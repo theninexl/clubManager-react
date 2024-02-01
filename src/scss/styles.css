@@ -1700,6 +1700,14 @@ strong {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+.cm-c-form-simple span.error {
+  font-family: "Quicksand", sans-serif;
+  font-weight: 700;
+  font-stretch: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #F93A3A;
+}
 .cm-c-form-simple input[type=text], .cm-c-form-simple input[type=number], .cm-c-form-simple input[type=email], .cm-c-form-simple input[type=password], .cm-c-form-simple input[type=date] {
   border: 1px solid rgba(44, 50, 95, 0.5);
   border-radius: 8px;

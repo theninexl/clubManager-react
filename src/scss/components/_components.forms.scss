@@ -25,6 +25,11 @@
         }
     }
 
+    span.error {
+        @include cm-qs-bold;
+        color: getColor(danger);
+    }
+
     input[type=text], input[type=number], input[type=email], input[type=password], input[type=date]{
         border:1px solid getColor(primaryLight);
         border-radius: getSize($small);
