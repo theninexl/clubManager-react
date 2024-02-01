@@ -1,0 +1,32 @@
+.cm-l-header {
+    background-color: getColor(white);
+    border-bottom: 1px solid getColor(secondaryLight);
+    position: fixed;
+    top:0;
+    z-index: 10;
+    width: 100%;
+    padding-top: getSize($medium);
+    padding-bottom: getSize($medium);
+}
+
+.cm-l-footer {
+    border-top:1px solid getColor(secondaryLight);
+    padding-top: getLines(1);
+    padding-bottom: getLines(1);
+}
+
+.cm-l-body-static-header {
+    $block:&;
+    border-bottom:1px solid getColor(secondaryLight);
+    display: flex;
+    align-items: center;
+    height: getSize($huge);
+    color:getColor(secondary);
+
+    &--inTab {
+        border-bottom:1px solid getColor(scarpaFlowLight);
+        color:getColor(primary);
+        margin-top: getSize($bigger);
+        padding-bottom: getSize($small);
+    }
+}

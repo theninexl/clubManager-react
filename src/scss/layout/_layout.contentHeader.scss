@@ -1,0 +1,49 @@
+.cm-l-contentHeader {
+  $block:&;
+    display: flex;
+    flex-direction: column;
+    background-color: getColor(white);
+    position: fixed;
+    $asideGutter: getCols(2) + getGutter(regular) + getGutter(regular);
+    width: calc(100% - $asideGutter);
+    z-index: 1;
+
+    &__titleBar {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-top: getSize($medium);
+        .titleBar {
+          $block:&;
+          &__title {
+            display: flex;
+            flex-grow: 1;
+            align-items: center;
+
+            #userDetailsImageContainer {
+              border: 1px solid getColor(scarpaFlowLight);
+              border-radius: 100%;
+              margin-right: getSize($small);
+              width: getSize($huger);
+              height: getSize($huger);
+              overflow: hidden;
+
+              img {
+                width: 100%;
+                height: 100%;
+              }
+            }
+          }
+          &__tools {
+            display: flex;
+            flex-grow: 0;
+            gap: getSize($small);
+          }
+        }
+    }
+    &__toolBar {
+        display: flex;
+        flex-flow:row nowrap;
+        gap: getSize($small);
+    }
+}
