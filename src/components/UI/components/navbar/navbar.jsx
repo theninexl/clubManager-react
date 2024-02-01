@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export const Navbar = ({ children }) => {
   return (
     <div className={`cm-c-navbar`}>
@@ -35,6 +37,14 @@ export const NavbarLinksVert = ({ children }) => {
     <ul className='navbar-links-vert'>
       { children }
     </ul>
+  );
+}
+
+export const NavbarLinksTextBtnSmall = ({ children, id }) => {
+  return (
+    <Link className='navbar-links__textbutt-small' id={id}>
+      { children }
+    </Link>
   );
 }
 

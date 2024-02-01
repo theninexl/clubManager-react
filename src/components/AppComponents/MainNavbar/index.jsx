@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
 import { useGlobalContext } from "../../../providers/globalContextProvider";
-import { Navbar, NavbarContentLeft, NavbarContentRight } from "../../UI/components/navbar/navbar";
+import { Navbar, NavbarContentLeft, NavbarContentRight, NavbarLinksHrz, NavbarLinksTextBtnSmall } from "../../UI/components/navbar/navbar";
 import { LogoShield } from "../../UI/objects/Logo";
 import { Button } from "../../UI/objects/buttons";
 
 export const MainNavbar = () => {
   //guardar contexto global
   const context = useGlobalContext();
+  console.log('context',context);
 
   const handleSignOut = (e) => {
     e.preventDefault();
@@ -28,7 +29,13 @@ export const MainNavbar = () => {
           </Link>
         </NavbarContentLeft>
         <NavbarContentRight>
-          Aquí van los otros estados
+          <NavbarLinksHrz>
+            <li>
+              <NavbarLinksTextBtnSmall>
+                {context.account.desc_nombre}
+              </NavbarLinksTextBtnSmall>
+            </li>
+          </NavbarLinksHrz>
           <Button
             onClick={handleSignOut}>Sign Out</Button>
         </NavbarContentRight>
