@@ -1,11 +1,9 @@
 import axios from 'axios';
 
-// const SERVER = import.meta.env.VITE_SERVER;
-// const PORT = import.meta.env.VITE_PORT;
-const SECRET = import.meta.env.MOCKAPI_KEY;
+const SERVER = import.meta.env.VITE_SERVER;
+const PORT = import.meta.env.VITE_PORT;
 
-// const baseURL = `http://${SERVER}:${PORT}/api/`;
-const baseURL = 'https://${SECRET}.mockapi.io/api/v1/'
+const baseURL = `http://${SERVER}:${PORT}/api/`;
 
 export const Api = {
   call: axios.create({

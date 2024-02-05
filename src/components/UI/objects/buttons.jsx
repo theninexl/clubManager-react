@@ -1,3 +1,5 @@
+//NORMAL TEXT BUTTONS
+
 export const Button = ({ children, type, className, defaultValue, id, onClick}) => {
   return (
     <button
@@ -7,6 +9,124 @@ export const Button = ({ children, type, className, defaultValue, id, onClick}) 
       id={id}
       onClick={onClick}>
         { children }
+    </button>
+  );
+}
+
+export const ButtonCatPrimary = ({ children, className, id, onClick }) => {
+  return (
+    <button
+      className={`cm-o-button-cat--primary ${className}`}
+      id={id}
+      onClick={onClick} >
+      { children }
+    </button>
+  );
+}
+
+export const ButtonCatTransparent = ({ children, className, id, onClick }) => {
+  return (
+    <button
+      className={`cm-o-button-cat--transparent ${className}`}
+      id={id}
+      onClick={onClick} >
+      { children }
+    </button>
+  );
+}
+
+export const ButtonCatGhost = ({ children, className, id, onClick }) => {
+  return (
+    <button
+      className={`cm-o-button-cat--ghost ${className}`}
+      id={id}
+      onClick={onClick} >
+      { children }
+    </button>
+  );
+}
+
+export const ButtonMousePrimary = ({ children, className, id, onClick }) => {
+  return (
+    <button
+      className={`cm-o-button-mouse--primary ${className}`}
+      id={id}
+      onClick={onClick} >
+      { children }
+    </button>
+  );
+}
+
+export const ButtonMouseGhost = ({ children, className, id, onClick }) => {
+  return (
+    <button
+      className={`cm-o-button-mouse--ghost ${className}`}
+      id={id}
+      onClick={onClick} >
+      { children }
+    </button>
+  );
+}
+
+export const ButtonCatGhostDisabled = ({ children, className, id, onClick }) => {
+  return (
+    <button
+      className={`cm-o-button-cat--ghost-inactive ${className}`}
+      id={id}
+      onClick={onClick} >
+      { children }
+    </button>
+  );
+}
+
+// ICON BUTTONS
+
+export const IconButtonSmallPrimary = ({ children, className, onClick }) => {
+  return (
+    <button 
+      className={`cm-o-icon-button-small--primary ${className}`}
+      onClick={onClick} >
+      { children }
+    </button>
+  );
+}
+
+export const IconButtonSmallSecondary = ({ children, className, onClick }) => {
+  return (
+    <button 
+      className={`cm-o-icon-button-small--primary ${className}`}
+      onClick={onClick} >
+      { children }
+    </button>
+  );
+}
+
+export const IconButtonSmallerPrimary = ({ children, className, onClick }) => {
+  return (
+    <button 
+      className={`cm-o-icon-button-smaller--primary ${className}`}
+      onClick={onClick} >
+      { children }
+    </button>
+  );
+}
+
+export const IconButtonSmallerSuccess = ({ children, className, onClick }) => {
+  return (
+    <button 
+      className={`cm-o-icon-button-smaller--success ${className}`}
+      onClick={onClick} >
+      { children }
+    </button>
+  );
+}
+
+export const IconButtonSmallerError = ({ children, className, onClick }) => {
+  return (
+    <button 
+      className={`cm-o-icon-button-smaller--error ${className}`}
+      onClick={onClick} >
+      { children }
     </button>
   );
 }

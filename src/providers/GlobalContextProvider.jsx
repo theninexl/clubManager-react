@@ -7,7 +7,6 @@ export const useGlobalContext = () => {
 }
 
 export const InitializeLocalStorage = () => {
-  console.log('inicializo LS');
   const accountInLocalStorage = localStorage.getItem('CMAccount');
   const signOutInLocalStorage = localStorage.getItem('CMSign-out');
   let parsedAccount = null;
@@ -19,7 +18,6 @@ export const InitializeLocalStorage = () => {
   } else {
     parsedAccount = JSON.parse(accountInLocalStorage);
   }
-  console.log('parsedAccount',parsedAccount);
 
   if (!signOutInLocalStorage) {
     localStorage.setItem('CMSign-out', JSON.stringify({}));
@@ -27,16 +25,20 @@ export const InitializeLocalStorage = () => {
   } else {
     parsedSignOut = JSON.parse(signOutInLocalStorage);
   }
-
-  console.log('parsedSignOut',parsedSignOut);
 }
 
 export const GlobalContextProvider = ({ children }) => {
-
   //acount
   const [account, setAccount] = useState({});
   //signout
   const [signOut, setSignOut] = useState(false);
+
+  //notificaciones
+  const [notifications, setNotifications] = useState([]);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+  //uploadedDocs new Player
+  const [fileNewPlayerUploaded, setFileNewPlayerUploaded] = useState([]);
 
   return (
     <globalContext.Provider 
@@ -44,7 +46,13 @@ export const GlobalContextProvider = ({ children }) => {
         account,
         setAccount,
         signOut,
-        setSignOut
+        setSignOut,
+        notifications,
+        setNotifications,
+        unreadNotifications,
+        setUnreadNotifications,
+        fileNewPlayerUploaded,
+        setFileNewPlayerUploaded
       }}
     >
       {children}

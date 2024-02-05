@@ -1733,6 +1733,23 @@ strong {
   border-width: 2px;
   outline: none;
 }
+.cm-c-form-simple input[type=text]:-moz-read-only, .cm-c-form-simple input[type=number]:-moz-read-only, .cm-c-form-simple input[type=email]:-moz-read-only, .cm-c-form-simple input[type=password]:-moz-read-only, .cm-c-form-simple input[type=date]:-moz-read-only {
+  border: 2px solid #E1E1E1;
+  color: rgba(69, 69, 72, 0.5);
+}
+.cm-c-form-simple input[type=text]:read-only, .cm-c-form-simple input[type=number]:read-only, .cm-c-form-simple input[type=email]:read-only, .cm-c-form-simple input[type=password]:read-only, .cm-c-form-simple input[type=date]:read-only {
+  border: 2px solid #E1E1E1;
+  color: rgba(69, 69, 72, 0.5);
+}
+.cm-c-form-simple input[type=text]:read-only::-moz-placeholder, .cm-c-form-simple input[type=number]:read-only::-moz-placeholder, .cm-c-form-simple input[type=email]:read-only::-moz-placeholder, .cm-c-form-simple input[type=password]:read-only::-moz-placeholder, .cm-c-form-simple input[type=date]:read-only::-moz-placeholder {
+  color: #E1E1E1;
+}
+.cm-c-form-simple input[type=text]:-moz-read-only::placeholder, .cm-c-form-simple input[type=number]:-moz-read-only::placeholder, .cm-c-form-simple input[type=email]:-moz-read-only::placeholder, .cm-c-form-simple input[type=password]:-moz-read-only::placeholder, .cm-c-form-simple input[type=date]:-moz-read-only::placeholder {
+  color: #E1E1E1;
+}
+.cm-c-form-simple input[type=text]:read-only::placeholder, .cm-c-form-simple input[type=number]:read-only::placeholder, .cm-c-form-simple input[type=email]:read-only::placeholder, .cm-c-form-simple input[type=password]:read-only::placeholder, .cm-c-form-simple input[type=date]:read-only::placeholder {
+  color: #E1E1E1;
+}
 .cm-c-form-simple input[type=text]:-internal-autofill-selected, .cm-c-form-simple input[type=number]:-internal-autofill-selected, .cm-c-form-simple input[type=email]:-internal-autofill-selected, .cm-c-form-simple input[type=password]:-internal-autofill-selected, .cm-c-form-simple input[type=date]:-internal-autofill-selected {
   background-color: #FFFFFF !important;
 }

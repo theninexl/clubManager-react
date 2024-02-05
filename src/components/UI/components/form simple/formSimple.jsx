@@ -1,13 +1,39 @@
-export const FormSimple = ({ children, className, id, innerRef }) => {
+export const FormSimple = ({ children, className, id, innerRef, autoComplete }) => {
   return (
     <form 
       className={`cm-c-form-simple cm-l-form-simple ${className}`} 
       id={id}
+      autoComplete={autoComplete}
       ref={innerRef} >
       { children }
     </form>
   );
 }
+
+export const FormSimplePanel = ({ children, className, id, innerRef, autoComplete }) => {
+  return (
+    <form 
+      className={`cm-c-form-simple cm-l-form-panel ${className}`} 
+      id={id}
+      autoComplete={autoComplete}
+      ref={innerRef} >
+      { children }
+    </form>
+  );
+}
+
+export const FormSimpleHrz = ({ children, className, id, innerRef, autoComplete }) => {
+  return (
+    <form 
+      className={`cm-c-form-simple-hrz ${className}`} 
+      id={id}
+      autoComplete={autoComplete}
+      ref={innerRef} >
+      { children }
+    </form>
+  );
+}
+
 
 export const FormSimpleRow = ({ children, className }) => {
   return (
@@ -17,7 +43,15 @@ export const FormSimpleRow = ({ children, className }) => {
   );
 }
 
-export const LabelElement = ({ children, style, className, htmlFor, type, placeholder, value, handleOnChange, required, disabled, readOnly }) => {
+export const FormSimplePanelRow = ({ children, className }) => {
+  return (
+    <div className={`cm-l-form-panel__row ${className}`}>
+      { children }
+    </div>
+  );
+}
+
+export const LabelElement = ({ children, style, className, htmlFor, type, placeholder, value, handleOnChange, required, disabled, readOnly, autoComplete, role }) => {
   return (
     <label
       htmlFor={htmlFor}
@@ -31,7 +65,9 @@ export const LabelElement = ({ children, style, className, htmlFor, type, placeh
         id={htmlFor}
         onChange={handleOnChange}
         placeholder={placeholder}
-        defaultValue={value}
+        autoComplete={autoComplete}
+        role={role}
+        value={value}
         required={required}
         disabled={disabled}
         readOnly={readOnly} />
@@ -39,25 +75,110 @@ export const LabelElement = ({ children, style, className, htmlFor, type, placeh
   );
 } 
 
-export const LabelElementAssist = ({ children, style, className, htmlFor , type, placeholder, value, handleOnChange, required, disabled, readOnly, assistanceText }) => {
-  <label
-    htmlFor={htmlFor}
-    className={className}
-    style={style} >
-    <span>{ children }</span>
-    <input
+export const LabelElementAssist = ({ children, style, className, htmlFor , type, placeholder, value, handleOnChange, required, disabled, readOnly, assistanceText,autoComplete, role, format, defaultValue }) => {
+  return (
+    <label
+      htmlFor={htmlFor}
       className={className}
-      type={type}
-      name={htmlFor}
-      id={htmlFor}
-      onChange={handleOnChange}
-      placeholder={placeholder}
-      defaultValue={value}
-      required={required}
-      disabled={disabled}
-      readOnly={readOnly} />
-    <span className='assistance' aria-live='polite'>
-      { assistanceText }
-    </span>
-  </label>
+      style={style} >
+      <span>{ children }</span>
+      <input
+        className={className}
+        type={type}
+        name={htmlFor}
+        id={htmlFor}
+        onChange={handleOnChange}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        role={role}
+        value={value}
+        defaultValue={defaultValue}
+        required={required}
+        disabled={disabled}
+        readOnly={readOnly}
+        format={format} />
+      <span className='assistance' aria-live='polite'>
+        { assistanceText }
+      </span>
+    </label>
+  );
+}
+
+
+export const LabelSelectElement = ({ children, style, className, htmlFor, labelText, placeholder, value, handleOnChange, required }) => {
+  return (
+    <label
+      htmlFor={htmlFor}
+      className={`panel-field-long ${className}`}
+      style={style} >
+      <span>{labelText}</span>
+      <div className='cm-c-select-icon'>
+        <select
+          className='cm-c-select-icon__select'
+          name={htmlFor}
+          id={htmlFor}
+          onChange={handleOnChange}
+          placeholder={placeholder}
+          value={value}
+          required={required}>
+          { children }
+        </select>
+      </div>
+    </label>
+  );
 } 
+
+
+
+export const LabelElementToggle = ({ children, style, className, htmlFor , checked, value, handleOnChange }) => {
+  return (
+    <label
+      htmlFor={htmlFor}
+      className='panel-field-short'
+      style={style} >
+      <span>{ children }</span>
+      <div
+        className='cm-c-form-simple__radio-toggle'>
+           <input
+            className={className}
+            type='checkbox'
+            name={htmlFor}
+            id={htmlFor}
+            onChange={handleOnChange}
+            value={value}
+            checked={checked}/>
+        </div>
+    </label>
+  );
+} 
+
+export const SelectIcon = ({ children, style, id, placeholder, name, value, defaultValue, selected, onChange }) => {
+  return (
+    <div className='cm-c-select-icon'>
+      <select
+        className='cm-c-select-icon__select'
+        style={style}
+        id={id}
+        placeholder={placeholder}
+        name={name}
+        value={value}
+        defaultValue={defaultValue}
+        selected={selected}
+        onChange={onChange} >
+        { children }
+      </select>
+    </div>
+  )
+}
+
+export const FieldWithIcon = ({ children }) => {
+  return (
+    <div className='cm-c-field-icon'>{ children }</div>
+  );
+}
+
+export const FieldWithIcon__input =({ children, name, placeholder }) => {
+  return (
+    <input className='cm-c-field-icon__input' name={name} id={name} placeholder={placeholder} />
+  );
+}

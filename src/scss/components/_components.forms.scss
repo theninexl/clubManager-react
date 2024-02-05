@@ -11,6 +11,7 @@
             color: getColor(danger) !important;
             @include cm-qs-bold;
 
+
             &::placeholder, input::placeholder {
                 color: getColor(danger);
             }
@@ -49,6 +50,15 @@
             border-color:getColor(primary);
             border-width:2px;
             outline:none;
+        }
+
+        &:read-only {
+            border:2px solid getColor(scarpaFlowLight);
+            color: getColor(scarpaFlowFade);
+        }
+
+        &:read-only::placeholder {
+            color: getColor(scarpaFlowLight);
         }
 
         &:-internal-autofill-selected {

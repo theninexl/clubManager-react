@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import axios from "axios";
+import { Api } from "../../services/api";
 import { useGlobalContext } from "../../providers/globalContextProvider";
 import { FormSimple, FormSimpleRow, LabelElement } from "../../components/UI/components/form simple/formSimple";
 import { MainContent, ThirdContainer } from "../../components/UI/layout/containers";
@@ -9,18 +9,18 @@ import { Button } from "../../components/UI/objects/buttons";
 export default function Login () {
   //guardar contexto global
   const context = useGlobalContext();
-
-  console.log(context);
-
   //evalua signout
   const signOUT = localStorage.getItem('CMSign-out');
   const parsedSignOut = JSON.parse(signOUT);
   const isUserSignOut = context.signOut || parsedSignOut;
 
-  console.log('context.signOut',context.signOut);
-  console.log('parsedSignOut',parsedSignOut);
-  console.log('isUserSignOut',isUserSignOut);
+  // console.log('context.signOut',context.signOut);
+  // console.log('parsedSignOut',parsedSignOut);
+  // console.log('isUserSignOut',isUserSignOut);
 
+  //estados locales
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPwd, setLoginPwd] = useState('');
   //error para form
   const [error, setError] = useState(null);
   //ref form
@@ -33,8 +33,7 @@ export default function Login () {
       email: formData.get('loginEmail'),
       password: formData.get('loginPwd')
     }
-    const baseURL = 'http://85.54.47.35:8888/api/users/login'
-    axios.post(baseURL,{
+    Api.call.post('users/login',{
       desc_email:data.email,
       password:data.password,
     })
@@ -45,7 +44,8 @@ export default function Login () {
       handleSignIn()
 
     }).catch(err => {
-      if (err.response.status === 409) setError('Email o contraseña incorrectos')
+      if (err.code === 'ERR_NETWORK') setError('Error en la base de datos, inténtelo más tarde')
+      else if (err.response.status === 409) setError('Email o contraseña incorrectos')
       else setError('Error al realizar la solicitud')
     })
   }
@@ -67,11 +67,13 @@ export default function Login () {
           </div>
           <FormSimple 
             className='cm-u-spacer-mb-big'
-            innerRef={form} >
+            innerRef={form} 
+            autoComplete="off">
             <FormSimpleRow>
               <LabelElement
                 htmlFor='loginEmail'
                 type='email'
+                autoComplete='off'
                 >
                   Email
               </LabelElement>
@@ -80,6 +82,7 @@ export default function Login () {
               <LabelElement
                 htmlFor='loginPwd'
                 type='password'
+                autoComplete='new-password'
                 >
                   Contraseña
               </LabelElement>

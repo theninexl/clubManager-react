@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
 
-export const Navbar = ({ children }) => {
+export const Navbar = ({ children, style, className }) => {
   return (
-    <div className={`cm-c-navbar`}>
+    <nav 
+      className={`cm-c-navbar ${className}`}
+      style={style} >
       { children }
-    </div>
+    </nav>
   );
 }
 
@@ -40,9 +42,12 @@ export const NavbarLinksVert = ({ children }) => {
   );
 }
 
-export const NavbarLinksTextBtnSmall = ({ children, id }) => {
+export const NavbarLinksTextBtnSmall = ({ children, className, id, onClick }) => {
   return (
-    <Link className='navbar-links__textbutt-small' id={id}>
+    <Link 
+      className={`navbar-links__textbutt-small ${className}`} 
+      id={id}
+      onClick={onClick} >
       { children }
     </Link>
   );
