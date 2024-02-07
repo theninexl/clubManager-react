@@ -1,4 +1,7 @@
+import { InitializeLocalStorage } from "../providers/globalContextProvider";
 import { Api } from "./api";
+
+InitializeLocalStorage();
 
 //guardar token peticiones
 const account = localStorage.getItem('CMAccount');

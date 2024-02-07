@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from 'react';
-import { BrowserRouter, Navigate, useLocation, useRoutes } from 'react-router-dom';
+
+import { BrowserRouter, Navigate, useRoutes } from 'react-router-dom';
 import { GlobalContextProvider, InitializeLocalStorage, useGlobalContext } from '../../providers/globalContextProvider';
 import TopNav from '../../components/TopNav';
 import Login from '../Login';
@@ -27,9 +27,6 @@ const AppRoutes = () => {
   const parsedSignOut = JSON.parse(signOUT);
   const isUserSignOut = context.signOut || parsedSignOut;
 
-  // console.log('context.signOut',context.signOut);
-  // console.log('parsedSignOut',parsedSignOut);
-  // console.log('isUserSignOut',isUserSignOut);
 
   let routes = useRoutes([
     {path: '/', element: !isUserSignOut ? 
@@ -110,10 +107,12 @@ export default function App() {
   InitializeLocalStorage();
 
   return (
+    <>    
     <GlobalContextProvider>  
-      <BrowserRouter>        
+      <BrowserRouter>   
         <AppRoutes />
       </BrowserRouter>
     </GlobalContextProvider>
+    </>
   )
 }
