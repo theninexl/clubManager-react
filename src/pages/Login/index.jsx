@@ -44,6 +44,7 @@ export default function Login () {
       handleSignIn()
 
     }).catch(err => {
+      console.log(err);
       if (err.code === 'ERR_NETWORK') setError('Error en la base de datos, inténtelo más tarde')
       else if (err.response.status === 409) setError('Email o contraseña incorrectos')
       else setError('Error al realizar la solicitud')

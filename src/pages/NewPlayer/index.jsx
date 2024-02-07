@@ -45,6 +45,7 @@ export default function NewPlayerPage () {
   const [contracts, setContracts] = useState(null);
   const [intermediaries, setIntermediaries] = useState(null);
   const [teams, setTeams] = useState(null);
+  const [showNewVariableLayer, setShowNewVariableLayer ] = useState(false);
   const [showUploadDoc, setShowUploadDoc ] = useState(false);
   const [uploadedFiles, setUploadedFiles ] = useState([]);
   
@@ -140,7 +141,7 @@ export default function NewPlayerPage () {
             <FormSimplePanelRow
               className='cm-u-centerText'>
               <ButtonMousePrimary
-                onClick={handleFile}>Guardar</ButtonMousePrimary>
+                >Guardar</ButtonMousePrimary>
               <ButtonMouseGhost
                 onClick={() => setShowUploadDoc(false)}
                 >Cancelar</ButtonMouseGhost>
@@ -149,6 +150,169 @@ export default function NewPlayerPage () {
       );
     }
   }
+
+    //render acordeon upload docs
+    const renderNewVariableLayer = () => {
+      if (showUploadDoc === true) {
+        return (
+          <SimpleAccordionContent
+            id='docUploadContent'>
+              <header className="cm-l-body-static-header--inTab" style={{marginTop:'0'}}>
+                  <p className="cm-u-text-black-cat">Añadir documento</p>
+              </header>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='variableDescription'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Descripcion'
+                  >
+                  Descripción
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+              <label htmlFor="" className="">
+              <span style={{display:'inline-block',width:'168px'}}>Condición</span>
+                  <div className="cm-c-select-icon">
+                      <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'100px'}}>
+                          <option value=""></option>
+                          </select>
+                  </div>            
+              </label> 
+              
+                <label htmlFor="" className="">
+                
+                
+                <div className="cm-c-select-icon">
+                  <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'200px'}}>
+                      <option value="1">Partidos jugados</option>
+                      <option value="2">Minutos jugados</option>
+                      <option value="3">Goles marcados</option>
+                      <option value="4">Goles asistidos</option>
+                      </select>
+                </div>            
+              </label>
+              <label htmlFor="" className="">
+                <div className="cm-c-select-icon">
+                  <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'200px'}}>
+                      <option value="1">Mayor que</option>
+                      <option value="2">Igual</option>
+                      <option value="3">Menor que</option>
+                      </select>
+                </div>            
+              </label>
+              <label htmlFor="" className="">
+                  <input type="text" id="" name="newVariableDescription" placeholder="Add value"/>        
+              </label>
+              <label htmlFor="" className="">
+                  <div className="cm-c-select-icon">
+                      <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'100px'}}>
+                          <option value=""></option>
+                          </select>
+                  </div>            
+              </label> 
+              <button className="cm-o-icon-button-small--secondary" id="addBonusVariable"><span className="material-symbols-outlined">add</span></button>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+              <div className="cm-c-select-icon" style={{width:'156px',maxWidth:'156px'}}>
+                <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" >
+                    <option value="1">Y</option>
+                    <option value="2">O</option>
+                    </select>
+              </div> 
+              <label htmlFor="" className="">
+                  <div className="cm-c-select-icon">
+                      <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'100px'}}>
+                          <option value=""></option>
+                          </select>
+                  </div>            
+              </label> 
+              <label htmlFor="" className="">
+                  <div className="cm-c-select-icon">
+                      <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'200px'}}>
+                          <option value="1">Partidos jugados</option>
+                          <option value="2">Minutos jugados</option>
+                          <option value="3">Goles marcados</option>
+                          <option value="4">Goles asistidos</option>
+                          </select>
+                  </div>            
+              </label>
+              <label htmlFor="" className="">
+                  <div className="cm-c-select-icon">
+                      <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'200px'}}>
+                          <option value="1">Mayor que</option>
+                          <option value="2">Igual</option>
+                          <option value="3">Menor que</option>
+                          </select>
+                  </div>            
+              </label>
+              <label htmlFor="" className="">
+                  <input type="text" id="" name="newVariableDescription" placeholder="Add value"/>        
+              </label>
+              <label htmlFor="" className="">
+                  <div className="cm-c-select-icon">
+                      <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'100px'}}>
+                          <option value=""></option>
+                          </select>
+                  </div>            
+              </label> 
+              <button className="cm-o-icon-button-small--secondary" id="addBonusVariable"><span className="material-symbols-outlined">add</span></button>
+              <button className="cm-o-icon-button-small--secondary" id="addBonusVariable"><span className="material-symbols-outlined">delete</span></button>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+              <label htmlFor="" className="">
+                <span style={{display:'inline-block', width:'160px'}}>Importe</span>
+                <input type="text" id="" name="newVariableDescription" placeholder="Add value"/>        
+              </label>
+              <label htmlFor="" className="">
+                <div className="cm-c-select-icon">
+                    <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'200px'}}>
+                        <option value="">Tipo variable</option>
+                        <option value="1">Variable1</option>
+                        <option value="1">Variable2</option>
+                        </select>
+                </div>            
+              </label>
+              <label htmlFor="" className="">
+                  <div className="cm-c-select-icon">
+                    <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'200px'}}>
+                        <option value="">Beneficiario</option>
+                        <option value="1">Jugador</option>
+                        <option value="2">Intermediario</option>
+                        <option value="3">Club origen</option>
+                        <option value="3">Club destino</option>
+                        </select>
+                  </div>            
+              </label>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+              <label htmlFor="" className="">
+                  <span style={{display:'inline-block', width:'160px'}}>Vigencia</span>
+                  <input type="date" id="" name="" placeholder="Start"/>       
+              </label>
+              <label htmlFor="" className="">
+                  <input type="date" id="" name="" placeholder="End"/>       
+              </label>
+              <label htmlFor="" className="" style={{display:'flex',gap:'8px',alignItems:'center'}}>
+                  <span>Amortizable</span>
+                  <div className="cm-c-form-simple__radio-toggle">
+                      <input type="checkbox" id="" name=""/>
+                  </div>
+              </label>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow
+                className='cm-u-centerText'>
+                <ButtonMousePrimary
+                  onClick={handleFile}>Guardar</ButtonMousePrimary>
+                <ButtonMouseGhost
+                  onClick={() => setShowUploadDoc(false)}
+                  >Cancelar</ButtonMouseGhost>
+              </FormSimplePanelRow>
+          </SimpleAccordionContent>
+        );
+      }
+    }
 
   const handleFile = (e) => {
     e.preventDefault();
@@ -264,6 +428,7 @@ export default function NewPlayerPage () {
                   <TabLink target='general'>General</TabLink>
                   <TabLink target='deportivo'>Deportivo</TabLink>
                   <TabLink target='contractual'>Contractual</TabLink>
+                  <TabLink target='variables'>Variables</TabLink>
                   <TabLink target='documentos'>Documentos</TabLink>
                 </FormTabs__LinksWrapper>
               </FormTabs>
@@ -546,6 +711,26 @@ export default function NewPlayerPage () {
                             })}
                         </LabelSelectElement>
                       </FormSimplePanelRow>
+                    </TabContent>
+                    <TabContent id='variables'>
+                    <SimpleAccordion>
+                        <SimpleAccordionTrigger
+                          className='cm-u-spacer-mb-bigger'>
+                          <HeadContentTitleBar>
+                            <TitleBar__Title></TitleBar__Title>
+                            <TitleBar__Tools>
+                              <IconButtonSmallPrimary
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  setShowUploadDoc(true);
+                                }} >
+                                  <SymbolAdd />
+                              </IconButtonSmallPrimary>
+                            </TitleBar__Tools>
+                          </HeadContentTitleBar>
+                        </SimpleAccordionTrigger>
+                        {renderNewVariableLayer()}
+                      </SimpleAccordion>
                     </TabContent>
                     <TabContent id='documentos'>
                       <SimpleAccordion>

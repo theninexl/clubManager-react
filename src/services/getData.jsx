@@ -11,7 +11,7 @@ const headers = {
 }
 
 //getData
-export const getData = async (token,endpoint, search, pagenumber, rowspage, order) => {    
+export const getData = async (endpoint, search, pagenumber, rowspage, order) => {    
   const { data } = await Api.call.post(endpoint, {
     "search":search,
     "pagenumber":pagenumber,
