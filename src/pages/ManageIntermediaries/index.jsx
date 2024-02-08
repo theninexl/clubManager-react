@@ -28,7 +28,7 @@ export default function ManageIntermediariesPage () {
 
   //pedir paises
   const getIntermediaries = async () => {
-    const results = await getSimpleData('intermediaries/getAll')
+    const results = await getSimpleData('intermediaries/getAll', token)
     .then (res=> {
       setAllIntermediaries(res.data);
     }).catch(err=> {

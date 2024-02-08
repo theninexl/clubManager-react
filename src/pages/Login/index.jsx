@@ -5,22 +5,18 @@ import { FormSimple, FormSimpleRow, LabelElement } from "../../components/UI/com
 import { MainContent, ThirdContainer } from "../../components/UI/layout/containers";
 import { LogoShield } from "../../components/UI/objects/Logo";
 import { Button } from "../../components/UI/objects/buttons";
+import { useNavigate } from "react-router-dom";
 
 export default function Login () {
   //guardar contexto global
   const context = useGlobalContext();
+
   //evalua signout
   const signOUT = localStorage.getItem('CMSign-out');
   const parsedSignOut = JSON.parse(signOUT);
   const isUserSignOut = context.signOut || parsedSignOut;
 
-  // console.log('context.signOut',context.signOut);
-  // console.log('parsedSignOut',parsedSignOut);
-  // console.log('isUserSignOut',isUserSignOut);
 
-  //estados locales
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPwd, setLoginPwd] = useState('');
   //error para form
   const [error, setError] = useState(null);
   //ref form

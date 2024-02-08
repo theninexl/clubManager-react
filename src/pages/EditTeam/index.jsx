@@ -80,7 +80,7 @@ export default function EditTeamPage () {
 
   //pedir ligas
   const getCountries = async () => {
-    const results = await getSimpleData('masters/getAllCountry')
+    const results = await getSimpleData('masters/getAllCountry', token)
     .then (res=> {
       setCountries(res.data);
     }).catch(err=> {
@@ -90,7 +90,7 @@ export default function EditTeamPage () {
 
   //pedir paises
   const getLeagues = async () => {
-    const results = await getSimpleData('masters/getAllLigue')
+    const results = await getSimpleData('masters/getAllLigue', token)
     .then (res=> {
       setAllLeagues(res.data);
     }).catch(err=> {

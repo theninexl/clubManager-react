@@ -28,7 +28,7 @@ export default function ManagePlayersPage () {
 
   //pedir 10 usuarios
   const getUsers = async (token = token, search,pagenumber, rowspage = rowsByPage, orderby = listOrder ) => {
-    const results = await getData('players/getAll',search,pagenumber,rowspage,orderby)
+    const results = await getData('players/getAll',search,pagenumber,rowspage,orderby,token)
     .then (res=> {
       setAllPlayers(res.data);
     }).catch(err=> {

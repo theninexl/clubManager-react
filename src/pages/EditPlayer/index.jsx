@@ -118,7 +118,7 @@ export default function EditPlayerPage () {
 
   //pedir paises
   const getCountries = async () => {
-    const results = await getSimpleData('masters/getAllCountry')
+    const results = await getSimpleData('masters/getAllCountry', token)
     .then (res=> {
       setCountries(res.data);
     }).catch(err=> {
@@ -128,7 +128,7 @@ export default function EditPlayerPage () {
 
   //pedir posiciones
   const getPositions = async () => {
-    const results = await getSimpleData('masters/getAllPosition')
+    const results = await getSimpleData('masters/getAllPosition', token)
     .then (res=> {
       setPositions(res.data);
     }).catch(err=> {
@@ -138,7 +138,7 @@ export default function EditPlayerPage () {
 
   //pedir contratos
   const getContracts= async () => {
-    const results = await getSimpleData('masters/getAllContract')
+    const results = await getSimpleData('masters/getAllContract', token)
     .then (res=> {
       setContracts(res.data);
     }).catch(err=> {
@@ -148,7 +148,7 @@ export default function EditPlayerPage () {
 
   //pedir intermediarios
   const getIntermediaries= async () => {
-    const results = await getSimpleData('intermediaries/getAll')
+    const results = await getSimpleData('intermediaries/getAll', token)
     .then (res=> {
       setIntermediaries(res.data);
     }).catch(err=> {
@@ -158,7 +158,7 @@ export default function EditPlayerPage () {
 
   //pedir equipos
   const getTeams= async () => {
-    const results = await getSimpleData('teams/getAll')
+    const results = await getSimpleData('teams/getAll', token)
     .then (res=> {
       setTeams(res.data);
     }).catch(err=> {

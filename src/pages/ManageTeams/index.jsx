@@ -27,7 +27,7 @@ export default function ManageTeamsPage () {
 
   //pedir paises
   const getTeams = async () => {
-    const results = await getSimpleData('teams/getAll')
+    const results = await getSimpleData('teams/getAll', token)
     .then (res=> {
       setAllTeams(res.data);
     }).catch(err=> {

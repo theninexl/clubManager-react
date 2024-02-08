@@ -14,18 +14,24 @@ const headers = {
 }
 
 //getData
-export const getData = async (endpoint, search, pagenumber, rowspage, order) => {    
+export const getData = async (endpoint, search, pagenumber, rowspage, order, token) => {    
   const { data } = await Api.call.post(endpoint, {
     "search":search,
     "pagenumber":pagenumber,
     "rowspage":rowspage,
-    "orderby":order},
-    { headers:headers })
+    "orderby":order
+  },{ headers: {
+    'Content-Type': 'application/json',
+    'x-access-token': token,
+  }})
   return data;
 }
 
 //get Data without parameters
-export const getSimpleData = async (endpoint) => {
-  const { data } = await Api.call.post(endpoint, {},{ headers:headers })
+export const getSimpleData = async (endpoint, token) => {
+  const { data } = await Api.call.post(endpoint, {},{ headers:{
+    'Content-Type': 'application/json',
+    'x-access-token': token,
+  }})
   return data;
 }
