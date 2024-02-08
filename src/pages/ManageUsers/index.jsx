@@ -30,7 +30,7 @@ export default function ManageUsersPage () {
 
   //pedir 10 usuarios
   const getUsers = async (token = token, search,pagenumber, rowspage = rowsByPage, orderby = listOrder ) => {
-    const results = await getData(token,'users/getAll',search,pagenumber,rowspage,orderby)
+    const results = await getData('users/getAll',search,pagenumber,rowspage,orderby)
     .then (res=> {
       setAllUsers(res.data);
     }).catch(err=> {

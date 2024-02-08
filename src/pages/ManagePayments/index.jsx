@@ -6,11 +6,11 @@ import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../comp
 import { CentralBody, CentralBody__Header, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
 import { TableCellLong, TableCellMedium, TableCellShort, TableDataHeader, TableDataRow, TableDataWrapper } from "../../components/UI/layout/tableData";
 import { IconButtonSmallPrimary, IconButtonSmallSecondary, IconButtonSmallerError, IconButtonSmallerPrimary, IconButtonSmallerSuccess } from "../../components/UI/objects/buttons";
-import { SymbolAdd, SymbolCheck, SymbolEdit, SymbolError, SymbolSearch } from "../../components/UI/objects/symbols";
+import { SymbolAdd, SymbolBartchart, SymbolCheck, SymbolEdit, SymbolError, SymbolSearch } from "../../components/UI/objects/symbols";
 import { FieldWithIcon, FieldWithIcon__input, FormSimpleHrz } from "../../components/UI/components/form simple/formSimple";
 
 
-export default function ManagePlayersPage () {
+export default function ManagePaymentsPage () {
 
   //navegar
   const navigate = useNavigate();
@@ -22,27 +22,62 @@ export default function ManagePlayersPage () {
   const rowsByPage = 10;
   const [searchValue, setSearchValue] = useState('');
   const [listOrder, setListOrder] = useState(1);
-  const [allPlayers, setAllPlayers] = useState([]);
   const [page, setPage] = useState(1);
+
+  const [allPlayers, setAllPlayers] = useState([
+    {
+      "id_jugador": 1,
+      "nombre": "LUCAS",
+      "apellidos": "TIRO",
+      "alias": "TIRO",
+      "comunitario": "SI",
+      "desc_posicion": "DEFENSA",
+      "imp_salario_total": "100,00€",
+      "imp_variable": "100,00€",
+      "activo": "NO"
+    },
+    {
+      "id_jugador": 1,
+      "nombre": "ALVARO",
+      "apellidos": "MORATA MORATO",
+      "alias": "MORATA",
+      "comunitario": "SI",
+      "desc_posicion": "DELANTERO",
+      "imp_salario_total": "100,00€",
+      "imp_variable": "100,00€",
+      "activo": "SI"
+    },
+    {
+      "id_jugador": 1,
+      "nombre": "STEFAN",
+      "apellidos": "SAVIC",
+      "alias": "SAVIC",
+      "comunitario": "SI",
+      "desc_posicion": "DELANTERO",
+      "imp_salario_total": "100,00€",
+      "imp_variable": "100,00€",
+      "activo": "SI"
+    },
+  ]);
 
 
   //pedir 10 usuarios
-  const getUsers = async (token = token, search,pagenumber, rowspage = rowsByPage, orderby = listOrder ) => {
-    const results = await getData('players/getAll',search,pagenumber,rowspage,orderby)
-    .then (res=> {
-      setAllPlayers(res.data);
-    }).catch(err=> {
-      console.log(err);
-    })
-  }
+  // const getUsers = async (token = token, search,pagenumber, rowspage = rowsByPage, orderby = listOrder ) => {
+  //   const results = await getData(token,'players/getAll',search,pagenumber,rowspage,orderby)
+  //   .then (res=> {
+  //     setAllPlayers(res.data);
+  //   }).catch(err=> {
+  //     console.log(err);
+  //   })
+  // }
 
-  //resetear pagina a 1 cuando cargas la primera vez
-  useEffect(()=> { setPage(1)},[setPage]);
+  // //resetear pagina a 1 cuando cargas la primera vez
+  // useEffect(()=> { setPage(1)},[setPage]);
 
-  //volver a pedir users cuando cambia pagina, orden
-  useEffect(()=> {
-    getUsers(token,searchValue,page);
-  },[page, listOrder]);
+  // //volver a pedir users cuando cambia pagina, orden
+  // useEffect(()=> {
+  //   getUsers(token,searchValue,page);
+  // },[page, listOrder]);
 
 
   return (
@@ -54,7 +89,7 @@ export default function ManagePlayersPage () {
         <HalfContainerBody className='cm-u-spacer-mt-medium'>
           <HeadContent>
             <HeadContentTitleBar>
-              <TitleBar__Title>Plantilla</TitleBar__Title>
+              <TitleBar__Title>Calendario de pagos</TitleBar__Title>
               <TitleBar__Tools>
                 {/* <FormSimpleHrz>
                   <FieldWithIcon>
@@ -116,9 +151,9 @@ export default function ManagePlayersPage () {
                         <TableCellShort className='cm-u-centerText' >
                           <IconButtonSmallerPrimary
                             onClick={() => {
-                              navigate(`/edit-player?player=${player.id_jugador}`)
+                              navigate(`/manage-player-payments?player=${player.id_jugador}`)
                             }}>
-                            <SymbolEdit/>
+                            <SymbolBartchart/>
                           </IconButtonSmallerPrimary>
                         </TableCellShort>
                       </TableDataRow>

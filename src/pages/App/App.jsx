@@ -17,6 +17,8 @@ import EditTeamPage from '../EditTeam';
 import NewTeamPage from '../NewTeam';
 import EditIntermediaryPage from '../EditIntermediary';
 import NewIntermediaryPage from '../NewIntermediary';
+import ManagePaymentsPage from '../ManagePayments';
+import EditPlayerPaymentsPage from '../EditPlayerPayments';
 
 
 const AppRoutes = () => {
@@ -97,6 +99,16 @@ const AppRoutes = () => {
     <>
       <TopNav />
       <NewIntermediaryPage/>
+    </> : <Navigate replace to={'/login'} /> },
+    { path: '/manage-payments', element: !isUserSignOut ?
+    <>
+      <TopNav />
+      <ManagePaymentsPage/>
+    </> : <Navigate replace to={'/login'} /> },
+    { path: '/manage-player-payments', element: !isUserSignOut ?
+    <>
+      <TopNav />
+      <EditPlayerPaymentsPage/>
     </> : <Navigate replace to={'/login'} /> },
   ])
   return routes;

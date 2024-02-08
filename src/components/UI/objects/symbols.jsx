@@ -10,6 +10,12 @@ export const SymbolBack = () => {
   );
 }
 
+export const SymbolBartchart = () => {
+  return (
+    <span className='material-symbols-outlined'>bar_chart</span>
+  );
+}
+
 export const SymbolCheck = () => {
   return (
     <span className='material-symbols-outlined'>check</span>

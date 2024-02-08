@@ -31,7 +31,12 @@ export const AsideMenu = () => {
              onClick={() => navigate('/manage-teams')}>
               Gestión relacional</ButtonCatGhost>
         </li>
-        <li><ButtonCatGhost>Calendario de pagos</ButtonCatGhost></li>
+        <li>
+        <ButtonCatGhost
+             className={currentUrl === '/manage-payments' || currentUrl === '/manage-player-payments' ? 'active' : ''}
+             onClick={() => navigate('/manage-payments')}>
+              Calendario de pagos</ButtonCatGhost>
+        </li>
         <li><ButtonCatGhostDisabled>Tesorería</ButtonCatGhostDisabled></li>
         <li><ButtonCatGhostDisabled>Reporting</ButtonCatGhostDisabled></li>
         <li><ButtonCatGhostDisabled>Scouting</ButtonCatGhostDisabled></li>

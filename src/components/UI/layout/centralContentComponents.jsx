@@ -85,9 +85,9 @@ export const CentralBody = ({ children, style, id }) => {
   );
 }
 
-export const CentralBody__Header = ({ children }) => {
+export const CentralBody__Header = ({ children, className }) => {
   return (
-    <section className='cm-l-body-static-header cm-u-spacer-mb-bigger'>
+    <section className={`cm-l-body-static-header cm-u-spacer-mb-bigger ${className}`}>
       <p className="cm-u-text-black-cat">{ children }</p>
     </section>
   );

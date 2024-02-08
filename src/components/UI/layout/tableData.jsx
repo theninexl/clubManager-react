@@ -6,9 +6,9 @@ export const TableDataWrapper = ({ children, className }) => {
   );
 } 
 
-export const TableDataHeader = ({ children }) => {
+export const TableDataHeader = ({ children, className }) => {
   return (
-    <div className='cm-l-tabledata__header'>
+    <div className={`cm-l-tabledata__header ${className}`}>
       { children }
     </div>
   );
