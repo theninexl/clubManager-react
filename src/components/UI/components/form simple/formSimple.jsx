@@ -105,7 +105,7 @@ export const LabelElementAssist = ({ children, style, className, htmlFor , type,
 }
 
 
-export const LabelSelectElement = ({ children, style, className, htmlFor, labelText, placeholder, value, handleOnChange, required }) => {
+export const LabelSelectElement = ({ children, style, className, htmlFor, labelText, placeholder, value, defaultValue, handleOnChange, required, selected }) => {
   return (
     <label
       htmlFor={htmlFor}
@@ -120,7 +120,9 @@ export const LabelSelectElement = ({ children, style, className, htmlFor, labelT
           onChange={handleOnChange}
           placeholder={placeholder}
           value={value}
-          required={required}>
+          defaultValue={defaultValue}
+          required={required}
+          selected={selected}>
           { children }
         </select>
       </div>

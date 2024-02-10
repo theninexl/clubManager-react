@@ -1,22 +1,20 @@
 import { useEffect, useState } from "react";
 import { Api } from "../services/api";
+import { useRetrieveApiHeaders } from "./useRetrieveApiHeaders";
 
-export const useGetData = (token, endpoint, search, pagenumber, rowspage, orderby) => {
-  const [data, setData] = useState(null);
+export const useGetData = (endpoint,parameters) => {
+  const {headers} = useRetrieveApiHeaders();
+  const [responseGetData, setResponseGetData] = useState(null);  
 
-  useEffect(()=> {    
-    const headers = {
-      'Content-Type': 'application/json',
-      'x-access-token': token,
-    }
-
-    Api.call.post(endpoint, {'search':search, 'pagenumber':pagenumber, 'rowspage':rowspage, 'orderby':orderby},{ headers:headers })
-    .then (res => {
-      setData(res.data);
+ useEffect(()=> {
+  Api.call.post(endpoint,parameters,{ headers:headers})
+    .then(response => {
+      setResponseGetData(response);
     })
-    .catch (err => console.log(err));
-    
-  },[])
+    .catch(err => {
+      setResponseGetData(err)
+    })
+ },[])
 
-  return { data };
+  return { responseGetData };
 }

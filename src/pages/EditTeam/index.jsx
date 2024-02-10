@@ -1,31 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Api } from "../../services/api";
+import { useGetData } from "../../hooks/useGetData";
+import { useSaveData } from "../../hooks/useSaveData";
 import { AsideMenu } from "../../components/AsideMenu";
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
 import { CentralBody, CentralBody__Header, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
 import { ButtonCatPrimary, ButtonCatTransparent, ButtonMousePrimary, IconButtonSmallPrimary } from "../../components/UI/objects/buttons";
 import { SymbolBack, SymbolDelete } from "../../components/UI/objects/symbols";
 import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElementAssist, LabelSelectElement } from "../../components/UI/components/form simple/formSimple";
-import { FormTabs, FormTabs__ContentWrapper, FormTabs__LinksWrapper, TabContent, TabLink } from "../../components/UI/components/formTabs/formTabs";
-import { manageTabs } from "../../domUtilities/manageTabs";
-import { TablePlayers, TablePlayers__Body, TablePlayers__Header, TablePlayers__tdLong } from "../../components/UI/layout/tablePlayers";
 import { ModalBody, ModalContainer, ModalContent__Small, ModalFooter } from "../../components/UI/components/modal/modal";
-import { getSimpleData } from "../../services/getData";
+
 
 export default function EditTeamPage () {
   //navegar
   const navigate = useNavigate();
 
-  //guardar token peticiones
-  const account = localStorage.getItem('CMAccount');
-  const parsedAccount = JSON.parse(account);
-  const token = parsedAccount.token;
-
-  const headers = {
-    'Content-Type': 'application/json',
-    'x-access-token': token
-  }
+  //hook guardar datos
+  const updateTeam = useSaveData();
+  const deleteTeam = useSaveData();
 
   //ref form
   const form = useRef(null);
@@ -48,12 +40,6 @@ export default function EditTeamPage () {
     "desc_telefono": '',
     "desc_email": '',
 });
-
-  useEffect(()=>{
-    getTeamDetail(userParam);
-    getCountries();
-    getLeagues();
-  },[])
   
 
   const renderDeleteUserBtn = () => {
@@ -67,36 +53,27 @@ export default function EditTeamPage () {
     }
   }
 
+  //pedir ligas, paises
+  const getTeamDetail = useGetData('teams/getDetail',{'id_club':userParam});
+  useEffect (() => {
+    if (getTeamDetail.responseGetData) {
+      console.log(getTeamDetail.responseGetData);
+      setTeamDetail(getTeamDetail.responseGetData.data)
+    }
+  },[getTeamDetail.responseGetData])
 
-  //pedir detalle equipo
-  const getTeamDetail = async (id) => {
-    const data = await Api.call.post('teams/getDetail',{'id_club':id},{headers:headers})
-    .then(res => {
-      const team = res.data;
-      setTeamDetail(team);
-      console.log(teamDetail.desc_nombre_club)
-    }).catch(err => console.log(err));
-  }
+  //pedir ligas, paises
+  const getLeagues = useGetData('masters/getAllLigue');
+  useEffect (() => {
+    if (getLeagues.responseGetData) setAllLeagues(getLeagues.responseGetData.data.data);
+  },[getLeagues.responseGetData])
 
-  //pedir ligas
-  const getCountries = async () => {
-    const results = await getSimpleData('masters/getAllCountry', token)
-    .then (res=> {
-      setCountries(res.data);
-    }).catch(err=> {
-      console.log(err);
-    })
-  }
+  const getCountries = useGetData('masters/getAllCountry');
+  useEffect (() => {
+    if (getCountries.responseGetData) setCountries(getCountries.responseGetData.data.data);
+  },[getCountries.responseGetData])
 
-  //pedir paises
-  const getLeagues = async () => {
-    const results = await getSimpleData('masters/getAllLigue', token)
-    .then (res=> {
-      setAllLeagues(res.data);
-    }).catch(err=> {
-      console.log(err);
-    })
-  }
+
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -121,26 +98,39 @@ export default function EditTeamPage () {
       desc_email: data.desc_email,
   }
 
-  Api.call.post('teams/edit',dataSent,{ headers:headers })
-  .then (res => {
-    navigate('/manage-teams');
-  }).catch(err => {
-    if (err.code === 'ERR_NETWORK') setError('Error en la base de datos, inténtelo más tarde')
-    else setError('Error al realizar la solicitud')
-  })
+  updateTeam.uploadData('teams/edit',dataSent);
   }
+
+  //mirar la respuesta de subir datos para setear error
+  useEffect(()=> {
+    if (updateTeam.responseUpload) {
+      console.log(updateTeam.responseUpload);
+      if (updateTeam.responseUpload.status === 409) { setError('El usuario que estás intentnado crear ya existe')
+      } else if (updateTeam.responseUpload.code === 'ERR_NETWORK') { setError('Error de conexión, inténtelo más tarde')
+      } else if (updateTeam.responseUpload.status === 'ok') { navigate('/manage-teams');
+      } else {
+        setError('Existe un error en el formulario, inténtelo de nuevo')
+      }
+    }
+  },[updateTeam.responseUpload])
 
   const handleTeamDelete = () => {
     
-    Api.call.post('teams/remove',{id_club:userParam},{ headers:headers })
-      .then (res => {
-        setModal(false);
-        navigate('/manage-teams');
-      }).catch(err => {
-        if (err.code === 'ERR_NETWORK') setError('Error en la base de datos, inténtelo más tarde')
-        else setError('Error al realizar la solicitud')
-      })    
+    deleteTeam.uploadData('teams/remove',{'id_club_opta':userParam});
   }
+
+  //mirar la respuesta de borrar usuario para setear error
+  useEffect(()=> {
+    if (deleteTeam.responseUpload) {
+      console.log(deleteTeam.responseUpload);
+      if (deleteTeam.responseUpload.status === 409) { setError('El usuario que estás borrar no existe')
+      } else if (deleteTeam.responseUpload.code === 'ERR_NETWORK') { setError('Error de conexión, inténtelo más tarde')
+      } else if (deleteTeam.responseUpload.status === 'ok') { navigate('/manage-teams');
+      } else {
+        setError('Existe un error en el formulario, inténtelo de nuevo')
+      }
+    }
+  },[deleteTeam.responseUpload])
 
   const renderModal = () => {
     if (modal) {
@@ -188,17 +178,7 @@ export default function EditTeamPage () {
                 {renderDeleteUserBtn()}
                 <IconButtonSmallPrimary
                   onClick={() => {
-                    setUserForm({
-                      desc_nombre:'',
-                      desc_apellidos:'',
-                      desc_email:'',
-                      desc_nombre_departamento:'',
-                      id_departamento:'',
-                      id_usuario:'',
-                      pantallas: [],
-                      permisos: [],
-                    });
-                    navigate('/manage-users')}}>
+                    navigate('/manage-teams')}}>
                   <SymbolBack />
                 </IconButtonSmallPrimary>
               </TitleBar__Tools>

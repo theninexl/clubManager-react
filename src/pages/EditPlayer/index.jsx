@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Api } from "../../services/api";
-import { getSimpleData } from "../../services/getData";
+import { useSaveData } from "../../hooks/useSaveData";
+import { useGetData } from "../../hooks/useGetData";
 import { AsideMenu } from "../../components/AsideMenu";
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
 import { CentralBody, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
 import { ButtonCatPrimary, ButtonCatTransparent, ButtonMouseGhost, ButtonMousePrimary, IconButtonSmallPrimary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
 import { SymbolAdd, SymbolBack, SymbolDelete } from "../../components/UI/objects/symbols";
-import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElementAssist, LabelElementToggle, LabelSelectElement, SelectIcon } from "../../components/UI/components/form simple/formSimple";
+import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElementAssist, LabelElementToggle, LabelSelectElement, } from "../../components/UI/components/form simple/formSimple";
 import { FormTabs, FormTabs__ContentWrapper, FormTabs__LinksWrapper, FormTabs__ToolBarWrapper, TabContent, TabLink } from "../../components/UI/components/formTabs/formTabs";
-import { SimpleAccordion, SimpleAccordionContent, SimpleAccordionLink, SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
+import { SimpleAccordion, SimpleAccordionContent,  SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
 import { manageTabs } from "../../domUtilities/manageTabs";
 import { FileDrop } from "../../components/UI/components/form simple/fileDrop";
 import { TableCellLong, TableCellShort, TableDataHeader, TableDataRow, TableDataWrapper } from "../../components/UI/layout/tableData";
@@ -23,15 +23,11 @@ export default function EditPlayerPage () {
   //navegar
   const navigate = useNavigate();
 
-  //guardar token peticiones
-  const account = localStorage.getItem('CMAccount');
-  const parsedAccount = JSON.parse(account);
-  const token = parsedAccount.token;
+  //hook guardar datos
+  const updatePlayer = useSaveData();
+  const deletePlayer = useSaveData();
 
-  const headers = {
-    'Content-Type': 'application/json',
-    'x-access-token': token
-  }
+
 
   //ref form
   const form = useRef(null);
@@ -79,92 +75,52 @@ export default function EditPlayerPage () {
       "altura": '',
       "imp_salario_total": '',
       "valor_mercado": '',
+      "nss":'',
   });
   
 
   useEffect(()=>{
     manageTabs();
-    getPlayer(userParam);
-    getCountries();
-    getPositions();
-    getContracts();
-    getIntermediaries();
-    getTeams();
   },[])
 
   //pedir datos del jugador
-  const getPlayer = async (id) => {
-    const data = await Api.call.post('players/getDetail',{'id_jugador':id},{headers:headers})
-    .then(res => {
-      const jugador = res.data.jugador[0];
-      const documentos = res.data.documentos[0];
-      console.log(jugador)
-      console.log(documentos)
-      setPlayerData(jugador);
-      setUploadedFiles(documentos);
-    }).catch(err => console.log(err));
-  }
-
-  useEffect(()=> {
-    if (playerData) {
-      // console.log(playerData.caducidad_dni)
-      // const [dia,mes,ano] = playerData.caducidad_dni.split('/');
-      // const newCaducidadDNI = `${ano}-${mes}-${dia}`;
-      // console.log(newCaducidadDNI);
-      // setPlayerData({caducidad_dni: newCaducidadDNI});
+  const getPlayerDetail = useGetData('players/getDetail',{'id_jugador':userParam});
+  useEffect (() => {
+    if (getPlayerDetail.responseGetData) {
+      console.log(getPlayerDetail.responseGetData.data);
+      setPlayerData(getPlayerDetail.responseGetData.data.jugador[0])
+      setUploadedFiles(getPlayerDetail.responseGetData.data.documentos[0])
     }
-  },[playerData])
-    
+  },[getPlayerDetail.responseGetData])    
 
-  //pedir paises
-  const getCountries = async () => {
-    const results = await getSimpleData('masters/getAllCountry', token)
-    .then (res=> {
-      setCountries(res.data);
-    }).catch(err=> {
-      console.log(err);
-    })
-  }
+  //pedir paises, posiciones, contratos, intermediarios y equipos
+  const getCountries = useGetData('masters/getAllCountry');
+  useEffect (() => {
+    if (getCountries.responseGetData) setCountries(getCountries.responseGetData.data.data);
+  },[getCountries.responseGetData])
 
-  //pedir posiciones
-  const getPositions = async () => {
-    const results = await getSimpleData('masters/getAllPosition', token)
-    .then (res=> {
-      setPositions(res.data);
-    }).catch(err=> {
-      console.log(err);
-    })
-  }
+  const getPositions = useGetData('masters/getAllPosition');
+  useEffect (() => {
+    if (getPositions.responseGetData) setPositions(getPositions.responseGetData.data.data);
+  },[getPositions.responseGetData])
 
-  //pedir contratos
-  const getContracts= async () => {
-    const results = await getSimpleData('masters/getAllContract', token)
-    .then (res=> {
-      setContracts(res.data);
-    }).catch(err=> {
-      console.log(err);
-    })
-  }
+  const getContracts = useGetData('masters/getAllContract');
+  useEffect (() => {
+    if (getContracts.responseGetData) setContracts(getContracts.responseGetData.data.data);
+  },[getContracts.responseGetData])
 
-  //pedir intermediarios
-  const getIntermediaries= async () => {
-    const results = await getSimpleData('intermediaries/getAll', token)
-    .then (res=> {
-      setIntermediaries(res.data);
-    }).catch(err=> {
-      console.log(err);
-    })
-  }
+  const getIntermediaries = useGetData('masters/getAllIntermediary');
+  useEffect (() => {
+    if (getIntermediaries.responseGetData) setIntermediaries(getIntermediaries.responseGetData.data.data);
+  },[getIntermediaries.responseGetData])
 
-  //pedir equipos
-  const getTeams= async () => {
-    const results = await getSimpleData('teams/getAll', token)
-    .then (res=> {
-      setTeams(res.data);
-    }).catch(err=> {
-      console.log(err);
-    })
-  }
+  const getTeams = useGetData('teams/getAll');
+  useEffect (() => {
+    if (getTeams.responseGetData) {
+      console.log(getTeams.responseGetData.data.data);
+      setTeams(getTeams.responseGetData.data.data);
+    }
+  },[getTeams.responseGetData])
 
   //render acordeon upload docs
   const renderUploadDocsLayer = () => {
@@ -222,30 +178,30 @@ export default function EditPlayerPage () {
     const playerResidenciaVal = document.getElementById('playerResidencia').checked;
 
     const data = {
-      id_intermediario: formData.get('playerIntermediary'),
-      id_posicion: formData.get('playerPosition'),
-      id_club_origen: formData.get('playerTeamOrigin'),
-      id_contrato: formData.get('playerContract'),
-      nombre: formData.get('playerName'),
-      apellido1: formData.get('playerLastname1'),
-      apellido2: formData.get('playerLastname2'),
-      alias: formData.get('playerAlias'),
-      desc_dorsal: formData.get('playerDorsal'),
-      nacionalidad1: formData.get('playerNationality1'),
-      nacionalidad2: formData.get('playerNationality2'),
-      fch_nacimiento: formData.get('playerBornDate'),
-      dni_nie: formData.get('playerDNI'),
-      pasaporte1: formData.get('playerPassport1Nr'),
-      pasaporte2: formData.get('playerPassport2Nr'),
-      nss: formData.get('playerNSS'),
-      caducidad_pasaporte1: formData.get('playerPassport1Date'),
-      caducidad_pasaporte2: formData.get('playerPassport2Date'),
-      caducidad_dni: formData.get('playerDNIdate'),
+      id_intermediario: formData.get('playerIntermediary') || '',
+      id_posicion: formData.get('playerPosition') || '',
+      id_club_origen: formData.get('playerTeamOrigin') || '',
+      id_contrato: formData.get('playerContract') || '',
+      nombre: formData.get('playerName') || '',
+      apellido1: formData.get('playerLastname1') || '',
+      apellido2: formData.get('playerLastname2') || '',
+      alias: formData.get('playerAlias') || '',
+      desc_dorsal: formData.get('playerDorsal') || '',
+      nacionalidad1: formData.get('playerNationality1') || '',
+      nacionalidad2: formData.get('playerNationality2') || '',
+      fch_nacimiento: formData.get('playerBornDate') || '',
+      dni_nie: formData.get('playerDNI') || '',
+      pasaporte1: formData.get('playerPassport1Nr') || '',
+      pasaporte2: formData.get('playerPassport2Nr') || '',
+      nss: formData.get('playerNSS') || '',
+      caducidad_pasaporte1: formData.get('playerPassport1Date') || '',
+      caducidad_pasaporte2: formData.get('playerPassport2Date') || '',
+      caducidad_dni: formData.get('playerDNIdate') || '',
       residencia: playerResidenciaVal ? 1 : 0,
       comunitario: playerComunitarioVal ? 1 : 0,
-      peso: formData.get('playerWeight'),
-      altura: formData.get('playerHeight'),
-      valor_mercado: formData.get('playerMarketValue'),
+      peso: formData.get('playerWeight') || '',
+      altura: formData.get('playerHeight') || '',
+      valor_mercado: formData.get('playerMarketValue') || '',
       documentos: uploadedFiles 
     }
 
@@ -265,6 +221,7 @@ export default function EditPlayerPage () {
       'dni_nie': data.dni_nie,
       'pasaporte1': data.pasaporte1,
       'pasaporte2': data.pasaporte2,
+      'nss': data.nss,
       'caducidad_pasaporte1': data.caducidad_pasaporte1,
       'caducidad_pasaporte2': data.caducidad_pasaporte2,
       'caducidad_dni': data.caducidad_dni,
@@ -275,31 +232,47 @@ export default function EditPlayerPage () {
       'valor_mercado': data.valor_mercado,
       'documentos': data.documentos || [],
     }
-    console.log(dataSent);
+    updatePlayer.uploadData('players/edit',dataSent);
 
-    Api.call.post('players/edit',dataSent,{ headers:headers })
-        .then (res => {
-          console.log(res);
-          // navigate('/manage-team');
-        }).catch(err => {
-          if (err.code === 'ERR_NETWORK') setError('Error en la base de datos, inténtelo más tarde')
-          else setError('Error al realizar la solicitud')
-        })
+    // Api.call.post('players/edit',dataSent,{ headers:headers })
+    //     .then (res => {
+    //       console.log(res);
+    //       // navigate('/manage-team');
+    //     }).catch(err => {
+    //       if (err.code === 'ERR_NETWORK') setError('Error en la base de datos, inténtelo más tarde')
+    //       else setError('Error al realizar la solicitud')
+    //     })
   }
+
+  //mirar la respuesta de subir datos para setear error
+  useEffect(()=> {
+    if (updatePlayer.responseUpload) {
+      console.log(updatePlayer.responseUpload);
+      if (updatePlayer.responseUpload.status === 409) { setError('El jugador que estás intentnado editar ya existe')
+      } else if (updatePlayer.responseUpload.code === 'ERR_NETWORK') { setError('Error de conexión, inténtelo más tarde')
+      } else if (updatePlayer.responseUpload.status === 'ok') { navigate('/manage-players');
+      } else {
+        setError('Existe un error en el formulario, inténtelo de nuevo')
+      }
+    }
+  },[updatePlayer.responseUpload])
 
   const handlePlayerDelete = () => {
-    
-    Api.call.post('players/remove',{id_jugador:userParam.toString()},{ headers:headers })
-      .then (res => {
-        setModal(false);
-        navigate('/manage-players');
-      }).catch(err => {
-        if (err.code === 'ERR_NETWORK') setError('Error en la base de datos, inténtelo más tarde')
-        else setError('Error al realizar la solicitud')
-      })
-
-    
+    deletePlayer.uploadData('players/remove',{id_jugador:userParam.toString()});    
   }
+
+  //mirar la respuesta de subir datos para setear error
+  useEffect(()=> {
+    if (deletePlayer.responseUpload) {
+      console.log(deletePlayer.responseUpload);
+      if (deletePlayer.responseUpload.status === 409) { setError('El jugador que estás intentnado borrar no existe')
+      } else if (deletePlayer.responseUpload.code === 'ERR_NETWORK') { setError('Error de conexión, inténtelo más tarde')
+      } else if (deletePlayer.responseUpload.status === 'ok') { navigate('/manage-players');
+      } else {
+        setError('Existe un error en el formulario, inténtelo de nuevo')
+      }
+    }
+  },[deletePlayer.responseUpload])
 
   const renderModal = () => {
     if (modal) {
@@ -457,12 +430,13 @@ export default function EditPlayerPage () {
                         <LabelSelectElement
                           htmlFor='playerNationality1'
                           labelText='Nacionalidad'
-                          value={playerData.nacionalidad1 || ''}
+                          defaultValue={playerData.nacionalidad1 || ''}
                           handleOnChange={e => {setPlayerData({...playerData, nacionalidad1: e.target.value})}} >
                             <option value=''>Selecciona</option>
                             { countries?.map(country => {
+                              const selected = playerData.nacionalidad1 == country.id_pais ? 'selected' : '';
                               return (
-                                <option key={country.id_pais} value={country.desc_nombre_pais}>{country.desc_nombre_pais}</option>
+                                <option key={country.id_pais} value={country.desc_nombre_pais} selected={selected}>{country.desc_nombre_pais}</option>
                               );
                             })}
                         </LabelSelectElement>
@@ -475,23 +449,26 @@ export default function EditPlayerPage () {
                           handleOnChange={e => {setPlayerData({...playerData, nacionalidad2: e.target.value})}} >
                             <option value=''>Selecciona</option>
                             { countries?.map(country => {
+                              const selected = playerData.nacionalidad2 == country.id_pais ? 'selected' : '';
                               return (
-                                <option key={country.id_pais} value={country.desc_nombre_pais}>{country.desc_nombre_pais}</option>
+                                <option key={country.id_pais} value={country.desc_nombre_pais} selected={selected}>{country.desc_nombre_pais}</option>
                               );
                             })}
                         </LabelSelectElement>
                       </FormSimplePanelRow>
-                      {/* <FormSimplePanelRow>
+                      <FormSimplePanelRow>
                         <LabelElementAssist
                           htmlFor='playerNSS'
                           type='number'
                           className='panel-field-long'
                           autoComplete='off'
                           placeholder='Nº Seguridad Social'
+                          value={playerData.nss || ''}
+                          handleOnChange={e => {setPlayerData({...playerData, nss: e.target.value})}} 
                           >
                           Nº Seguridad Social
                         </LabelElementAssist>
-                      </FormSimplePanelRow> */}
+                      </FormSimplePanelRow>
                       <FormSimplePanelRow>
                         <LabelElementAssist
                           htmlFor='playerDNI'
@@ -656,12 +633,13 @@ export default function EditPlayerPage () {
                         <LabelSelectElement
                           htmlFor='playerTeamOrigin'
                           labelText='Equipo Origen'
-                          value={playerData.id_club || ''}
+                          value={playerData.id_club_origen || ''}
                           handleOnChange={e => {setPlayerData({...playerData, id_club: e.target.value})}}>
-                            <option value=''>Selecciona</option>
+                            <option value=''>Selecciona</option>                            
                             { teams?.map(item => {
+                              const selected = playerData.id_club_origen == item.id_club_opta ? 'selected' : '';
                               return (
-                                <option key={item.id_club} value={item.id_club}>{item.desc_nombre_club}</option>
+                                <option key={item.id_club_opta} value={item.id_club_opta} selected={selected}>{item.desc_nombre_club}</option>
                               );
                             })}
                         </LabelSelectElement>

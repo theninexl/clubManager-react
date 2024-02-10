@@ -5,17 +5,10 @@ import { FormSimple, FormSimpleRow, LabelElement } from "../../components/UI/com
 import { MainContent, ThirdContainer } from "../../components/UI/layout/containers";
 import { LogoShield } from "../../components/UI/objects/Logo";
 import { Button } from "../../components/UI/objects/buttons";
-import { useNavigate } from "react-router-dom";
 
 export default function Login () {
   //guardar contexto global
   const context = useGlobalContext();
-
-  //evalua signout
-  const signOUT = localStorage.getItem('CMSign-out');
-  const parsedSignOut = JSON.parse(signOUT);
-  const isUserSignOut = context.signOut || parsedSignOut;
-
 
   //error para form
   const [error, setError] = useState(null);
@@ -41,7 +34,7 @@ export default function Login () {
 
     }).catch(err => {
       console.log(err);
-      if (err.code === 'ERR_NETWORK') setError('Error en la base de datos, inténtelo más tarde')
+      if (err.code === 'ERR_NETWORK') setError('Error de conexión, inténtelo más tarde')
       else if (err.response.status === 409) setError('Email o contraseña incorrectos')
       else setError('Error al realizar la solicitud')
     })

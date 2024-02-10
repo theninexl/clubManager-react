@@ -1,6 +1,6 @@
-
 import { BrowserRouter, Navigate, useRoutes } from 'react-router-dom';
-import { GlobalContextProvider, InitializeLocalStorage, useGlobalContext } from '../../providers/globalContextProvider';
+import { GlobalContextProvider, InitializeLocalStorage } from '../../providers/globalContextProvider';
+import { useEvaluateSignOut } from '../../hooks/useEvaluateSignOut';
 import TopNav from '../../components/TopNav';
 import Login from '../Login';
 import Home from '../Home';
@@ -19,93 +19,93 @@ import EditIntermediaryPage from '../EditIntermediary';
 import NewIntermediaryPage from '../NewIntermediary';
 import ManagePaymentsPage from '../ManagePayments';
 import EditPlayerPaymentsPage from '../EditPlayerPayments';
+import NewUserPage from '../NewUser';
 
-
-const AppRoutes = () => {
-  //guardar contexto global
-  const context = useGlobalContext()
-  //evalua signout
-  const signOUT = localStorage.getItem('CMSign-out');
-  const parsedSignOut = JSON.parse(signOUT);
-  const isUserSignOut = context.signOut || parsedSignOut;
+const AppRoutes = () => {  
+  const {isUserSignedOut} = useEvaluateSignOut();
 
 
   let routes = useRoutes([
-    {path: '/', element: !isUserSignOut ? 
+    {path: '/', element: !isUserSignedOut ? 
       <Navigate replace to={'/main'} /> : <Navigate replace to={'/login'} /> },
-    { path: '/login', element: isUserSignOut ?
+    { path: '/login', element: isUserSignedOut ?
       <Login /> : <Navigate replace to={'/main'} /> },
-    { path: '/main', element: !isUserSignOut ?
+    { path: '/main', element: !isUserSignedOut ?
       <>
         <TopNav />
         <Home />
       </> : <Navigate replace to={'/login'} /> },
-    { path: '/notifications', element: !isUserSignOut ?
+    { path: '/notifications', element: !isUserSignedOut ?
     <>
       <TopNav />
       <NotificationsPage />
     </> : <Navigate replace to={'/login'} /> },
-    { path: '/manage-users', element: !isUserSignOut ?
+    { path: '/manage-users', element: !isUserSignedOut ?
     <>
       <TopNav />
       <ManageUsersPage />
     </> : <Navigate replace to={'/login'} /> },
-    { path: '/edit-users', element: !isUserSignOut ?
+    { path: '/new-user', element: !isUserSignedOut ?
+    <>
+      <TopNav />
+      <NewUserPage />
+    </> : <Navigate replace to={'/login'} /> },
+    { path: '/edit-users', element: !isUserSignedOut ?
     <>
       <TopNav />
       <EditUsersPage />
     </> : <Navigate replace to={'/login'} /> },
-    { path: '/manage-players', element: !isUserSignOut ?
+    { path: '/manage-players', element: !isUserSignedOut ?
     <>
       <TopNav />
       <ManagePlayersPage />
     </> : <Navigate replace to={'/login'} /> },
-    { path: '/new-player', element: !isUserSignOut ?
+    { path: '/new-player', element: !isUserSignedOut ?
     <>
       <TopNav />
       <NewPlayerPage />
     </> : <Navigate replace to={'/login'} /> },
-    { path: '/edit-player', element: !isUserSignOut ?
+    { path: '/edit-player', element: !isUserSignedOut ?
     <>
       <TopNav />
       <EditPlayerPage />
     </> : <Navigate replace to={'/login'} /> },
-    { path: '/manage-teams', element: !isUserSignOut ?
+    { path: '/manage-teams', element: !isUserSignedOut ?
     <>
       <TopNav />
       <ManageTeamsPage/>
     </> : <Navigate replace to={'/login'} /> },
-    { path: '/edit-team', element: !isUserSignOut ?
+    { path: '/edit-team', element: !isUserSignedOut ?
     <>
       <TopNav />
       <EditTeamPage/>
     </> : <Navigate replace to={'/login'} /> },
-    { path: '/new-team', element: !isUserSignOut ?
+    { path: '/new-team', element: !isUserSignedOut ?
     <>
       <TopNav />
       <NewTeamPage/>
     </> : <Navigate replace to={'/login'} /> },
-    { path: '/manage-intermediaries', element: !isUserSignOut ?
+    { path: '/manage-intermediaries', element: !isUserSignedOut ?
     <>
       <TopNav />
       <ManageIntermediariesPage/>
     </> : <Navigate replace to={'/login'} /> },
-    { path: '/edit-intermediary', element: !isUserSignOut ?
+    { path: '/edit-intermediary', element: !isUserSignedOut ?
     <>
       <TopNav />
       <EditIntermediaryPage/>
     </> : <Navigate replace to={'/login'} /> },
-    { path: '/new-intermediary', element: !isUserSignOut ?
+    { path: '/new-intermediary', element: !isUserSignedOut ?
     <>
       <TopNav />
       <NewIntermediaryPage/>
     </> : <Navigate replace to={'/login'} /> },
-    { path: '/manage-payments', element: !isUserSignOut ?
+    { path: '/manage-payments', element: !isUserSignedOut ?
     <>
       <TopNav />
       <ManagePaymentsPage/>
     </> : <Navigate replace to={'/login'} /> },
-    { path: '/manage-player-payments', element: !isUserSignOut ?
+    { path: '/manage-player-payments', element: !isUserSignedOut ?
     <>
       <TopNav />
       <EditPlayerPaymentsPage/>
@@ -115,13 +115,14 @@ const AppRoutes = () => {
 }
 
 
-export default function App() {
+export default function App() {  
+  const publicPath = import.meta.env.VITE_PUBLIC_PATH;
   InitializeLocalStorage();
 
   return (
     <>    
     <GlobalContextProvider>  
-      <BrowserRouter>   
+      <BrowserRouter basename={publicPath}>   
         <AppRoutes />
       </BrowserRouter>
     </GlobalContextProvider>

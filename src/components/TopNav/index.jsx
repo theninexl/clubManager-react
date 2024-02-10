@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../../providers/globalContextProvider";
+import { useGetData } from "../../hooks/useGetData"
 import { Api } from "../../services/api";
 import { Navbar, NavbarContentLeft, NavbarContentRight, NavbarLinksHrz, NavbarLinksTextBtnSmall } from "../UI/components/navbar/navbar";
 import { LogoShield } from "../UI/objects/Logo";
@@ -25,38 +26,33 @@ export default function TopNav () {
   const isUserSignOut = parsedSignOut;
   //estados locales
   const [userBoxOpen, setUserBoxOpen] = useState(false);
+  const [headerEntities, setHeaderEntities] = useState();
   //leer pathname actual y manejar navegacion
   const path = useLocation().pathname;
   const navigate = useNavigate();
 
-  //getData
-  const getData = async (endpoint) => {
-    const headers = {
-      'Content-Type': 'application/json',
-      'x-access-token': token,
-    }
-    const { data } = await Api.call.post(endpoint,{},{ headers:headers })
-    return data;
-  }
-
   //pedir notificaciones
-  const getNotifications = async () => {
-    const results = await getData('notifications/getAll')
-    .then(res => {
-      // console.log('leo notificaciones');
-      // console.log('notifications', res.data);
-      context.setNotifications(res.data);
+  const getNotifications = useGetData('notifications/getAll');
+
+  useEffect(()=> {
+    if (getNotifications.responseGetData) {
+      // console.log(getNotifications.responseGetData.data.data);
+      context.setNotifications(getNotifications.responseGetData.data.data);
       const unReadNotifs = context.notifications.filter(notif => notif.leido === false);
       context.setUnreadNotifications(unReadNotifs.length)
-    })
-    .catch(err =>{
-      console.log(err);
-    });
-  } 
+    }
+   },[getNotifications.responseGetData])
 
-  useEffect(()=> {    
-    getNotifications();    
-  },[path]) 
+   //pedir entidades header
+   const getEntities = useGetData('header/getDetail');
+
+   useEffect(()=> {
+     if (getEntities.responseGetData) {
+       setHeaderEntities(getEntities.responseGetData.data.entidades);
+     }
+    },[getEntities.responseGetData])
+
+
 
   //manejar click en el boton de usuario
   const handleLogoutBox = (e) => {
@@ -164,9 +160,11 @@ export default function TopNav () {
               <li>
                 <SelectIcon
                   style={{width:'350px'}}>
-                  <option value="ATM">Club Atlético de Madrid S.A.D</option>
-                  <option value="ATM">Club Deportivo2 S.A.D</option>
-                  <option value="ATM">Club Deportivo3 S.A.D</option>
+                  { headerEntities?.map(item => {
+                    return (
+                      <option key={item.id_entidad} value={item.id_entidad}>{item.desc_entidad}</option>
+                    );
+                  })}
                 </SelectIcon>
               </li>
               <li>

@@ -1,78 +1,41 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Api } from "../../services/api";
+import { useSaveData } from "../../hooks/useSaveData";
+import { useGetData } from "../../hooks/useGetData";
 import { AsideMenu } from "../../components/AsideMenu";
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
 import { CentralBody, CentralBody__Header, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
-import { ButtonCatPrimary, ButtonCatTransparent, ButtonMousePrimary, IconButtonSmallPrimary } from "../../components/UI/objects/buttons";
-import { SymbolBack, SymbolDelete } from "../../components/UI/objects/symbols";
+import {   ButtonMousePrimary, IconButtonSmallPrimary } from "../../components/UI/objects/buttons";
+import { SymbolBack } from "../../components/UI/objects/symbols";
 import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElementAssist, LabelSelectElement } from "../../components/UI/components/form simple/formSimple";
-import { FormTabs, FormTabs__ContentWrapper, FormTabs__LinksWrapper, TabContent, TabLink } from "../../components/UI/components/formTabs/formTabs";
-import { manageTabs } from "../../domUtilities/manageTabs";
-import { TablePlayers, TablePlayers__Body, TablePlayers__Header, TablePlayers__tdLong } from "../../components/UI/layout/tablePlayers";
-import { ModalBody, ModalContainer, ModalContent__Small, ModalFooter } from "../../components/UI/components/modal/modal";
-import { getSimpleData } from "../../services/getData";
 
 export default function NewTeamPage () {
   //navegar
   const navigate = useNavigate();
 
-  //guardar token peticiones
-  const account = localStorage.getItem('CMAccount');
-  const parsedAccount = JSON.parse(account);
-  const token = parsedAccount.token;
-
-  const headers = {
-    'Content-Type': 'application/json',
-    'x-access-token': token
-  }
+  //hook guardar datos
+  const { uploadData, responseUpload } = useSaveData();
 
   //ref form
   const form = useRef(null);
 
   // variables y estados locales
   const [error, setError] = useState(null);
-  const [modal, setModal] = useState(false);
   const [allLeagues, setAllLeagues] = useState();
   const [countries, setCountries] = useState(null);
-  const [teamDetail, setTeamDetail] = useState({});
 
-  useEffect(()=>{
-    getCountries();
-    getLeagues();
-  },[])
-  
 
-  const renderDeleteUserBtn = () => {
-    if (userParam !== 'new') {
-      return (
-        <IconButtonSmallPrimary
-          onClick={() => setModal(true)}>
-          <SymbolDelete/>
-        </IconButtonSmallPrimary>
-      )
-    }
-  }
+  //pedir ligas, paises
+  const getLeagues = useGetData('masters/getAllLigue');
+  useEffect (() => {
+    if (getLeagues.responseGetData) setAllLeagues(getLeagues.responseGetData.data.data);;
+  },[getLeagues.responseGetData])
 
-  //pedir ligas
-  const getCountries = async () => {
-    const results = await getSimpleData('masters/getAllCountry')
-    .then (res=> {
-      setCountries(res.data);
-    }).catch(err=> {
-      console.log(err);
-    })
-  }
+  const getCountries = useGetData('masters/getAllCountry');
+  useEffect (() => {
+    if (getCountries.responseGetData) setCountries(getCountries.responseGetData.data.data);
+  },[getCountries.responseGetData])
 
-  //pedir paises
-  const getLeagues = async () => {
-    const results = await getSimpleData('masters/getAllLigue')
-    .then (res=> {
-      setAllLeagues(res.data);
-    }).catch(err=> {
-      console.log(err);
-    })
-  }
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -96,16 +59,22 @@ export default function NewTeamPage () {
       desc_email: data.desc_email,
   }
 
-  Api.call.post('teams/create',dataSent,{ headers:headers })
-  .then (res => {
-    navigate('/manage-teams');
-  }).catch(err => {
-    if (err.code === 'ERR_NETWORK') setError('Error en la base de datos, inténtelo más tarde')
-    else setError('Error al realizar la solicitud')
-  })
+  uploadData('teams/create',dataSent);
+
   }
 
-
+  //mirar la respuesta de subir datos para setear error
+  useEffect(()=> {
+    if (responseUpload) {
+      console.log(responseUpload);
+      if (responseUpload.status === 409) { setError('El equipo que estás intentnado crear ya existe')
+      } else if (responseUpload.code === 'ERR_NETWORK') { setError('Error de conexión, inténtelo más tarde')
+      } else if (responseUpload.status === 'ok') { navigate('/manage-teams');
+      } else {
+        setError('Existe un error en el formulario, inténtelo de nuevo')
+      }
+    }
+  },[responseUpload])
 
   return (
     <>

@@ -7,30 +7,25 @@ import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../comp
 import { CentralBody, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
 import { ButtonMouseGhost, ButtonMousePrimary, IconButtonSmallPrimary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
 import { SymbolAdd, SymbolBack, SymbolDelete } from "../../components/UI/objects/symbols";
-import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElementAssist, LabelElementToggle, LabelSelectElement, SelectIcon } from "../../components/UI/components/form simple/formSimple";
+import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElement, LabelElementAssist, LabelElementToggle, LabelSelectElement, SelectIcon } from "../../components/UI/components/form simple/formSimple";
 import { FormTabs, FormTabs__ContentWrapper, FormTabs__LinksWrapper, FormTabs__ToolBarWrapper, TabContent, TabLink } from "../../components/UI/components/formTabs/formTabs";
 import { SimpleAccordion, SimpleAccordionContent, SimpleAccordionLink, SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
 import { manageTabs } from "../../domUtilities/manageTabs";
 import { FileDrop } from "../../components/UI/components/form simple/fileDrop";
 import { TableCellLong, TableCellShort, TableDataHeader, TableDataRow, TableDataWrapper } from "../../components/UI/layout/tableData";
 import { useGlobalContext } from "../../providers/globalContextProvider";
+import { useGetData } from "../../hooks/useGetData";
+import { useSaveData } from "../../hooks/useSaveData";
 
 export default function NewPlayerPage () {
 
   const context = useGlobalContext();
 
+  //hook guardar datos
+  const { uploadData, responseUpload } = useSaveData();
+
   //navegar
   const navigate = useNavigate();
-
-  //guardar token peticiones
-  const account = localStorage.getItem('CMAccount');
-  const parsedAccount = JSON.parse(account);
-  const token = parsedAccount.token;
-
-  const headers = {
-    'Content-Type': 'application/json',
-    'x-access-token': token
-  }
 
   //ref form
   const form = useRef(null);
@@ -51,65 +46,34 @@ export default function NewPlayerPage () {
   
 
   useEffect(()=>{
-    manageTabs();
-    getCountries();
-    getPositions();
-    getContracts();
-    getIntermediaries();
-    getTeams();
-    
+    manageTabs();    
   },[])
+  //pedir paises, posiciones, contratos, intermediarios y equipos
+  const getCountries = useGetData('masters/getAllCountry');
+  useEffect (() => {
+    if (getCountries.responseGetData) setCountries(getCountries.responseGetData.data.data);
+  },[getCountries.responseGetData])
+
+  const getPositions = useGetData('masters/getAllPosition');
+  useEffect (() => {
+    if (getPositions.responseGetData) setPositions(getPositions.responseGetData.data.data);
+  },[getPositions.responseGetData])
+
+  const getContracts = useGetData('masters/getAllContract');
+  useEffect (() => {
+    if (getContracts.responseGetData) setContracts(getContracts.responseGetData.data.data);
+  },[getContracts.responseGetData])
+
+  const getIntermediaries = useGetData('masters/getAllIntermediary');
+  useEffect (() => {
+    if (getIntermediaries.responseGetData) setIntermediaries(getIntermediaries.responseGetData.data.data);
+  },[getIntermediaries.responseGetData])
+
+  const getTeams = useGetData('teams/getAll');
+  useEffect (() => {
+    if (getTeams.responseGetData) setTeams(getTeams.responseGetData.data.data);
+  },[getTeams.responseGetData])
   
-
-  //pedir paises
-  const getCountries = async () => {
-    const results = await getSimpleData('masters/getAllCountry')
-    .then (res=> {
-      setCountries(res.data);
-    }).catch(err=> {
-      console.log(err);
-    })
-  }
-
-  //pedir posiciones
-  const getPositions = async () => {
-    const results = await getSimpleData('masters/getAllPosition')
-    .then (res=> {
-      setPositions(res.data);
-    }).catch(err=> {
-      console.log(err);
-    })
-  }
-
-  //pedir contratos
-  const getContracts= async () => {
-    const results = await getSimpleData('masters/getAllContract')
-    .then (res=> {
-      setContracts(res.data);
-    }).catch(err=> {
-      console.log(err);
-    })
-  }
-
-  //pedir intermediarios
-  const getIntermediaries= async () => {
-    const results = await getSimpleData('intermediaries/getAll')
-    .then (res=> {
-      setIntermediaries(res.data);
-    }).catch(err=> {
-      console.log(err);
-    })
-  }
-
-  //pedir equipos
-  const getTeams= async () => {
-    const results = await getSimpleData('teams/getAll')
-    .then (res=> {
-      setTeams(res.data);
-    }).catch(err=> {
-      console.log(err);
-    })
-  }
 
   //render acordeon upload docs
   const renderUploadDocsLayer = () => {
@@ -141,6 +105,7 @@ export default function NewPlayerPage () {
             <FormSimplePanelRow
               className='cm-u-centerText'>
               <ButtonMousePrimary
+                onClick={handleFile}
                 >Guardar</ButtonMousePrimary>
               <ButtonMouseGhost
                 onClick={() => setShowUploadDoc(false)}
@@ -304,7 +269,7 @@ export default function NewPlayerPage () {
               <FormSimplePanelRow
                 className='cm-u-centerText'>
                 <ButtonMousePrimary
-                  onClick={handleFile}>Guardar</ButtonMousePrimary>
+                  >Guardar</ButtonMousePrimary>
                 <ButtonMouseGhost
                   onClick={() => setShowUploadDoc(false)}
                   >Cancelar</ButtonMouseGhost>
@@ -387,15 +352,21 @@ export default function NewPlayerPage () {
       'documentos': data.documentos,
     }
 
-    Api.call.post('players/create',dataSent,{ headers:headers })
-        .then (res => {
-          console.log(res);
-          // navigate('/manage-team');
-        }).catch(err => {
-          if (err.code === 'ERR_NETWORK') setError('Error en la base de datos, inténtelo más tarde')
-          else setError('Error al realizar la solicitud')
-        })
+    uploadData('players/create',dataSent);
   }
+
+  //mirar la respuesta de subir datos para setear error
+  useEffect(()=> {
+    if (responseUpload) {
+      console.log(responseUpload);
+      if (responseUpload.status === 409) { setError('El usuario que estás intentnado crear ya existe')
+      } else if (responseUpload.code === 'ERR_NETWORK') { setError('Error de conexión, inténtelo más tarde')
+      } else if (responseUpload.status === 'ok') { navigate('/manage-players');
+      } else {
+        setError('Existe un error en el formulario, inténtelo de nuevo')
+      }
+    }
+  },[responseUpload])
 
   return (
     <>
@@ -682,7 +653,7 @@ export default function NewPlayerPage () {
                             <option value=''>Selecciona</option>
                             { teams?.map(item => {
                               return (
-                                <option key={item.id_club} value={item.id_club}>{item.desc_nombre_club}</option>
+                                <option key={item.id_club_opta} value={item.id_club_opta}>{item.desc_nombre_club}</option>
                               );
                             })}
                         </LabelSelectElement>
@@ -754,7 +725,7 @@ export default function NewPlayerPage () {
                       <TableDataWrapper
                         className='cm-u-spacer-mt-big'>
                           <TableDataHeader>
-                            <TableCellLong>Decripción</TableCellLong>
+                            <TableCellLong>Documentos añadidos</TableCellLong>
                             <TableCellShort></TableCellShort>
                           </TableDataHeader>
                           {

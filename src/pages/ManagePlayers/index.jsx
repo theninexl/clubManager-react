@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getData } from "../../services/getData";
+import { useGetData } from "../../hooks/useGetData";
 import { AsideMenu } from "../../components/AsideMenu";
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
 import { CentralBody, CentralBody__Header, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
@@ -14,10 +14,7 @@ export default function ManagePlayersPage () {
 
   //navegar
   const navigate = useNavigate();
-  //guardar token peticiones
-  const account = localStorage.getItem('CMAccount');
-  const parsedAccount = JSON.parse(account);
-  const token = parsedAccount.token;
+
   // variables y estados locales
   const rowsByPage = 10;
   const [searchValue, setSearchValue] = useState('');
@@ -25,24 +22,21 @@ export default function ManagePlayersPage () {
   const [allPlayers, setAllPlayers] = useState([]);
   const [page, setPage] = useState(1);
 
+  const { responseGetData } = useGetData('players/getAll',{search:'',pagenumber:page,rowspage:rowsByPage})
 
-  //pedir 10 usuarios
-  const getUsers = async (token = token, search,pagenumber, rowspage = rowsByPage, orderby = listOrder ) => {
-    const results = await getData('players/getAll',search,pagenumber,rowspage,orderby,token)
-    .then (res=> {
-      setAllPlayers(res.data);
-    }).catch(err=> {
-      console.log(err);
-    })
-  }
+  useEffect(()=>{
+    if (responseGetData){
+      setAllPlayers(responseGetData.data.data);
+    }
+  },[responseGetData])
 
   //resetear pagina a 1 cuando cargas la primera vez
   useEffect(()=> { setPage(1)},[setPage]);
 
   //volver a pedir users cuando cambia pagina, orden
-  useEffect(()=> {
-    getUsers(token,searchValue,page);
-  },[page, listOrder]);
+  // useEffect(()=> {
+  //   getUsers(token,searchValue,page);
+  // },[page, listOrder]);
 
 
   return (

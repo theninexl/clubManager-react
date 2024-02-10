@@ -1,17 +1,28 @@
 import { useDropzone } from "react-dropzone";
 import { useGlobalContext } from "../../../../providers/globalContextProvider";
+import { useCallback, useEffect, useState } from "react";
 
 
 export const FileDrop = ({ htmlFor,accept,placeholder, className, style, children}) => {
 
+  const [localFile, setLocalFile] = useState();
   const context = useGlobalContext();
 
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop: (acceptedFile) => {
-      context.setFileNewPlayerUploaded(acceptedFile[0].name)
-    },
-  });
+    const onDrop = useCallback((acceptedFiles) => {
+      acceptedFiles.forEach((file) => {
+        const reader = new FileReader()
+  
+        reader.onabort = () => console.log('file reading was aborted')
+        reader.onerror = () => console.log('file reading has failed')
+        reader.onload = () => {
+          const binaryStr = reader.result
+          context.setFileNewPlayerUploaded(binaryStr);
+        }
+        reader.readAsDataURL(file)
+      })
+    },[]);
 
+  const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
   return (
     <label
