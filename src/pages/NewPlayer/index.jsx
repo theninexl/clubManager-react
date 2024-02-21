@@ -45,12 +45,11 @@ export default function NewPlayerPage () {
   //array para guardar las nuevas expresiones añadidas a cada variable
   const [variableExpressions, setVariableExpressions] = useState([{id_ExprComb:1,id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
   //array para guardar las nuevas condiones añadidas a cada expresion
-  const [variableConditions, setVariableConditions] = useState([]);
+  // const [variableConditions, setVariableConditions] = useState([]);
   //tipo de condicion escogida
-  const [conditionChosen, setConditionChosen] = useState();
+  // const [conditionChosen, setConditionChosen] = useState();
   //array con las variables creades
   const [savedVariables, setSavedVariables] = useState([]);
-  const [editingVarID, setEditingVarID] = useState(null);
   //si muestro o no la capa de creacion de nuevo documento
   const [showUploadDoc, setShowUploadDoc ] = useState(false);
   //los archivos guardados
@@ -90,7 +89,7 @@ export default function NewPlayerPage () {
   const getNewVariableCombos = useGetData('players/getCombosValues');
   useEffect (() => {
     if (getNewVariableCombos.responseGetData) {
-      console.log(getNewVariableCombos.responseGetData.data.data);
+      // console.log(getNewVariableCombos.responseGetData.data.data);
       setVariableCombos(getNewVariableCombos.responseGetData.data.data);
     }
   },[getNewVariableCombos.responseGetData])
@@ -115,60 +114,48 @@ export default function NewPlayerPage () {
   }
 
   useEffect(()=>{
-    console.log(variableExpressions);
+    console.log('variableExpressions', variableExpressions);
   },[variableExpressions]);
   
 
   //añadir nueva condicion al crear variable
-  const handleAddNewVariableCondition = () => {
-    setVariableConditions([...variableConditions, {id_condicion:'',id_condicion_anidado:'',id_condicion_tipo:'',id_condicion_operador:'',id_condicion_valor:''}]);
+  const handleAddNewCond = (indexExpr,indexNewCond) => {
+    let onChangeValue = [...variableExpressions];
+    onChangeValue[indexExpr]["condiciones"][indexNewCond] = {id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''};
+    setVariableExpressions(onChangeValue);
   }
 
   //manejar cambios en los campos de la condicion
-  const handleChangesOnNewVariableCondition = (event, index) => {
-    let {name, value} = event.target;
-    let onChangeValue = [...variableConditions];
-    onChangeValue[index][name] = value;
-    setVariableConditions(onChangeValue);
-  }
+  // const handleChangesOnNewVariableCondition = (event, index) => {
+  //   let {name, value} = event.target;
+  //   let onChangeValue = [...variableConditions];
+  //   onChangeValue[index][name] = value;
+  //   setVariableConditions(onChangeValue);
+  // }
 
   //borrar una nueva condicion al crear variable
-  const handleDeleteNewVariableCondition = (index) => {
-    const newConditionsArray = [...variableConditions];
-    newConditionsArray.splice(index, 1);
-    // console.log(newConditionsArray);
-    setVariableConditions(newConditionsArray);
-  }
-
-  
+  const handleDeleteNewCond = (indexExpr, indexCond) => {
+    let newExpressionsArray = [...variableExpressions];
+    let newConditionsArray = [...newExpressionsArray[indexExpr].condiciones]
+    newExpressionsArray[indexExpr].condiciones = [];
+    newConditionsArray.splice(indexCond, 1);
+    newExpressionsArray[indexExpr]["condiciones"] = newConditionsArray;    
+    setVariableExpressions(newExpressionsArray);
+  }  
 
   //render campo valor condicion dependiendo del escogido en condicion
-  const renderConditionValueField = (index,firstRow,isEditing) => {
-    console.log('entro en renderConditionValueFiel');
-    const isFirstRow = firstRow;
-    const isEditingVar = isEditing;
-    const condName = conditionChosen?.[`conditionChosen`+index];
-    console.log('condname',condName);
-    const filter = variableCombos.condition.filter(item => item.id.includes(condName));
-    console.log('filter:',filter);
-    let result;
-    const comboVal = filter[0]?.comboVal;
+  const renderConditionValueField = (idCondicion, indexExpr, indexCond) => {
+    let filter = null;
+    let result = null;
+    let comboVal = null;
+    if (idCondicion !== '') {
+      filter = variableCombos.condition.filter(item => item.id.includes(idCondicion));
+      result = filter[0]?.type;
+      comboVal = filter[0]?.comboVal;
+    }
+  
 
-    if (!isEditingVar) {
-      result = filter[0]?.type
-    } else {
-      if (isFirstRow) { index = 0;}      
-      // console.log('index:',index);
-      // console.log(savedVariables[index]);
-      result = savedVariables[index]?.condiciones[0].id_condicion_tipo;
-      // console.log('result cuando esta editando', result);
-    }   
-
-    if (result === 'text' || result === 'texto') {  
-      let value;
-      if (isEditingVar) {
-        value = savedVariables[index]?.condiciones[0]?.id_condicion_valor;
-      }   
+    if (result === 'texto') { 
       return (
         <>
           <LabelElement
@@ -176,47 +163,32 @@ export default function NewPlayerPage () {
           placeholder='introduce valor'
           type='text'
           className='cm-c-form-simple'
-          value={value}
-          handleOnChange={(event) => {
-            if (!isFirstRow && !isEditingVar) {
-              handleChangesOnNewVariableCondition(event,index);
-              let onChangeValue = [...variableConditions];
-              onChangeValue[index]["id_condicion_tipo"] = "texto";
-              setVariableConditions(onChangeValue);
-            } else if (isEditingVar) {
-              let variableCopy = [...savedVariables];
-              variableCopy[index]['condiciones'][0]['id_condicion_valor'] = event.target.value;
-              setSavedVariables(variableCopy)
-            }
-            }} /> 
-            {(!isEditingVar) && 
-              <input type='hidden' name={`id_condicion_tipo${index}`} value='texto' />
-            }
+          value={variableExpressions[indexExpr]?.condiciones[indexCond]?.id_condicion_valor || ''}
+          handleOnChange={(e) => {
+            let onChangeValue = [...variableExpressions];
+            onChangeValue[indexExpr]["condiciones"][indexCond]["id_condicion_valor"] = e.target.value;
+            setVariableExpressions(onChangeValue);
+            let onChangeType = [...variableExpressions];
+            onChangeType[indexExpr]["condiciones"][indexCond]["id_condicion_tipo"] = 'texto';
+            setVariableExpressions(onChangeType);                             
+          }}
+           />
         </>          
       );
     } else if (result === 'combo') {
-      // console.log('result',result);
-      let value;
-      if (isEditingVar) {
-        value = savedVariables[index]?.condiciones[0]?.id_condicion_valor;
-      }
       return (
         <>
           <SelectIconShorter
             name='id_condicion_valor'
-            value={value}
-            handleOnChange={(event) => {
-              if (!isFirstRow && !isEditingVar) {
-                handleChangesOnNewVariableCondition(event,index);
-                let onChangeValue = [...variableConditions];
-                onChangeValue[index]["id_condicion_tipo"] = "combo";
-                setVariableConditions(onChangeValue);
-              } else if (isEditingVar) {
-                let variableCopy = [...savedVariables];
-                variableCopy[index]['condiciones'][0]['id_condicion_valor'] = event.target.value;
-                setSavedVariables(variableCopy)
-              }
-            }}>
+            value={variableExpressions[indexExpr]?.condiciones[indexCond]?.id_condicion_valor || ''}
+            handleOnChange={(e) => {
+              let onChangeValue = [...variableExpressions];
+              onChangeValue[indexExpr]["condiciones"][indexCond]["id_condicion_valor"] = e.target.value;
+              setVariableExpressions(onChangeValue);
+              let onChangeType = [...variableExpressions];
+              onChangeType[indexExpr]["condiciones"][indexCond]["id_condicion_tipo"] = 'combo';
+              setVariableExpressions(onChangeType);                             
+            }} >
             <option value=''>Selecciona</option>
             { comboVal.map((item) => {
                 return (
@@ -224,9 +196,6 @@ export default function NewPlayerPage () {
                 );
             })}
           </SelectIconShorter>  
-          {(!isEditingVar) && 
-            <input type='hidden' name={`id_condicion_tipo${index}`} value='combo' />
-          }
         </>  
       );
     }
@@ -243,10 +212,9 @@ export default function NewPlayerPage () {
                 <p className="cm-u-text-black-cat">Añadir nueva variable</p>
             </header>
           {variableExpressions.map((item,index) => {
-            // console.log(item);
             const ExprComb = item.id_ExprComb;          
             return (
-              <div key={index} id={index} className='cm-u-spacer-mb-bigger'>
+              <div key={ExprComb} className='cm-u-spacer-mb-bigger'>
                 <FormSimplePanelRow>
                   <LabelSelectShorterElement
                     htmlFor='id_expresion'
@@ -303,23 +271,18 @@ export default function NewPlayerPage () {
                     : ''}
                 </FormSimplePanelRow>
                 { variableExpressions[index].condiciones.map((item, index2) => {
-                  console.log(variableExpressions[index].condiciones);
-                  console.log(variableExpressions[index].condiciones[index2]);
-                  console.log(item);
-                  console.log('index',index)
-                  console.log('index2',index2)
                   return(
                     <>
-                      <FormSimplePanelRow key={index}>
+                      <FormSimplePanelRow key={index2}>
                         <LabelSelectShorterElement
                           htmlFor='id_condicion'
                           labelText='Condición'
-                          value={item.id_condicion || ''}
+                          value={variableExpressions[index].condiciones[index2].id_condicion || ''}
                           handleOnChange={(e) => {
                             let onChangeValue = [...variableExpressions];
-                            onChangeValue[index]["condiciones"][index2]["id_condicion"] = item.id_condicion;
-                            setVariableExpressions(onChangeValue);
-                            
+                            onChangeValue[index]["condiciones"][index2]["id_condicion"] = e.target.value;
+                            console.log(onChangeValue);
+                            setVariableExpressions(onChangeValue);                            
                           }}
                           >
                             <option value=''>Condicion</option>
@@ -331,20 +294,39 @@ export default function NewPlayerPage () {
                         </LabelSelectShorterElement>
                         <SelectIconShorter
                           name='id_condicion_operador'
+                          value={variableExpressions[index].condiciones[index2].id_condicion_operador || ''}
+                          handleOnChange={(e) => {
+                            let onChangeValue = [...variableExpressions];
+                            onChangeValue[index]["condiciones"][index2]["id_condicion_operador"] = e.target.value;
+                            console.log(onChangeValue);
+                            setVariableExpressions(onChangeValue);                            
+                          }}
                           >
                             <option value=''>Operador</option>
                             <option value='='>Igual a</option>
                             <option value='<'>Menor qué</option>
                             <option value='>'>Mayor qué</option>
                         </SelectIconShorter>
-                        {}
-                        <IconButtonSmallSecondary
-                          onClick={(e) => {
-                            e.preventDefault();
-                            // handleAddNewVariableCondition();
-                          }} >
-                            <SymbolAdd />
-                        </IconButtonSmallSecondary>
+                        {renderConditionValueField(variableExpressions[index].condiciones[index2].id_condicion, index, index2)}
+
+                        {(index2 !== 0) ?                   
+                          <IconButtonSmallSecondary
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleDeleteNewCond(index, index2);
+                            }} >
+                              <SymbolDelete />
+                          </IconButtonSmallSecondary>
+                        : ''}
+                        {index2+1 == variableExpressions[index].condiciones.length ?                   
+                          <IconButtonSmallSecondary
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleAddNewCond(index, index2+1);
+                            }} >
+                              <SymbolAdd />
+                          </IconButtonSmallSecondary>
+                        : ''}
                       </FormSimplePanelRow>
                     </>
                   )
@@ -442,8 +424,9 @@ export default function NewPlayerPage () {
               >Guardar</ButtonMousePrimary>
             <ButtonMouseGhost
               onClick={() => {
-                setEditingVarID(null);
-                setShowNewVariableLayer(false)}}
+                setShowNewVariableLayer(false);
+                setVariableExpressions([{id_ExprComb:1,id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]); 
+              }}
               >Cancelar</ButtonMouseGhost>
           </FormSimplePanelRow>
         </SimpleAccordionContent>
@@ -452,28 +435,17 @@ export default function NewPlayerPage () {
     }
   }
 
-
   //guardar una nueva variable
   const handleSaveNewVariable = (e) => {
     e.preventDefault();
     const formData = new FormData(form.current);
     const amortizableVal = document.getElementById('amortizable').checked;
 
-    const condition1 = {
-      id_condicion: formData.get('id_condicion'),
-      id_condicion_operador: formData.get('id_condicion_operador'),
-      id_condicion_tipo: formData.get('id_condicion_tipo99'),
-      id_condicion_valor: formData.get('id_condicion_valor'),
-    }
 
-    const condiciones = variableConditions;
-    condiciones.unshift(condition1);
-
+    const expresiones = variableExpressions;
 
     const data = {
-      id_expresion: formData.get('expresionId'),
-      id_expresion_operador: formData.get('expressionOperador'),
-      id_expresion_valor: formData.get('expressionValue'),
+      expresiones,
       id_competicion: formData.get('idCompetition'),
       id_fase: formData.get('idStage'),
       id_temporada: formData.get('idSeason'),
@@ -483,12 +455,12 @@ export default function NewPlayerPage () {
       importe: formData.get('variableAmount'),
       id_tipo_variable: formData.get('variableType'),
       id_beneficiario: formData.get('variableBeneficiary'),
-      condiciones,
     }
 
-    console.log(data);
+    // console.log(data);
     setSavedVariables([...savedVariables, data]);
-    setShowNewVariableLayer(false);    
+    setShowNewVariableLayer(false);
+    setVariableExpressions([{id_ExprComb:1,id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);   
   }
 
   useEffect(()=> {
@@ -551,6 +523,7 @@ export default function NewPlayerPage () {
 
     const playerComunitarioVal = document.getElementById('playerComunitario').checked;
     const playerResidenciaVal = document.getElementById('playerResidencia').checked;
+    const savedVariablesInState = savedVariables;
 
     const data = {
       id_intermediario: formData.get('playerIntermediary'),
@@ -577,6 +550,7 @@ export default function NewPlayerPage () {
       peso: formData.get('playerWeight'),
       altura: formData.get('playerHeight'),
       valor_mercado: formData.get('playerMarketValue'),
+      savedVariables: savedVariablesInState,
       documentos: uploadedFiles 
     }
 
@@ -605,6 +579,7 @@ export default function NewPlayerPage () {
       'peso': data.peso,
       'altura': data.altura,
       'valor_mercado': data.valor_mercado,
+      'variables':data.savedVariables,
       'documentos': data.documentos,
     }
     
@@ -967,11 +942,11 @@ export default function NewPlayerPage () {
                                 <span>&nbsp;&nbsp;</span>
                                   <IconButtonSmallerPrimary
                                     onClick={(index) => {
-                                      console.log('borro variable');
-                                      // const newVariablesArray = [...savedVariables];
-                                      // newVariablesArray.splice(index, 1);
-                                      // console.log(newVariablesArray);
-                                      // setSavedVariables(newVariablesArray);
+                                      // console.log('borro variable');
+                                      const newVariablesArray = [...savedVariables];
+                                      newVariablesArray.splice(index, 1);
+                                      console.log(newVariablesArray);
+                                      setSavedVariables(newVariablesArray);
                                     }}
                                     >
                                   <SymbolDelete />
@@ -1000,7 +975,7 @@ export default function NewPlayerPage () {
                             </TitleBar__Tools>
                           </HeadContentTitleBar>
                         </SimpleAccordionTrigger>
-                        {renderNewVariableLayer(editingVarID)}
+                        {renderNewVariableLayer()}
                       </SimpleAccordion>
                      
 

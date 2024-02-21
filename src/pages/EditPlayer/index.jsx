@@ -12,7 +12,7 @@ import { FormTabs, FormTabs__ContentWrapper, FormTabs__LinksWrapper, FormTabs__T
 import { SimpleAccordion, SimpleAccordionContent,  SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
 import { manageTabs } from "../../domUtilities/manageTabs";
 import { FileDrop } from "../../components/UI/components/form simple/fileDrop";
-import { TableCellLong, TableCellShort, TableDataHeader, TableDataRow, TableDataWrapper } from "../../components/UI/layout/tableData";
+import { TableCellLong, TableCellMedium, TableCellShort, TableDataHeader, TableDataRow, TableDataWrapper } from "../../components/UI/layout/tableData";
 import { useGlobalContext } from "../../providers/globalContextProvider";
 import { ModalBody, ModalContainer, ModalContent__Small, ModalFooter } from "../../components/UI/components/modal/modal";
 
@@ -77,6 +77,7 @@ export default function EditPlayerPage () {
       "valor_mercado": '',
       "nss":'',
   });
+  const [savedVariables, setSavedVariables] = useState([]);
   
 
   useEffect(()=>{
@@ -88,8 +89,9 @@ export default function EditPlayerPage () {
   useEffect (() => {
     if (getPlayerDetail.responseGetData) {
       console.log(getPlayerDetail.responseGetData.data);
-      setPlayerData(getPlayerDetail.responseGetData.data.jugador[0])
-      setUploadedFiles(getPlayerDetail.responseGetData.data.documentos[0])
+      setPlayerData(getPlayerDetail.responseGetData.data?.jugador[0])
+      setUploadedFiles(getPlayerDetail.responseGetData.data?.documentos[0])
+      // setSavedVariables(getPlayerDetail.responseGetData.data?.variables[0])
     }
   },[getPlayerDetail.responseGetData])    
 
@@ -335,6 +337,7 @@ export default function EditPlayerPage () {
                   <TabLink target='general'>General</TabLink>
                   <TabLink target='deportivo'>Deportivo</TabLink>
                   <TabLink target='contractual'>Contractual</TabLink>
+                  <TabLink target='variables'>Variables</TabLink>
                   <TabLink target='documentos'>Documentos</TabLink>
                 </FormTabs__LinksWrapper>
               </FormTabs>
@@ -703,6 +706,39 @@ export default function EditPlayerPage () {
                             })}
                         </LabelSelectElement>
                       </FormSimplePanelRow>
+                    </TabContent>
+                    <TabContent id='variables'>
+                       {/* Tabla Variables creadas */}
+                      <TableDataWrapper
+                        className='cm-u-spacer-mt-big'>
+                          <TableDataHeader>
+                            <TableCellLong>Variables añadidas</TableCellLong>
+                            <TableCellShort></TableCellShort>
+                          </TableDataHeader>
+                          { savedVariables?.map((item, index) => {                            
+                            return (
+                              <TableDataRow key={index}>
+                                <TableCellLong>{`Variable ${index+1}`}</TableCellLong>
+                                <TableCellMedium
+                                  className='cm-u-textRight'>
+                                <span>&nbsp;&nbsp;</span>
+                                  <IconButtonSmallerPrimary
+                                    onClick={(index) => {
+                                      // console.log('borro variable');
+                                      const newVariablesArray = [...savedVariables];
+                                      newVariablesArray.splice(index, 1);
+                                      console.log(newVariablesArray);
+                                      setSavedVariables(newVariablesArray);
+                                    }}
+                                    >
+                                  <SymbolDelete />
+                                </IconButtonSmallerPrimary>
+                              </TableCellMedium>
+                            </TableDataRow>
+                            )
+                          })}
+                        </TableDataWrapper>                     
+
                     </TabContent>
                     <TabContent id='documentos'>
                       <SimpleAccordion>
