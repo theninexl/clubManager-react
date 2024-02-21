@@ -94,7 +94,7 @@ export const IconButtonSmallPrimary = ({ children, className, onClick }) => {
 export const IconButtonSmallSecondary = ({ children, className, onClick }) => {
   return (
     <button 
-      className={`cm-o-icon-button-small--primary ${className}`}
+      className={`cm-o-icon-button-small--secondary ${className}`}
       onClick={onClick} >
       { children }
     </button>

@@ -70,11 +70,10 @@
                 $block: &;
                 display: flex;
                 flex-direction:row;
-                flex-grow: 1;
                 flex-wrap: wrap;
                 align-items: center;
                 gap:getSize($small);
-                margin-bottom:getSize($small);
+                // margin-bottom:getSize($small);
 
                 span:not(.material-symbols-outlined) {
                     text-align: left;
@@ -98,8 +97,12 @@
                     $block: &;
                     display: flex;
                     flex-direction: column;
+                }
 
-                    &.assistance {
+                &--inline {
+                    span:not(.material-symbols-outlined) {
+                        text-align: left;
+                        width: auto !important;                        
                     }
                 }
             }

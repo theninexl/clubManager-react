@@ -1,18 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Api } from "../../services/api";
-import { getSimpleData } from "../../services/getData";
+import { Form, useNavigate } from "react-router-dom";
 import { AsideMenu } from "../../components/AsideMenu";
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
 import { CentralBody, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
-import { ButtonMouseGhost, ButtonMousePrimary, IconButtonSmallPrimary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
-import { SymbolAdd, SymbolBack, SymbolDelete } from "../../components/UI/objects/symbols";
-import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElement, LabelElementAssist, LabelElementToggle, LabelSelectElement, SelectIcon } from "../../components/UI/components/form simple/formSimple";
+import { ButtonMouseGhost, ButtonMousePrimary, IconButtonSmallPrimary, IconButtonSmallSecondary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
+import { SymbolAdd, SymbolBack, SymbolDelete, SymbolEdit } from "../../components/UI/objects/symbols";
+import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElement, LabelElementAssist, LabelElementToggle, LabelSelectElement, LabelSelectShorterElement, SelectIcon, SelectIconShorter } from "../../components/UI/components/form simple/formSimple";
 import { FormTabs, FormTabs__ContentWrapper, FormTabs__LinksWrapper, FormTabs__ToolBarWrapper, TabContent, TabLink } from "../../components/UI/components/formTabs/formTabs";
 import { SimpleAccordion, SimpleAccordionContent, SimpleAccordionLink, SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
 import { manageTabs } from "../../domUtilities/manageTabs";
 import { FileDrop } from "../../components/UI/components/form simple/fileDrop";
-import { TableCellLong, TableCellShort, TableDataHeader, TableDataRow, TableDataWrapper } from "../../components/UI/layout/tableData";
+import { TableCellLong, TableCellMedium, TableCellShort, TableDataHeader, TableDataRow, TableDataWrapper } from "../../components/UI/layout/tableData";
 import { useGlobalContext } from "../../providers/globalContextProvider";
 import { useGetData } from "../../hooks/useGetData";
 import { useSaveData } from "../../hooks/useSaveData";
@@ -33,15 +31,29 @@ export default function NewPlayerPage () {
   const queryParams = new URLSearchParams(window.location.search);
   const userParam = queryParams.get('user');
 
-  // variables y estados locales
+  // estados locales
   const [error, setError] = useState(null);
   const [countries, setCountries] = useState(null);
   const [positions, setPositions] = useState(null);
   const [contracts, setContracts] = useState(null);
   const [intermediaries, setIntermediaries] = useState(null);
   const [teams, setTeams] = useState(null);
+  //si muestro o no la capa de creacion de variable
   const [showNewVariableLayer, setShowNewVariableLayer ] = useState(false);
+  //donde guardo la info de los posibles combos de cada combinacion Exprexion+Condiciones
+  const [variableCombos, setVariableCombos] = useState([]);
+  //array para guardar las nuevas expresiones añadidas a cada variable
+  const [variableExpressions, setVariableExpressions] = useState([{id_ExprComb:1,id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
+  //array para guardar las nuevas condiones añadidas a cada expresion
+  const [variableConditions, setVariableConditions] = useState([]);
+  //tipo de condicion escogida
+  const [conditionChosen, setConditionChosen] = useState();
+  //array con las variables creades
+  const [savedVariables, setSavedVariables] = useState([]);
+  const [editingVarID, setEditingVarID] = useState(null);
+  //si muestro o no la capa de creacion de nuevo documento
   const [showUploadDoc, setShowUploadDoc ] = useState(false);
+  //los archivos guardados
   const [uploadedFiles, setUploadedFiles ] = useState([]);
   
 
@@ -73,7 +85,416 @@ export default function NewPlayerPage () {
   useEffect (() => {
     if (getTeams.responseGetData) setTeams(getTeams.responseGetData.data.data);
   },[getTeams.responseGetData])
+
+  //pedir combos creación de variables
+  const getNewVariableCombos = useGetData('players/getCombosValues');
+  useEffect (() => {
+    if (getNewVariableCombos.responseGetData) {
+      console.log(getNewVariableCombos.responseGetData.data.data);
+      setVariableCombos(getNewVariableCombos.responseGetData.data.data);
+    }
+  },[getNewVariableCombos.responseGetData])
+
+  //añadir una nueva expresion completa a la variable
+  const handleAddNewVariableExpression = (number) => {
+   setVariableExpressions([...variableExpressions, {id_ExprComb:number, id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]) 
+  }
+
+  //manejar cambios en los campos de la expresion
+  const handleChangesOnNewVariableExpression = (event, index) => {
+    let {name, value} = event.target;
+    let onChangeValue = [...variableExpressions];
+    onChangeValue[index][name] = value;
+    setVariableExpressions(onChangeValue);
+  }
+
+  const handleDeleteNewVariableExpression = (index) => {
+    const newExpressionsArray = [...variableExpressions];
+    newExpressionsArray.splice(index,1);
+    setVariableExpressions(newExpressionsArray);
+  }
+
+  useEffect(()=>{
+    console.log(variableExpressions);
+  },[variableExpressions]);
   
+
+  //añadir nueva condicion al crear variable
+  const handleAddNewVariableCondition = () => {
+    setVariableConditions([...variableConditions, {id_condicion:'',id_condicion_anidado:'',id_condicion_tipo:'',id_condicion_operador:'',id_condicion_valor:''}]);
+  }
+
+  //manejar cambios en los campos de la condicion
+  const handleChangesOnNewVariableCondition = (event, index) => {
+    let {name, value} = event.target;
+    let onChangeValue = [...variableConditions];
+    onChangeValue[index][name] = value;
+    setVariableConditions(onChangeValue);
+  }
+
+  //borrar una nueva condicion al crear variable
+  const handleDeleteNewVariableCondition = (index) => {
+    const newConditionsArray = [...variableConditions];
+    newConditionsArray.splice(index, 1);
+    // console.log(newConditionsArray);
+    setVariableConditions(newConditionsArray);
+  }
+
+  
+
+  //render campo valor condicion dependiendo del escogido en condicion
+  const renderConditionValueField = (index,firstRow,isEditing) => {
+    console.log('entro en renderConditionValueFiel');
+    const isFirstRow = firstRow;
+    const isEditingVar = isEditing;
+    const condName = conditionChosen?.[`conditionChosen`+index];
+    console.log('condname',condName);
+    const filter = variableCombos.condition.filter(item => item.id.includes(condName));
+    console.log('filter:',filter);
+    let result;
+    const comboVal = filter[0]?.comboVal;
+
+    if (!isEditingVar) {
+      result = filter[0]?.type
+    } else {
+      if (isFirstRow) { index = 0;}      
+      // console.log('index:',index);
+      // console.log(savedVariables[index]);
+      result = savedVariables[index]?.condiciones[0].id_condicion_tipo;
+      // console.log('result cuando esta editando', result);
+    }   
+
+    if (result === 'text' || result === 'texto') {  
+      let value;
+      if (isEditingVar) {
+        value = savedVariables[index]?.condiciones[0]?.id_condicion_valor;
+      }   
+      return (
+        <>
+          <LabelElement
+          htmlFor='id_condicion_valor'
+          placeholder='introduce valor'
+          type='text'
+          className='cm-c-form-simple'
+          value={value}
+          handleOnChange={(event) => {
+            if (!isFirstRow && !isEditingVar) {
+              handleChangesOnNewVariableCondition(event,index);
+              let onChangeValue = [...variableConditions];
+              onChangeValue[index]["id_condicion_tipo"] = "texto";
+              setVariableConditions(onChangeValue);
+            } else if (isEditingVar) {
+              let variableCopy = [...savedVariables];
+              variableCopy[index]['condiciones'][0]['id_condicion_valor'] = event.target.value;
+              setSavedVariables(variableCopy)
+            }
+            }} /> 
+            {(!isEditingVar) && 
+              <input type='hidden' name={`id_condicion_tipo${index}`} value='texto' />
+            }
+        </>          
+      );
+    } else if (result === 'combo') {
+      // console.log('result',result);
+      let value;
+      if (isEditingVar) {
+        value = savedVariables[index]?.condiciones[0]?.id_condicion_valor;
+      }
+      return (
+        <>
+          <SelectIconShorter
+            name='id_condicion_valor'
+            value={value}
+            handleOnChange={(event) => {
+              if (!isFirstRow && !isEditingVar) {
+                handleChangesOnNewVariableCondition(event,index);
+                let onChangeValue = [...variableConditions];
+                onChangeValue[index]["id_condicion_tipo"] = "combo";
+                setVariableConditions(onChangeValue);
+              } else if (isEditingVar) {
+                let variableCopy = [...savedVariables];
+                variableCopy[index]['condiciones'][0]['id_condicion_valor'] = event.target.value;
+                setSavedVariables(variableCopy)
+              }
+            }}>
+            <option value=''>Selecciona</option>
+            { comboVal.map((item) => {
+                return (
+                  <option key={item.id_condVal} value={item.id_condVal}>{item.value}</option>
+                );
+            })}
+          </SelectIconShorter>  
+          {(!isEditingVar) && 
+            <input type='hidden' name={`id_condicion_tipo${index}`} value='combo' />
+          }
+        </>  
+      );
+    }
+  }
+
+  //render acordeon nueva variable
+  const renderNewVariableLayer = () => {
+
+    if (showNewVariableLayer === true) {
+      return (
+        <>
+        <SimpleAccordionContent>
+          <header className="cm-l-body-static-header--inTab" style={{marginTop:'0'}}>
+                <p className="cm-u-text-black-cat">Añadir nueva variable</p>
+            </header>
+          {variableExpressions.map((item,index) => {
+            // console.log(item);
+            const ExprComb = item.id_ExprComb;          
+            return (
+              <div key={index} id={index} className='cm-u-spacer-mb-bigger'>
+                <FormSimplePanelRow>
+                  <LabelSelectShorterElement
+                    htmlFor='id_expresion'
+                    labelText='Expresión'
+                    value={item.id_expresion}
+                    handleOnChange={(event) => {
+                      handleChangesOnNewVariableExpression(event,index)
+                    }}                  
+                    >
+                      <option value=''>Expresion</option>
+                      { variableCombos.expresion?.map((item) => {
+                          return (
+                            <option key={item.id} value={item.id}>{item.value}</option>
+                          );
+                      })}
+                  </LabelSelectShorterElement>
+                  <SelectIconShorter
+                    name='id_expresion_operador'
+                    value={item.id_expresion_operador}
+                    handleOnChange={(event) => {
+                      handleChangesOnNewVariableExpression(event,index)
+                    }} >
+                      <option value=''>Operador</option>
+                    <option value='='>Igual a</option>
+                    <option value='<'>Menor qué</option>
+                    <option value='>'>Mayor qué</option>
+                  </SelectIconShorter>
+                  <LabelElement
+                    htmlFor='id_expresion_valor'
+                    placeholder='introduce valor'
+                    type='text'
+                    className='cm-c-form-simple'
+                    value={item.id_expresion_valor}
+                    handleOnChange={(event) => {
+                      handleChangesOnNewVariableExpression(event,index)
+                    }} /> 
+                  {(item.id_ExprComb !== 1) ?                   
+                    <IconButtonSmallSecondary
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDeleteNewVariableExpression(index);
+                      }} >
+                        <SymbolDelete />
+                    </IconButtonSmallSecondary>
+                    : ''}
+                  {index+1 == variableExpressions.length ?                   
+                    <IconButtonSmallSecondary
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleAddNewVariableExpression(ExprComb+1);
+                      }} >
+                        <SymbolAdd />
+                    </IconButtonSmallSecondary>
+                    : ''}
+                </FormSimplePanelRow>
+                { variableExpressions[index].condiciones.map((item, index2) => {
+                  console.log(variableExpressions[index].condiciones);
+                  console.log(variableExpressions[index].condiciones[index2]);
+                  console.log(item);
+                  console.log('index',index)
+                  console.log('index2',index2)
+                  return(
+                    <>
+                      <FormSimplePanelRow key={index}>
+                        <LabelSelectShorterElement
+                          htmlFor='id_condicion'
+                          labelText='Condición'
+                          value={item.id_condicion || ''}
+                          handleOnChange={(e) => {
+                            let onChangeValue = [...variableExpressions];
+                            onChangeValue[index]["condiciones"][index2]["id_condicion"] = item.id_condicion;
+                            setVariableExpressions(onChangeValue);
+                            
+                          }}
+                          >
+                            <option value=''>Condicion</option>
+                            { variableCombos.condition?.map((item) => {
+                                return (
+                                  <option key={item.id} value={item.id}>{item.value}</option>
+                                );
+                            })}
+                        </LabelSelectShorterElement>
+                        <SelectIconShorter
+                          name='id_condicion_operador'
+                          >
+                            <option value=''>Operador</option>
+                            <option value='='>Igual a</option>
+                            <option value='<'>Menor qué</option>
+                            <option value='>'>Mayor qué</option>
+                        </SelectIconShorter>
+                        {}
+                        <IconButtonSmallSecondary
+                          onClick={(e) => {
+                            e.preventDefault();
+                            // handleAddNewVariableCondition();
+                          }} >
+                            <SymbolAdd />
+                        </IconButtonSmallSecondary>
+                      </FormSimplePanelRow>
+                    </>
+                  )
+                })}
+                </div>
+            );
+          })}
+          <FormSimplePanelRow>
+            <LabelSelectElement
+              htmlFor='idCompetition'
+              labelText='Competición'>
+              <option value=''>Selecciona</option>
+              { variableCombos.competition?.map((item) => {
+                    return (
+                      <option key={item.id} value={item.id}>{item.value}</option>
+                    );
+                })}
+            </LabelSelectElement>
+          </FormSimplePanelRow>
+          <FormSimplePanelRow>
+            <LabelSelectElement
+              htmlFor='idStage'
+              labelText='Fase'>
+              <option value=''>Selecciona</option>
+              { variableCombos.stage?.map((item) => {
+                    return (
+                      <option key={item.id} value={item.id}>{item.value}</option>
+                    );
+                })}
+            </LabelSelectElement>
+          </FormSimplePanelRow>
+          <FormSimplePanelRow>
+            <LabelElementAssist
+              htmlFor='variableAmount'
+              placeholder='introduce valor'
+              type='text'
+              className='panel-field-long'>
+                Importe
+              </LabelElementAssist> 
+          </FormSimplePanelRow>
+          <FormSimplePanelRow>
+            <LabelSelectElement
+              htmlFor='variableType'
+              labelText='Tipo variable'>
+                <option value=''>Selecciona</option>
+                <option value='1'>Variable 1</option>
+                <option value='2'>Variable 2</option>
+              </LabelSelectElement> 
+          </FormSimplePanelRow>
+          <FormSimplePanelRow>
+            <LabelSelectElement
+              htmlFor='variableBeneficiary'
+              labelText='Beneficiario'>
+                <option value=''>Selecciona</option>
+                <option value='1'>Beneficiario 1</option>
+                <option value='2'>Beneficiario 2</option>
+              </LabelSelectElement> 
+          </FormSimplePanelRow>
+          <FormSimplePanelRow>
+            <LabelSelectElement
+              htmlFor='idSeason'
+              labelText='Temporada'>
+              <option value=''>Selecciona</option>
+              { variableCombos.season?.map((item,index) => {
+                    return (
+                      <option key={item.id} value={item.id}>{item.value}</option>
+                    );
+                })}
+            </LabelSelectElement>
+          </FormSimplePanelRow>
+          <FormSimplePanelRow>
+            <LabelElement
+              htmlFor='dateSince'
+              type='date'
+              className='panel-field-short'>
+              Vigencia desde
+            </LabelElement>
+            <LabelElement
+              htmlFor='dateTo'
+              type='date'
+              className='panel-field-short panel-field-short--inline'>
+              hasta
+            </LabelElement>
+          </FormSimplePanelRow>
+          <FormSimplePanelRow>
+            <LabelElementToggle
+                htmlFor='amortizable' >
+                Amortizable
+              </LabelElementToggle>
+            </FormSimplePanelRow>
+          <FormSimplePanelRow
+            className='cm-u-centerText'>
+            <ButtonMousePrimary
+              onClick={handleSaveNewVariable}
+              >Guardar</ButtonMousePrimary>
+            <ButtonMouseGhost
+              onClick={() => {
+                setEditingVarID(null);
+                setShowNewVariableLayer(false)}}
+              >Cancelar</ButtonMouseGhost>
+          </FormSimplePanelRow>
+        </SimpleAccordionContent>
+        </>
+      );     
+    }
+  }
+
+
+  //guardar una nueva variable
+  const handleSaveNewVariable = (e) => {
+    e.preventDefault();
+    const formData = new FormData(form.current);
+    const amortizableVal = document.getElementById('amortizable').checked;
+
+    const condition1 = {
+      id_condicion: formData.get('id_condicion'),
+      id_condicion_operador: formData.get('id_condicion_operador'),
+      id_condicion_tipo: formData.get('id_condicion_tipo99'),
+      id_condicion_valor: formData.get('id_condicion_valor'),
+    }
+
+    const condiciones = variableConditions;
+    condiciones.unshift(condition1);
+
+
+    const data = {
+      id_expresion: formData.get('expresionId'),
+      id_expresion_operador: formData.get('expressionOperador'),
+      id_expresion_valor: formData.get('expressionValue'),
+      id_competicion: formData.get('idCompetition'),
+      id_fase: formData.get('idStage'),
+      id_temporada: formData.get('idSeason'),
+      fecha_desde: formData.get('dateSince'),
+      fecha_hasta: formData.get('dateTo'),
+      amortizable: amortizableVal ? 1 : 0,
+      importe: formData.get('variableAmount'),
+      id_tipo_variable: formData.get('variableType'),
+      id_beneficiario: formData.get('variableBeneficiary'),
+      condiciones,
+    }
+
+    console.log(data);
+    setSavedVariables([...savedVariables, data]);
+    setShowNewVariableLayer(false);    
+  }
+
+  useEffect(()=> {
+    console.log(savedVariables);
+  },[savedVariables])
+ 
 
   //render acordeon upload docs
   const renderUploadDocsLayer = () => {
@@ -115,169 +536,6 @@ export default function NewPlayerPage () {
       );
     }
   }
-
-    //render acordeon upload docs
-    const renderNewVariableLayer = () => {
-      if (showUploadDoc === true) {
-        return (
-          <SimpleAccordionContent
-            id='docUploadContent'>
-              <header className="cm-l-body-static-header--inTab" style={{marginTop:'0'}}>
-                  <p className="cm-u-text-black-cat">Añadir documento</p>
-              </header>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='variableDescription'
-                  type='text'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='Descripcion'
-                  >
-                  Descripción
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-              <label htmlFor="" className="">
-              <span style={{display:'inline-block',width:'168px'}}>Condición</span>
-                  <div className="cm-c-select-icon">
-                      <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'100px'}}>
-                          <option value=""></option>
-                          </select>
-                  </div>            
-              </label> 
-              
-                <label htmlFor="" className="">
-                
-                
-                <div className="cm-c-select-icon">
-                  <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'200px'}}>
-                      <option value="1">Partidos jugados</option>
-                      <option value="2">Minutos jugados</option>
-                      <option value="3">Goles marcados</option>
-                      <option value="4">Goles asistidos</option>
-                      </select>
-                </div>            
-              </label>
-              <label htmlFor="" className="">
-                <div className="cm-c-select-icon">
-                  <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'200px'}}>
-                      <option value="1">Mayor que</option>
-                      <option value="2">Igual</option>
-                      <option value="3">Menor que</option>
-                      </select>
-                </div>            
-              </label>
-              <label htmlFor="" className="">
-                  <input type="text" id="" name="newVariableDescription" placeholder="Add value"/>        
-              </label>
-              <label htmlFor="" className="">
-                  <div className="cm-c-select-icon">
-                      <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'100px'}}>
-                          <option value=""></option>
-                          </select>
-                  </div>            
-              </label> 
-              <button className="cm-o-icon-button-small--secondary" id="addBonusVariable"><span className="material-symbols-outlined">add</span></button>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-              <div className="cm-c-select-icon" style={{width:'156px',maxWidth:'156px'}}>
-                <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" >
-                    <option value="1">Y</option>
-                    <option value="2">O</option>
-                    </select>
-              </div> 
-              <label htmlFor="" className="">
-                  <div className="cm-c-select-icon">
-                      <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'100px'}}>
-                          <option value=""></option>
-                          </select>
-                  </div>            
-              </label> 
-              <label htmlFor="" className="">
-                  <div className="cm-c-select-icon">
-                      <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'200px'}}>
-                          <option value="1">Partidos jugados</option>
-                          <option value="2">Minutos jugados</option>
-                          <option value="3">Goles marcados</option>
-                          <option value="4">Goles asistidos</option>
-                          </select>
-                  </div>            
-              </label>
-              <label htmlFor="" className="">
-                  <div className="cm-c-select-icon">
-                      <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'200px'}}>
-                          <option value="1">Mayor que</option>
-                          <option value="2">Igual</option>
-                          <option value="3">Menor que</option>
-                          </select>
-                  </div>            
-              </label>
-              <label htmlFor="" className="">
-                  <input type="text" id="" name="newVariableDescription" placeholder="Add value"/>        
-              </label>
-              <label htmlFor="" className="">
-                  <div className="cm-c-select-icon">
-                      <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'100px'}}>
-                          <option value=""></option>
-                          </select>
-                  </div>            
-              </label> 
-              <button className="cm-o-icon-button-small--secondary" id="addBonusVariable"><span className="material-symbols-outlined">add</span></button>
-              <button className="cm-o-icon-button-small--secondary" id="addBonusVariable"><span className="material-symbols-outlined">delete</span></button>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-              <label htmlFor="" className="">
-                <span style={{display:'inline-block', width:'160px'}}>Importe</span>
-                <input type="text" id="" name="newVariableDescription" placeholder="Add value"/>        
-              </label>
-              <label htmlFor="" className="">
-                <div className="cm-c-select-icon">
-                    <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'200px'}}>
-                        <option value="">Tipo variable</option>
-                        <option value="1">Variable1</option>
-                        <option value="1">Variable2</option>
-                        </select>
-                </div>            
-              </label>
-              <label htmlFor="" className="">
-                  <div className="cm-c-select-icon">
-                    <select className="cm-c-select-icon__select" id="" placeholder="Condicion" name="" style={{width:'200px'}}>
-                        <option value="">Beneficiario</option>
-                        <option value="1">Jugador</option>
-                        <option value="2">Intermediario</option>
-                        <option value="3">Club origen</option>
-                        <option value="3">Club destino</option>
-                        </select>
-                  </div>            
-              </label>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-              <label htmlFor="" className="">
-                  <span style={{display:'inline-block', width:'160px'}}>Vigencia</span>
-                  <input type="date" id="" name="" placeholder="Start"/>       
-              </label>
-              <label htmlFor="" className="">
-                  <input type="date" id="" name="" placeholder="End"/>       
-              </label>
-              <label htmlFor="" className="" style={{display:'flex',gap:'8px',alignItems:'center'}}>
-                  <span>Amortizable</span>
-                  <div className="cm-c-form-simple__radio-toggle">
-                      <input type="checkbox" id="" name=""/>
-                  </div>
-              </label>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow
-                className='cm-u-centerText'>
-                <ButtonMousePrimary
-                  >Guardar</ButtonMousePrimary>
-                <ButtonMouseGhost
-                  onClick={() => setShowUploadDoc(false)}
-                  >Cancelar</ButtonMouseGhost>
-              </FormSimplePanelRow>
-          </SimpleAccordionContent>
-        );
-      }
-    }
 
   const handleFile = (e) => {
     e.preventDefault();
@@ -322,8 +580,6 @@ export default function NewPlayerPage () {
       documentos: uploadedFiles 
     }
 
-    console.log(data);
-
     const dataSent = {
       'id_intermediario': data.id_intermediario,
       'id_posicion': data.id_posicion,
@@ -351,6 +607,7 @@ export default function NewPlayerPage () {
       'valor_mercado': data.valor_mercado,
       'documentos': data.documentos,
     }
+    
 
     uploadData('players/create',dataSent);
   }
@@ -684,26 +941,49 @@ export default function NewPlayerPage () {
                       </FormSimplePanelRow>
                     </TabContent>
                     <TabContent id='variables'>
-                    <SimpleAccordion>
-                        <SimpleAccordionTrigger
-                          className='cm-u-spacer-mb-bigger'>
-                          <HeadContentTitleBar>
-                            <TitleBar__Title></TitleBar__Title>
-                            <TitleBar__Tools>
-                              <IconButtonSmallPrimary
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  setShowUploadDoc(true);
-                                }} >
-                                  <SymbolAdd />
-                              </IconButtonSmallPrimary>
-                            </TitleBar__Tools>
-                          </HeadContentTitleBar>
-                        </SimpleAccordionTrigger>
-                        {renderNewVariableLayer()}
-                      </SimpleAccordion>
-                    </TabContent>
-                    <TabContent id='documentos'>
+                       {/* Tabla Variables creadas */}
+                      <TableDataWrapper
+                        className='cm-u-spacer-mt-big'>
+                          <TableDataHeader>
+                            <TableCellLong>Variables añadidas</TableCellLong>
+                            <TableCellShort></TableCellShort>
+                          </TableDataHeader>
+                          { savedVariables?.map((item, index) => {                            
+                            return (
+                              <TableDataRow key={index}>
+                                <TableCellLong>{`Variable ${index+1}`}</TableCellLong>
+                                <TableCellMedium
+                                  className='cm-u-textRight'>
+                                  {/* <IconButtonSmallerPrimary
+                                      onClick={(indice) => {
+                                        
+                                        console.log('indice',index);
+                                        console.log(savedVariables[index]);
+                                        setEditingVarID(index);
+                                        setShowNewVariableLayer(true);
+                                      }}>
+                                    <SymbolEdit />
+                                  </IconButtonSmallerPrimary> */}
+                                <span>&nbsp;&nbsp;</span>
+                                  <IconButtonSmallerPrimary
+                                    onClick={(index) => {
+                                      console.log('borro variable');
+                                      // const newVariablesArray = [...savedVariables];
+                                      // newVariablesArray.splice(index, 1);
+                                      // console.log(newVariablesArray);
+                                      // setSavedVariables(newVariablesArray);
+                                    }}
+                                    >
+                                  <SymbolDelete />
+                                </IconButtonSmallerPrimary>
+                              </TableCellMedium>
+                            </TableDataRow>
+                            )
+                          })}
+                        </TableDataWrapper>
+                      
+
+                      {/* Acordeon crear variable */}
                       <SimpleAccordion>
                         <SimpleAccordionTrigger
                           className='cm-u-spacer-mb-bigger'>
@@ -713,15 +993,20 @@ export default function NewPlayerPage () {
                               <IconButtonSmallPrimary
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  setShowUploadDoc(true);
+                                  setShowNewVariableLayer(true);
                                 }} >
                                   <SymbolAdd />
                               </IconButtonSmallPrimary>
                             </TitleBar__Tools>
                           </HeadContentTitleBar>
                         </SimpleAccordionTrigger>
-                        {renderUploadDocsLayer()}
+                        {renderNewVariableLayer(editingVarID)}
                       </SimpleAccordion>
+                     
+
+                    </TabContent>
+                    <TabContent id='documentos'>
+                      {/* Tabla documentos añadidos */}
                       <TableDataWrapper
                         className='cm-u-spacer-mt-big'>
                           <TableDataHeader>
@@ -748,10 +1033,30 @@ export default function NewPlayerPage () {
                               );
                             })
                           }
-                      </TableDataWrapper>
-                    </TabContent>
-                  </FormTabs__ContentWrapper>
-                </FormTabs>
+                        </TableDataWrapper>
+                        {/* Acordeon añadir documentos */}
+                        <SimpleAccordion>
+                          <SimpleAccordionTrigger
+                            className='cm-u-spacer-mb-bigger'>
+                            <HeadContentTitleBar>
+                              <TitleBar__Title></TitleBar__Title>
+                              <TitleBar__Tools>
+                                <IconButtonSmallPrimary
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setShowUploadDoc(true);
+                                  }} >
+                                    <SymbolAdd />
+                                </IconButtonSmallPrimary>
+                              </TitleBar__Tools>
+                            </HeadContentTitleBar>
+                          </SimpleAccordionTrigger>
+                          {renderUploadDocsLayer()}
+                        </SimpleAccordion>
+                      
+                      </TabContent>
+                    </FormTabs__ContentWrapper>
+                  </FormTabs>
                 {error &&
                   <FormSimpleRow className='cm-u-centerText'>
                     <span className='error'>{error}</span>

@@ -19,7 +19,6 @@ export default function TopNav () {
   //evaluar account
   const account = localStorage.getItem('CMAccount');
   const parsedAccount = JSON.parse(account);
-  const token = parsedAccount.token;
   //evaluar signout
   const signOUT = localStorage.getItem('CMSign-out');
   const parsedSignOut = JSON.parse(signOUT);
@@ -36,10 +35,20 @@ export default function TopNav () {
 
   useEffect(()=> {
     if (getNotifications.responseGetData) {
-      // console.log(getNotifications.responseGetData.data.data);
-      context.setNotifications(getNotifications.responseGetData.data.data);
-      const unReadNotifs = context.notifications.filter(notif => notif.leido === false);
-      context.setUnreadNotifications(unReadNotifs.length)
+      console.log(getNotifications.responseGetData.data.status);
+
+      if (getNotifications.responseGetData.data.status == 'ok') {
+        context.setNotifications(getNotifications.responseGetData.data.data);
+        const unReadNotifs = context.notifications.filter(notif => notif.leido === false);
+        context.setUnreadNotifications(unReadNotifs.length)
+      } else if (getNotifications.responseGetData.response.status === 401) { 
+        //seteo signout y account en localStorage y context
+        const stringifiedSignOut = JSON.stringify(true);
+        localStorage.setItem('CMSign-out',stringifiedSignOut);
+        context.setSignOut(true);
+        localStorage.removeItem('CMAccount');
+        context.setAccount({});
+      }
     }
    },[getNotifications.responseGetData])
 

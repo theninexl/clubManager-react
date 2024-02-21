@@ -31,7 +31,7 @@
         color: getColor(danger);
     }
 
-    input[type=text], input[type=number], input[type=email], input[type=password], input[type=date]{
+    input[type=text], input[type=number], input[type=email], input[type=password], input[type=date], &input[type=text], &input[type=number], &input[type=email], &input[type=password], &input[type=date]{
         border:1px solid getColor(primaryLight);
         border-radius: getSize($small);
         height:calc(getSize($larger) - 4px);
@@ -238,9 +238,12 @@
     height:calc(getSize($larger) - 2px);
     display: inline-flex;
     overflow: hidden;
-    flex-grow:1;
     position:relative;
     max-width: getCols(3);
+
+    &--shorter {
+        width: getCols(2);
+    }
 
     &__select {
         -webkit-appearance: none;

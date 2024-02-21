@@ -130,6 +130,31 @@ export const LabelSelectElement = ({ children, style, className, htmlFor, labelT
   );
 } 
 
+export const LabelSelectShorterElement = ({ children, style, className, htmlFor, labelText, placeholder, value, defaultValue, handleOnChange, required, selected }) => {
+  return (
+    <label
+      htmlFor={htmlFor}
+      className={`panel-field-short ${className}`}
+      style={style} >
+      <span>{labelText}</span>
+      <div className='cm-c-select-icon cm-c-select-icon--shorter'>
+        <select
+          className='cm-c-select-icon__select'
+          name={htmlFor}
+          id={htmlFor}
+          onChange={handleOnChange}
+          placeholder={placeholder}
+          value={value}
+          defaultValue={defaultValue}
+          required={required}
+          selected={selected}>
+          { children }
+        </select>
+      </div>
+    </label>
+  );
+} 
+
 
 
 export const LabelElementToggle = ({ children, style, className, htmlFor , checked, value, handleOnChange }) => {
@@ -153,6 +178,25 @@ export const LabelElementToggle = ({ children, style, className, htmlFor , check
     </label>
   );
 } 
+
+export const SelectIconShorter = ({ children, style, id, placeholder, name, value, defaultValue, selected, handleOnChange }) => {
+  return (
+    <div className='cm-c-select-icon  cm-c-select-icon--shorter'>
+      <select
+        className='cm-c-select-icon__select'
+        style={style}
+        id={id}
+        placeholder={placeholder}
+        name={name}
+        value={value}
+        defaultValue={defaultValue}
+        selected={selected}
+        onChange={handleOnChange} >
+        { children }
+      </select>
+    </div>
+  )
+}
 
 export const SelectIcon = ({ children, style, id, placeholder, name, value, defaultValue, selected, onChange }) => {
   return (

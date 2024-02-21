@@ -310,11 +310,9 @@ strong {
 .cm-l-form-panel__row .panel-field-short {
   display: flex;
   flex-direction: row;
-  flex-grow: 1;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  margin-bottom: 8px;
 }
 .cm-l-form-panel__row .panel-field-short span:not(.material-symbols-outlined) {
   text-align: left;
@@ -333,6 +331,11 @@ strong {
   display: flex;
   flex-direction: column;
 }
+.cm-l-form-panel__row .panel-field-short--inline span:not(.material-symbols-outlined) {
+  text-align: left;
+  width: auto !important;
+}
+
 .cm-l-headtool {
   display: flex;
   flex-flow: row nowrap;
@@ -1708,7 +1711,7 @@ strong {
   -moz-osx-font-smoothing: grayscale;
   color: #F93A3A;
 }
-.cm-c-form-simple input[type=text], .cm-c-form-simple input[type=number], .cm-c-form-simple input[type=email], .cm-c-form-simple input[type=password], .cm-c-form-simple input[type=date] {
+.cm-c-form-simple input[type=text], .cm-c-form-simple input[type=number], .cm-c-form-simple input[type=email], .cm-c-form-simple input[type=password], .cm-c-form-simple input[type=date], .cm-c-form-simpleinput[type=text], .cm-c-form-simpleinput[type=number], .cm-c-form-simpleinput[type=email], .cm-c-form-simpleinput[type=password], .cm-c-form-simpleinput[type=date] {
   border: 1px solid rgba(44, 50, 95, 0.5);
   border-radius: 8px;
   height: 36px;
@@ -1723,34 +1726,34 @@ strong {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-.cm-c-form-simple input[type=text]:focus, .cm-c-form-simple input[type=text]:focus-visible, .cm-c-form-simple input[type=text]:active, .cm-c-form-simple input[type=number]:focus, .cm-c-form-simple input[type=number]:focus-visible, .cm-c-form-simple input[type=number]:active, .cm-c-form-simple input[type=email]:focus, .cm-c-form-simple input[type=email]:focus-visible, .cm-c-form-simple input[type=email]:active, .cm-c-form-simple input[type=password]:focus, .cm-c-form-simple input[type=password]:focus-visible, .cm-c-form-simple input[type=password]:active, .cm-c-form-simple input[type=date]:focus, .cm-c-form-simple input[type=date]:focus-visible, .cm-c-form-simple input[type=date]:active {
+.cm-c-form-simple input[type=text]:focus, .cm-c-form-simple input[type=text]:focus-visible, .cm-c-form-simple input[type=text]:active, .cm-c-form-simple input[type=number]:focus, .cm-c-form-simple input[type=number]:focus-visible, .cm-c-form-simple input[type=number]:active, .cm-c-form-simple input[type=email]:focus, .cm-c-form-simple input[type=email]:focus-visible, .cm-c-form-simple input[type=email]:active, .cm-c-form-simple input[type=password]:focus, .cm-c-form-simple input[type=password]:focus-visible, .cm-c-form-simple input[type=password]:active, .cm-c-form-simple input[type=date]:focus, .cm-c-form-simple input[type=date]:focus-visible, .cm-c-form-simple input[type=date]:active, .cm-c-form-simpleinput[type=text]:focus, .cm-c-form-simpleinput[type=text]:focus-visible, .cm-c-form-simpleinput[type=text]:active, .cm-c-form-simpleinput[type=number]:focus, .cm-c-form-simpleinput[type=number]:focus-visible, .cm-c-form-simpleinput[type=number]:active, .cm-c-form-simpleinput[type=email]:focus, .cm-c-form-simpleinput[type=email]:focus-visible, .cm-c-form-simpleinput[type=email]:active, .cm-c-form-simpleinput[type=password]:focus, .cm-c-form-simpleinput[type=password]:focus-visible, .cm-c-form-simpleinput[type=password]:active, .cm-c-form-simpleinput[type=date]:focus, .cm-c-form-simpleinput[type=date]:focus-visible, .cm-c-form-simpleinput[type=date]:active {
   border-color: #2C325F;
   border-width: 2px;
   outline: none;
 }
-.cm-c-form-simple input[type=text]:invalid, .cm-c-form-simple input[type=text]:focus:invalid, .cm-c-form-simple input[type=number]:invalid, .cm-c-form-simple input[type=number]:focus:invalid, .cm-c-form-simple input[type=email]:invalid, .cm-c-form-simple input[type=email]:focus:invalid, .cm-c-form-simple input[type=password]:invalid, .cm-c-form-simple input[type=password]:focus:invalid, .cm-c-form-simple input[type=date]:invalid, .cm-c-form-simple input[type=date]:focus:invalid {
+.cm-c-form-simple input[type=text]:invalid, .cm-c-form-simple input[type=text]:focus:invalid, .cm-c-form-simple input[type=number]:invalid, .cm-c-form-simple input[type=number]:focus:invalid, .cm-c-form-simple input[type=email]:invalid, .cm-c-form-simple input[type=email]:focus:invalid, .cm-c-form-simple input[type=password]:invalid, .cm-c-form-simple input[type=password]:focus:invalid, .cm-c-form-simple input[type=date]:invalid, .cm-c-form-simple input[type=date]:focus:invalid, .cm-c-form-simpleinput[type=text]:invalid, .cm-c-form-simpleinput[type=text]:focus:invalid, .cm-c-form-simpleinput[type=number]:invalid, .cm-c-form-simpleinput[type=number]:focus:invalid, .cm-c-form-simpleinput[type=email]:invalid, .cm-c-form-simpleinput[type=email]:focus:invalid, .cm-c-form-simpleinput[type=password]:invalid, .cm-c-form-simpleinput[type=password]:focus:invalid, .cm-c-form-simpleinput[type=date]:invalid, .cm-c-form-simpleinput[type=date]:focus:invalid {
   border-color: #2C325F;
   border-width: 2px;
   outline: none;
 }
-.cm-c-form-simple input[type=text]:-moz-read-only, .cm-c-form-simple input[type=number]:-moz-read-only, .cm-c-form-simple input[type=email]:-moz-read-only, .cm-c-form-simple input[type=password]:-moz-read-only, .cm-c-form-simple input[type=date]:-moz-read-only {
+.cm-c-form-simple input[type=text]:-moz-read-only, .cm-c-form-simple input[type=number]:-moz-read-only, .cm-c-form-simple input[type=email]:-moz-read-only, .cm-c-form-simple input[type=password]:-moz-read-only, .cm-c-form-simple input[type=date]:-moz-read-only, .cm-c-form-simpleinput[type=text]:-moz-read-only, .cm-c-form-simpleinput[type=number]:-moz-read-only, .cm-c-form-simpleinput[type=email]:-moz-read-only, .cm-c-form-simpleinput[type=password]:-moz-read-only, .cm-c-form-simpleinput[type=date]:-moz-read-only {
   border: 2px solid #E1E1E1;
   color: rgba(69, 69, 72, 0.5);
 }
-.cm-c-form-simple input[type=text]:read-only, .cm-c-form-simple input[type=number]:read-only, .cm-c-form-simple input[type=email]:read-only, .cm-c-form-simple input[type=password]:read-only, .cm-c-form-simple input[type=date]:read-only {
+.cm-c-form-simple input[type=text]:read-only, .cm-c-form-simple input[type=number]:read-only, .cm-c-form-simple input[type=email]:read-only, .cm-c-form-simple input[type=password]:read-only, .cm-c-form-simple input[type=date]:read-only, .cm-c-form-simpleinput[type=text]:read-only, .cm-c-form-simpleinput[type=number]:read-only, .cm-c-form-simpleinput[type=email]:read-only, .cm-c-form-simpleinput[type=password]:read-only, .cm-c-form-simpleinput[type=date]:read-only {
   border: 2px solid #E1E1E1;
   color: rgba(69, 69, 72, 0.5);
 }
-.cm-c-form-simple input[type=text]:read-only::-moz-placeholder, .cm-c-form-simple input[type=number]:read-only::-moz-placeholder, .cm-c-form-simple input[type=email]:read-only::-moz-placeholder, .cm-c-form-simple input[type=password]:read-only::-moz-placeholder, .cm-c-form-simple input[type=date]:read-only::-moz-placeholder {
+.cm-c-form-simple input[type=text]:read-only::-moz-placeholder, .cm-c-form-simple input[type=number]:read-only::-moz-placeholder, .cm-c-form-simple input[type=email]:read-only::-moz-placeholder, .cm-c-form-simple input[type=password]:read-only::-moz-placeholder, .cm-c-form-simple input[type=date]:read-only::-moz-placeholder, .cm-c-form-simpleinput[type=text]:read-only::-moz-placeholder, .cm-c-form-simpleinput[type=number]:read-only::-moz-placeholder, .cm-c-form-simpleinput[type=email]:read-only::-moz-placeholder, .cm-c-form-simpleinput[type=password]:read-only::-moz-placeholder, .cm-c-form-simpleinput[type=date]:read-only::-moz-placeholder {
   color: #E1E1E1;
 }
-.cm-c-form-simple input[type=text]:-moz-read-only::placeholder, .cm-c-form-simple input[type=number]:-moz-read-only::placeholder, .cm-c-form-simple input[type=email]:-moz-read-only::placeholder, .cm-c-form-simple input[type=password]:-moz-read-only::placeholder, .cm-c-form-simple input[type=date]:-moz-read-only::placeholder {
+.cm-c-form-simple input[type=text]:-moz-read-only::placeholder, .cm-c-form-simple input[type=number]:-moz-read-only::placeholder, .cm-c-form-simple input[type=email]:-moz-read-only::placeholder, .cm-c-form-simple input[type=password]:-moz-read-only::placeholder, .cm-c-form-simple input[type=date]:-moz-read-only::placeholder, .cm-c-form-simpleinput[type=text]:-moz-read-only::placeholder, .cm-c-form-simpleinput[type=number]:-moz-read-only::placeholder, .cm-c-form-simpleinput[type=email]:-moz-read-only::placeholder, .cm-c-form-simpleinput[type=password]:-moz-read-only::placeholder, .cm-c-form-simpleinput[type=date]:-moz-read-only::placeholder {
   color: #E1E1E1;
 }
-.cm-c-form-simple input[type=text]:read-only::placeholder, .cm-c-form-simple input[type=number]:read-only::placeholder, .cm-c-form-simple input[type=email]:read-only::placeholder, .cm-c-form-simple input[type=password]:read-only::placeholder, .cm-c-form-simple input[type=date]:read-only::placeholder {
+.cm-c-form-simple input[type=text]:read-only::placeholder, .cm-c-form-simple input[type=number]:read-only::placeholder, .cm-c-form-simple input[type=email]:read-only::placeholder, .cm-c-form-simple input[type=password]:read-only::placeholder, .cm-c-form-simple input[type=date]:read-only::placeholder, .cm-c-form-simpleinput[type=text]:read-only::placeholder, .cm-c-form-simpleinput[type=number]:read-only::placeholder, .cm-c-form-simpleinput[type=email]:read-only::placeholder, .cm-c-form-simpleinput[type=password]:read-only::placeholder, .cm-c-form-simpleinput[type=date]:read-only::placeholder {
   color: #E1E1E1;
 }
-.cm-c-form-simple input[type=text]:-internal-autofill-selected, .cm-c-form-simple input[type=number]:-internal-autofill-selected, .cm-c-form-simple input[type=email]:-internal-autofill-selected, .cm-c-form-simple input[type=password]:-internal-autofill-selected, .cm-c-form-simple input[type=date]:-internal-autofill-selected {
+.cm-c-form-simple input[type=text]:-internal-autofill-selected, .cm-c-form-simple input[type=number]:-internal-autofill-selected, .cm-c-form-simple input[type=email]:-internal-autofill-selected, .cm-c-form-simple input[type=password]:-internal-autofill-selected, .cm-c-form-simple input[type=date]:-internal-autofill-selected, .cm-c-form-simpleinput[type=text]:-internal-autofill-selected, .cm-c-form-simpleinput[type=number]:-internal-autofill-selected, .cm-c-form-simpleinput[type=email]:-internal-autofill-selected, .cm-c-form-simpleinput[type=password]:-internal-autofill-selected, .cm-c-form-simpleinput[type=date]:-internal-autofill-selected {
   background-color: #FFFFFF !important;
 }
 .cm-c-form-simple input[type=radio], .cm-c-form-simple input[type=checkbox] {
@@ -1924,9 +1927,11 @@ strong {
   height: 38px;
   display: inline-flex;
   overflow: hidden;
-  flex-grow: 1;
   position: relative;
   max-width: 256px;
+}
+.cm-c-select-icon--shorter {
+  width: 160px;
 }
 .cm-c-select-icon__select {
   -webkit-appearance: none;
