@@ -101,9 +101,10 @@ export const IconButtonSmallSecondary = ({ children, className, onClick }) => {
   );
 }
 
-export const IconButtonSmallerPrimary = ({ children, className, onClick }) => {
+export const IconButtonSmallerPrimary = ({ children, className, onClick, dataValue }) => {
   return (
-    <button 
+    <button
+      data-value={dataValue}
       className={`cm-o-icon-button-smaller--primary ${className}`}
       onClick={onClick} >
       { children }

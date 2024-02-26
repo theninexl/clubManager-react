@@ -6,8 +6,8 @@ import { AsideMenu } from "../../components/AsideMenu";
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
 import { CentralBody, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
 import { ButtonCatPrimary, ButtonCatTransparent, ButtonMouseGhost, ButtonMousePrimary, IconButtonSmallPrimary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
-import { SymbolAdd, SymbolBack, SymbolDelete } from "../../components/UI/objects/symbols";
-import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElementAssist, LabelElementToggle, LabelSelectElement, } from "../../components/UI/components/form simple/formSimple";
+import { SymbolAdd, SymbolBack, SymbolDelete, SymbolSearch } from "../../components/UI/objects/symbols";
+import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElement, LabelElementAssist, LabelElementToggle, LabelSelectElement, LabelSelectShorterElement, SelectIconShorter, } from "../../components/UI/components/form simple/formSimple";
 import { FormTabs, FormTabs__ContentWrapper, FormTabs__LinksWrapper, FormTabs__ToolBarWrapper, TabContent, TabLink } from "../../components/UI/components/formTabs/formTabs";
 import { SimpleAccordion, SimpleAccordionContent,  SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
 import { manageTabs } from "../../domUtilities/manageTabs";
@@ -77,6 +77,8 @@ export default function EditPlayerPage () {
       "valor_mercado": '',
       "nss":'',
   });
+  const [showVariable, setShowVariable] = useState(false);
+  const [activeVariable, setActiveVariable] = useState(null);
   const [savedVariables, setSavedVariables] = useState([]);
   
 
@@ -128,6 +130,322 @@ export default function EditPlayerPage () {
       setTeams(getTeams.responseGetData.data.data);
     }
   },[getTeams.responseGetData])
+
+
+  //render acordeon nueva variable
+  const renderVariableLayer = () => {
+    if (showVariable === true && activeVariable) {
+      return (
+        <>
+        <SimpleAccordionContent
+          className='cm-u-spacer-mt-large'>
+          <header className="cm-l-body-static-header--inTab" style={{marginTop:'0'}}>
+                <p className="cm-u-text-black-cat">Variable {activeVariable}</p>
+            </header>
+            {savedVariables.map(item => {
+              console.log(item);
+              return (
+                <div key={item.id_clausula}>
+                  {item.objetos.map((item,index) => {
+                    console.log(item);
+                    return (
+                      <>
+                        <FormSimplePanelRow key={index}>
+                          <LabelSelectShorterElement
+                            htmlFor='id_expresion'
+                            labelText='Expresion'
+                            >
+                              <option value=''>Expresion</option>
+                              
+                          </LabelSelectShorterElement>
+                          <SelectIconShorter
+                            name='id_expresion_operador'
+                            >
+                              <option value=''>Operador</option>
+                            <option value='='>Igual a</option>
+                            <option value='<'>Menor qué</option>
+                            <option value='>'>Mayor qué</option>
+                          </SelectIconShorter>
+                          <LabelElement
+                            htmlFor='id_expresion_valor'
+                            placeholder='introduce valor'
+                            type='text'
+                            className='cm-c-form-simple'
+                            />
+                        </FormSimplePanelRow>
+                        {item.condiciones.map((item, inex) => {
+                          return (
+                            <>
+                            <FormSimplePanelRow key={index}>
+                              <LabelSelectShorterElement
+                                htmlFor='id_condicion'
+                                labelText='Condición'
+                                >
+                                  <option value=''>Condicion</option>
+                                  
+                              </LabelSelectShorterElement>
+                              <SelectIconShorter
+                                name='id_condicion_operador'
+                                
+                                >
+                                  <option value=''>Operador</option>
+                                  <option value='='>Igual a</option>
+                                  <option value='<'>Menor qué</option>
+                                  <option value='>'>Mayor qué</option>
+                              </SelectIconShorter>
+                            </FormSimplePanelRow>
+                          </>
+                          );
+                        })}
+                      </>
+                      
+                    );
+                  })}
+                </div>
+              );
+            })}
+          {/* {savedVariables.map((item) => {
+            // const ExprComb = item.id_ExprComb;  
+            console.log(item)
+            return (
+              <div key={ExprComb} className='cm-u-spacer-mb-bigger'>
+                {(item.id_ExprComb !== 1) ?
+                    <FormSimplePanelRow>                   
+                      <LabelSelectShorterElement
+                        htmlFor='operador'
+                        labelText='Nueva expresión'
+                        value={item.operador}
+                        handleOnChange={(event) => {
+                          handleChangesOnNewVariableExpression(event,index)
+                        }} >
+                          <option value=''>Selecciona</option>
+                        <option value='y'>Y</option>
+                        <option value='o'>O</option>
+                      </LabelSelectShorterElement>
+                    </FormSimplePanelRow>
+                    : ''}
+                  <FormSimplePanelRow>
+                  <LabelSelectShorterElement
+                    htmlFor='id_expresion'
+                    labelText={(item.id_ExprComb !== 1) ?  '' : 'Expresión'}
+                    value={item.id_expresion}
+                    handleOnChange={(event) => {
+                      handleChangesOnNewVariableExpression(event,index)
+                    }}                  
+                    >
+                      <option value=''>Expresion</option>
+                      { variableCombos.expresion?.map((item) => {
+                          return (
+                            <option key={item.id} value={item.id}>{item.value}</option>
+                          );
+                      })}
+                  </LabelSelectShorterElement>
+                  <SelectIconShorter
+                    name='id_expresion_operador'
+                    value={item.id_expresion_operador}
+                    handleOnChange={(event) => {
+                      handleChangesOnNewVariableExpression(event,index)
+                    }} >
+                      <option value=''>Operador</option>
+                    <option value='='>Igual a</option>
+                    <option value='<'>Menor qué</option>
+                    <option value='>'>Mayor qué</option>
+                  </SelectIconShorter>
+                  <LabelElement
+                    htmlFor='id_expresion_valor'
+                    placeholder='introduce valor'
+                    type='text'
+                    className='cm-c-form-simple'
+                    value={item.id_expresion_valor}
+                    handleOnChange={(event) => {
+                      handleChangesOnNewVariableExpression(event,index)
+                    }} /> 
+                  {(item.id_ExprComb !== 1) ?                   
+                    <IconButtonSmallSecondary
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDeleteNewVariableExpression(index);
+                      }} >
+                        <SymbolDelete />
+                    </IconButtonSmallSecondary>
+                    : ''}
+                  {index+1 == variableExpressions.length ?                   
+                    <IconButtonSmallSecondary
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleAddNewVariableExpression(ExprComb+1);
+                      }} >
+                        <SymbolAdd />
+                    </IconButtonSmallSecondary>
+                    : ''}
+                </FormSimplePanelRow>
+                { variableExpressions[index].condiciones.map((item, index2) => {
+                  return(
+                    <>
+                      <FormSimplePanelRow key={index2}>
+                        <LabelSelectShorterElement
+                          htmlFor='id_condicion'
+                          labelText='Condición'
+                          value={variableExpressions[index].condiciones[index2].id_condicion || ''}
+                          handleOnChange={(e) => {
+                            let onChangeValue = [...variableExpressions];
+                            onChangeValue[index]["condiciones"][index2]["id_condicion"] = e.target.value;
+                            setVariableExpressions(onChangeValue);                            
+                          }}
+                          >
+                            <option value=''>Condicion</option>
+                            { variableCombos.condition?.map((item) => {
+                                return (
+                                  <option key={item.id} value={item.id}>{item.value}</option>
+                                );
+                            })}
+                        </LabelSelectShorterElement>
+                        <SelectIconShorter
+                          name='id_condicion_operador'
+                          value={variableExpressions[index].condiciones[index2].id_condicion_operador || ''}
+                          handleOnChange={(e) => {
+                            let onChangeValue = [...variableExpressions];
+                            onChangeValue[index]["condiciones"][index2]["id_condicion_operador"] = e.target.value;
+                            setVariableExpressions(onChangeValue);                            
+                          }}
+                          >
+                            <option value=''>Operador</option>
+                            <option value='='>Igual a</option>
+                            <option value='<'>Menor qué</option>
+                            <option value='>'>Mayor qué</option>
+                        </SelectIconShorter>
+                        {renderConditionValueField(variableExpressions[index].condiciones[index2].id_condicion, index, index2)}
+
+                        {(index2 !== 0) ?                   
+                          <IconButtonSmallSecondary
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleDeleteNewCond(index, index2);
+                            }} >
+                              <SymbolDelete />
+                          </IconButtonSmallSecondary>
+                        : ''}
+                        {index2+1 == variableExpressions[index].condiciones.length ?                   
+                          <IconButtonSmallSecondary
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleAddNewCond(index, index2+1);
+                            }} >
+                              <SymbolAdd />
+                          </IconButtonSmallSecondary>
+                        : ''}
+                      </FormSimplePanelRow>
+                    </>
+                  )
+                })}
+                </div>
+            );
+          })} */}
+          {/* <FormSimplePanelRow>
+            <LabelSelectElement
+              htmlFor='idCompetition'
+              labelText='Competición'>
+              <option value=''>Selecciona</option>
+              { variableCombos.competition?.map((item) => {
+                    return (
+                      <option key={item.id} value={item.id}>{item.value}</option>
+                    );
+                })}
+            </LabelSelectElement>
+          </FormSimplePanelRow>
+          <FormSimplePanelRow>
+            <LabelSelectElement
+              htmlFor='idStage'
+              labelText='Fase'>
+              <option value=''>Selecciona</option>
+              { variableCombos.stage?.map((item) => {
+                    return (
+                      <option key={item.id} value={item.id}>{item.value}</option>
+                    );
+                })}
+            </LabelSelectElement>
+          </FormSimplePanelRow>
+          <FormSimplePanelRow>
+            <LabelElementAssist
+              htmlFor='variableAmount'
+              placeholder='introduce valor'
+              type='text'
+              className='panel-field-long'>
+                Importe
+              </LabelElementAssist> 
+          </FormSimplePanelRow>
+          <FormSimplePanelRow>
+            <LabelSelectElement
+              htmlFor='variableType'
+              labelText='Tipo variable'>
+                <option value=''>Selecciona</option>
+                <option value='1'>Variable 1</option>
+                <option value='2'>Variable 2</option>
+              </LabelSelectElement> 
+          </FormSimplePanelRow>
+          <FormSimplePanelRow>
+            <LabelSelectElement
+              htmlFor='variableBeneficiary'
+              labelText='Beneficiario'>
+                <option value=''>Selecciona</option>
+                <option value='1'>Beneficiario 1</option>
+                <option value='2'>Beneficiario 2</option>
+              </LabelSelectElement> 
+          </FormSimplePanelRow>
+          <FormSimplePanelRow>
+            <LabelSelectElement
+              htmlFor='idSeason'
+              labelText='Temporada'>
+              <option value=''>Selecciona</option>
+              { variableCombos.season?.map((item,index) => {
+                    return (
+                      <option key={item.id} value={item.id}>{item.value}</option>
+                    );
+                })}
+            </LabelSelectElement>
+          </FormSimplePanelRow>
+          <FormSimplePanelRow>
+            <LabelElement
+              htmlFor='dateSince'
+              type='date'
+              className='panel-field-short'>
+              Vigencia desde
+            </LabelElement>
+            <LabelElement
+              htmlFor='dateTo'
+              type='date'
+              className='panel-field-short panel-field-short--inline'>
+              hasta
+            </LabelElement>
+          </FormSimplePanelRow>
+          <FormSimplePanelRow>
+            <LabelElementToggle
+                htmlFor='amortizable' >
+                Amortizable
+              </LabelElementToggle>
+            </FormSimplePanelRow> */}
+          <FormSimplePanelRow
+            className='cm-u-centerText'>
+            <ButtonMousePrimary
+              onClick={() => {
+                console.log('borro variable');
+                // const newVariablesArray = [...savedVariables];
+                // newVariablesArray.splice(index, 1);
+                // console.log(newVariablesArray);
+                // setSavedVariables(newVariablesArray);
+              }}
+              >Borrar</ButtonMousePrimary>
+            <ButtonMouseGhost
+              onClick={() => {
+                setShowVariable(false);
+              }}
+              >Cancelar</ButtonMouseGhost>
+          </FormSimplePanelRow>
+        </SimpleAccordionContent>
+        </>
+      );     
+    }
+  }
 
   //render acordeon upload docs
   const renderUploadDocsLayer = () => {
@@ -183,6 +501,7 @@ export default function EditPlayerPage () {
 
     const playerComunitarioVal = document.getElementById('playerComunitario').checked;
     const playerResidenciaVal = document.getElementById('playerResidencia').checked;
+    const savedVariablesInState = savedVariables;
 
     const data = {
       id_intermediario: formData.get('playerIntermediary') || '',
@@ -209,6 +528,7 @@ export default function EditPlayerPage () {
       peso: formData.get('playerWeight') || '',
       altura: formData.get('playerHeight') || '',
       valor_mercado: formData.get('playerMarketValue') || '',
+      savedVariables: savedVariablesInState,
       documentos: uploadedFiles 
     }
 
@@ -239,6 +559,7 @@ export default function EditPlayerPage () {
       'valor_mercado': data.valor_mercado,
       'documentos': data.documentos || [],
     }
+    console.log(dataSent);
     updatePlayer.uploadData('players/edit',dataSent);
 
     // Api.call.post('players/edit',dataSent,{ headers:headers })
@@ -721,30 +1042,33 @@ export default function EditPlayerPage () {
                             <TableCellShort></TableCellShort>
                           </TableDataHeader>
                           
-                          { savedVariables?.map((item, index) => {   
-                            console.log(item);                         
+                          { savedVariables?.map((item) => {   
+                            const idClausula = item.id_clausula;
                             return (
-                              <TableDataRow key={index}>
-                                <TableCellLong>{`Variable ${index+1}`}</TableCellLong>
+                              <TableDataRow key={idClausula}>
+                                <TableCellLong>{`Variable ${idClausula}`}</TableCellLong>
                                 <TableCellMedium
                                   className='cm-u-textRight'>
                                 <span>&nbsp;&nbsp;</span>
                                   <IconButtonSmallerPrimary
-                                    onClick={(index) => {
-                                      // console.log('borro variable');
-                                      const newVariablesArray = [...savedVariables];
-                                      newVariablesArray.splice(index, 1);
-                                      console.log(newVariablesArray);
-                                      setSavedVariables(newVariablesArray);
+                                    dataValue={idClausula}
+                                    onClick={(event) => {
+                                      event.preventDefault();
+                                      setActiveVariable(idClausula);                                    
+                                      setShowVariable(true);
                                     }}
                                     >
-                                  <SymbolDelete />
+                                  <SymbolSearch />
                                 </IconButtonSmallerPrimary>
                               </TableCellMedium>
                             </TableDataRow>
                             )
                           })}
-                        </TableDataWrapper>                     
+                        </TableDataWrapper>  
+
+
+                        {/* Acordeon ver variable jugador */}
+                        {renderVariableLayer()}                  
 
                     </TabContent>
                     <TabContent id='documentos'>

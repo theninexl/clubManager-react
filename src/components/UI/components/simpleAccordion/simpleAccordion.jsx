@@ -24,10 +24,10 @@ export const SimpleAccordionLink = ({ children, className, target }) => {
   );
 }
 
-export const SimpleAccordionContent = ({ children,id}) => {
+export const SimpleAccordionContent = ({ children, className, id}) => {
   return (
     <div 
-      className={`cm-c-simpleAccordion__content accordionContent`}
+      className={`cm-c-simpleAccordion__content accordionContent ${className}`}
       id={id} >
       { children }
     </div>
