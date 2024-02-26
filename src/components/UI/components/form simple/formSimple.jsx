@@ -130,7 +130,7 @@ export const LabelSelectElement = ({ children, style, className, htmlFor, labelT
   );
 } 
 
-export const LabelSelectShorterElement = ({ children, style, className, htmlFor, labelText, placeholder, value, defaultValue, handleOnChange, required, selected }) => {
+export const LabelSelectShorterElement = ({ children, style, className, htmlFor, labelText, placeholder, value, defaultValue, handleOnChange, required, selected, disabled }) => {
   return (
     <label
       htmlFor={htmlFor}
@@ -147,7 +147,8 @@ export const LabelSelectShorterElement = ({ children, style, className, htmlFor,
           value={value}
           defaultValue={defaultValue}
           required={required}
-          selected={selected}>
+          selected={selected}
+          disabled={disabled}>
           { children }
         </select>
       </div>
@@ -173,13 +174,14 @@ export const LabelElementToggle = ({ children, style, className, htmlFor , check
             id={htmlFor}
             onChange={handleOnChange}
             value={value}
-            checked={checked}/>
+            checked={checked}
+            />
         </div>
     </label>
   );
 } 
 
-export const SelectIconShorter = ({ children, style, id, placeholder, name, value, defaultValue, selected, handleOnChange }) => {
+export const SelectIconShorter = ({ children, style, id, placeholder, name, value, defaultValue, selected, handleOnChange, disabled }) => {
   return (
     <div className='cm-c-select-icon  cm-c-select-icon--shorter'>
       <select
@@ -191,14 +193,15 @@ export const SelectIconShorter = ({ children, style, id, placeholder, name, valu
         value={value}
         defaultValue={defaultValue}
         selected={selected}
-        onChange={handleOnChange} >
+        onChange={handleOnChange}
+        disabled={disabled} >
         { children }
       </select>
     </div>
   )
 }
 
-export const SelectIcon = ({ children, style, id, placeholder, name, value, defaultValue, selected, onChange }) => {
+export const SelectIcon = ({ children, style, id, placeholder, name, value, defaultValue, selected, onChange, disabled }) => {
   return (
     <div className='cm-c-select-icon'>
       <select
@@ -210,7 +213,8 @@ export const SelectIcon = ({ children, style, id, placeholder, name, value, defa
         value={value}
         defaultValue={defaultValue}
         selected={selected}
-        onChange={onChange} >
+        onChange={onChange}
+        disabled={disabled} >
         { children }
       </select>
     </div>
