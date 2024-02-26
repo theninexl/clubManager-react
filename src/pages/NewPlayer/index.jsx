@@ -43,7 +43,7 @@ export default function NewPlayerPage () {
   //donde guardo la info de los posibles combos de cada combinacion Exprexion+Condiciones
   const [variableCombos, setVariableCombos] = useState([]);
   //array para guardar las nuevas expresiones añadidas a cada variable
-  const [variableExpressions, setVariableExpressions] = useState([{id_ExprComb:1,id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
+  const [variableExpressions, setVariableExpressions] = useState([{id_ExprComb:1,id_expresion:'',id_expresion_operador:'',id_expresion_valor:'', operador:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
   //array para guardar las nuevas condiones añadidas a cada expresion
   // const [variableConditions, setVariableConditions] = useState([]);
   //tipo de condicion escogida
@@ -113,9 +113,9 @@ export default function NewPlayerPage () {
     setVariableExpressions(newExpressionsArray);
   }
 
-  useEffect(()=>{
-    console.log('variableExpressions', variableExpressions);
-  },[variableExpressions]);
+  // useEffect(()=>{
+  //   console.log('variableExpressions', variableExpressions);
+  // },[variableExpressions]);
   
 
   //añadir nueva condicion al crear variable
@@ -212,13 +212,28 @@ export default function NewPlayerPage () {
                 <p className="cm-u-text-black-cat">Añadir nueva variable</p>
             </header>
           {variableExpressions.map((item,index) => {
-            const ExprComb = item.id_ExprComb;          
+            const ExprComb = item.id_ExprComb;  
             return (
               <div key={ExprComb} className='cm-u-spacer-mb-bigger'>
-                <FormSimplePanelRow>
+                {(item.id_ExprComb !== 1) ?
+                    <FormSimplePanelRow>                   
+                      <LabelSelectShorterElement
+                        htmlFor='operador'
+                        labelText='Nueva expresión'
+                        value={item.operador}
+                        handleOnChange={(event) => {
+                          handleChangesOnNewVariableExpression(event,index)
+                        }} >
+                          <option value=''>Selecciona</option>
+                        <option value='y'>Y</option>
+                        <option value='o'>O</option>
+                      </LabelSelectShorterElement>
+                    </FormSimplePanelRow>
+                    : ''}
+                  <FormSimplePanelRow>
                   <LabelSelectShorterElement
                     htmlFor='id_expresion'
-                    labelText='Expresión'
+                    labelText={(item.id_ExprComb !== 1) ?  '' : 'Expresión'}
                     value={item.id_expresion}
                     handleOnChange={(event) => {
                       handleChangesOnNewVariableExpression(event,index)
@@ -281,7 +296,6 @@ export default function NewPlayerPage () {
                           handleOnChange={(e) => {
                             let onChangeValue = [...variableExpressions];
                             onChangeValue[index]["condiciones"][index2]["id_condicion"] = e.target.value;
-                            console.log(onChangeValue);
                             setVariableExpressions(onChangeValue);                            
                           }}
                           >
@@ -298,7 +312,6 @@ export default function NewPlayerPage () {
                           handleOnChange={(e) => {
                             let onChangeValue = [...variableExpressions];
                             onChangeValue[index]["condiciones"][index2]["id_condicion_operador"] = e.target.value;
-                            console.log(onChangeValue);
                             setVariableExpressions(onChangeValue);                            
                           }}
                           >
@@ -583,6 +596,7 @@ export default function NewPlayerPage () {
       'documentos': data.documentos,
     }
     
+    console.log(dataSent);
 
     uploadData('players/create',dataSent);
   }

@@ -91,9 +91,15 @@ export default function EditPlayerPage () {
       console.log(getPlayerDetail.responseGetData.data);
       setPlayerData(getPlayerDetail.responseGetData.data?.jugador[0])
       setUploadedFiles(getPlayerDetail.responseGetData.data?.documentos[0])
-      // setSavedVariables(getPlayerDetail.responseGetData.data?.variables[0])
+      setSavedVariables(getPlayerDetail.responseGetData.data?.variables)
     }
-  },[getPlayerDetail.responseGetData])    
+  },[getPlayerDetail.responseGetData])
+
+  useEffect(()=>{
+    if(savedVariables){
+      console.log(savedVariables);
+    }
+  },[savedVariables])
 
   //pedir paises, posiciones, contratos, intermediarios y equipos
   const getCountries = useGetData('masters/getAllCountry');
@@ -119,7 +125,6 @@ export default function EditPlayerPage () {
   const getTeams = useGetData('teams/getAll');
   useEffect (() => {
     if (getTeams.responseGetData) {
-      console.log(getTeams.responseGetData.data.data);
       setTeams(getTeams.responseGetData.data.data);
     }
   },[getTeams.responseGetData])
@@ -715,7 +720,9 @@ export default function EditPlayerPage () {
                             <TableCellLong>Variables añadidas</TableCellLong>
                             <TableCellShort></TableCellShort>
                           </TableDataHeader>
-                          { savedVariables?.map((item, index) => {                            
+                          
+                          { savedVariables?.map((item, index) => {   
+                            console.log(item);                         
                             return (
                               <TableDataRow key={index}>
                                 <TableCellLong>{`Variable ${index+1}`}</TableCellLong>
