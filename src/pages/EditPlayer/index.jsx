@@ -88,7 +88,7 @@ export default function EditPlayerPage () {
   //mostrar/ocultar capa de nueva variable
   const [showNewVariableLayer, setShowNewVariableLayer ] = useState(false);
    //array para guardar las nuevas expresiones añadidas a cada variable
-   const [variableExpressions, setVariableExpressions] = useState([{id_ExprComb:1,id_expresion:'',id_expresion_operador:'',id_expresion_valor:'', operador:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
+   const [variableExpressions, setVariableExpressions] = useState([{id_ExprComb:1,id_expresion_concatenacion:'',id_expresion:'',id_expresion_operador:'',id_expresion_valor:null,condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
  
   
 
@@ -141,17 +141,17 @@ export default function EditPlayerPage () {
     }
   },[getTeams.responseGetData])
 
-    //pedir combos creación de variables
-    const getNewVariableCombos = useGetData('players/getCombosValues');
-    useEffect (() => {
-      if (getNewVariableCombos.responseGetData) {
-        setVariableCombos(getNewVariableCombos.responseGetData.data.data);
-      }
-    },[getNewVariableCombos.responseGetData])
+  //pedir combos creación de variables
+  const getNewVariableCombos = useGetData('players/getCombosValues');
+  useEffect (() => {
+    if (getNewVariableCombos.responseGetData) {
+      setVariableCombos(getNewVariableCombos.responseGetData.data.data);
+    }
+  },[getNewVariableCombos.responseGetData])
 
   //añadir una nueva expresion completa a la variable
   const handleAddNewVariableExpression = (number) => {
-    setVariableExpressions([...variableExpressions, {id_ExprComb:number, id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]) 
+    setVariableExpressions([...variableExpressions, {id_ExprComb:number, id_expresion_concatenacion:'', id_expresion:'',id_expresion_operador:'',id_expresion_tipo:'',id_expresion_valor:null,condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]) 
    }
  
    //manejar cambios en los campos de la expresion
@@ -203,7 +203,7 @@ export default function EditPlayerPage () {
           <LabelElement
           htmlFor='id_condicion_valor'
           placeholder='introduce valor'
-          type='text'
+          type='number'
           className='cm-c-form-simple'
           value={variableExpressions[indexExpr]?.condiciones[indexCond]?.id_condicion_valor || ''}
           handleOnChange={(e) => {
@@ -243,142 +243,172 @@ export default function EditPlayerPage () {
     }
   }
 
-  //render acordeon nueva variable
+  //render acordeon variable existente
   const renderVariableLayer = () => {
-    if (showVariable === true && activeVariable) {
+    if (showVariable === true ) {
+      console.log('savedVariables',savedVariables);
+      console.log('activeVariable',activeVariable);
       return (
         <>
         <SimpleAccordionContent
           className='cm-u-spacer-mt-large'>
           <header className="cm-l-body-static-header--inTab" style={{marginTop:'0'}}>
-                <p className="cm-u-text-black-cat">Variable {activeVariable}</p>
-            </header>
-            {savedVariables.map(item => {
-              console.log("savedVariables",item);
-              console.log('variableCombos', variableCombos);
+            <p className="cm-u-text-black-cat">Variable {`${activeVariable+1}`}</p>
+          </header>
+          
+            {savedVariables[activeVariable].expresiones.map((item,index) => {
               return (
-                <div key={item.id_clausula}>
-                  {item.objetos.map((item,index) => {
-                    console.log("objeto", item);
-                    console.log("id expresion", item.expresion[0].id_expresion)
-                    return (
-                      <>
-                        <div key={index} className='cm-u-spacer-mb-bigger'>
-                          {item.expresion[0].expresion_concatenacion !== '' ? 
-                            <FormSimplePanelRow>
-                              <LabelSelectShorterElement
-                                htmlFor='expresion_concatenacion'
-                                labelText='Expresion'
-                                value={item.expresion[0].expresion_concatenacion}
-                                disabled='disabled'
-                                >
-                                  <option value=''>Selecciona</option>
-                                  <option value='y'>Y</option>
-                                  <option value='o'>O</option>
-                                  
-                              </LabelSelectShorterElement>
-                            </FormSimplePanelRow>
-                            :
-                            ''
-                            }
-                          <FormSimplePanelRow>
+                <>
+                  <div className='cm-u-spacer-mb-bigger'>
+                    {item.id_expresion_concatenacion !== '' ? 
+                      <FormSimplePanelRow>                   
+                        <LabelSelectShorterElement
+                          htmlFor='id_expresion_concatenacion'
+                          labelText='Nueva expresión'
+                          disabled='disabled'
+                          value={item.id_expresion_concatenacion}
+                          >
+                            <option value={item.id_expresion_concatenacion} selected='selected'>{item.id_expresion_concatenacion}</option>
+                        </LabelSelectShorterElement>
+                      </FormSimplePanelRow>
+                      :
+                      ''}
+                    <FormSimplePanelRow>
+                      <LabelSelectShorterElement
+                        htmlFor='id_expresion'
+                        labelText='Expresión'
+                        disabled='disabled'
+                        value={item.id_expresion}             
+                        >
+                          <option value={item.id_expresion} selected='selected'>{item.id_expresion}</option>
+                      </LabelSelectShorterElement>
+                      <SelectIconShorter
+                        name='id_expresion_operador'
+                        value={item.id_expresion_operador}
+                        disabled='disabled'>
+                          <option value={item.id_expresion_operador} selected='selected'>{item.id_expresion_operador}</option>
+                      </SelectIconShorter>
+                      <LabelElement
+                        htmlFor='id_expresion_valor'
+                        placeholder='introduce valor'
+                        type='number'
+                        className='cm-c-form-simple'
+                        disabled='disabled'
+                        value={item.id_expresion_valor}
+                        /> 
+                    </FormSimplePanelRow>
+                    {item.condiciones.map((condicion, index2) => {
+                      return(
+                        <>
+                          <FormSimplePanelRow key={index2}>
                             <LabelSelectShorterElement
-                              htmlFor='id_expresion'
-                              labelText={item.expresion[0].expresion_concatenacion !== '' ? '' : 'Expresion'}
-                              value={item.expresion[0].id_expresion}
+                              htmlFor='id_condicion'
+                              labelText='Condición'
                               disabled='disabled'
+                              value={condicion.id_condicion}
                               >
-                                <option value=''>Expresion</option>
-                                { variableCombos.expresion?.map((item) => {
-                                    return (
-                                      <option key={item.id} value={item.id}>{item.value}</option>
-                                    );
-                                })}
-                                
+                                <option value={condicion.id_condicion} selected='selected'>{condicion.id_condicion}</option>
                             </LabelSelectShorterElement>
                             <SelectIconShorter
-                              name='id_expresion_operador'
-                              value={item.expresion[0].expresion_operador}
-                              disabled='disabled'
+                              name='id_condicion_operador'
+                              value={condicion.id_condicion_operador}
                               >
-                                <option value=''>Operador</option>
-                              <option value='='>Igual a</option>
-                              <option value='<'>Menor qué</option>
-                              <option value='>'>Mayor qué</option>
+                                <option value={condicion.id_condicion_operador} selected='selected'>{condicion.id_condicion_operador}</option>
                             </SelectIconShorter>
-                            <LabelElement
-                              htmlFor='id_expresion_valor'
-                              placeholder='introduce valor'
-                              type='text'
-                              className='cm-c-form-simple'
-                              readOnly='readonly'
-                              value={item.expresion[0].expresion_valor}
-                              />
-                          </FormSimplePanelRow>
-                          {item.condiciones.map((item, inex) => {
-                            console.log("condicion",item);
-                            return (
-                              <>
-                              <FormSimplePanelRow key={index}>
-                                <LabelSelectShorterElement
-                                  htmlFor='id_condicion'
-                                  labelText='Condición'
-                                  value={item.id_condicion}
-                                  disabled='disabled'
-                                  >
-                                    <option value=''>Condicion</option>
-                                    { variableCombos.condition?.map((item) => {
-                                    return (
-                                      <option key={item.id} value={item.id}>{item.value}</option>
-                                    );
-                                })}
-                                    
-                                </LabelSelectShorterElement>
+                            {condicion.id_condicion_tipo === 'texto' ?
+                              <LabelElement
+                                htmlFor='id_condicion_valor'
+                                placeholder='introduce valor'
+                                type='text'
+                                className='cm-c-form-simple'
+                                value={condicion.id_condicion_valor}
+                                disabled='disabled'
+                                />
+                                :
                                 <SelectIconShorter
-                                  name='id_condicion_operador'
-                                  value={item.condicion_operador}
+                                  name='id_condicion_valor'
+                                  value={condicion.id_condicion_valor}
                                   disabled='disabled'
                                   >
-                                    <option value=''>Operador</option>
-                                    <option value='='>Igual a</option>
-                                    <option value='<'>Menor qué</option>
-                                    <option value='>'>Mayor qué</option>
-                                </SelectIconShorter>
-                                {item.condicion_tipo === 'texto' ? 
-                                  <LabelElement
-                                    htmlFor='condicion_valor'
-                                    type='text'
-                                    className='cm-c-form-simple'
-                                    readOnly='readonly'
-                                    value={item.condicion_valor}
-                                    />
-                                  :
-                                  <LabelSelectShorterElement
-                                    htmlFor='condicion_valor'
-                                    value={item.condicion_valor}
-                                    disabled='disabled'
-                                    >
-                                      <option value=''>Condicion</option>
-                                      { variableCombos.condition?.map((item) => {
-                                      return (
-                                        <option key={item.id} value={item.id}>{item.value}</option>
-                                      );
-                                  })}
-                                      
-                                  </LabelSelectShorterElement>
-                                }
-                              </FormSimplePanelRow>
-                            </>
-                            );
-                          })}
-                        </div>
-                      </>
-                      
-                    );
-                  })}
-                </div>
+                                  <option value={condicion.id_condicion_valor} selected='selected'>{condicion.id_condicion_valor}</option>
+                                </SelectIconShorter>  
+                            }
+                            
+                          </FormSimplePanelRow>
+                        </>
+                      )
+                    })}
+                  </div>
+                </>
+                
               );
             })}
+            <FormSimplePanelRow>
+              <LabelElement
+                htmlFor='bloque'
+                placeholder='introduce bloque'
+                type='number'
+                className='panel-field-long'
+                value={savedVariables[activeVariable].bloque}
+                disabled='disabled'
+                >Bloque 
+              </LabelElement> 
+              <LabelSelectElement
+                htmlFor='tipo_importe'
+                labelText='Tipo importe'
+                value={savedVariables[activeVariable].tipo_importe}
+                disabled='diabled'
+                >
+                  <option value={savedVariables[activeVariable].tipo_importe} selected='selected'>{savedVariables[activeVariable].tipo_importe}</option>
+              </LabelSelectElement>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='variableAmount'
+                placeholder='introduce valor'
+                type='number'
+                className='panel-field-long'
+                value={savedVariables[activeVariable].importe}
+                disabled='disabled'>
+                  Importe
+                </LabelElementAssist> 
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelSelectElement
+                htmlFor='variableBeneficiary'
+                labelText='Beneficiario'
+                disabled='disabled'
+                value={savedVariables[activeVariable].nombre || savedVariables[activeVariable].id_beneficiario}>
+                  <option value={savedVariables[activeVariable].nombre || savedVariables[activeVariable].id_beneficiario} selected='selected'>{savedVariables[activeVariable].nombre || savedVariables[activeVariable].id_beneficiario}</option>
+              </LabelSelectElement>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElement
+                htmlFor='dateSince'
+                type='date'
+                className='panel-field-short'
+                disabled='disabled'
+                value={savedVariables[activeVariable].fecha_desde}>
+                Vigencia desde
+              </LabelElement>
+              <LabelElement
+                htmlFor='dateTo'
+                type='date'
+                className='panel-field-short panel-field-short--inline'
+                disabled='disabledd'
+                value={savedVariables[activeVariable].fecha_hasta}>
+                hasta
+              </LabelElement>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementToggle
+                  htmlFor='amortizable'
+                  checked={savedVariables[activeVariable].amortizable === 1 ? 'checked' : ''}
+                  disabled='disabled'>
+                  Amortizable
+              </LabelElementToggle>
+            </FormSimplePanelRow>
+          
           
           <FormSimplePanelRow
             className='cm-u-centerText'>
@@ -402,6 +432,7 @@ export default function EditPlayerPage () {
         </>
       );     
     }
+    
   }
 
   //render acordeon nueva variable
@@ -421,9 +452,9 @@ export default function EditPlayerPage () {
                 {(item.id_ExprComb !== 1) ?
                     <FormSimplePanelRow>                   
                       <LabelSelectShorterElement
-                        htmlFor='operador'
+                        htmlFor='id_expresion_concatenacion'
                         labelText='Nueva expresión'
-                        value={item.operador}
+                        value={item.id_expresion_concatenacion}
                         handleOnChange={(event) => {
                           handleChangesOnNewVariableExpression(event,index)
                         }} >
@@ -463,7 +494,7 @@ export default function EditPlayerPage () {
                   <LabelElement
                     htmlFor='id_expresion_valor'
                     placeholder='introduce valor'
-                    type='text'
+                    type='number'
                     className='cm-c-form-simple'
                     value={item.id_expresion_valor}
                     handleOnChange={(event) => {
@@ -551,64 +582,38 @@ export default function EditPlayerPage () {
             );
           })}
           <FormSimplePanelRow>
+            <LabelElement
+              htmlFor='bloque'
+              placeholder='introduce bloque'
+              type='number'
+              className='panel-field-long'
+              >Bloque 
+            </LabelElement> 
             <LabelSelectElement
-              htmlFor='idCompetition'
-              labelText='Competición'>
+              htmlFor='tipo_importe'
+              labelText='Tipo importe'>
               <option value=''>Selecciona</option>
-              { variableCombos.competition?.map((item) => {
-                    return (
-                      <option key={item.id} value={item.id}>{item.value}</option>
-                    );
-                })}
-            </LabelSelectElement>
-          </FormSimplePanelRow>
-          <FormSimplePanelRow>
-            <LabelSelectElement
-              htmlFor='idStage'
-              labelText='Fase'>
-              <option value=''>Selecciona</option>
-              { variableCombos.stage?.map((item) => {
-                    return (
-                      <option key={item.id} value={item.id}>{item.value}</option>
-                    );
-                })}
+              <option value='A'>A</option>
+              <option value='B'>B</option>
             </LabelSelectElement>
           </FormSimplePanelRow>
           <FormSimplePanelRow>
             <LabelElementAssist
               htmlFor='variableAmount'
               placeholder='introduce valor'
-              type='text'
+              type='number'
               className='panel-field-long'>
                 Importe
               </LabelElementAssist> 
           </FormSimplePanelRow>
           <FormSimplePanelRow>
             <LabelSelectElement
-              htmlFor='variableType'
-              labelText='Tipo variable'>
-                <option value=''>Selecciona</option>
-                <option value='1'>Variable 1</option>
-                <option value='2'>Variable 2</option>
-              </LabelSelectElement> 
-          </FormSimplePanelRow>
-          <FormSimplePanelRow>
-            <LabelSelectElement
               htmlFor='variableBeneficiary'
               labelText='Beneficiario'>
-                <option value=''>Selecciona</option>
-                <option value='1'>Beneficiario 1</option>
-                <option value='2'>Beneficiario 2</option>
-              </LabelSelectElement> 
-          </FormSimplePanelRow>
-          <FormSimplePanelRow>
-            <LabelSelectElement
-              htmlFor='idSeason'
-              labelText='Temporada'>
               <option value=''>Selecciona</option>
-              { variableCombos.season?.map((item,index) => {
+              { variableCombos.beneficiarios?.map((item) => {
                     return (
-                      <option key={item.id} value={item.id}>{item.value}</option>
+                      <option key={item.id_beneficiario} value={item.id_beneficiario}>{item.nombre}</option>
                     );
                 })}
             </LabelSelectElement>
@@ -641,7 +646,7 @@ export default function EditPlayerPage () {
             <ButtonMouseGhost
               onClick={() => {
                 setShowNewVariableLayer(false);
-                setVariableExpressions([{id_ExprComb:1,id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]); 
+                setVariableExpressions([{id_ExprComb:1,id_expresion:'',id_expresion_operador:'',id_expresion_valor:null,condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]); 
               }}
               >Cancelar</ButtonMouseGhost>
           </FormSimplePanelRow>
@@ -662,21 +667,19 @@ export default function EditPlayerPage () {
 
     const data = {
       expresiones,
-      id_competicion: formData.get('idCompetition'),
-      id_fase: formData.get('idStage'),
-      id_temporada: formData.get('idSeason'),
+      bloque: parseFloat(formData.get('bloque')),
+      tipo_importe: formData.get('tipo_importe'),
       fecha_desde: formData.get('dateSince'),
       fecha_hasta: formData.get('dateTo'),
       amortizable: amortizableVal ? 1 : 0,
-      importe: formData.get('variableAmount'),
-      id_tipo_variable: formData.get('variableType'),
-      id_beneficiario: formData.get('variableBeneficiary'),
+      importe: parseFloat(formData.get('variableAmount')),
+      id_beneficiario: parseFloat(formData.get('variableBeneficiary')),
     }
 
     // console.log(data);
     setSavedVariables([...savedVariables, data]);
     setShowNewVariableLayer(false);
-    setVariableExpressions([{id_ExprComb:1,id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);   
+    setVariableExpressions([{id_ExprComb:1,id_expresion_concatenacion:'',id_expresion:'',id_expresion_operador:'',id_expresion_tipo:'',id_expresion_valor:null,condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);   
   }
 
   //render acordeon upload docs
@@ -734,12 +737,13 @@ export default function EditPlayerPage () {
     const playerComunitarioVal = document.getElementById('playerComunitario').checked;
     const playerResidenciaVal = document.getElementById('playerResidencia').checked;
     const savedVariablesInState = savedVariables;
+    const idContrato = playerData.id_contrato;
 
     const data = {
       id_intermediario: formData.get('playerIntermediary') || '',
       id_posicion: formData.get('playerPosition') || '',
       id_club_origen: formData.get('playerTeamOrigin') || '',
-      id_contrato: formData.get('playerContract') || '',
+      // id_contrato: formData.get('playerContract') || '',
       nombre: formData.get('playerName') || '',
       apellido1: formData.get('playerLastname1') || '',
       apellido2: formData.get('playerLastname2') || '',
@@ -769,6 +773,7 @@ export default function EditPlayerPage () {
       'id_intermediario': data.id_intermediario,
       'id_posicion': data.id_posicion,
       'id_club_origen': data.id_club_origen,
+      'id_contrato':idContrato,
       'nombre': data.nombre,
       'apellido1': data.apellido1,
       'apellido2': data.apellido2,
@@ -789,19 +794,11 @@ export default function EditPlayerPage () {
       'peso': data.peso,
       'altura': data.altura,
       'valor_mercado': data.valor_mercado,
+      'variables':data.savedVariables,
       'documentos': data.documentos || [],
     }
     console.log(dataSent);
     updatePlayer.uploadData('players/edit',dataSent);
-
-    // Api.call.post('players/edit',dataSent,{ headers:headers })
-    //     .then (res => {
-    //       console.log(res);
-    //       // navigate('/manage-team');
-    //     }).catch(err => {
-    //       if (err.code === 'ERR_NETWORK') setError('Error en la base de datos, inténtelo más tarde')
-    //       else setError('Error al realizar la solicitud')
-    //     })
   }
 
   //mirar la respuesta de subir datos para setear error
@@ -925,6 +922,7 @@ export default function EditPlayerPage () {
                           autoComplete='off'
                           placeholder='Nombre'
                           required='required'
+                          assistanceText='Este campo es obligatorio'
                           value={playerData.nombre}
                           handleOnChange={e => {setPlayerData({...playerData, nombre: e.target.value})}}
                           >
@@ -939,6 +937,7 @@ export default function EditPlayerPage () {
                           autoComplete='off'
                           placeholder='Apellido'
                           required='required'
+                          assistanceText='Este campo es obligatorio'
                           value={playerData.apellido1 || ''}
                           handleOnChange={e => {setPlayerData({...playerData, apellido1: e.target.value})}}
                           >
@@ -965,7 +964,6 @@ export default function EditPlayerPage () {
                           className='panel-field-long'
                           autoComplete='off'
                           placeholder='Alias'
-                          required='required'
                           value={playerData.alias || ''}
                           handleOnChange={e => {setPlayerData({...playerData, alias: e.target.value})}}
                           >
@@ -980,7 +978,6 @@ export default function EditPlayerPage () {
                           autoComplete='off'
                           format={'yyyy-mm-dd'}
                           placeholder='dd/mm/yyyy'
-                          required='required'
                           value={playerData.fch_nacimiento}
                           handleOnChange={e => {setPlayerData({...playerData, fch_nacimiento: e.target.value})}}
                           >
@@ -1139,7 +1136,6 @@ export default function EditPlayerPage () {
                           className='panel-field-long'
                           autoComplete='off'
                           placeholder='Dorsal'
-                          required='required'
                           value={playerData.desc_dorsal || ''}
                           handleOnChange={e => {setPlayerData({...playerData, desc_dorsal: e.target.value})}}
                           >
@@ -1153,7 +1149,6 @@ export default function EditPlayerPage () {
                           className='panel-field-long'
                           autoComplete='off'
                           placeholder='Peso'
-                          required='required'
                           value={playerData.peso || ''}
                           handleOnChange={e => {setPlayerData({...playerData, peso: e.target.value})}}
                           >
@@ -1167,7 +1162,6 @@ export default function EditPlayerPage () {
                           className='panel-field-long'
                           autoComplete='off'
                           placeholder='Altura'
-                          required='required'
                           value={playerData.altura || ''}
                           handleOnChange={e => {setPlayerData({...playerData, altura: e.target.value})}}
                           >
@@ -1181,7 +1175,7 @@ export default function EditPlayerPage () {
                           className='panel-field-long'
                           autoComplete='off'
                           placeholder='Introduce euros'
-                          required='required'
+                          assistanceText='€'
                           value={playerData.valor_mercado || ''}
                           handleOnChange={e => {setPlayerData({...playerData, valor_mercado: e.target.value})}}
                           >
@@ -1212,7 +1206,6 @@ export default function EditPlayerPage () {
                           className='panel-field-long'
                           autoComplete='off'
                           placeholder='entidad'
-                          required='required'
                           readOnly='readonly'
                           value={playerData.desc_entidad || ''}
                           handleOnChange={e => {setPlayerData({...playerData, desc_entidad: e.target.value})}}
@@ -1227,7 +1220,6 @@ export default function EditPlayerPage () {
                           className='panel-field-long'
                           autoComplete='off'
                           placeholder='plantilla'
-                          required='required'
                           readOnly='readonly'
                           value={playerData.desc_plantilla || ''}
                           handleOnChange={e => {setPlayerData({...playerData, desc_plantilla: e.target.value})}}
@@ -1242,7 +1234,6 @@ export default function EditPlayerPage () {
                           className='panel-field-long'
                           autoComplete='off'
                           placeholder='salario'
-                          required='required'
                           readOnly='readonly'
                           value={playerData.imp_salario_total || ''}
                           handleOnChange={e => {setPlayerData({...playerData, imp_salario_total: e.target.value})}}
@@ -1274,19 +1265,21 @@ export default function EditPlayerPage () {
                             <TableCellShort></TableCellShort>
                           </TableDataHeader>
                           
-                          { savedVariables?.map((item) => {   
-                            const idClausula = item.id_clausula;
+                          { savedVariables?.map((item, index) => {   
+                            // const idClausula = item.id_clausula;
                             return (
-                              <TableDataRow key={idClausula}>
-                                <TableCellLong>{`Variable ${idClausula}`}</TableCellLong>
+                              <TableDataRow key={index}>
+                                <TableCellLong>{`Variable ${index+1}`}</TableCellLong>
                                 <TableCellMedium
                                   className='cm-u-textRight'>
                                 <span>&nbsp;&nbsp;</span>
                                   <IconButtonSmallerPrimary
-                                    dataValue={idClausula}
+                                    dataValue={index}
                                     onClick={(event) => {
                                       event.preventDefault();
-                                      setActiveVariable(idClausula);                                    
+                                      console.log('click variable',index);
+                                      console.log(savedVariables);
+                                      setActiveVariable(index);                                    
                                       setShowVariable(true);
                                     }}
                                     >
@@ -1298,12 +1291,11 @@ export default function EditPlayerPage () {
                           })}
                         </TableDataWrapper>  
 
-
-                        {/* Acordeon ver variable jugador */}
+                        {/* Acordeon ver variable existente */}
                         {renderVariableLayer()}
 
                          {/* Acordeon crear variable */}
-                          {/* <SimpleAccordion>
+                          <SimpleAccordion>
                             <SimpleAccordionTrigger
                               className='cm-u-spacer-mb-bigger'>
                               <HeadContentTitleBar>
@@ -1320,7 +1312,7 @@ export default function EditPlayerPage () {
                               </HeadContentTitleBar>
                             </SimpleAccordionTrigger>
                             {renderNewVariableLayer()}
-                          </SimpleAccordion>               */}
+                          </SimpleAccordion>              
 
                     </TabContent>
                     <TabContent id='documentos'>

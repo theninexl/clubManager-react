@@ -105,7 +105,7 @@ export const LabelElementAssist = ({ children, style, className, htmlFor , type,
 }
 
 
-export const LabelSelectElement = ({ children, style, className, htmlFor, labelText, placeholder, value, defaultValue, handleOnChange, required, selected }) => {
+export const LabelSelectElement = ({ children, style, className, htmlFor, labelText, placeholder, value, defaultValue, handleOnChange, required, selected, disabled }) => {
   return (
     <label
       htmlFor={htmlFor}
@@ -122,7 +122,8 @@ export const LabelSelectElement = ({ children, style, className, htmlFor, labelT
           value={value}
           defaultValue={defaultValue}
           required={required}
-          selected={selected}>
+          selected={selected}
+          disabled={disabled}>
           { children }
         </select>
       </div>
@@ -158,7 +159,7 @@ export const LabelSelectShorterElement = ({ children, style, className, htmlFor,
 
 
 
-export const LabelElementToggle = ({ children, style, className, htmlFor , checked, value, handleOnChange }) => {
+export const LabelElementToggle = ({ children, style, className, htmlFor , checked, value, handleOnChange, disabled }) => {
   return (
     <label
       htmlFor={htmlFor}
@@ -175,6 +176,7 @@ export const LabelElementToggle = ({ children, style, className, htmlFor , check
             onChange={handleOnChange}
             value={value}
             checked={checked}
+            disabled={disabled}
             />
         </div>
     </label>
