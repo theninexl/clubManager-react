@@ -131,6 +131,37 @@ export const LabelSelectElement = ({ children, style, className, htmlFor, labelT
   );
 } 
 
+export const LabelSelectElementAssist = ({ children, style, className, htmlFor, labelText, placeholder, value, defaultValue, handleOnChange, required, selected, disabled, assistanceText }) => {
+  return (
+    <label
+      htmlFor={htmlFor}
+      className={`panel-field-long ${className}`}
+      style={style} >
+      <span>{labelText}</span>
+      <div className='cm-c-select-icon'>
+        <select
+          className='cm-c-select-icon__select'
+          name={htmlFor}
+          id={htmlFor}
+          onChange={handleOnChange}
+          placeholder={placeholder}
+          value={value}
+          defaultValue={defaultValue}
+          required={required}
+          selected={selected}
+          disabled={disabled}>
+          { children }
+        </select>
+      </div>
+      <span className='assistance' aria-live='polite'>
+        { assistanceText }
+      </span>
+    </label>
+  );
+} 
+
+
+
 export const LabelSelectShorterElement = ({ children, style, className, htmlFor, labelText, placeholder, value, defaultValue, handleOnChange, required, selected, disabled }) => {
   return (
     <label
@@ -159,13 +190,14 @@ export const LabelSelectShorterElement = ({ children, style, className, htmlFor,
 
 
 
-export const LabelElementToggle = ({ children, style, className, htmlFor , checked, value, handleOnChange, disabled }) => {
+export const LabelElementToggle = ({ children, style, className, titleClassName, htmlFor , checked, value, handleOnChange, disabled }) => {
   return (
     <label
       htmlFor={htmlFor}
-      className='panel-field-short'
+      className={`panel-field-short`}
       style={style} >
-      <span>{ children }</span>
+      <span
+        className={titleClassName}>{ children }</span>
       <div
         className='cm-c-form-simple__radio-toggle'>
            <input
@@ -179,6 +211,62 @@ export const LabelElementToggle = ({ children, style, className, htmlFor , check
             disabled={disabled}
             />
         </div>
+    </label>
+  );
+}
+
+export const LabelElementToggle2Sides = ({ textLeft, textRight, style, className, titleClassNameLeft, titleClassNameRight, htmlFor , checked, value, handleOnChange, disabled }) => {
+  return (
+    <label
+      htmlFor={htmlFor}
+      className={`panel-field-flexible`}
+      style={style} >
+      <span
+        className={`textLeft ${titleClassNameLeft}`}>{ textLeft }</span>
+      <div
+        className='cm-c-form-simple__radio-toggle'>
+           <input
+            className={className}
+            type='checkbox'
+            name={htmlFor}
+            id={htmlFor}
+            onChange={handleOnChange}
+            value={value}
+            checked={checked}
+            disabled={disabled}
+            />
+        </div>
+        <span
+        className={`textRight ${titleClassNameRight}`}>{ textRight }</span>
+    </label>
+  );
+} 
+
+export const LabelElementToggle2SidesPanel = ({ children, textLeft, textRight, titleClassNameleft, titleClassNameRight, style, className, titleClassName, htmlFor , checked, value, handleOnChange, disabled }) => {
+  return (
+    <label
+      htmlFor={htmlFor}
+      className={`panel-field-short`}
+      style={style} >
+      <span
+        className={titleClassName}>{ children }</span>
+      <span
+        className={`textLeft ${titleClassNameleft}`}>{ textLeft }</span>
+      <div
+        className='cm-c-form-simple__radio-toggle'>
+           <input
+            className={className}
+            type='checkbox'
+            name={htmlFor}
+            id={htmlFor}
+            onChange={handleOnChange}
+            value={value}
+            checked={checked}
+            disabled={disabled}
+            />
+        </div>
+      <span
+        className={`textRight ${titleClassNameRight}`}>{ textRight }</span>
     </label>
   );
 } 
@@ -234,3 +322,14 @@ export const FieldWithIcon__input =({ children, name, placeholder }) => {
     <input className='cm-c-field-icon__input' name={name} id={name} placeholder={placeholder} />
   );
 }
+
+export const HiddenElement = ({ htmlFor, value }) => {
+  return (
+      <input
+        type='hidden'
+        name={htmlFor}
+        id={htmlFor}
+        value={value}
+       />
+  );
+} 

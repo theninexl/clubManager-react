@@ -46,6 +46,17 @@ export const ButtonCatGhost = ({ children, className, id, onClick }) => {
   );
 }
 
+export const ButtonCatGhostDisabled = ({ children, className, id, onClick }) => {
+  return (
+    <button
+      className={`cm-o-button-cat--ghost-inactive ${className}`}
+      id={id}
+      onClick={onClick} >
+      { children }
+    </button>
+  );
+}
+
 export const ButtonMousePrimary = ({ children, className, id, onClick }) => {
   return (
     <button
@@ -68,16 +79,18 @@ export const ButtonMouseGhost = ({ children, className, id, onClick }) => {
   );
 }
 
-export const ButtonCatGhostDisabled = ({ children, className, id, onClick }) => {
+export const ButtonMouseDisabled = ({ children, className, id, onClick }) => {
   return (
     <button
-      className={`cm-o-button-cat--ghost-inactive ${className}`}
+      className={`cm-o-button-mouse--inactive ${className}`}
       id={id}
       onClick={onClick} >
       { children }
     </button>
   );
 }
+
+
 
 // ICON BUTTONS
 

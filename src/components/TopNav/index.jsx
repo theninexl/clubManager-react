@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../../providers/globalContextProvider";
 import { useGetData } from "../../hooks/useGetData"
-import { Api } from "../../services/api";
 import { Navbar, NavbarContentLeft, NavbarContentRight, NavbarLinksHrz, NavbarLinksTextBtnSmall } from "../UI/components/navbar/navbar";
 import { LogoShield } from "../UI/objects/Logo";
 import { IconButtonSmallPrimary } from "../UI/objects/buttons";
@@ -57,7 +56,8 @@ export default function TopNav () {
 
    useEffect(()=> {
      if (getEntities.responseGetData) {
-       setHeaderEntities(getEntities.responseGetData.data.entidades);
+       //setHeaderEntities(getEntities.responseGetData.data.entidades);
+       context.setEntities(getEntities.responseGetData.data.entidades);
      }
     },[getEntities.responseGetData])
 
@@ -152,6 +152,10 @@ export default function TopNav () {
   useEffect(()=>{
     renderNotificationsBubble();
   },[path])
+
+  useEffect(()=>{
+    context.setActiveEntity(context.entities[0]?.id_entidad)
+  },[context.entities])
   
 
   return (    
@@ -168,8 +172,12 @@ export default function TopNav () {
             <NavbarLinksHrz>
               <li>
                 <SelectIcon
-                  style={{width:'350px'}}>
-                  { headerEntities?.map(item => {
+                  style={{width:'350px'}}
+                  value={context.activeEntity}
+                  onChange={(e) => {
+                    context.setActiveEntity(e.target.value);                    
+                  }}>
+                  { context.entities?.map(item => {
                     return (
                       <option key={item.id_entidad} value={item.id_entidad}>{item.desc_entidad}</option>
                     );

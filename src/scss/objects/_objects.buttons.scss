@@ -92,6 +92,7 @@
     &--inactive {
         @include button-mouse;
         @include button-inactive;
+        cursor: inherit;
     }      
 }
 

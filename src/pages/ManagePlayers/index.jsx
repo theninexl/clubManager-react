@@ -21,14 +21,26 @@ export default function ManagePlayersPage () {
   const [listOrder, setListOrder] = useState(1);
   const [allPlayers, setAllPlayers] = useState([]);
   const [page, setPage] = useState(1);
+  const [errorMsg, setErrorMsg] = useState(null);
 
+  //pedir todos los jugadores
   const { responseGetData } = useGetData('players/getAll',{search:'',pagenumber:page,rowspage:rowsByPage})
 
   useEffect(()=>{
     if (responseGetData){
-      setAllPlayers(responseGetData.data.data);
+      console.log(responseGetData);
+      if (responseGetData.status === 200) { setAllPlayers(responseGetData.data.data);
+      } else if (responseGetData.status === 409) { setErrorMsg('El usuario que estás intentnado crear ya existe')
+      } else if (responseGetData.code === 'ERR_NETWORK') { setErrorMsg('Error de conexión, inténtelo más tarde')
+      } else if (responseGetData.code === 'ERR_BAD_RESPONSE') { setErrorMsg('Error de conexión, inténtelo más tarde')
+      } else if (responseGetData.status === 'ok') { setAllPlayers(responseGetData.data.data);
+      } else {
+        setErrorMsg('No hay datos disponibles. Vuelve a intentarlo');
+      }
     }
   },[responseGetData])
+
+  
 
   //resetear pagina a 1 cuando cargas la primera vez
   useEffect(()=> { setPage(1)},[setPage]);
@@ -81,10 +93,17 @@ export default function ManagePlayersPage () {
                 <TableCellMedium>Posicion</TableCellMedium>
                 <TableCellMedium>Salario total</TableCellMedium>
                 <TableCellMedium>Variable</TableCellMedium>
+                <TableCellShort className='cm-u-centerText'>Edad</TableCellShort>
+                <TableCellMedium className='cm-u-centerText'>Fecha Fin Contrato</TableCellMedium>
                 <TableCellShort className='cm-u-centerText'>Activo</TableCellShort>
                 <TableCellShort>&nbsp;</TableCellShort>
               </TableDataHeader>
               <div>
+                {errorMsg &&
+                  <TableDataRow  className='cm-u-centerText'>
+                    <span className='error'>{errorMsg}</span>
+                  </TableDataRow>
+                }
                 {
                   allPlayers?.map(player => {
                     
@@ -96,6 +115,8 @@ export default function ManagePlayersPage () {
                         <TableCellMedium>{player.desc_posicion}</TableCellMedium>
                         <TableCellMedium>{player.imp_salario_total}</TableCellMedium>
                         <TableCellMedium>{player.imp_variable}</TableCellMedium>
+                        <TableCellShort className='cm-u-centerText'>{player.edad || ''}</TableCellShort>
+                        <TableCellMedium className='cm-u-centerText'>{player.fecha_fin_contrato || ''}</TableCellMedium>
                         <TableCellShort className='cm-u-centerText'>
                           { player.activo === 'SI' ?
                             <IconButtonSmallerSuccess>

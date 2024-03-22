@@ -34,6 +34,7 @@
     input[type=text], input[type=number], input[type=email], input[type=password], input[type=date], &input[type=text], &input[type=number], &input[type=email], &input[type=password], &input[type=date]{
         border:1px solid getColor(primaryLight);
         border-radius: getSize($small);
+        color: getcolor(primaryLight);
         height:calc(getSize($larger) - 4px);
         text-indent: getSize($medium);
         @include font-size($defFontSizeDT, $lineHeightDT);
@@ -169,6 +170,7 @@
     &__input {
         $block:&;
         border:0;
+        color:getColor(primaryLight);
         outline: none;
         text-indent: getSize($medium);
         flex-grow:1;
@@ -305,6 +307,51 @@
             box-shadow: inset -150px getSize($large) getSize($large) getColor(scarpaFlowLight);
             color:getColor(white);
             
+        }
+    }
+}
+
+.cm-c-dropdown-select {
+    $block:&;
+    border-radius: getSize($small) !important;
+    height:getSize($huge);
+    min-width: 150px;
+    position: relative;
+
+    input {
+        @include font-size($defFontSizeDT, $lineHeightDT);
+
+        &::placeholder, input::placeholder {
+            color: getColor(primaryLight);
+        }
+
+        input::placeholder {
+            @include cm-qs-bold;
+        }
+    }
+
+    &__results-box {
+        background-color: getColor(white);
+        border:1px solid getColor(scarpaFlowLight);
+        border-radius: getSize($small);
+        height: 150px;
+        overflow: auto;
+        padding: getSize($small);
+        position: absolute;
+        top:getSize($huge);
+        left: getCols(2);
+        width: 200px;
+        z-index: 10;
+
+        span.result {
+            $block:&;
+            display: block;
+            cursor: pointer;
+
+            &:hover {
+                background-color: getColor(primary);
+                color:getColor(white);
+            }
         }
     }
 }

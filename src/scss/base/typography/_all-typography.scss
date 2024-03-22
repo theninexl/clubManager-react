@@ -65,6 +65,11 @@ strong {
     @include cm-qs-bold;
 }
 
+.error {
+    @include cm-qs-bold;
+    color: getColor(danger);
+}
+
 .material-symbols-outlined {
     font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 1, 'opsz' 48;
 }

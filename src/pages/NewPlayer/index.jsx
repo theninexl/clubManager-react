@@ -1,19 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import { Form, useNavigate } from "react-router-dom";
-import { AsideMenu } from "../../components/AsideMenu";
-import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
-import { CentralBody, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
-import { ButtonMouseGhost, ButtonMousePrimary, IconButtonSmallPrimary, IconButtonSmallSecondary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
-import { SymbolAdd, SymbolBack, SymbolDelete, SymbolEdit } from "../../components/UI/objects/symbols";
-import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElement, LabelElementAssist, LabelElementToggle, LabelSelectElement, LabelSelectShorterElement, SelectIcon, SelectIconShorter } from "../../components/UI/components/form simple/formSimple";
-import { FormTabs, FormTabs__ContentWrapper, FormTabs__LinksWrapper, FormTabs__ToolBarWrapper, TabContent, TabLink } from "../../components/UI/components/formTabs/formTabs";
-import { SimpleAccordion, SimpleAccordionContent, SimpleAccordionLink, SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
-import { manageTabs } from "../../domUtilities/manageTabs";
-import { FileDrop } from "../../components/UI/components/form simple/fileDrop";
-import { TableCellLong, TableCellMedium, TableCellShort, TableDataHeader, TableDataRow, TableDataWrapper } from "../../components/UI/layout/tableData";
+import { useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../../providers/globalContextProvider";
 import { useGetData } from "../../hooks/useGetData";
 import { useSaveData } from "../../hooks/useSaveData";
+import { AsideMenu } from "../../components/AsideMenu";
+import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
+import { CentralBody, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
+import { ButtonMouseDisabled, ButtonMouseGhost, ButtonMousePrimary, IconButtonSmallPrimary, IconButtonSmallSecondary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
+import { SymbolAdd, SymbolBack, SymbolDelete, SymbolEdit } from "../../components/UI/objects/symbols";
+import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, HiddenElement, LabelElement, LabelElementAssist, LabelElementToggle, LabelElementToggle2Sides, LabelElementToggle2SidesPanel, LabelSelectElement, LabelSelectElementAssist, LabelSelectShorterElement, SelectIcon, SelectIconShorter } from "../../components/UI/components/form simple/formSimple";
+import { FormTabs, FormTabs__ContentWrapper, FormTabs__LinksWrapper, FormTabs__ToolBarWrapper, TabContent, TabLink } from "../../components/UI/components/formTabs/formTabs";
+import { SimpleAccordion, SimpleAccordionContent, SimpleAccordionLink, SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
+import { FileDrop } from "../../components/UI/components/form simple/fileDrop";
+import { TableCellLong, TableCellMedium, TableCellShort, TableDataHeader, TableDataRow, TableDataWrapper } from "../../components/UI/layout/tableData";
+
 
 export default function NewPlayerPage () {
 
@@ -33,17 +33,41 @@ export default function NewPlayerPage () {
 
   // estados locales
   const [error, setError] = useState(null);
+  //tabs contenido
+  const [activeTab, setActiveTab] = useState(1);
+  const [createPlayerCompleted, setCreatePlayerCompleted ] = useState(false);
+  const [contractsTabsActive, setContractsTabsActive] = useState(false);
+  const [contractsCompleted, setContractsCompleted] = useState(false);
+  const [variableTabsActive, setVariableTabsActive] = useState(false); 
+
+  //estados playerDetails
+  const [optaPlayersList, setOptaPlayersList] = useState(null);
+  const [optaSelectedPlayer, setOptaSelectedPlayer] = useState('');
+  const [optaResultsBox, setOptaResultsBox] = useState(false);
   const [countries, setCountries] = useState(null);
   const [positions, setPositions] = useState(null);
   const [contracts, setContracts] = useState(null);
   const [intermediaries, setIntermediaries] = useState(null);
   const [teams, setTeams] = useState(null);
+  const [createdPlayerId, setCreatedPlayerId] = useState(null);
+  const [createPlayerError, setCreatePlayerError] = useState(null);
+
+  //estados contratos
+  const [newContract, setNewContract] = useState(false);
+  //array para guardar las nuevas combinaciones de sueldo añadidas a cada contrato
+  const [contractSalary, setContractSalary] = useState([{id_salario:1,flag_bruto_neto:'',fch_inicio:'',fch_fin:'',num_salario_fijo:''}]);
+  //array con los contratos creados
+  const [savedContracts, setSavedContracts] = useState([]);
+  //contrato activo
+  const [activeContractId, setActiveContractId] = useState();
+  const [activeContractError, setActiveContractError] = useState(false);
+
   //si muestro o no la capa de creacion de variable
   const [showNewVariableLayer, setShowNewVariableLayer ] = useState(false);
   //donde guardo la info de los posibles combos de cada combinacion Exprexion+Condiciones
   const [variableCombos, setVariableCombos] = useState([]);
   //array para guardar las nuevas expresiones añadidas a cada variable
-  const [variableExpressions, setVariableExpressions] = useState([{id_ExprComb:1,id_expresion_concatenacion:'',id_expresion:'',id_expresion_operador:'',id_expresion_valor:'', operador:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
+  const [variableExpressions, setVariableExpressions] = useState([{id_ExprComb:1,id_expresion_bonusprima:'',id_expresion_concatenacion:'',id_expresion:'',id_expresion_operador:'',id_expresion_valor:'', operador:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
   //array para guardar las nuevas condiones añadidas a cada expresion
   // const [variableConditions, setVariableConditions] = useState([]);
   //tipo de condicion escogida
@@ -56,11 +80,7 @@ export default function NewPlayerPage () {
   const [uploadedFiles, setUploadedFiles ] = useState([]);
   //guardar
   const [economicValue, setEconomicValue] = useState(0);
-  
 
-  useEffect(()=>{
-    manageTabs();    
-  },[])
   //pedir paises, posiciones, contratos, intermediarios y equipos
   const getCountries = useGetData('masters/getAllCountry');
   useEffect (() => {
@@ -82,23 +102,534 @@ export default function NewPlayerPage () {
     if (getIntermediaries.responseGetData) setIntermediaries(getIntermediaries.responseGetData.data.data);
   },[getIntermediaries.responseGetData])
 
-  const getTeams = useGetData('teams/getAll');
+  const getTeams = useGetData('masters/GetAllTeams');
   useEffect (() => {
-    if (getTeams.responseGetData) setTeams(getTeams.responseGetData.data.data);
+    if (getTeams.responseGetData) {
+      setTeams(getTeams.responseGetData.data.data);
+    }
   },[getTeams.responseGetData])
 
   //pedir combos creación de variables
   const getNewVariableCombos = useGetData('players/getCombosValues');
   useEffect (() => {
     if (getNewVariableCombos.responseGetData) {
-      console.log(getNewVariableCombos.responseGetData.data.data);
+      // console.log(getNewVariableCombos.responseGetData.data.data);
       setVariableCombos(getNewVariableCombos.responseGetData.data.data);
+      
     }
   },[getNewVariableCombos.responseGetData])
 
+  //manageTabs manualmente
+  const updateActiveTab = (id) => {
+    setActiveTab(id)
+  };
+
+
+  //pedir datos para buscar un jugador
+  const getOptaPlayer = useSaveData();
+  const searchPlayer = (search) => {
+    getOptaPlayer.uploadData('players/searchPlayerOpta',{'search':search})
+  }
+  //guardar datos busqueda jugador
+  useEffect(()=> {
+    if (getOptaPlayer.responseUpload) {
+      setOptaPlayersList(getOptaPlayer.responseUpload.data);
+      setOptaResultsBox(true);
+    }
+  },[getOptaPlayer.responseUpload])
+
+  //render caja de resultados busqueda jugador
+  const renderSearchPlayerResults = () => {
+    if (optaResultsBox && optaPlayersList?.length == 0) {
+      return (
+        <div className='cm-c-dropdown-select__results-box'><span>No hay resultados</span></div>
+      );
+    } else if (optaResultsBox && optaPlayersList?.length > 0) {
+      return (
+        <div className='cm-c-dropdown-select__results-box'>
+          {
+            optaPlayersList.map(item => {
+              return (
+                <span
+                  className='result'
+                  key={item.id_jugador_opta}
+                  onClick={e => {
+                    e.preventDefault();
+                    setOptaSelectedPlayer(item);
+                    setOptaResultsBox(false);
+                  }}  >
+                    {item.desc_nombre_jugador} {item.desc_apellido_jugador}
+                </span>
+              );
+            })
+          }
+        </div>
+      );
+    }
+  }
+
+  //-----------------------------------------------------------------------------//
+  //form creacion nuevo contrato
+
+  const contractTypes = [
+    { desc_tipo_contrato: 'Laboral', id: 1 },
+    { desc_tipo_contrato: 'Transfer. permanente', id: 2 },
+    { desc_tipo_contrato: 'Transfer. temporal', id: 3 },
+    { desc_tipo_contrato: 'Intermediación', id: 3 },
+    { desc_tipo_contrato: 'Liquidación', id: 4 },
+  ]
+
+  const procedureTypes = [
+    { desc_tipo_procedimiento: 'Alta traspaso', id: 1 },
+    { desc_tipo_procedimiento: 'Alta cesión', id: 2 },
+    { desc_tipo_procedimiento: 'Alta libre', id: 3 },
+    { desc_tipo_procedimiento: 'Baja traspaso', id: 4 },
+    { desc_tipo_procedimiento: 'Baja cesión', id: 5 },
+    { desc_tipo_procedimiento: 'Baja rescisión', id: 6 },
+    { desc_tipo_procedimiento: 'Pago cláusula', id: 7 },
+  ]
+
+  //añadir una nueva linea de salario
+  const handleAddNewSalary = (number) => {
+    setContractSalary([...contractSalary, {id_salario:number,flag_bruto_neto:'',fch_inicio:'',fch_fin:'',num_salario_fijo:''}]) 
+   }
+  
+   //borrar linea de salario
+   const handleDeleteNewSalary = (index) => {
+    const newSalariesArray = [...contractSalary];
+    newSalariesArray.splice(index,1);
+    setContractSalary(newSalariesArray);
+  }
+  
+  //manejar cambios en los campos de la linea de salario
+  const handleChangesOnNewSalary = (event, index) => {
+    let {name, value} = event.target;
+    let onChangeValue = [...contractSalary];
+    onChangeValue[index][name] = value;
+    setContractSalary(onChangeValue);
+  }
+
+  const handleChangesOnNewSalaryIfToggle = (event, index) => {
+    let {name, checked} = event.target;
+    let onChangeValue = [...contractSalary];
+    onChangeValue[index][name] = checked ? 1 : 0;
+    setContractSalary(onChangeValue);
+  }
+
+  //guardar un nuevo contrato
+  const saveNewContract = useSaveData();
+
+  const handleAddNewContract = (e) => {
+    e.preventDefault();
+    const formData = new FormData(form.current);
+
+    const salarios = contractSalary;
+
+    const data = {
+      id_jugador: createdPlayerId,
+      desc_tipo_contrato: formData.get('contractType'),
+      desc_tipo_procedimiento: formData.get('procedureType'),
+      descripcion: formData.get('contractDescription'),
+      id_plantilla: context.activeEntity,
+      id_club_origen: formData.get('playerTeamOrigin'),
+      id_club_destino: formData.get('playerTeamDestination'),
+      fch_inicio_contrato: formData.get('contractStartDate'),
+      fch_inicio_contrato_real: formData.get('contractRealStartDate'),
+      fch_fin_contrato: formData.get('contractEndDate'),
+      imp_contrato_fijo: formData.get('amountFixedContract'),
+      imp_contrato_variable: formData.get('amountVariableContract'),
+      imp_salario_total: formData.get('amountFixedSalary'),
+      imp_salario_variable: formData.get('amountVariableSalary'),
+      pct_pago_atm: formData.get('clubPercentage'),
+      imp_clausula_rescision: formData.get('terminationClause'),
+      salario_fijo:salarios,
+      // amortizable: amortizableVal ? 1 : 0,
+    }
+
+    const savedContract = {
+      id_contrato: '',
+      id_jugador: data.id_jugador,
+      desc_tipo_contrato: data.desc_tipo_contrato,
+      desc_tipo_procedimiento: data.desc_tipo_procedimiento,
+      descripcion: data.descripcion,
+      id_plantilla: data.id_plantilla,
+      id_club_origen: data.id_club_origen,
+      id_club_destino: data.id_club_destino,
+      fch_inicio_contrato: data.fch_inicio_contrato,
+      fch_inicio_contrato_real: data.fch_inicio_contrato_real,
+      fch_fin_contrato: data.fch_fin_contrato,
+      imp_contrato_fijo: data.imp_contrato_fijo,
+      imp_contrato_variable: data.imp_contrato_variable,
+      imp_salario_total: data.imp_salario_total,
+      imp_salario_variable: data.imp_salario_variable,
+      pct_pago_atm: data.pct_pago_atm,
+      imp_clausula_rescision: data.imp_clausula_rescision,
+      salario_fijo:data.salario_fijo,
+    }
+
+    console.log('contrato que guardo', data);
+    saveNewContract.uploadData('players/createContract',data)
+    setSavedContracts([...savedContracts, savedContract]);
+    setNewContract(false);
+    setContractSalary([{id_salario:1,flag_bruto_neto:'',fch_inicio:'',fch_fin:'',num_salario_fijo:''}]); 
+  }
+
+  useEffect(() => {
+    if (savedContracts) {
+      console.log(savedContracts);
+    }
+  },[savedContracts])
+
+  //mirar la respuesta de subir datos al crear jugador para setear error
+  useEffect(()=> {
+    if (saveNewContract.responseUpload) {
+      console.log(saveNewContract.responseUpload);
+      if (saveNewContract.responseUpload.code === 'ERR_NETWORK') { setCreatePlayerError('Error de conexión, inténtelo más tarde')
+      } else if (saveNewContract.responseUpload.status === 'ok') { 
+        console.log('id_contrato', saveNewContract.responseUpload.id_contrato)
+        let onSaveContract = [...savedContracts];
+        const index = onSaveContract.length - 1;
+        onSaveContract[index]["id_contrato"] = saveNewContract.responseUpload.id_contrato;
+        setSavedContracts(onSaveContract);
+      } else {
+        setCreatePlayerError('Existe un error en el formulario, inténtelo de nuevo')
+      }
+    }
+  },[saveNewContract.responseUpload])
+
+  //asignar contrato y guardar
+  const assignContract = useSaveData();
+
+  const handleSaveContracts = (e) => {
+    e.preventDefault();
+
+    if (!activeContractId) {
+      setActiveContractError('Tienes que señalar un contrato vigente')
+    } else {
+      assignContract.uploadData('players/setContract',{id_jugador:createdPlayerId.toString(), id_contrato:activeContractId.toString()});      
+    }
+  }
+
+  useEffect(()=>{
+    if (assignContract.responseUpload) {
+      console.log(assignContract.responseUpload)
+      if (assignContract.responseUpload.status === 'ok') {
+        setVariableTabsActive(true);
+        updateActiveTab(3);
+      }
+    }
+  },[assignContract.responseUpload])
+
+  
+
+  //nueva capa contrato
+  const renderNewContractLayer = () => {
+    if (newContract) {
+      return (
+        <>
+          <SimpleAccordionContent>
+            <header className="cm-l-body-static-header--inTab" style={{marginTop:'0'}}>
+              <p className="cm-u-text-black-cat">Añadir nuevo contrato</p>
+            </header>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='contractDescription'
+                type='text'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Descripción corta'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Descripcion
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>                   
+              <LabelSelectElementAssist
+                htmlFor='contractType'
+                labelText='Tipo de contrato'
+                required={true}
+                assistanceText='Este campo es obligatorio'>
+                  <option value=''>Selecciona</option>
+                  {
+                    contractTypes.map(item => {
+                      return (
+                        <option value={item.desc_tipo_contrato}>{item.desc_tipo_contrato}</option>
+                      );
+                    })
+                  }
+              </LabelSelectElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>                   
+              <LabelSelectElementAssist
+                htmlFor='procedureType'
+                labelText='Tipo de procedimiento'
+                required={true}
+                assistanceText='Este campo es obligatorio'>
+                  <option value=''>Selecciona</option>
+                  {
+                    procedureTypes.map(item => {
+                      return (
+                        <option value={item.desc_tipo_procedimiento}>{item.desc_tipo_procedimiento}</option>
+                      );
+                    })
+                  }
+              </LabelSelectElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelSelectElementAssist
+                htmlFor='playerTeamOrigin'
+                labelText='Club Origen'
+                assistanceText='Este campo es obligatorio'
+                required={true}>
+                  <option value=''>Selecciona</option>
+                  { teams?.map(item => {
+                    return (
+                      <option key={item.id_club_opta} value={item.id_club_opta}>{item.desc_nombre_club}</option>
+                    );
+                  })}
+              </LabelSelectElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelSelectElementAssist
+                htmlFor='playerTeamDestination'
+                labelText='Club Destino'
+                assistanceText='Este campo es obligatorio'
+                required={true}>
+                  <option value=''>Selecciona</option>
+                  { teams?.map(item => {
+                    return (
+                      <option key={item.id_club_opta} value={item.id_club_opta}>{item.desc_nombre_club}</option>
+                    );
+                  })}
+              </LabelSelectElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='contractStartDate'
+                type='date'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='dd/mm/yyyy'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Fecha inicio contrato
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='contractRealStartDate'
+                type='date'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='dd/mm/yyyy'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Fecha inicio contrato real
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='contractEndDate'
+                type='date'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='dd/mm/yyyy'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Fecha fin contrato
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='amountFixedContract'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Importe contrato fijo'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Importe contrato fijo
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='amountVariableContract'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Importe contrato variable'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Importe contrato variable
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='amountFixedSalary'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Importe salario fijo'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Importe salario fijo
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='amountVariableSalary'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Importe salario variable'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Importe salario variable
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='clubPercentage'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Porcentaje de pago club (%)'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Porcentaje pago club
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='terminationClause'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Importe cláusula rescisión'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Importe cláusula rescisión
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            {
+              contractSalary.map((item,index) => {
+                const SalaryComb = item.id_salario;  
+                return (
+                  <div key={item.id_salario} data-id={item.id_salario}  className='cm-u-spacer-mb-bigger'>
+                    <FormSimplePanelRow >
+                      <LabelElement
+                        htmlFor='num_salario_fijo'
+                        type='number'
+                        className='panel-field-short'
+                        autoComplete='off'
+                        placeholder='Importe salario'
+                        required={true}
+                        value={item.num_salario_fijo}
+                        handleOnChange={(event) => {
+                          handleChangesOnNewSalary(event,index)
+                        }}
+                        >
+                        Salario fijo
+                      </LabelElement>
+                      <LabelElementToggle2Sides
+                        htmlFor='flag_bruto_neto'
+                        titleClassNameLeft='cm-u-textRight'
+                        textLeft='Bruto'
+                        titleClassNameRight='cm-u-spacer-mr-medium'
+                        textRight='Neto'
+                        required={true}
+                        checked={item.flag_bruto_neto}
+                        handleOnChange={(event) => {
+                          handleChangesOnNewSalaryIfToggle(event,index)
+                        }} />
+                      <LabelElement
+                        htmlFor='fch_inicio'
+                        type='date'
+                        className='panel-field-flexible'
+                        autoComplete='off'
+                        placeholder='dd/mm/yyyy'
+                        required={true}
+                        value={item.fch_inicio}
+                        handleOnChange={(event) => {
+                          handleChangesOnNewSalary(event,index)
+                        }}   >
+                        Fecha inicio
+                      </LabelElement>
+                      <LabelElement
+                        htmlFor='fch_fin'
+                        type='date'
+                        className='panel-field-flexible'
+                        autoComplete='off'
+                        placeholder='dd/mm/yyyy'
+                        required={true}
+                        value={item.fch_fin}
+                        handleOnChange={(event) => {
+                          handleChangesOnNewSalary(event,index)
+                        }}   >
+                        Fecha fin
+                      </LabelElement>
+                      {(item.id_salario !== 1) ?                   
+                        <IconButtonSmallSecondary
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleDeleteNewSalary(index);
+                          }} >
+                            <SymbolDelete />
+                        </IconButtonSmallSecondary>
+                        : ''}
+                      {index+1 == contractSalary.length ?                   
+                        <IconButtonSmallSecondary
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleAddNewSalary(SalaryComb+1);
+                          }} >
+                            <SymbolAdd />
+                        </IconButtonSmallSecondary>
+                        : ''}
+                    </FormSimplePanelRow>
+                    
+                  </div>
+                );
+              })
+            }
+            <FormSimplePanelRow
+              className='cm-u-centerText'>
+              <ButtonMousePrimary
+                onClick={handleAddNewContract}
+                >Guardar</ButtonMousePrimary>
+              <ButtonMouseGhost
+                onClick={() => {
+                  setNewContract(false);
+                  setContractSalary([{id_salario:1,flag_bruto_neto:'',fch_inicio:'',fch_fin:'',num_salario_fijo:''}]); 
+                }}
+                >Cancelar</ButtonMouseGhost>
+            </FormSimplePanelRow>
+          </SimpleAccordionContent>
+        </>
+      )
+    }
+  }
+
+  useEffect(() => {
+    if (variableExpressions) {
+      console.log(variableExpressions);
+    }
+  },[variableExpressions])
+
+
   //añadir una nueva expresion completa a la variable
   const handleAddNewVariableExpression = (number) => {
-   setVariableExpressions([...variableExpressions, {id_ExprComb:number,id_expresion_concatenacion:'', id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]) 
+   setVariableExpressions([...variableExpressions, {id_ExprComb:number,id_expresion_bonusprima:'',id_expresion_concatenacion:'', id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]) 
   }
 
   //manejar cambios en los campos de la expresion
@@ -108,17 +639,19 @@ export default function NewPlayerPage () {
     onChangeValue[index][name] = value;
     setVariableExpressions(onChangeValue);
   }
+
+  const handleChangesOnNewVariableExpressionToggle = (event, index) => {
+    let {name, checked} = event.target;
+    let onChangeValue = [...variableExpressions];
+    onChangeValue[index][name] = checked ? 1 : 0;
+    setVariableExpressions(onChangeValue);
+  }
  
   const handleDeleteNewVariableExpression = (index) => {
     const newExpressionsArray = [...variableExpressions];
     newExpressionsArray.splice(index,1);
     setVariableExpressions(newExpressionsArray);
-  }
-
-  // useEffect(()=>{
-  //   console.log('variableExpressions', variableExpressions);
-  // },[variableExpressions]);
-  
+  }  
 
   //añadir nueva condicion al crear variable
   const handleAddNewCond = (indexExpr,indexNewCond) => {
@@ -126,14 +659,6 @@ export default function NewPlayerPage () {
     onChangeValue[indexExpr]["condiciones"][indexNewCond] = {id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''};
     setVariableExpressions(onChangeValue);
   }
-
-  //manejar cambios en los campos de la condicion
-  // const handleChangesOnNewVariableCondition = (event, index) => {
-  //   let {name, value} = event.target;
-  //   let onChangeValue = [...variableConditions];
-  //   onChangeValue[index][name] = value;
-  //   setVariableConditions(onChangeValue);
-  // }
 
   //borrar una nueva condicion al crear variable
   const handleDeleteNewCond = (indexExpr, indexCond) => {
@@ -231,11 +756,22 @@ export default function NewPlayerPage () {
                       </LabelSelectShorterElement>
                     </FormSimplePanelRow>
                     : ''}
-
+                  <FormSimplePanelRow>
+                    <LabelElementToggle2SidesPanel
+                      textLeft='Bonus'
+                      textRight='Prima'
+                      htmlFor='id_expresion_bonusprima'
+                      checked={item.id_expresion_bonusprima === 1 ? true : ''}
+                      handleOnChange={(event) => {
+                        handleChangesOnNewVariableExpressionToggle(event, index);
+                      }}>
+                      {(item.id_ExprComb !== 1) ?  '' : 'Expresión'}
+                    </LabelElementToggle2SidesPanel>
+                  </FormSimplePanelRow>
                   <FormSimplePanelRow>
                   <LabelSelectShorterElement
                     htmlFor='id_expresion'
-                    labelText={(item.id_ExprComb !== 1) ?  '' : 'Expresión'}
+                    
                     value={item.id_expresion}
                     handleOnChange={(event) => {
                       handleChangesOnNewVariableExpression(event,index)
@@ -255,9 +791,9 @@ export default function NewPlayerPage () {
                       handleChangesOnNewVariableExpression(event,index)
                     }} >
                       <option value=''>Operador</option>
-                    <option value='='>Igual a</option>
-                    <option value='<'>Menor qué</option>
-                    <option value='>'>Mayor qué</option>
+                    <option value='='>=</option>
+                    <option value='<'>&lt;</option>
+                    <option value='>'>&gt;</option>
                   </SelectIconShorter>
                   <LabelElement
                     htmlFor='id_expresion_valor'
@@ -288,65 +824,72 @@ export default function NewPlayerPage () {
                     </IconButtonSmallSecondary>
                     : ''}
                 </FormSimplePanelRow>
-                { variableExpressions[index].condiciones.map((item, index2) => {
-                  return(
-                    <>
-                      <FormSimplePanelRow key={index2}>
-                        <LabelSelectShorterElement
-                          htmlFor='id_condicion'
-                          labelText='Condición'
-                          value={variableExpressions[index].condiciones[index2].id_condicion || ''}
-                          handleOnChange={(e) => {
-                            let onChangeValue = [...variableExpressions];
-                            onChangeValue[index]["condiciones"][index2]["id_condicion"] = e.target.value;
-                            setVariableExpressions(onChangeValue);                            
-                          }}
-                          >
-                            <option value=''>Condicion</option>
-                            { variableCombos.condition?.map((item) => {
-                                return (
-                                  <option key={item.id} value={item.id}>{item.value}</option>
-                                );
-                            })}
-                        </LabelSelectShorterElement>
-                        <SelectIconShorter
-                          name='id_condicion_operador'
-                          value={variableExpressions[index].condiciones[index2].id_condicion_operador || ''}
-                          handleOnChange={(e) => {
-                            let onChangeValue = [...variableExpressions];
-                            onChangeValue[index]["condiciones"][index2]["id_condicion_operador"] = e.target.value;
-                            setVariableExpressions(onChangeValue);                            
-                          }}
-                          >
-                            <option value=''>Operador</option>
-                            <option value='='>Igual a</option>
-                            <option value='<'>Menor qué</option>
-                            <option value='>'>Mayor qué</option>
-                        </SelectIconShorter>
-                        {renderConditionValueField(variableExpressions[index].condiciones[index2].id_condicion, index, index2)}
-
-                        {(index2 !== 0) ?                   
-                          <IconButtonSmallSecondary
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleDeleteNewCond(index, index2);
-                            }} >
-                              <SymbolDelete />
-                          </IconButtonSmallSecondary>
-                        : ''}
-                        {index2+1 == variableExpressions[index].condiciones.length ?                   
-                          <IconButtonSmallSecondary
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleAddNewCond(index, index2+1);
-                            }} >
-                              <SymbolAdd />
-                          </IconButtonSmallSecondary>
-                        : ''}
-                      </FormSimplePanelRow>
-                    </>
-                  )
-                })}
+                { item.id_expresion_bonusprima === 1 ?
+                  <>
+                    {
+                      variableExpressions[index].condiciones.map((item, index2) => {
+                        return(
+                          <>
+                            <FormSimplePanelRow key={index2}>
+                              <LabelSelectShorterElement
+                                htmlFor='id_condicion'
+                                labelText='Condición'
+                                value={variableExpressions[index].condiciones[index2].id_condicion || ''}
+                                handleOnChange={(e) => {
+                                  let onChangeValue = [...variableExpressions];
+                                  onChangeValue[index]["condiciones"][index2]["id_condicion"] = e.target.value;
+                                  setVariableExpressions(onChangeValue);                            
+                                }}
+                                >
+                                  <option value=''>Condicion</option>
+                                  { variableCombos.condition?.map((item) => {
+                                      return (
+                                        <option key={item.id} value={item.id}>{item.value}</option>
+                                      );
+                                  })}
+                              </LabelSelectShorterElement>
+                              <SelectIconShorter
+                                name='id_condicion_operador'
+                                value={variableExpressions[index].condiciones[index2].id_condicion_operador || ''}
+                                handleOnChange={(e) => {
+                                  let onChangeValue = [...variableExpressions];
+                                  onChangeValue[index]["condiciones"][index2]["id_condicion_operador"] = e.target.value;
+                                  setVariableExpressions(onChangeValue);                            
+                                }}
+                                >
+                                  <option value=''>Operador</option>
+                                  <option value='='>=</option>
+                                  <option value='<'>&lt;</option>
+                                  <option value='>'>&gt;</option>
+                              </SelectIconShorter>
+                              {renderConditionValueField(variableExpressions[index].condiciones[index2].id_condicion, index, index2)}
+      
+                              {(index2 !== 0) ?                   
+                                <IconButtonSmallSecondary
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleDeleteNewCond(index, index2);
+                                  }} >
+                                    <SymbolDelete />
+                                </IconButtonSmallSecondary>
+                              : ''}
+                              {index2+1 == variableExpressions[index].condiciones.length ?                   
+                                <IconButtonSmallSecondary
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleAddNewCond(index, index2+1);
+                                  }} >
+                                    <SymbolAdd />
+                                </IconButtonSmallSecondary>
+                              : ''}
+                            </FormSimplePanelRow>
+                          </>
+                        )
+                      })
+                    }
+                  </>
+                  : ''
+                }
                 </div>
             );
           })}
@@ -426,6 +969,8 @@ export default function NewPlayerPage () {
   }
 
   //guardar una nueva variable
+  const saveClausula = useSaveData();
+
   const handleSaveNewVariable = (e) => {
     e.preventDefault();
     const formData = new FormData(form.current);
@@ -445,11 +990,27 @@ export default function NewPlayerPage () {
       id_beneficiario: formData.get('variableBeneficiary'),
     }
 
+    const dataSent = {
+      'id_jugador': createdPlayerId,
+      'variable': data,
+    }
+
     console.log('variable que guardo', data);
-    setSavedVariables([...savedVariables, data]);
-    setShowNewVariableLayer(false);
-    setVariableExpressions([{id_ExprComb:1,id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);   
+
+    saveClausula.uploadData('players/createClausula', dataSent);
+    setSavedVariables([...savedVariables, dataSent]);    
   }
+
+  useEffect(()=>{
+    if (saveClausula.responseUpload) {
+      if (saveClausula.responseUpload.status === 'ok') {
+        setShowNewVariableLayer(false);
+        setVariableExpressions([{id_ExprComb:1,id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);   
+      } else {
+        setError('Existe un error en el formulario, inténtelo de nuevo')
+      }
+    }
+  },[saveClausula.responseUpload])
 
   useEffect(()=> {
     console.log(savedVariables);
@@ -505,7 +1066,10 @@ export default function NewPlayerPage () {
     setShowUploadDoc(false);
   }
 
-  const handleSave = (e) => {
+  //handle Save jugador y habilitar la pestaña contractual si no hay fallo.
+  const createNewPlayer = useSaveData();
+
+  const handleSavePlayer = (e) => {
     e.preventDefault();
     const formData = new FormData(form.current);
 
@@ -514,79 +1078,117 @@ export default function NewPlayerPage () {
     const savedVariablesInState = savedVariables;
 
     const data = {
-      id_intermediario: formData.get('playerIntermediary'),
-      id_posicion: formData.get('playerPosition'),
-      id_club_origen: formData.get('playerTeamOrigin'),
-      // id_contrato: formData.get('playerContract'),
+      id_jugador:formData.get('playerId'),
       nombre: formData.get('playerName'),
       apellido1: formData.get('playerLastname1'),
       apellido2: formData.get('playerLastname2'),
       alias: formData.get('playerAlias'),
-      desc_dorsal: formData.get('playerDorsal'),
-      nacionalidad1: formData.get('playerNationality1'),
-      nacionalidad2: formData.get('playerNationality2'),
       fch_nacimiento: formData.get('playerBornDate'),
-      dni_nie: formData.get('playerDNI'),
-      pasaporte1: formData.get('playerPassport1Nr'),
-      pasaporte2: formData.get('playerPassport2Nr'),
-      nss: formData.get('playerNSS'),
-      caducidad_pasaporte1: formData.get('playerPassport1Date'),
-      caducidad_pasaporte2: formData.get('playerPassport2Date'),
-      caducidad_dni: formData.get('playerDNIdate'),
       residencia: playerResidenciaVal ? 1 : 0,
       comunitario: playerComunitarioVal ? 1 : 0,
-      peso: formData.get('playerWeight'),
-      altura: formData.get('playerHeight'),
+      nacionalidad1: formData.get('playerNationality1'),
+      pasaporte1: formData.get('playerPassport1Nr'),
+      caducidad_pasaporte1: formData.get('playerPassport1Date'),
+      nacionalidad2: formData.get('playerNationality2'),
+      pasaporte2: formData.get('playerPassport2Nr'),
+      caducidad_pasaporte2: formData.get('playerPassport2Date'),
+      dni_nie: formData.get('playerDNI'),
+      caducidad_dni: formData.get('playerDNIdate'),
+      nss: formData.get('playerNSS'),
+      desc_dorsal: formData.get('playerDorsal'),
+      id_posicion: formData.get('playerPosition'),
+      id_intermediario: formData.get('playerIntermediary'),
+      id_club_origen: formData.get('playerTeamOrigin'),
       valor_mercado: formData.get('playerMarketValue'),
-      savedVariables: savedVariablesInState,
-      documentos: uploadedFiles 
+      fecha_fin_contrato: formData.get('playerContractEndDate'),
+      // cotonu: formData.get('playerCotonu'),     
     }
 
     const dataSent = {
-      'id_intermediario': data.id_intermediario,
-      'id_posicion': data.id_posicion,
-      'id_club_origen': data.id_club_origen,
+      'id_jugador':data.id_jugador,
       'nombre': data.nombre,
       'apellido1': data.apellido1,
       'apellido2': data.apellido2,
       'alias': data.alias,
-      'desc_dorsal': data.desc_dorsal,
-      'nacionalidad1': data.nacionalidad1,
-      'nacionalidad2': data.nacionalidad2,
       'fch_nacimiento': data.fch_nacimiento,
-      'dni_nie': data.dni_nie,
-      'pasaporte1': data.pasaporte1,
-      'pasaporte2': data.pasaporte2,
-      'nss': data.nss,
-      'caducidad_pasaporte1': data.caducidad_pasaporte1,
-      'caducidad_pasaporte2': data.caducidad_pasaporte2,
-      'caducidad_dni': data.caducidad_dni,
       'residencia': data.residencia.toString(),
       'comunitario': data.comunitario.toString(),
-      'peso': data.peso,
-      'altura': data.altura,
+      'nacionalidad1': data.nacionalidad1,
+      'pasaporte1': data.pasaporte1,
+      'caducidad_pasaporte1': data.caducidad_pasaporte1,
+      'nacionalidad2': data.nacionalidad2,
+      'pasaporte2': data.pasaporte2,
+      'caducidad_pasaporte2': data.caducidad_pasaporte2,
+      'dni_nie': data.dni_nie,
+      'caducidad_dni': data.caducidad_dni,
+      'nss': data.nss,
+      'desc_dorsal': data.desc_dorsal,
+      'id_posicion': data.id_posicion,
+      'id_intermediario': data.id_intermediario,
+      'id_club_origen': data.id_club_origen,
       'valor_mercado': data.valor_mercado,
-      'variables':data.savedVariables,
-      'documentos': data.documentos,
+      'fecha_fin_contrato': data.fecha_fin_contrato,
+      // 'cotonu', data.cotonu,
     }
     
     console.log('dataSent',dataSent);
+    createNewPlayer.uploadData('players/create',dataSent);
+  }
 
-    uploadData('players/create',dataSent);
+  //mirar la respuesta de subir datos al crear jugador para setear error
+  useEffect(()=> {
+    if (createNewPlayer.responseUpload) {
+      console.log(createNewPlayer.responseUpload);
+      if (createNewPlayer.responseUpload.status === 409) { setCreatePlayerError('El usuario que estás intentando crear ya existe')
+      } else if (createNewPlayer.responseUpload.code === 'ERR_NETWORK') { setCreatePlayerError('Error de conexión, inténtelo más tarde')
+      } else if (createNewPlayer.responseUpload.status === 'ok') { 
+        setCreatedPlayerId(createNewPlayer.responseUpload.id_jugador);
+        setContractsTabsActive(true);
+        updateActiveTab(2);
+        setContractsCompleted(true);
+      } else {
+        setCreatePlayerError('Existe un error en el formulario, inténtelo de nuevo')
+      }
+    }
+  },[createNewPlayer.responseUpload])
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    navigate('/manage-players');
+    // const formData = new FormData(form.current);
+
+
+    // const savedVariablesInState = savedVariables;
+
+    // const data = {
+    //   id_jugador: createdPlayerId,
+    //   variable: savedVariablesInState,
+    //   // documentos: uploadedFiles 
+    // }
+
+    // const dataSent = {
+    //   'id_jugador': data.id_jugador,
+    //   'variable':data.savedVariables,
+    //   // 'documentos': data.documentos,
+    // }
+    
+    // console.log('dataSent',dataSent);
+
+    // uploadData('players/create',dataSent);
   }
 
   //mirar la respuesta de subir datos para setear error
-  useEffect(()=> {
-    if (responseUpload) {
-      console.log(responseUpload);
-      if (responseUpload.status === 409) { setError('El usuario que estás intentnado crear ya existe')
-      } else if (responseUpload.code === 'ERR_NETWORK') { setError('Error de conexión, inténtelo más tarde')
-      } else if (responseUpload.status === 'ok') { navigate('/manage-players');
-      } else {
-        setError('Existe un error en el formulario, inténtelo de nuevo')
-      }
-    }
-  },[responseUpload])
+  // useEffect(()=> {
+  //   if (responseUpload) {
+  //     console.log(responseUpload);
+  //     if (responseUpload.status === 409) { setError('El usuario que estás intentnado crear ya existe')
+  //     } else if (responseUpload.code === 'ERR_NETWORK') { setError('Error de conexión, inténtelo más tarde')
+  //     } else if (responseUpload.status === 'ok') { navigate('/manage-players');
+  //     } else {
+  //       setError('Existe un error en el formulario, inténtelo de nuevo')
+  //     }
+  //   }
+  // },[responseUpload])
 
   return (
     <>
@@ -602,10 +1204,14 @@ export default function NewPlayerPage () {
                 Nuevo jugador
               </TitleBar__TitleAvatar>
               <TitleBar__Tools>
-                <ButtonMousePrimary
-                  onClick={handleSave}>
-                  Guardar
-                </ButtonMousePrimary>
+                { savedVariables.length >= 1 ? 
+                  <>
+                    <ButtonMousePrimary
+                      onClick={handleSave}>
+                      Finalizar
+                    </ButtonMousePrimary>
+                  </>
+                  : ''}
                 <IconButtonSmallPrimary
                   onClick={() => {
                     navigate('/manage-players')}}>
@@ -616,11 +1222,24 @@ export default function NewPlayerPage () {
             <FormTabs__ToolBarWrapper>
               <FormTabs>
                 <FormTabs__LinksWrapper>
-                  <TabLink target='general'>General</TabLink>
-                  <TabLink target='deportivo'>Deportivo</TabLink>
-                  <TabLink target='contractual'>Contractual</TabLink>
-                  <TabLink target='variables'>Variables</TabLink>
-                  <TabLink target='documentos'>Documentos</TabLink>
+                  <TabLink 
+                    className={activeTab === 1 ? 'active' : ''}
+                    handleOnClick={()=> updateActiveTab(1)}
+                    >General</TabLink>
+                  {contractsTabsActive ? 
+                    <TabLink 
+                    className={activeTab === 2 ? 'active' : ''}
+                    handleOnClick={()=> updateActiveTab(2)}
+                    >Contractual</TabLink>
+                    :''
+                  }
+                  {variableTabsActive ? 
+                    <TabLink 
+                    className={activeTab === 3 ? 'active' : ''} 
+                    handleOnClick={()=> updateActiveTab(3)}
+                    >Variables</TabLink>  
+                    :''
+                  }             
                 </FormTabs__LinksWrapper>
               </FormTabs>
             </FormTabs__ToolBarWrapper>
@@ -629,28 +1248,46 @@ export default function NewPlayerPage () {
             style={{paddingTop: '140px'}}>
             <FormSimplePanel
               innerRef={form}
-              autoComplete='off'>                
+              autoComplete='off'>
                 <FormTabs>
                   <FormTabs__ContentWrapper>
-                    <TabContent id='general'>
-                      <FormSimplePanelRow>
+                    <TabContent className={activeTab === 1 ? '' : 'hideContent'}>
+                    <FormSimplePanelRow>
                       <LabelElementToggle
                           htmlFor='playerComunitario' >
                           Jugador comunitario
                         </LabelElementToggle>
                       </FormSimplePanelRow>
                       <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerName'
-                          type='text'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='Nombre'
-                          required='required'
-                          assistanceText='Este campo es obligatorio'
-                          >
-                          Nombre
-                        </LabelElementAssist>
+                        <HiddenElement
+                          htmlFor='playerId'
+                          value={optaSelectedPlayer.id_jugador_opta || ''} />
+                        <div className='cm-c-dropdown-select'>
+                          <LabelElementAssist
+                            htmlFor='playerName'
+                            type='text'
+                            className='panel-field-long'
+                            autoComplete='off'
+                            placeholder='Escribe para buscar'
+                            required={true}
+                            assistanceText='Este campo es obligatorio'
+                            value={optaSelectedPlayer.desc_nombre_jugador}
+                            handleOnChange={(e)=>{
+                              setOptaSelectedPlayer(e.target.value);
+                              if (e.target.value.length > 2 ) {
+                                searchPlayer(e.target.value)
+                              } else if ((e.target.value.length <= 2 )) {
+                                setOptaPlayersList(null);
+                                setOptaSelectedPlayer('');
+                                setOptaResultsBox(false);
+                                
+                              }
+                            }} >
+                            Nombre
+                          </LabelElementAssist>
+                          {renderSearchPlayerResults()}
+                        </div>
+
                       </FormSimplePanelRow>
                       <FormSimplePanelRow>
                         <LabelElementAssist
@@ -659,22 +1296,23 @@ export default function NewPlayerPage () {
                           className='panel-field-long'
                           autoComplete='off'
                           placeholder='Apellido'
-                          required='required'
+                          required={true}
                           assistanceText='Este campo es obligatorio'
+                          value={optaSelectedPlayer.desc_apellido_jugador || ''}
                           >
                           Apellido
                         </LabelElementAssist>
                       </FormSimplePanelRow>
                       <FormSimplePanelRow>
-                        <LabelElementAssist
+                        <LabelElement
                           htmlFor='playerLastname2'
                           type='text'
                           className='panel-field-long'
                           autoComplete='off'
-                          placeholder='Apellido 2'
+                          placeholder='Segundo apellido'
                           >
-                          Apellido 2
-                        </LabelElementAssist>
+                          Apellido
+                        </LabelElement>
                       </FormSimplePanelRow>
                       <FormSimplePanelRow>
                         <LabelElementAssist
@@ -694,6 +1332,7 @@ export default function NewPlayerPage () {
                           className='panel-field-long'
                           autoComplete='off'
                           placeholder='dd/mm/yyyy'
+                          value={optaSelectedPlayer.fch_nacimiento || ''}
                           >
                           Fecha nacimiento
                         </LabelElementAssist>
@@ -802,8 +1441,6 @@ export default function NewPlayerPage () {
                           Permiso residencia
                         </LabelElementToggle>
                       </FormSimplePanelRow>
-                    </TabContent>
-                    <TabContent id='deportivo'>
                       <FormSimplePanelRow>
                         <LabelSelectElement
                           htmlFor='playerPosition'
@@ -829,48 +1466,9 @@ export default function NewPlayerPage () {
                         </LabelElementAssist>
                       </FormSimplePanelRow>
                       <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerWeight'
-                          type='text'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='Peso'
-
-                          >
-                          Peso
-                        </LabelElementAssist>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerHeight'
-                          type='text'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='Altura'
-
-                          >
-                          Altura
-                        </LabelElementAssist>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerMarketValue'
-                          type='text'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='Introduce euros'
-                          assistanceText='€'
-                          >
-                          Valoración económica mercado
-                        </LabelElementAssist>
-                      </FormSimplePanelRow>
-                    </TabContent>
-                    <TabContent id='contractual'>
-                      <FormSimplePanelRow>
-                        <LabelSelectElement
+                      <LabelSelectElement
                           htmlFor='playerTeamOrigin'
-                          labelText='Equipo Origen'>
-                            <option value=''>Selecciona</option>
+                          labelText='Club Origen'>
                             { teams?.map(item => {
                               return (
                                 <option key={item.id_club_opta} value={item.id_club_opta}>{item.desc_nombre_club}</option>
@@ -878,18 +1476,6 @@ export default function NewPlayerPage () {
                             })}
                         </LabelSelectElement>
                       </FormSimplePanelRow>
-                      {/* <FormSimplePanelRow>
-                        <LabelSelectElement
-                          htmlFor='playerContract'
-                          labelText='Contract'>
-                            <option value=''>Selecciona</option>
-                            { contracts?.map(item => {
-                              return (
-                                <option key={item.id_contrato} value={item.id_contrato}>{item.desc_tipo_contrato}</option>
-                              );
-                            })}
-                        </LabelSelectElement>
-                      </FormSimplePanelRow> */}
                       <FormSimplePanelRow>
                         <LabelSelectElement
                           htmlFor='playerIntermediary'
@@ -902,75 +1488,213 @@ export default function NewPlayerPage () {
                             })}
                         </LabelSelectElement>
                       </FormSimplePanelRow>
-                    </TabContent>
-                    <TabContent id='variables'>
-                       {/* Tabla Variables creadas */}
-                      <TableDataWrapper
-                        className='cm-u-spacer-mt-big'>
-                          <TableDataHeader>
-                            <TableCellLong>Variables añadidas</TableCellLong>
-                            <TableCellShort></TableCellShort>
-                          </TableDataHeader>
-                          { savedVariables?.map((item, index) => {                            
-                            return (
-                              <TableDataRow key={index}>
-                                <TableCellLong>{`Variable ${index+1}`}</TableCellLong>
-                                <TableCellMedium
-                                  className='cm-u-textRight'>
-                                  {/* <IconButtonSmallerPrimary
-                                      onClick={(indice) => {
-                                        
-                                        console.log('indice',index);
-                                        console.log(savedVariables[index]);
-                                        setEditingVarID(index);
-                                        setShowNewVariableLayer(true);
-                                      }}>
-                                    <SymbolEdit />
-                                  </IconButtonSmallerPrimary> */}
-                                <span>&nbsp;&nbsp;</span>
-                                  <IconButtonSmallerPrimary
-                                    onClick={(index) => {
-                                      // console.log('borro variable');
-                                      const newVariablesArray = [...savedVariables];
-                                      newVariablesArray.splice(index, 1);
-                                      console.log(newVariablesArray);
-                                      setSavedVariables(newVariablesArray);
-                                    }}
+                      <FormSimplePanelRow>
+                        <LabelElementAssist
+                          htmlFor='playerMarketValue'
+                          type='text'
+                          className='panel-field-long'
+                          autoComplete='off'
+                          placeholder='Introduce euros'
+                          assistanceText='€'
+                          >
+                          Valoración económica mercado
+                        </LabelElementAssist>
+                        <FormSimplePanelRow>
+                          <LabelElementAssist
+                            htmlFor='playerContractEndDate'
+                            type='date'
+                            className='panel-field-long'
+                            autoComplete='off'
+                            >
+                            Fecha fin contrato
+                          </LabelElementAssist>
+                      </FormSimplePanelRow>
+                      <FormSimplePanelRow>
+                        <LabelElementToggle
+                          htmlFor='playerCotonu' >
+                          Cotonú
+                        </LabelElementToggle>
+                      </FormSimplePanelRow>
+                      
+                      </FormSimplePanelRow>
+                      {createPlayerError &&
+                        <FormSimpleRow className='cm-u-centerText'>
+                          <span className='error'>{createPlayerError}</span>
+                        </FormSimpleRow>
+                      }
+                      { !contractsCompleted ? 
+                        <FormSimplePanelRow className='cm-u-centerText'>
+                          <ButtonMousePrimary
+                            onClick={handleSavePlayer}>
+                            Guardar y Continuar
+                          </ButtonMousePrimary>
+                          <ButtonMouseGhost
+                            onClick={() => {
+                              navigate('/manage-players')}} >
+                            Cancelar
+                          </ButtonMouseGhost>
+                        </FormSimplePanelRow>
+                        :''
+                      }
+                    </TabContent>   
+                    { contractsTabsActive?      
+                      <TabContent className={activeTab === 2 ? '' : 'hideContent'}>
+                        <TableDataWrapper
+                          className='cm-u-spacer-mt-big'>
+                            <TableDataHeader>
+                              <TableCellMedium>Tipo de Contrato</TableCellMedium>
+                              <TableCellMedium>Tipo de Procedimiento</TableCellMedium>
+                              <TableCellMedium>Fecha Inicio - Fecha Fin</TableCellMedium>
+                              <TableCellShort>Seleccionado</TableCellShort>
+                              <TableCellShort></TableCellShort>
+                            </TableDataHeader>
+
+                            { savedContracts?.map((item, index) => {
+
+                              return (
+                                <TableDataRow key={index}>
+                                  <TableCellMedium>{item.desc_tipo_contrato}</TableCellMedium>
+                                  <TableCellMedium>{item.desc_tipo_procedimiento}</TableCellMedium>
+                                  <TableCellMedium>{item.fch_inicio_contrato} - {item.fch_fin_contrato}</TableCellMedium>
+                                  <TableCellShort>
+                                    <input 
+                                      type='radio' 
+                                      name='selected'
+                                      checked={activeContractId === item.id_contrato ? true : ''} 
+                                      value={index}
+                                      onChange={()=>{
+                                        console.log('he cambiado', item.id_contrato)
+                                      }}
+                                      onClick={(e) => {
+                                        setActiveContractId(item.id_contrato);
+                                      }} />
+                                  </TableCellShort>
+                                  <TableCellShort></TableCellShort>
+                                </TableDataRow>
+                              )
+                            })}
+                            {activeContractError ? 
+                              <FormSimplePanelRow className='cm-u-center-text'>
+                                <span className="error">{activeContractError}</span>
+                              </FormSimplePanelRow>
+                              : ''}
+                            <FormSimplePanelRow className='cm-u-centerText cm-u-spacer-mt-bigger cm-u-spacer-mb-bigger'>
+                              { savedContracts.length >= 1 ? 
+                                
+                                  <ButtonMousePrimary
+                                    onClick={handleSaveContracts}>
+                                    Guardar y Continuar
+                                  </ButtonMousePrimary>
+                                
+                                :
+                                
+                                  <ButtonMouseDisabled
                                     >
-                                  <SymbolDelete />
-                                </IconButtonSmallerPrimary>
-                              </TableCellMedium>
-                            </TableDataRow>
-                            )
-                          })}
-                        </TableDataWrapper>
+                                    Guardar y Continuar
+                                  </ButtonMouseDisabled>
+                                
+                              }
+                              </FormSimplePanelRow>
+                          </TableDataWrapper>
+
+                            {/* Acordeon crear contrato */}
+                            <SimpleAccordion>
+                              <SimpleAccordionTrigger
+                                className='cm-u-spacer-mb-bigger'>
+                                <HeadContentTitleBar>
+                                  <TitleBar__Title></TitleBar__Title>
+                                  <TitleBar__Tools>
+                                    <IconButtonSmallPrimary
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        setNewContract(true);
+                                      }} >
+                                        <SymbolAdd />
+                                    </IconButtonSmallPrimary>
+                                  </TitleBar__Tools>
+                                </HeadContentTitleBar>
+                              </SimpleAccordionTrigger>
+                              {renderNewContractLayer()}
+                            </SimpleAccordion>
+
+                        
+                      </TabContent>
+                      :''
+                    }
+                    {variableTabsActive ?
+                      <TabContent className={activeTab === 3 ? '' : 'hideContent'}>
+                        {/* Tabla Variables creadas */}
+                        <TableDataWrapper
+                          className='cm-u-spacer-mt-big'>
+                            <TableDataHeader>
+                              <TableCellLong>Variables añadidas</TableCellLong>
+                              <TableCellShort></TableCellShort>
+                            </TableDataHeader>
+                            { savedVariables?.map((item, index) => {                            
+                              return (
+                                <TableDataRow key={index}>
+                                  <TableCellLong>{`Variable ${index+1}`}</TableCellLong>
+                                  <TableCellMedium
+                                    className='cm-u-textRight'>
+                                    {/* <IconButtonSmallerPrimary
+                                        onClick={(indice) => {
+                                          
+                                          console.log('indice',index);
+                                          console.log(savedVariables[index]);
+                                          setEditingVarID(index);
+                                          setShowNewVariableLayer(true);
+                                        }}>
+                                      <SymbolEdit />
+                                    </IconButtonSmallerPrimary> */}
+                                  <span>&nbsp;&nbsp;</span>
+                                    <IconButtonSmallerPrimary
+                                      onClick={(index) => {
+                                        // console.log('borro variable');
+                                        const newVariablesArray = [...savedVariables];
+                                        newVariablesArray.splice(index, 1);
+                                        console.log(newVariablesArray);
+                                        setSavedVariables(newVariablesArray);
+                                      }}
+                                      >
+                                    <SymbolDelete />
+                                  </IconButtonSmallerPrimary>
+                                </TableCellMedium>
+                              </TableDataRow>
+                              )
+                            })}
+                            
+                          </TableDataWrapper>
+                        
+
+                        {/* Acordeon crear variable */}
+                        <SimpleAccordion>
+                          <SimpleAccordionTrigger
+                            className='cm-u-spacer-mb-bigger'>
+                            <HeadContentTitleBar>
+                              <TitleBar__Title></TitleBar__Title>
+                              <TitleBar__Tools>
+                                <IconButtonSmallPrimary
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setShowNewVariableLayer(true);
+                                  }} >
+                                    <SymbolAdd />
+                                </IconButtonSmallPrimary>
+                              </TitleBar__Tools>
+                            </HeadContentTitleBar>
+                          </SimpleAccordionTrigger>
+                          {renderNewVariableLayer()}
+                        </SimpleAccordion>
                       
 
-                      {/* Acordeon crear variable */}
-                      <SimpleAccordion>
-                        <SimpleAccordionTrigger
-                          className='cm-u-spacer-mb-bigger'>
-                          <HeadContentTitleBar>
-                            <TitleBar__Title></TitleBar__Title>
-                            <TitleBar__Tools>
-                              <IconButtonSmallPrimary
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  setShowNewVariableLayer(true);
-                                }} >
-                                  <SymbolAdd />
-                              </IconButtonSmallPrimary>
-                            </TitleBar__Tools>
-                          </HeadContentTitleBar>
-                        </SimpleAccordionTrigger>
-                        {renderNewVariableLayer()}
-                      </SimpleAccordion>
-                     
-
-                    </TabContent>
-                    <TabContent id='documentos'>
+                      </TabContent>
+                      :''
+                    }
+                    
+                    
+                    {/* <TabContent id='documentos'>
                       {/* Tabla documentos añadidos */}
-                      <TableDataWrapper
+                      {/* <TableDataWrapper
                         className='cm-u-spacer-mt-big'>
                           <TableDataHeader>
                             <TableCellLong>Documentos añadidos</TableCellLong>
@@ -998,7 +1722,7 @@ export default function NewPlayerPage () {
                           }
                         </TableDataWrapper>
                         {/* Acordeon añadir documentos */}
-                        <SimpleAccordion>
+                        {/* <SimpleAccordion>
                           <SimpleAccordionTrigger
                             className='cm-u-spacer-mb-bigger'>
                             <HeadContentTitleBar>
@@ -1017,7 +1741,7 @@ export default function NewPlayerPage () {
                           {renderUploadDocsLayer()}
                         </SimpleAccordion>
                       
-                      </TabContent>
+                      </TabContent> */}
                     </FormTabs__ContentWrapper>
                   </FormTabs>
                 {error &&

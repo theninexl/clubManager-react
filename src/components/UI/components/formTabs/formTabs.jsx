@@ -22,11 +22,13 @@ export const FormTabs__ToolBarWrapper = ({ children, className}) => {
   )
 }
 
-export const TabLink = ({ children, target }) => {
+export const TabLink = ({ children, className, id, target, handleOnClick }) => {
   return (
     <button 
-      className='tabLink'
-      data-target={target} >
+      className={`tabLink ${className}`}
+      id={id}
+      data-target={target}
+      onClick={handleOnClick} >
         { children }
       </button>
   );
@@ -40,10 +42,10 @@ export const FormTabs__ContentWrapper = ({ children }) => {
   )
 }
 
-export const TabContent = ({ children, id }) => {
+export const TabContent = ({ children, id, className }) => {
   return (
     <div 
-      className='tabContent'
+      className={`tabContent ${className}`}
       id={id} >
         { children }
       </div>

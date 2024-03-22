@@ -25,4 +25,26 @@
     // margin auto
     &-m-auto{margin:auto};
     &-mlr-auto{margin:0 auto};
+    // margin-right
+    &-mr-base { margin-right:getSize($base); }
+    &-mr-tiny { margin-right: getSize($tiny);}
+    &-mr-small{ margin-right: getSize($small);}
+    &-mr-medium{ margin-right: getSize($medium);}
+    &-mr-big{ margin-right: getSize($big);}
+    &-mr-bigger{ margin-right: getSize($bigger);}
+    &-mr-large{ margin-right: getSize($large);}
+    &-mr-huge{ margin-right: getSize($huge);}
+    &-mr-enormous{ margin-right: getSize($enormous);}
+    &-mr-gigantic{ margin-right: getSize($gigantic);}
+    // margin-left
+    &-ml-base { margin-left:getSize($base); }
+    &-ml-tiny { margin-left: getSize($tiny);}
+    &-ml-small{ margin-left: getSize($small);}
+    &-ml-medium{ margin-left: getSize($medium);}
+    &-ml-big{ margin-left: getSize($big);}
+    &-ml-bigger{ margin-left: getSize($bigger);}
+    &-ml-large{ margin-left: getSize($large);}
+    &-ml-huge{ margin-left: getSize($huge);}
+    &-ml-enormous{ margin-left: getSize($enormous);}
+    &-ml-gigantic{ margin-left: getSize($gigantic);}
 }

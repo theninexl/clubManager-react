@@ -7,6 +7,7 @@
     border-bottom:1px solid getColor(secondaryLight);
     
     .tabLink {
+      $block:&;
       background: none;
       border:0;
       color:getColor(scarpaFlowLight);
@@ -16,10 +17,20 @@
       height: getSize($huge);
       @extend .cm-u-text-cat;
       @include cm-qs-bold;
+
+ 
     }
 
     .tabLink.active {
       color:getColor(secondary);
+    }
+  }
+
+  &__content {
+    .hideContent {
+      height: 0;
+      opacity: 0;
+      overflow: hidden;
     }
   }
 }

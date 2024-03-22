@@ -134,7 +134,7 @@ export default function EditPlayerPage () {
     if (getIntermediaries.responseGetData) setIntermediaries(getIntermediaries.responseGetData.data.data);
   },[getIntermediaries.responseGetData])
 
-  const getTeams = useGetData('teams/getAll');
+  const getTeams = useGetData('masters/GetAllTeams');
   useEffect (() => {
     if (getTeams.responseGetData) {
       setTeams(getTeams.responseGetData.data.data);

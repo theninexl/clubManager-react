@@ -75,7 +75,7 @@
                 gap:getSize($small);
                 // margin-bottom:getSize($small);
 
-                span:not(.material-symbols-outlined) {
+                span:not(.material-symbols-outlined, .textLeft, .textRight) {
                     text-align: left;
                     width:getCols(2);
                     
@@ -104,6 +104,19 @@
                         text-align: left;
                         width: auto !important;                        
                     }
+                }
+            }
+
+            .panel-field-flexible {
+                $block: &;
+                display: flex;
+                flex-direction:row;
+                flex-wrap: wrap;
+                align-items: center;
+                gap:getSize($small);
+
+                .textLeft {
+                    text-align: right;
                 }
             }
         }

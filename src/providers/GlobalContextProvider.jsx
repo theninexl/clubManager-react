@@ -28,6 +28,11 @@ export const InitializeLocalStorage = () => {
 }
 
 export const GlobalContextProvider = ({ children }) => {
+  //listado entidades
+  const [entities, setEntities] = useState([])
+  //entidad activa
+  const [activeEntity, setActiveEntity] = useState();
+
   //acount
   const [account, setAccount] = useState({});
   //signout
@@ -43,6 +48,10 @@ export const GlobalContextProvider = ({ children }) => {
   return (
     <globalContext.Provider 
       value={{
+        entities,
+        setEntities,
+        activeEntity,
+        setActiveEntity,
         account,
         setAccount,
         signOut,
