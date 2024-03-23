@@ -46,9 +46,11 @@ export default function NewPlayerPage () {
   const [optaResultsBox, setOptaResultsBox] = useState(false);
   const [countries, setCountries] = useState(null);
   const [positions, setPositions] = useState(null);
-  const [contracts, setContracts] = useState(null);
+  // const [contracts, setContracts] = useState(null);
   const [intermediaries, setIntermediaries] = useState(null);
   const [teams, setTeams] = useState(null);
+  const [createdPlayerData, setCreatedPlayerData] = useState(null);
+  const [createdPlayerName, setCreatedPlayerName] = useState(null);
   const [createdPlayerId, setCreatedPlayerId] = useState(null);
   const [createPlayerError, setCreatePlayerError] = useState(null);
 
@@ -58,8 +60,11 @@ export default function NewPlayerPage () {
   const [contractSalary, setContractSalary] = useState([{id_salario:1,flag_bruto_neto:'',fch_inicio:'',fch_fin:'',num_salario_fijo:''}]);
   //array con los contratos creados
   const [savedContracts, setSavedContracts] = useState([]);
+  //error creando contratos
+  const [creatingContractError, setCreatingContractError] = useState();
   //contrato activo
   const [activeContractId, setActiveContractId] = useState();
+  const [activeContractData, setActiveContractData] = useState();
   const [activeContractError, setActiveContractError] = useState(false);
 
   //si muestro o no la capa de creacion de variable
@@ -68,18 +73,22 @@ export default function NewPlayerPage () {
   const [variableCombos, setVariableCombos] = useState([]);
   //array para guardar las nuevas expresiones añadidas a cada variable
   const [variableExpressions, setVariableExpressions] = useState([{id_ExprComb:1,id_expresion_bonusprima:'',id_expresion_concatenacion:'',id_expresion:'',id_expresion_operador:'',id_expresion_valor:'', operador:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
-  //array para guardar las nuevas condiones añadidas a cada expresion
-  // const [variableConditions, setVariableConditions] = useState([]);
-  //tipo de condicion escogida
-  // const [conditionChosen, setConditionChosen] = useState();
   //array con las variables creades
   const [savedVariables, setSavedVariables] = useState([]);
+  //guardar resultados search expressions
+  const [searchExpSelected, setSearchExpSelected] = useState(null);
+  const [searchExpResults, setSearchExpResults] = useState(null);
+  const [showSearchExpResults, setShowSearchExpResults] = useState(false);
+  //guardar resultados search conditions
+  const [searchCondSelected, setSearchCondSelected] = useState(null);
+  const [searchCondResults, setSearchCondResults] = useState(null);
+  const [showSearchCondResults, setShowSearchCondResults] = useState(false);
+
+
   //si muestro o no la capa de creacion de nuevo documento
   const [showUploadDoc, setShowUploadDoc ] = useState(false);
   //los archivos guardados
   const [uploadedFiles, setUploadedFiles ] = useState([]);
-  //guardar
-  const [economicValue, setEconomicValue] = useState(0);
 
   //pedir paises, posiciones, contratos, intermediarios y equipos
   const getCountries = useGetData('masters/getAllCountry');
@@ -92,10 +101,6 @@ export default function NewPlayerPage () {
     if (getPositions.responseGetData) setPositions(getPositions.responseGetData.data.data);
   },[getPositions.responseGetData])
 
-  const getContracts = useGetData('masters/getAllContract');
-  useEffect (() => {
-    if (getContracts.responseGetData) setContracts(getContracts.responseGetData.data.data);
-  },[getContracts.responseGetData])
 
   const getIntermediaries = useGetData('masters/getAllIntermediary');
   useEffect (() => {
@@ -124,6 +129,8 @@ export default function NewPlayerPage () {
     setActiveTab(id)
   };
 
+  //-----------------------------------------------------------------------------//
+  // CREACIÓN DE JUGADOR
 
   //pedir datos para buscar un jugador
   const getOptaPlayer = useSaveData();
@@ -167,6 +174,132 @@ export default function NewPlayerPage () {
       );
     }
   }
+
+  //handle Save jugador y habilitar la pestaña contractual si no hay fallo.
+  const createNewPlayer = useSaveData();
+
+  const handleSavePlayer = (e) => {
+    e.preventDefault();
+    const formData = new FormData(form.current);
+
+    const playerComunitarioVal = document.getElementById('playerComunitario').checked;
+    const playerResidenciaVal = document.getElementById('playerResidencia').checked;
+    const savedVariablesInState = savedVariables;
+
+    const data = {
+      id_jugador:formData.get('playerId'),
+      nombre: formData.get('playerName'),
+      apellido1: formData.get('playerLastname1'),
+      apellido2: formData.get('playerLastname2'),
+      alias: formData.get('playerAlias'),
+      fch_nacimiento: formData.get('playerBornDate'),
+      residencia: playerResidenciaVal ? 1 : 0,
+      comunitario: playerComunitarioVal ? 1 : 0,
+      nacionalidad1: formData.get('playerNationality1'),
+      pasaporte1: formData.get('playerPassport1Nr'),
+      caducidad_pasaporte1: formData.get('playerPassport1Date'),
+      nacionalidad2: formData.get('playerNationality2'),
+      pasaporte2: formData.get('playerPassport2Nr'),
+      caducidad_pasaporte2: formData.get('playerPassport2Date'),
+      dni_nie: formData.get('playerDNI'),
+      caducidad_dni: formData.get('playerDNIdate'),
+      nss: formData.get('playerNSS'),
+      desc_dorsal: formData.get('playerDorsal'),
+      id_posicion: formData.get('playerPosition'),
+      id_intermediario: '',
+      id_club_origen: formData.get('playerTeamOrigin'),
+      valor_mercado: formData.get('playerMarketValue'),
+      fecha_fin_contrato: formData.get('playerContractEndDate'),
+      // cotonu: formData.get('playerCotonu'),     
+    }
+
+    const dataSent = {
+      'id_jugador':'',
+      'nombre': '',
+      'apellido1': '',
+      'apellido2': data.apellido2,
+      'alias': data.alias,
+      'fch_nacimiento': data.fch_nacimiento,
+      'residencia': data.residencia.toString(),
+      'comunitario': data.comunitario.toString(),
+      'nacionalidad1': data.nacionalidad1,
+      'pasaporte1': data.pasaporte1,
+      'caducidad_pasaporte1': data.caducidad_pasaporte1,
+      'nacionalidad2': data.nacionalidad2,
+      'pasaporte2': data.pasaporte2,
+      'caducidad_pasaporte2': data.caducidad_pasaporte2,
+      'dni_nie': data.dni_nie,
+      'caducidad_dni': data.caducidad_dni,
+      'nss': data.nss,
+      'desc_dorsal': data.desc_dorsal,
+      'id_posicion': data.id_posicion,
+      'id_intermediario': '',
+      'id_club_origen': data.id_club_origen,
+      'valor_mercado': data.valor_mercado,
+      'fecha_fin_contrato': data.fecha_fin_contrato,
+      // 'cotonu', data.cotonu,
+    }
+
+    if (data.nombre === '') {
+      setCreatePlayerError('Tienes que rellenar los campos mínimos obligatorios');
+    } else {
+      dataSent['nombre'] = data.nombre;
+      if (data.apellido1 === '') {
+        setCreatePlayerError('Tienes que rellenar los campos mínimos obligatorios');
+      } else {       
+        dataSent['apellido1'] = data.apellido1;    
+        console.log('jugador que creo', dataSent);    
+        saveUpdatePlayer(dataSent);
+      }
+    }    
+  }
+
+  const saveUpdatePlayer = (data) => {
+    console.log('createPlayerCompleted', createPlayerCompleted);
+    console.log('data.id_jugador', data);
+    console.log('createdPlayerId',createdPlayerId);
+
+    if (!createPlayerCompleted) {
+        setCreatedPlayerData(data);
+        createNewPlayer.uploadData('players/create',data);
+    } else {
+      if (data['id_jugador'] === '') {
+        data['id_jugador'] = createdPlayerId.toString();
+      }
+      setCreatedPlayerData(data);
+      console.log('dataSent',data);
+      createNewPlayer.uploadData('players/edit',data);
+    }
+  }
+
+  //mirar la respuesta de subir datos al crear jugador para setear error
+  useEffect(()=> {
+    if (createNewPlayer.responseUpload) {
+      console.log(createNewPlayer.responseUpload);
+      if (createNewPlayer.responseUpload.status === 409) { 
+        setCreatePlayerCompleted(false);
+        setCreatedPlayerData(null);
+        setCreatePlayerError('El usuario que estás intentando crear ya existe')
+      } else if (createNewPlayer.responseUpload.code === 'ERR_NETWORK') { 
+        setCreatePlayerCompleted(false);
+        setCreatedPlayerData(null);
+        setCreatePlayerError('Error de conexión, inténtelo más tarde')
+      } else if (createNewPlayer.responseUpload.status === 'ok') { 
+        if (!createdPlayerId) setCreatedPlayerId(createNewPlayer.responseUpload.id_jugador);
+        window.scrollTo(0,0);
+        setCreatePlayerCompleted(true)
+        setCreatedPlayerName({'nombre':createdPlayerData.nombre ,'apellido1':createdPlayerData.apellido1})
+        setContractsTabsActive(true);
+        updateActiveTab(2);
+        setContractsCompleted(true);
+      } else {
+        setCreatePlayerCompleted(false);
+        setCreatedPlayerData(null);
+        setCreatePlayerError('Existe un error en el formulario, inténtelo de nuevo')
+      }
+    }
+  },[createNewPlayer.responseUpload])
+
 
   //-----------------------------------------------------------------------------//
   //form creacion nuevo contrato
@@ -242,36 +375,36 @@ export default function NewPlayerPage () {
       imp_salario_variable: formData.get('amountVariableSalary'),
       pct_pago_atm: formData.get('clubPercentage'),
       imp_clausula_rescision: formData.get('terminationClause'),
+      id_intermediario_1: formData.get('contractIntermediary1'),
+      id_intermediario_2: formData.get('contractIntermediary2'),
+      id_intermediario_3: formData.get('contractIntermediary3'),
       salario_fijo:salarios,
       // amortizable: amortizableVal ? 1 : 0,
     }
 
     const savedContract = {
       id_contrato: '',
-      id_jugador: data.id_jugador,
-      desc_tipo_contrato: data.desc_tipo_contrato,
-      desc_tipo_procedimiento: data.desc_tipo_procedimiento,
-      descripcion: data.descripcion,
-      id_plantilla: data.id_plantilla,
-      id_club_origen: data.id_club_origen,
-      id_club_destino: data.id_club_destino,
-      fch_inicio_contrato: data.fch_inicio_contrato,
-      fch_inicio_contrato_real: data.fch_inicio_contrato_real,
-      fch_fin_contrato: data.fch_fin_contrato,
-      imp_contrato_fijo: data.imp_contrato_fijo,
-      imp_contrato_variable: data.imp_contrato_variable,
-      imp_salario_total: data.imp_salario_total,
-      imp_salario_variable: data.imp_salario_variable,
-      pct_pago_atm: data.pct_pago_atm,
-      imp_clausula_rescision: data.imp_clausula_rescision,
-      salario_fijo:data.salario_fijo,
     }
 
-    console.log('contrato que guardo', data);
-    saveNewContract.uploadData('players/createContract',data)
-    setSavedContracts([...savedContracts, savedContract]);
-    setNewContract(false);
-    setContractSalary([{id_salario:1,flag_bruto_neto:'',fch_inicio:'',fch_fin:'',num_salario_fijo:''}]); 
+    if (data) {
+      for (const [key, value] of Object.entries(data)) {        
+        if (value == '-1' || value == '') {
+          setCreatingContractError('Es necesario rellenar todos los campos');
+          break;
+        } else {
+          savedContract[key] = value;
+        } 
+      }
+
+      if (Object.keys(data).length === (Object.keys(savedContract).length - 1)) {
+        console.log('contrato que guardo', data);
+        saveNewContract.uploadData('players/createContract',data)
+        setSavedContracts([...savedContracts, savedContract]);
+        setNewContract(false);
+        setContractSalary([{id_salario:1,flag_bruto_neto:'',fch_inicio:'',fch_fin:'',num_salario_fijo:''}]);
+        window.scrollTo(0,0);
+      }
+    } 
   }
 
   useEffect(() => {
@@ -302,11 +435,12 @@ export default function NewPlayerPage () {
 
   const handleSaveContracts = (e) => {
     e.preventDefault();
-
     if (!activeContractId) {
       setActiveContractError('Tienes que señalar un contrato vigente')
     } else {
-      assignContract.uploadData('players/setContract',{id_jugador:createdPlayerId.toString(), id_contrato:activeContractId.toString()});      
+      assignContract.uploadData('players/setContract',{id_jugador:createdPlayerId.toString(), id_contrato:activeContractId.toString()});   
+      setActiveContractError();
+      console.log('savedContracts:', savedContracts);   
     }
   }
 
@@ -320,7 +454,21 @@ export default function NewPlayerPage () {
     }
   },[assignContract.responseUpload])
 
-  
+  useEffect(()=>{
+    if (activeContractId) {
+      const filteredActiveContract = savedContracts.filter((contract) => {
+        return contract.id_contrato == activeContractId;
+      }) 
+      setActiveContractData(filteredActiveContract); 
+    }
+  },[activeContractId])
+
+  useEffect(()=>{
+    if (activeContractData) {
+      console.log('activeContractData',activeContractData);
+      assignContract.uploadData('players/setContract',{id_jugador:createdPlayerId.toString(), id_contrato:activeContractId.toString()});
+    }
+  },[activeContractData])  
 
   //nueva capa contrato
   const renderNewContractLayer = () => {
@@ -449,7 +597,7 @@ export default function NewPlayerPage () {
                 type='number'
                 className='panel-field-long'
                 autoComplete='off'
-                placeholder='Importe contrato fijo'
+                placeholder='Importe en €'
                 required={true}
                 assistanceText='Este campo es obligatorio'
                 >
@@ -462,7 +610,7 @@ export default function NewPlayerPage () {
                 type='number'
                 className='panel-field-long'
                 autoComplete='off'
-                placeholder='Importe contrato variable'
+                placeholder='Importe en €'
                 required={true}
                 assistanceText='Este campo es obligatorio'
                 >
@@ -475,7 +623,7 @@ export default function NewPlayerPage () {
                 type='number'
                 className='panel-field-long'
                 autoComplete='off'
-                placeholder='Importe salario fijo'
+                placeholder='Importe en €'
                 required={true}
                 assistanceText='Este campo es obligatorio'
                 >
@@ -488,7 +636,7 @@ export default function NewPlayerPage () {
                 type='number'
                 className='panel-field-long'
                 autoComplete='off'
-                placeholder='Importe salario variable'
+                placeholder='Importe en €'
                 required={true}
                 assistanceText='Este campo es obligatorio'
                 >
@@ -501,7 +649,7 @@ export default function NewPlayerPage () {
                 type='number'
                 className='panel-field-long'
                 autoComplete='off'
-                placeholder='Porcentaje de pago club (%)'
+                placeholder='Porcentaje (%)'
                 required={true}
                 assistanceText='Este campo es obligatorio'
                 >
@@ -514,13 +662,55 @@ export default function NewPlayerPage () {
                 type='number'
                 className='panel-field-long'
                 autoComplete='off'
-                placeholder='Importe cláusula rescisión'
+                placeholder='Importe en €'
                 required={true}
                 assistanceText='Este campo es obligatorio'
                 >
                 Importe cláusula rescisión
               </LabelElementAssist>
             </FormSimplePanelRow>
+            <FormSimplePanelRow>
+                <LabelSelectElement
+                  htmlFor='contractIntermediary1'
+                  labelText='Intermediario 1'
+                  required={true}
+                  >
+                    <option value=''>Selecciona</option>
+                    { intermediaries?.map(item => { ''
+                      return (
+                        <option key={item.id_intermediario} value={item.id_intermediario}>{item.nombre}</option>
+                      );
+                    })}
+                </LabelSelectElement>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelSelectElement
+                  htmlFor='contractIntermediary2'
+                  labelText='Intermediario 2'
+                  required={true}
+                  >
+                    <option value=''>Selecciona</option>
+                    { intermediaries?.map(item => { ''
+                      return (
+                        <option key={item.id_intermediario} value={item.id_intermediario}>{item.nombre}</option>
+                      );
+                    })}
+                </LabelSelectElement>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelSelectElement
+                  htmlFor='contractIntermediary3'
+                  labelText='Intermediario 3'
+                  required={true}
+                  >
+                    <option value=''>Selecciona</option>
+                    { intermediaries?.map(item => { ''
+                      return (
+                        <option key={item.id_intermediario} value={item.id_intermediario}>{item.nombre}</option>
+                      );
+                    })}
+                </LabelSelectElement>
+              </FormSimplePanelRow>
             {
               contractSalary.map((item,index) => {
                 const SalaryComb = item.id_salario;  
@@ -532,7 +722,7 @@ export default function NewPlayerPage () {
                         type='number'
                         className='panel-field-short'
                         autoComplete='off'
-                        placeholder='Importe salario'
+                        placeholder='Importe en €'
                         required={true}
                         value={item.num_salario_fijo}
                         handleOnChange={(event) => {
@@ -602,6 +792,13 @@ export default function NewPlayerPage () {
                 );
               })
             }
+            { creatingContractError? 
+              <FormSimplePanelRow
+              className='cm-u-centerText'>
+                <span className='error'>{creatingContractError}</span>
+              </FormSimplePanelRow>
+              : ''
+            }
             <FormSimplePanelRow
               className='cm-u-centerText'>
               <ButtonMousePrimary
@@ -626,6 +823,8 @@ export default function NewPlayerPage () {
     }
   },[variableExpressions])
 
+  //----------------------------------------------------------//
+  //variables
 
   //añadir una nueva expresion completa a la variable
   const handleAddNewVariableExpression = (number) => {
@@ -646,7 +845,7 @@ export default function NewPlayerPage () {
     onChangeValue[index][name] = checked ? 1 : 0;
     setVariableExpressions(onChangeValue);
   }
- 
+  //borrar una variable creada
   const handleDeleteNewVariableExpression = (index) => {
     const newExpressionsArray = [...variableExpressions];
     newExpressionsArray.splice(index,1);
@@ -669,6 +868,170 @@ export default function NewPlayerPage () {
     newExpressionsArray[indexExpr]["condiciones"] = newConditionsArray;    
     setVariableExpressions(newExpressionsArray);
   }  
+  
+  //pedir datos para buscar en una expresion tipo search
+  const getExprSearch = useSaveData();
+  const searchExpression = (id, search) => {
+    getExprSearch.uploadData('players/searchComboValues',{'id':id, 'search':search})
+  }
+  //guardar datos busqueda expresion
+  useEffect(()=> {
+    if (getExprSearch.responseUpload) {
+      console.log('resultados de busqueda',getExprSearch.responseUpload)
+      setSearchExpResults(getExprSearch.responseUpload.data);
+      setShowSearchExpResults(true);
+    }
+  },[getExprSearch.responseUpload])
+
+  //render caja de resultados busqueda expresion
+  const renderSearchExpResults = (index) => {
+    if (showSearchExpResults && searchExpResults?.length == 0) {
+      return (
+        <div className='cm-c-dropdown-select__results-box'><span>No hay resultados</span></div>
+      );
+    } else if (showSearchExpResults && searchExpResults?.length > 0) {
+      return (
+        <div className='cm-c-dropdown-select__results-box'>
+          {
+            searchExpResults.map(item => {
+     
+              return (
+                <span
+                  className='result'
+                  key={item.id}
+                  onClick={e => {
+                    e.preventDefault();
+                    let onChangeValue = [...variableExpressions];
+                    onChangeValue[index]["id_expresion_valor"] = item.id.toString();
+                    setVariableExpressions(onChangeValue);
+                    setSearchExpResults(item.value);
+                    setShowSearchExpResults(false);
+                  }}  >
+                    {item.value}
+                </span>
+              );
+            })
+          }
+        </div>
+      );
+    }
+  }
+
+  //render campo valor de expresion dependiendo de tipo de expresión
+  const renderExprCondValueField = (idExpresion, index) => {
+    let type = null;
+    let result= null;
+    let comboVal = null;
+    if (idExpresion !== '') {
+      type = variableCombos.expresion.filter(item => item.id.includes(idExpresion));
+      result = type[0]?.type;
+      comboVal = type[0]?.comboVal;
+    }
+    if (result === 'texto') {
+      return (
+        <LabelElement
+          htmlFor='id_expresion_valor'
+          placeholder='introduce valor'
+          type='number'
+          className='cm-c-form-simple'
+          value={variableExpressions[index]?.id_expresion_valor}
+          handleOnChange={(event) => {
+            handleChangesOnNewVariableExpression(event,index);
+        }} />
+      );
+    } else if (result === 'combo') {
+      return (
+        <SelectIconShorter
+          name='id_expresion_valor'
+          value={variableExpressions[index]?.id_expresion_valor || ''}
+          handleOnChange={(e) => {
+            handleChangesOnNewVariableExpression(e,index);                           
+          }} >
+          <option value=''>Selecciona</option>
+          { comboVal.map((item) => {
+              return (
+                <option key={item.id} value={item.id}>{item.value}</option>
+              );
+          })}
+        </SelectIconShorter>  
+      );
+    } else if (result === 'search') {
+      return (
+        <div className='cm-c-dropdown-select'>
+          <LabelElement
+            htmlFor='id_expresion_valor'
+            type='text'
+            className='cm-c-form-simple'
+            autoComplete='off'
+            placeholder='Escribe para buscar'
+            required={true}
+            value={searchExpSelected}
+            handleOnChange={(e)=>{
+              console.log(e.target.value);
+              setSearchExpSelected(e.target.value);
+              if (e.target.value.length >= 2 ) {
+                searchExpression(idExpresion, e.target.value)
+              } else if ((e.target.value.length < 2 )) {
+                setSearchExpResults(null);
+                setShowSearchExpResults(false);
+                
+              }
+            }}
+  
+            />
+          {renderSearchExpResults(index)}
+        </div>
+      );
+    }
+  }
+
+  //pedir datos para buscar en una condicion tipo search
+  const getCondSearch = useSaveData();
+  const searchCondition = (id, search) => {
+    getCondSearch.uploadData('players/searchComboValues',{'id':id, 'search':search})
+  }
+  //guardar datos busqueda jugador
+  useEffect(()=> {
+    if (getCondSearch.responseUpload) {
+      console.log(getCondSearch.responseUpload)
+      setSearchCondResults(getCondSearch.responseUpload.data);
+      setShowSearchCondResults(true);
+    }
+  },[getCondSearch.responseUpload])
+
+  //render caja de resultados busqueda jugador
+  const renderSearchCondResults = (indexExpr, indexCond) => {
+    if (showSearchCondResults && searchCondResults?.length == 0) {
+      return (
+        <div className='cm-c-dropdown-select__results-box'><span>No hay resultados</span></div>
+      );
+    } else if (showSearchCondResults && searchCondResults?.length > 0) {
+      return (
+        <div className='cm-c-dropdown-select__results-box'>
+          {
+            searchCondResults.map(item => {
+              console.log(item);
+              return (
+                <span
+                  className='result'
+                  key={item.id}
+                  onClick={e => {
+                    e.preventDefault();
+                    let onChangeValue = [...variableExpressions];
+                    onChangeValue[indexExpr]["condiciones"][indexCond]["id_condicion_valor"] = item.value;
+                    setVariableExpressions(onChangeValue);
+                    setSearchCondSelected(item.value);
+                    setShowSearchCondResults(false);
+                  }}  >
+                    {item.value}
+                </span>
+              );
+            })
+          }
+        </div>
+      );
+    }
+  }
 
   //render campo valor condicion dependiendo del escogido en condicion
   const renderConditionValueField = (idCondicion, indexExpr, indexCond) => {
@@ -725,6 +1088,33 @@ export default function NewPlayerPage () {
           </SelectIconShorter>  
         </>  
       );
+    } else if (result === 'search') {
+      return (
+        <div className='cm-c-dropdown-select'>
+          <LabelElement
+            htmlFor='id_condicion_valor'
+            type='text'
+            className='cm-c-form-simple'
+            autoComplete='off'
+            placeholder='Escribe para buscar'
+            required={true}
+            value={searchCondSelected}
+            handleOnChange={(e)=>{
+              console.log(e.target.value);
+              setSearchCondSelected(e.target.value);
+              if (e.target.value.length >= 2 ) {
+                searchCondition(idCondicion, e.target.value)
+              } else if ((e.target.value.length < 2 )) {
+                setSearchCondResults(null);
+                setShowSearchCondResults(false);
+                
+              }
+            }}
+  
+            />
+          {renderSearchCondResults(indexExpr, indexCond)}
+        </div>
+      );
     }
   }
 
@@ -741,37 +1131,34 @@ export default function NewPlayerPage () {
             const ExprComb = item.id_ExprComb;  
             return (
               <div key={ExprComb} className='cm-u-spacer-mb-bigger'>
-                {(item.id_ExprComb !== 1) ?
-                    <FormSimplePanelRow>                   
-                      <LabelSelectShorterElement
-                        htmlFor='id_expresion_concatenacion'
-                        labelText='Nueva expresión'
-                        value={item.id_expresion_concatenacion}
-                        handleOnChange={(event) => {
-                          handleChangesOnNewVariableExpression(event,index)
-                        }} >
-                          <option value=''>Selecciona</option>
-                        <option value='y'>Y</option>
-                        <option value='o'>O</option>
-                      </LabelSelectShorterElement>
-                    </FormSimplePanelRow>
-                    : ''}
-                  <FormSimplePanelRow>
-                    <LabelElementToggle2SidesPanel
-                      textLeft='Bonus'
-                      textRight='Prima'
-                      htmlFor='id_expresion_bonusprima'
-                      checked={item.id_expresion_bonusprima === 1 ? true : ''}
+                <FormSimplePanelRow>
+                  {(item.id_ExprComb !== 1) ?
+                    <LabelSelectShorterElement
+                      htmlFor='id_expresion_concatenacion'
+                      labelText='Nueva expresión'
+                      value={item.id_expresion_concatenacion}
                       handleOnChange={(event) => {
-                        handleChangesOnNewVariableExpressionToggle(event, index);
-                      }}>
-                      {(item.id_ExprComb !== 1) ?  '' : 'Expresión'}
-                    </LabelElementToggle2SidesPanel>
-                  </FormSimplePanelRow>
-                  <FormSimplePanelRow>
+                        handleChangesOnNewVariableExpression(event,index)
+                      }} >
+                        <option value=''>Selecciona</option>
+                      <option value='y'>Y</option>
+                      <option value='o'>O</option>
+                    </LabelSelectShorterElement>
+                  : ''}
+                  <LabelElementToggle2SidesPanel
+                    textLeft='Bonus'
+                    textRight='Prima'
+                    htmlFor='id_expresion_bonusprima'
+                    checked={item.id_expresion_bonusprima === 1 ? true : ''}
+                    handleOnChange={(event) => {
+                      handleChangesOnNewVariableExpressionToggle(event, index);
+                    }}>
+                    {(item.id_ExprComb !== 1) ?  '' : 'Expresión'}
+                  </LabelElementToggle2SidesPanel>
+                </FormSimplePanelRow>
+                <FormSimplePanelRow>
                   <LabelSelectShorterElement
-                    htmlFor='id_expresion'
-                    
+                    htmlFor='id_expresion'                    
                     value={item.id_expresion}
                     handleOnChange={(event) => {
                       handleChangesOnNewVariableExpression(event,index)
@@ -795,15 +1182,7 @@ export default function NewPlayerPage () {
                     <option value='<'>&lt;</option>
                     <option value='>'>&gt;</option>
                   </SelectIconShorter>
-                  <LabelElement
-                    htmlFor='id_expresion_valor'
-                    placeholder='introduce valor'
-                    type='number'
-                    className='cm-c-form-simple'
-                    value={item.id_expresion_valor}
-                    handleOnChange={(event) => {
-                      handleChangesOnNewVariableExpression(event,index)
-                    }} /> 
+                  {renderExprCondValueField(variableExpressions[index].id_expresion, index)}
 
                   {(item.id_ExprComb !== 1) ?                   
                     <IconButtonSmallSecondary
@@ -890,7 +1269,7 @@ export default function NewPlayerPage () {
                   </>
                   : ''
                 }
-                </div>
+              </div>
             );
           })}
           <FormSimplePanelRow>
@@ -912,7 +1291,7 @@ export default function NewPlayerPage () {
           <FormSimplePanelRow>
             <LabelElementAssist
               htmlFor='variableAmount'
-              placeholder='introduce valor'
+              placeholder='Importe en €'
               type='text'
               className='panel-field-long'>
                 Importe
@@ -996,6 +1375,7 @@ export default function NewPlayerPage () {
     }
 
     console.log('variable que guardo', data);
+    console.log('variable que mando', dataSent);
 
     saveClausula.uploadData('players/createClausula', dataSent);
     setSavedVariables([...savedVariables, dataSent]);    
@@ -1017,6 +1397,8 @@ export default function NewPlayerPage () {
   },[savedVariables])
  
 
+  //------------------------------------------------------------//
+  //documentos
   //render acordeon upload docs
   const renderUploadDocsLayer = () => {
     if (showUploadDoc === true) {
@@ -1066,92 +1448,6 @@ export default function NewPlayerPage () {
     setShowUploadDoc(false);
   }
 
-  //handle Save jugador y habilitar la pestaña contractual si no hay fallo.
-  const createNewPlayer = useSaveData();
-
-  const handleSavePlayer = (e) => {
-    e.preventDefault();
-    const formData = new FormData(form.current);
-
-    const playerComunitarioVal = document.getElementById('playerComunitario').checked;
-    const playerResidenciaVal = document.getElementById('playerResidencia').checked;
-    const savedVariablesInState = savedVariables;
-
-    const data = {
-      id_jugador:formData.get('playerId'),
-      nombre: formData.get('playerName'),
-      apellido1: formData.get('playerLastname1'),
-      apellido2: formData.get('playerLastname2'),
-      alias: formData.get('playerAlias'),
-      fch_nacimiento: formData.get('playerBornDate'),
-      residencia: playerResidenciaVal ? 1 : 0,
-      comunitario: playerComunitarioVal ? 1 : 0,
-      nacionalidad1: formData.get('playerNationality1'),
-      pasaporte1: formData.get('playerPassport1Nr'),
-      caducidad_pasaporte1: formData.get('playerPassport1Date'),
-      nacionalidad2: formData.get('playerNationality2'),
-      pasaporte2: formData.get('playerPassport2Nr'),
-      caducidad_pasaporte2: formData.get('playerPassport2Date'),
-      dni_nie: formData.get('playerDNI'),
-      caducidad_dni: formData.get('playerDNIdate'),
-      nss: formData.get('playerNSS'),
-      desc_dorsal: formData.get('playerDorsal'),
-      id_posicion: formData.get('playerPosition'),
-      id_intermediario: formData.get('playerIntermediary'),
-      id_club_origen: formData.get('playerTeamOrigin'),
-      valor_mercado: formData.get('playerMarketValue'),
-      fecha_fin_contrato: formData.get('playerContractEndDate'),
-      // cotonu: formData.get('playerCotonu'),     
-    }
-
-    const dataSent = {
-      'id_jugador':data.id_jugador,
-      'nombre': data.nombre,
-      'apellido1': data.apellido1,
-      'apellido2': data.apellido2,
-      'alias': data.alias,
-      'fch_nacimiento': data.fch_nacimiento,
-      'residencia': data.residencia.toString(),
-      'comunitario': data.comunitario.toString(),
-      'nacionalidad1': data.nacionalidad1,
-      'pasaporte1': data.pasaporte1,
-      'caducidad_pasaporte1': data.caducidad_pasaporte1,
-      'nacionalidad2': data.nacionalidad2,
-      'pasaporte2': data.pasaporte2,
-      'caducidad_pasaporte2': data.caducidad_pasaporte2,
-      'dni_nie': data.dni_nie,
-      'caducidad_dni': data.caducidad_dni,
-      'nss': data.nss,
-      'desc_dorsal': data.desc_dorsal,
-      'id_posicion': data.id_posicion,
-      'id_intermediario': data.id_intermediario,
-      'id_club_origen': data.id_club_origen,
-      'valor_mercado': data.valor_mercado,
-      'fecha_fin_contrato': data.fecha_fin_contrato,
-      // 'cotonu', data.cotonu,
-    }
-    
-    console.log('dataSent',dataSent);
-    createNewPlayer.uploadData('players/create',dataSent);
-  }
-
-  //mirar la respuesta de subir datos al crear jugador para setear error
-  useEffect(()=> {
-    if (createNewPlayer.responseUpload) {
-      console.log(createNewPlayer.responseUpload);
-      if (createNewPlayer.responseUpload.status === 409) { setCreatePlayerError('El usuario que estás intentando crear ya existe')
-      } else if (createNewPlayer.responseUpload.code === 'ERR_NETWORK') { setCreatePlayerError('Error de conexión, inténtelo más tarde')
-      } else if (createNewPlayer.responseUpload.status === 'ok') { 
-        setCreatedPlayerId(createNewPlayer.responseUpload.id_jugador);
-        setContractsTabsActive(true);
-        updateActiveTab(2);
-        setContractsCompleted(true);
-      } else {
-        setCreatePlayerError('Existe un error en el formulario, inténtelo de nuevo')
-      }
-    }
-  },[createNewPlayer.responseUpload])
-
   const handleSave = (e) => {
     e.preventDefault();
     navigate('/manage-players');
@@ -1200,11 +1496,11 @@ export default function NewPlayerPage () {
           <HeadContent>
             <HeadContentTitleBar>
               <TitleBar__TitleAvatar
-                avatarText='Nuevo\nJugador'>
-                Nuevo jugador
+                avatarText={createdPlayerName ? `${createdPlayerName.nombre}\n${createdPlayerName.apellido1}` : 'Nuevo\nJugador'}>
+                {createdPlayerName ? `${createdPlayerName.nombre}\n${createdPlayerName.apellido1}` : 'Nuevo Jugador'}
               </TitleBar__TitleAvatar>
               <TitleBar__Tools>
-                { savedVariables.length >= 1 ? 
+                { savedVariables.length >= 1 || savedContracts.length >= 1 ? 
                   <>
                     <ButtonMousePrimary
                       onClick={handleSave}>
@@ -1375,7 +1671,7 @@ export default function NewPlayerPage () {
                       <FormSimplePanelRow>
                         <LabelElementAssist
                           htmlFor='playerDNI'
-                          type='number'
+                          type='text'
                           className='panel-field-long'
                           autoComplete='off'
                           placeholder='DNI / NIE'
@@ -1396,7 +1692,7 @@ export default function NewPlayerPage () {
                       <FormSimplePanelRow>
                         <LabelElementAssist
                           htmlFor='playerPassport1Nr'
-                          type='number'
+                          type='text'
                           className='panel-field-long'
                           autoComplete='off'
                           placeholder='Numero pasaporte'
@@ -1417,7 +1713,7 @@ export default function NewPlayerPage () {
                       <FormSimplePanelRow>
                         <LabelElementAssist
                           htmlFor='playerPassport2Nr'
-                          type='number'
+                          type='text'
                           className='panel-field-long'
                           autoComplete='off'
                           placeholder='Numero pasaporte'
@@ -1476,7 +1772,7 @@ export default function NewPlayerPage () {
                             })}
                         </LabelSelectElement>
                       </FormSimplePanelRow>
-                      <FormSimplePanelRow>
+                      {/* <FormSimplePanelRow>
                         <LabelSelectElement
                           htmlFor='playerIntermediary'
                           labelText='Intermediario'>
@@ -1487,7 +1783,7 @@ export default function NewPlayerPage () {
                               );
                             })}
                         </LabelSelectElement>
-                      </FormSimplePanelRow>
+                      </FormSimplePanelRow> */}
                       <FormSimplePanelRow>
                         <LabelElementAssist
                           htmlFor='playerMarketValue'
@@ -1522,59 +1818,68 @@ export default function NewPlayerPage () {
                           <span className='error'>{createPlayerError}</span>
                         </FormSimpleRow>
                       }
-                      { !contractsCompleted ? 
-                        <FormSimplePanelRow className='cm-u-centerText'>
-                          <ButtonMousePrimary
-                            onClick={handleSavePlayer}>
-                            Guardar y Continuar
-                          </ButtonMousePrimary>
-                          <ButtonMouseGhost
-                            onClick={() => {
-                              navigate('/manage-players')}} >
-                            Cancelar
-                          </ButtonMouseGhost>
-                        </FormSimplePanelRow>
-                        :''
-                      }
+                      <FormSimplePanelRow className='cm-u-centerText'>                                              
+                        <ButtonMousePrimary
+                          onClick={handleSavePlayer}>
+                          { !contractsCompleted ? 'Guardar y Continuar' : 'Actualizar' }
+                        </ButtonMousePrimary>                          
+                        <ButtonMouseGhost
+                          onClick={() => {
+                            navigate('/manage-players')}} >
+                          Cancelar
+                        </ButtonMouseGhost>
+                      </FormSimplePanelRow>
                     </TabContent>   
                     { contractsTabsActive?      
                       <TabContent className={activeTab === 2 ? '' : 'hideContent'}>
                         <TableDataWrapper
                           className='cm-u-spacer-mt-big'>
                             <TableDataHeader>
+                              <TableCellMedium>Descripción</TableCellMedium>
                               <TableCellMedium>Tipo de Contrato</TableCellMedium>
                               <TableCellMedium>Tipo de Procedimiento</TableCellMedium>
+                              <TableCellMedium>Intermediario</TableCellMedium>
                               <TableCellMedium>Fecha Inicio - Fecha Fin</TableCellMedium>
                               <TableCellShort>Seleccionado</TableCellShort>
                               <TableCellShort></TableCellShort>
                             </TableDataHeader>
 
-                            { savedContracts?.map((item, index) => {
-
-                              return (
-                                <TableDataRow key={index}>
-                                  <TableCellMedium>{item.desc_tipo_contrato}</TableCellMedium>
-                                  <TableCellMedium>{item.desc_tipo_procedimiento}</TableCellMedium>
-                                  <TableCellMedium>{item.fch_inicio_contrato} - {item.fch_fin_contrato}</TableCellMedium>
-                                  <TableCellShort>
-                                    <input 
-                                      type='radio' 
-                                      name='selected'
-                                      checked={activeContractId === item.id_contrato ? true : ''} 
-                                      value={index}
-                                      onChange={()=>{
-                                        console.log('he cambiado', item.id_contrato)
-                                      }}
-                                      onClick={(e) => {
-                                        setActiveContractId(item.id_contrato);
-                                      }} />
-                                  </TableCellShort>
-                                  <TableCellShort></TableCellShort>
-                                </TableDataRow>
-                              )
-                            })}
+                            {savedContracts.length >= 1 ?
+                             <>
+                              { savedContracts?.map((item, index) => {
+                                const filteredIntermediary = intermediaries.filter((intermediary) => {
+                                  return intermediary.id_intermediario == item.id_intermediario;
+                                })                                                
+                                return (
+                                  <TableDataRow key={index}>
+                                    <TableCellMedium>{item.descripcion}</TableCellMedium>
+                                    <TableCellMedium>{item.desc_tipo_contrato}</TableCellMedium>
+                                    <TableCellMedium>{item.desc_tipo_procedimiento}</TableCellMedium>
+                                    <TableCellMedium>{filteredIntermediary[0]?.nombre}</TableCellMedium>
+                                    <TableCellMedium>{item.fch_inicio_contrato} - {item.fch_fin_contrato}</TableCellMedium>
+                                    <TableCellShort>
+                                      <input 
+                                        type='radio' 
+                                        name='selected'
+                                        checked={activeContractId === item.id_contrato ? true : ''} 
+                                        onClick={(e) => {
+                                          setActiveContractId(item.id_contrato);
+                                        }} />
+                                    </TableCellShort>
+                                    <TableCellShort></TableCellShort>
+                                  </TableDataRow>
+                                )
+                              })}
+                             </>
+                             :
+                             <>
+                             <FormSimplePanelRow className='cm-u-centerText'>
+                                <span className='warning'>No hay ningún contrato añadido</span>
+                              </FormSimplePanelRow>
+                             </>
+                            }
                             {activeContractError ? 
-                              <FormSimplePanelRow className='cm-u-center-text'>
+                              <FormSimplePanelRow className='cm-u-centerText'>
                                 <span className="error">{activeContractError}</span>
                               </FormSimplePanelRow>
                               : ''}
@@ -1627,6 +1932,15 @@ export default function NewPlayerPage () {
                         <TableDataWrapper
                           className='cm-u-spacer-mt-big'>
                             <TableDataHeader>
+                              <TableCellLong>Contrato activo</TableCellLong>
+                            </TableDataHeader>
+                            <TableDataRow className='cm-u-spacer-mb-bigger'>
+                              <TableCellMedium>{activeContractData[0].descripcion}</TableCellMedium>
+                              <TableCellMedium>{activeContractData[0].desc_tipo_contrato}</TableCellMedium>
+                              <TableCellMedium>{activeContractData[0].desc_tipo_procedimiento}</TableCellMedium>
+                              <TableCellMedium>{activeContractData[0].fch_inicio_contrato} - {activeContractData[0].fch_fin_contrato}</TableCellMedium>
+                            </TableDataRow>
+                            <TableDataHeader>
                               <TableCellLong>Variables añadidas</TableCellLong>
                               <TableCellShort></TableCellShort>
                             </TableDataHeader>
@@ -1677,6 +1991,7 @@ export default function NewPlayerPage () {
                                   onClick={(e) => {
                                     e.preventDefault();
                                     setShowNewVariableLayer(true);
+                                    console.log(variableCombos);
                                   }} >
                                     <SymbolAdd />
                                 </IconButtonSmallPrimary>

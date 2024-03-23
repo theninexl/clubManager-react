@@ -4,7 +4,7 @@
 
 html {
     font-size: 62.5%; /*Transform to base 10 for easier REM calculations*/ 
-    box-sizing: border-box;
+    box-sizing: content-box;
 }
 
 body {
@@ -68,6 +68,11 @@ strong {
 .error {
     @include cm-qs-bold;
     color: getColor(danger);
+}
+
+.warning {
+    @include cm-qs-bold;
+    color: getColor(warning);
 }
 
 .material-symbols-outlined {

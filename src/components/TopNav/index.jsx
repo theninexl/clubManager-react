@@ -34,7 +34,7 @@ export default function TopNav () {
 
   useEffect(()=> {
     if (getNotifications.responseGetData) {
-      console.log(getNotifications.responseGetData.data.status);
+      // console.log(getNotifications.responseGetData.data.status);
 
       if (getNotifications.responseGetData.data.status == 'ok') {
         context.setNotifications(getNotifications.responseGetData.data.data);

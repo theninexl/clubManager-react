@@ -6,8 +6,8 @@ import { AsideMenu } from "../../components/AsideMenu";
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
 import { CentralBody, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
 import { ButtonCatPrimary, ButtonCatTransparent, ButtonMouseGhost, ButtonMousePrimary, IconButtonSmallPrimary, IconButtonSmallSecondary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
-import { SymbolAdd, SymbolBack, SymbolDelete, SymbolSearch } from "../../components/UI/objects/symbols";
-import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElement, LabelElementAssist, LabelElementToggle, LabelSelectElement, LabelSelectShorterElement, SelectIconShorter, } from "../../components/UI/components/form simple/formSimple";
+import { SymbolAdd, SymbolBack, SymbolDelete, SymbolEdit, SymbolSearch } from "../../components/UI/objects/symbols";
+import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElement, LabelElementAssist, LabelElementToggle, LabelElementToggle2Sides, LabelElementToggle2SidesPanel, LabelSelectElement, LabelSelectElementAssist, LabelSelectShorterElement, SelectIconShorter, } from "../../components/UI/components/form simple/formSimple";
 import { FormTabs, FormTabs__ContentWrapper, FormTabs__LinksWrapper, FormTabs__ToolBarWrapper, TabContent, TabLink } from "../../components/UI/components/formTabs/formTabs";
 import { SimpleAccordion, SimpleAccordionContent,  SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
 import { manageTabs } from "../../domUtilities/manageTabs";
@@ -34,6 +34,7 @@ export default function EditPlayerPage () {
   //leer pathname actual y manejar navegacion
   const queryParams = new URLSearchParams(window.location.search);
   const userParam = queryParams.get('player');
+  const userParamString = userParam.toString();
 
   // variables y estados locales
   const [error, setError] = useState(null);
@@ -46,37 +47,70 @@ export default function EditPlayerPage () {
   const [showUploadDoc, setShowUploadDoc ] = useState(false);
   const [uploadedFiles, setUploadedFiles ] = useState([]);
   const [playerData, setPlayerData] = useState({
-      'id_jugador': userParam,
-      "desc_entidad": '',
-      "desc_plantilla": '',
-      "id_club_origen": '',
-      "desc_nombre_club_origen": '',
-      "desc_liga_origen": '',
-      "nombre": '',
-      "apellido1": '',
-      "apellido2": '',
-      "alias": '',
-      "desc_dorsal": '',
-      "nacionalidad1": '',
-      "pasaporte1": '',
-      "caducidad_pasaporte1": '',
-      "nacionalidad2": '',
-      "pasaporte2": '',
-      "caducidad_pasaporte2": '',
-      "dni_nie": '',
-      "caducidad_dni": '',
-      "residencia": '',
-      "comunitario": '',
-      "id_intermediario": '',
-      "nombre_intermediario": '',
-      "id_posicion": '',
-      "desc_posicion": '',
-      "peso": '',
-      "altura": '',
-      "imp_salario_total": '',
-      "valor_mercado": '',
-      "nss":'',
+      'id_jugador': userParamString,
+      'alias':'',
+      'apellido1':'',
+      'apellido2':'',
+      'caducidad_dni':'',
+      'caducidad_pasaporte1':'',
+      'caducidad_pasaporte2':'',
+      'comunitario':'',
+      'desc_dorsal':'',
+      'desc_entidad':'',
+      'desc_liga_origen':'',
+      'desc_nombre_club_origen':'',
+      'desc_plantilla':'',
+      'desc_posicion':'',
+      'dni_nie':'',
+      'edad':'',
+      'fch_nacimiento':'',
+      'fecha_fin_contrato':'',
+      'id_club_origen':'',
+      'id_contrato':'',
+      'id_intermediario':'',
+      'id_posicion':'',
+      'imp_salario_total':'',
+      'nacionalidad1':'',
+      'nacionalidad2':'',
+      'nombre':'',
+      'nombre_intermediario':'',
+      'nss':'',
+      'pasaporte1':'',
+      'pasaporte2':'',
+      'residencia':'',
+      'valor_mercado':'',
   });
+  const [playerContracts, setplayerContracts] = useState();
+
+  //estados playerDetails
+  //estados recuperar y seleccionar nombre jugador
+  const [optaPlayersList, setOptaPlayersList] = useState(null);
+  const [optaSelectedPlayer, setOptaSelectedPlayer] = useState('');
+  const [optaResultsBox, setOptaResultsBox] = useState(false);
+  //error update player
+  const [createPlayerError, setCreatePlayerError] = useState(null);
+
+  //estados contratos
+  //contrato activo
+  const [activeContractId, setActiveContractId] = useState(null);
+  //mostrar capa crear contrato
+  const [newContract, setNewContract] = useState(false);
+  //array para guardar las nuevas combinaciones de sueldo añadidas a cada contrato
+  const [contractSalary, setContractSalary] = useState([{id_salario:1,flag_bruto_neto:'',fch_inicio:'',fch_fin:'',num_salario_fijo:''}]);
+  //array con los contratos creados
+  const [savedContracts, setSavedContracts] = useState([]);
+  //error creando contratos
+  const [creatingContractError, setCreatingContractError] = useState();
+  //mostrar/ocultar capa editar contrato
+  const [editContract, setEditContract] = useState(false)
+  //id contrato que se edita
+  const [editedContractId, setEditedContractId] = useState(null);
+  //array contrato que edito
+  const [detailContractData, setDetailContractData] = useState(null);
+  //array con combinaciones de sueldo que edito
+  const [detailSalaryData, setDetailSalaryData] = useState(null);
+
+
   //donde guardo la info de los posibles combos de cada combinacion Exprexion+Condiciones
   const [variableCombos, setVariableCombos] = useState([]);
   //variable activa cuando estoy inspeccionado una ya creada
@@ -87,8 +121,16 @@ export default function EditPlayerPage () {
   const [showVariable, setShowVariable] = useState(false);
   //mostrar/ocultar capa de nueva variable
   const [showNewVariableLayer, setShowNewVariableLayer ] = useState(false);
-   //array para guardar las nuevas expresiones añadidas a cada variable
-   const [variableExpressions, setVariableExpressions] = useState([{id_ExprComb:1,id_expresion_concatenacion:'',id_expresion:'',id_expresion_operador:'',id_expresion_valor:null,condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
+  //array para guardar las nuevas expresiones añadidas a cada variable
+  const [variableExpressions, setVariableExpressions] = useState([{id_ExprComb:1,bonus_prima:'',id_expresion_concatenacion:'',id_expresion:'',id_expresion_operador:'',id_expresion_valor:'', operador:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
+  //guardar resultados search expressions
+  const [searchExpSelected, setSearchExpSelected] = useState(null);
+  const [searchExpResults, setSearchExpResults] = useState(null);
+  const [showSearchExpResults, setShowSearchExpResults] = useState(false);  
+  //guardar resultados search conditions
+  const [searchCondSelected, setSearchCondSelected] = useState(null);
+  const [searchCondResults, setSearchCondResults] = useState(null);
+  const [showSearchCondResults, setShowSearchCondResults] = useState(false);
  
   
 
@@ -100,18 +142,31 @@ export default function EditPlayerPage () {
   const getPlayerDetail = useGetData('players/getDetail',{'id_jugador':userParam});
   useEffect (() => {
     if (getPlayerDetail.responseGetData) {
-      console.log(getPlayerDetail.responseGetData.data);
+      // console.log(getPlayerDetail.responseGetData.data);
       setPlayerData(getPlayerDetail.responseGetData.data?.jugador[0])
-      setUploadedFiles(getPlayerDetail.responseGetData.data?.documentos[0])
+      setplayerContracts(getPlayerDetail.responseGetData.data?.contratos)
+      // setUploadedFiles(getPlayerDetail.responseGetData.data?.documentos[0])
       setSavedVariables(getPlayerDetail.responseGetData.data?.variables)
+      setOptaSelectedPlayer({
+        desc_nombre_jugador:getPlayerDetail.responseGetData.data?.jugador[0].nombre,
+        desc_apellido_jugador: getPlayerDetail.responseGetData.data?.jugador[0].apellido1
+      })
     }
   },[getPlayerDetail.responseGetData])
 
-  useEffect(()=>{
-    if(savedVariables){
-      console.log(savedVariables);
+  //pedir datos de jugador manualmente
+  const getPlayerDetailsManual = useSaveData();
+
+  const getPlayersAgain = () => {
+    getPlayerDetailsManual.uploadData('players/getDetail',{id_jugador:userParam});
+  }
+
+  useEffect (() => {
+    if (getPlayerDetailsManual.responseUpload) {
+      setplayerContracts(getPlayerDetailsManual.responseUpload.contratos)
+      setSavedVariables(getPlayerDetailsManual.responseUpload.variables)
     }
-  },[savedVariables])
+  },[getPlayerDetailsManual.responseUpload])
 
   //pedir paises, posiciones, contratos, intermediarios y equipos
   const getCountries = useGetData('masters/getAllCountry');
@@ -149,9 +204,1158 @@ export default function EditPlayerPage () {
     }
   },[getNewVariableCombos.responseGetData])
 
+
+  //-----------------------------------------------------------------------------//
+  // EDICION DE JUGADOR
+
+  //pedir datos para buscar un jugador
+  const getOptaPlayer = useSaveData();
+  const searchPlayer = (search) => {
+    getOptaPlayer.uploadData('players/searchPlayerOpta',{'search':search})
+  }
+  //guardar datos busqueda jugador
+  useEffect(()=> {
+    if (getOptaPlayer.responseUpload) {
+      setOptaPlayersList(getOptaPlayer.responseUpload.data);
+      setOptaResultsBox(true);
+    }
+  },[getOptaPlayer.responseUpload])
+
+  //render caja de resultados busqueda jugador
+  const renderSearchPlayerResults = () => {
+    if (optaResultsBox && optaPlayersList?.length == 0) {
+      return (
+        <div className='cm-c-dropdown-select__results-box'><span>No hay resultados</span></div>
+      );
+    } else if (optaResultsBox && optaPlayersList?.length > 0) {
+      return (
+        <div className='cm-c-dropdown-select__results-box'>
+          {
+            optaPlayersList.map(item => {
+              return (
+                <span
+                  className='result'
+                  key={item.id_jugador_opta}
+                  onClick={e => {
+                    e.preventDefault();
+                    setOptaSelectedPlayer(item);
+                    setOptaResultsBox(false);
+                    
+                    setPlayerData({...playerData, apellido1: item.desc_apellido_jugador, nombre: item.desc_nombre_jugador  })
+                    // setPlayerData({...playerData, nombre: item.desc_nombre_jugador });
+                  }}  >
+                    {item.desc_nombre_jugador} {item.desc_apellido_jugador}
+                </span>
+              );
+            })
+          }
+        </div>
+      );
+    }
+  }
+
+  //handle Save jugador y habilitar la pestaña contractual si no hay fallo.
+  const createNewPlayer = useSaveData();
+
+  const handleSavePlayer = (e) => {
+    e.preventDefault();   
+    // console.log('playerData-Antes:',playerData);
+    const playerIdToString = playerData.id_jugador.toString();
+    playerData.id_jugador = playerIdToString;
+    if (playerData.comunitario === true || playerData.comunitario === 1) playerData.comunitario = '1'
+    else if (playerData.comunitario === false || playerData.comunitario === 0) playerData.comunitario = '0'
+    if (playerData.residencia === true || playerData.residencia === 1) playerData.residencia = '1'
+    else if (playerData.residencia === false || playerData.residencia === 0) playerData.residencia = '0'
+    playerData.desc_dorsal = playerData.desc_dorsal.toString();
+    playerData.valor_mercado = playerData.valor_mercado.toString();
+
+    if (playerData.nombre === '' || playerData.apellido1 === '') {
+      setCreatePlayerError('Tienes que rellenar los campos mínimos obligatorios');
+    } else {
+        // console.log('dataUpdated',playerData);
+        createNewPlayer.uploadData('players/edit',playerData);
+    }
+  }
+  
+  //mirar la respuesta de subir datos al crear jugador para setear error
+  useEffect(()=> {
+    if (createNewPlayer.responseUpload) {
+      console.log(createNewPlayer.responseUpload);      
+      if (createNewPlayer.responseUpload.status === 'ok') { 
+        window.scrollTo(0,0);        
+      } else {
+        setCreatePlayerError('Existe un error en el formulario, inténtelo de nuevo')
+      }
+    }
+  },[createNewPlayer.responseUpload])
+
+  //-----------------------------------------------------------------------------//
+  // EDICION DE CONTRATOS
+
+  useEffect(()=>{
+    if (playerContracts) {
+      playerContracts.map(contract => {
+        if (contract.seleccionado === 1) setActiveContractId (contract.id_contrato);
+      })
+    }
+  },[playerContracts])
+
+  useEffect(()=> {
+    // console.log('activeContractId', activeContractId);
+    if (activeContractId) {
+      handleActivateContract(activeContractId);
+    }
+  },[activeContractId])
+
+  //asignar contrato y guardar
+  const assignContract = useSaveData();
+
+  const handleActivateContract = (id) => {
+    assignContract.uploadData('players/setContract',{id_jugador:userParamString, id_contrato:id.toString()}); 
+  }
+
+  const contractTypes = [
+    { desc_tipo_contrato: 'Laboral', id: 1 },
+    { desc_tipo_contrato: 'Transfer. permanente', id: 2 },
+    { desc_tipo_contrato: 'Transfer. temporal', id: 3 },
+    { desc_tipo_contrato: 'Intermediación', id: 3 },
+    { desc_tipo_contrato: 'Liquidación', id: 4 },
+  ]
+
+  const procedureTypes = [
+    { desc_tipo_procedimiento: 'Alta traspaso', id: 1 },
+    { desc_tipo_procedimiento: 'Alta cesión', id: 2 },
+    { desc_tipo_procedimiento: 'Alta libre', id: 3 },
+    { desc_tipo_procedimiento: 'Baja traspaso', id: 4 },
+    { desc_tipo_procedimiento: 'Baja cesión', id: 5 },
+    { desc_tipo_procedimiento: 'Baja rescisión', id: 6 },
+    { desc_tipo_procedimiento: 'Pago cláusula', id: 7 },
+  ]
+
+  //añadir una nueva linea de salario
+  const handleAddNewSalary = (number) => {
+    setContractSalary([...contractSalary, {id_salario:number,flag_bruto_neto:'',fch_inicio:'',fch_fin:'',num_salario_fijo:''}]) 
+   }
+  
+   //borrar linea de salario
+   const handleDeleteNewSalary = (index) => {
+    const newSalariesArray = [...contractSalary];
+    newSalariesArray.splice(index,1);
+    setContractSalary(newSalariesArray);
+  }
+  
+  //manejar cambios en los campos de la linea de salario
+  const handleChangesOnNewSalary = (event, index) => {
+    let {name, value} = event.target;
+    let onChangeValue = [...contractSalary];
+    onChangeValue[index][name] = value;
+    setContractSalary(onChangeValue);
+  }
+
+  const handleChangesOnNewSalaryIfToggle = (event, index) => {
+    let {name, checked} = event.target;
+    let onChangeValue = [...contractSalary];
+    onChangeValue[index][name] = checked ? 1 : 0;
+    setContractSalary(onChangeValue);
+  }
+
+  //guardar un nuevo contrato
+  const saveNewContract = useSaveData();
+
+  const handleAddNewContract = (e) => {
+    e.preventDefault();
+    const formData = new FormData(form.current);
+
+    const salarios = contractSalary;
+
+    const data = {
+      id_jugador: userParamString,
+      desc_tipo_contrato: formData.get('contractType'),
+      desc_tipo_procedimiento: formData.get('procedureType'),
+      descripcion: formData.get('contractDescription'),
+      id_plantilla: context.activeEntity,
+      id_club_origen: formData.get('playerTeamOrigin'),
+      id_club_destino: formData.get('playerTeamDestination'),
+      fch_inicio_contrato: formData.get('contractStartDate'),
+      fch_inicio_contrato_real: formData.get('contractRealStartDate'),
+      fch_fin_contrato: formData.get('contractEndDate'),
+      imp_contrato_fijo: formData.get('amountFixedContract'),
+      imp_contrato_variable: formData.get('amountVariableContract'),
+      imp_salario_total: formData.get('amountFixedSalary'),
+      imp_salario_variable: formData.get('amountVariableSalary'),
+      pct_pago_atm: formData.get('clubPercentage'),
+      imp_clausula_rescision: formData.get('terminationClause'),
+      id_intermediario_1: formData.get('contractIntermediary1'),
+      id_intermediario_2: formData.get('contractIntermediary2'),
+      id_intermediario_3: formData.get('contractIntermediary3'),
+      salario_fijo:salarios,
+      // amortizable: amortizableVal ? 1 : 0,
+    }
+
+    const savedContract = {
+      id_contrato: '',
+    }
+
+
+    if (data) {
+      for (const [key, value] of Object.entries(data)) {        
+        if (value == '-1' || value == '') {
+          setCreatingContractError('Es necesario rellenar todos los campos');
+          break;
+        } else {
+          savedContract[key] = value;
+        } 
+      }
+
+      if (Object.keys(data).length === (Object.keys(savedContract).length - 1)) {
+        console.log('contrato que guardo', data);
+        saveNewContract.uploadData('players/createContract',data)        
+        setNewContract(false);
+        setContractSalary([{id_salario:1,flag_bruto_neto:'',fch_inicio:'',fch_fin:'',num_salario_fijo:''}]);
+        window.scrollTo(0,0);
+      }
+    } 
+  }
+
+  //mirar la respuesta de subir datos al crear jugador para setear error
+  useEffect(()=> {
+    if (saveNewContract.responseUpload) {
+      console.log(saveNewContract.responseUpload);
+      if (saveNewContract.responseUpload.code === 'ERR_NETWORK') { setCreatePlayerError('Error de conexión, inténtelo más tarde')
+      } else if (saveNewContract.responseUpload.status === 'ok') { 
+        console.log('id_contrato', saveNewContract.responseUpload.id_contrato)
+        getPlayersAgain();
+      } else {
+        setCreatePlayerError('Existe un error en el formulario, inténtelo de nuevo')
+      }
+    }
+  },[saveNewContract.responseUpload])
+
+  const deleteContract = useSaveData();
+  const handleDeleteContract = (id) => {
+    deleteContract.uploadData('players/removeContract', {id_contrato:id.toString()})
+  }
+
+  useEffect(()=>{
+    if (deleteContract.responseUpload) {
+      console.log(deleteContract.responseUpload);
+      getPlayersAgain();
+    }
+  },[deleteContract.responseUpload])
+
+  //nueva capa contrato
+  const renderNewContractLayer = () => {
+    if (newContract) {
+      return (
+        <>
+          <SimpleAccordionContent>
+            <header className="cm-l-body-static-header--inTab" style={{marginTop:'0'}}>
+              <p className="cm-u-text-black-cat">Añadir nuevo contrato</p>
+            </header>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='contractDescription'
+                type='text'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Descripción corta'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Descripcion
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>                   
+              <LabelSelectElementAssist
+                htmlFor='contractType'
+                labelText='Tipo de contrato'
+                required={true}
+                assistanceText='Este campo es obligatorio'>
+                  <option value=''>Selecciona</option>
+                  {
+                    contractTypes.map(item => {
+                      return (
+                        <option value={item.desc_tipo_contrato}>{item.desc_tipo_contrato}</option>
+                      );
+                    })
+                  }
+              </LabelSelectElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>                   
+              <LabelSelectElementAssist
+                htmlFor='procedureType'
+                labelText='Tipo de procedimiento'
+                required={true}
+                assistanceText='Este campo es obligatorio'>
+                  <option value=''>Selecciona</option>
+                  {
+                    procedureTypes.map(item => {
+                      return (
+                        <option value={item.desc_tipo_procedimiento}>{item.desc_tipo_procedimiento}</option>
+                      );
+                    })
+                  }
+              </LabelSelectElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelSelectElementAssist
+                htmlFor='playerTeamOrigin'
+                labelText='Club Origen'
+                assistanceText='Este campo es obligatorio'
+                required={true}>
+                  <option value=''>Selecciona</option>
+                  { teams?.map(item => {
+                    return (
+                      <option key={item.id_club_opta} value={item.id_club_opta}>{item.desc_nombre_club}</option>
+                    );
+                  })}
+              </LabelSelectElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelSelectElementAssist
+                htmlFor='playerTeamDestination'
+                labelText='Club Destino'
+                assistanceText='Este campo es obligatorio'
+                required={true}>
+                  <option value=''>Selecciona</option>
+                  { teams?.map(item => {
+                    return (
+                      <option key={item.id_club_opta} value={item.id_club_opta}>{item.desc_nombre_club}</option>
+                    );
+                  })}
+              </LabelSelectElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='contractStartDate'
+                type='date'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='dd/mm/yyyy'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Fecha inicio contrato
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='contractRealStartDate'
+                type='date'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='dd/mm/yyyy'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Fecha inicio contrato real
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='contractEndDate'
+                type='date'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='dd/mm/yyyy'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Fecha fin contrato
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='amountFixedContract'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Importe en €'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Importe contrato fijo
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='amountVariableContract'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Importe en €e'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Importe contrato variable
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='amountFixedSalary'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Importe en €'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Importe salario fijo
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='amountVariableSalary'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Importe en €'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Importe salario variable
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='clubPercentage'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Porcentaje (%)'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Porcentaje pago club
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='terminationClause'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Importe en €'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                >
+                Importe cláusula rescisión
+              </LabelElementAssist>
+              <FormSimplePanelRow>
+                <LabelSelectElement
+                  htmlFor='contractIntermediary1'
+                  labelText='Intermediario 1'
+                  required={true}
+                  >
+                    <option value=''>Selecciona</option>
+                    { intermediaries?.map(item => {
+                      return (
+                        <option key={item.id_intermediario} value={item.id_intermediario}>{item.nombre}</option>
+                      );
+                    })}
+                </LabelSelectElement>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelSelectElement
+                  htmlFor='contractIntermediary2'
+                  labelText='Intermediario 2'
+                  required={true}
+                  >
+                    <option value=''>Selecciona</option>
+                    { intermediaries?.map(item => {
+                      return (
+                        <option key={item.id_intermediario} value={item.id_intermediario}>{item.nombre}</option>
+                      );
+                    })}
+                </LabelSelectElement>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelSelectElement
+                  htmlFor='contractIntermediary3'
+                  labelText='Intermediario 3'
+                  required={true}
+                  >
+                    <option value=''>Selecciona</option>
+                    { intermediaries?.map(item => {
+                      return (
+                        <option key={item.id_intermediario} value={item.id_intermediario}>{item.nombre}</option>
+                      );
+                    })}
+                </LabelSelectElement>
+              </FormSimplePanelRow>
+              
+            </FormSimplePanelRow>
+            {
+              contractSalary.map((item,index) => {
+                const SalaryComb = item.id_salario;  
+                return (
+                  <div key={item.id_salario} data-id={item.id_salario}  className='cm-u-spacer-mb-bigger'>
+                    <FormSimplePanelRow >
+                      <LabelElement
+                        htmlFor='num_salario_fijo'
+                        type='number'
+                        className='panel-field-short'
+                        autoComplete='off'
+                        placeholder='Importe en €'
+                        required={true}
+                        value={item.num_salario_fijo}
+                        handleOnChange={(event) => {
+                          handleChangesOnNewSalary(event,index)
+                        }}
+                        >
+                        Salario fijo
+                      </LabelElement>
+                      <LabelElementToggle2Sides
+                        htmlFor='flag_bruto_neto'
+                        titleClassNameLeft='cm-u-textRight'
+                        textLeft='Bruto'
+                        titleClassNameRight='cm-u-spacer-mr-medium'
+                        textRight='Neto'
+                        required={true}
+                        checked={item.flag_bruto_neto}
+                        handleOnChange={(event) => {
+                          handleChangesOnNewSalaryIfToggle(event,index)
+                        }} />
+                      <LabelElement
+                        htmlFor='fch_inicio'
+                        type='date'
+                        className='panel-field-flexible'
+                        autoComplete='off'
+                        placeholder='dd/mm/yyyy'
+                        required={true}
+                        value={item.fch_inicio}
+                        handleOnChange={(event) => {
+                          handleChangesOnNewSalary(event,index)
+                        }}   >
+                        Fecha inicio
+                      </LabelElement>
+                      <LabelElement
+                        htmlFor='fch_fin'
+                        type='date'
+                        className='panel-field-flexible'
+                        autoComplete='off'
+                        placeholder='dd/mm/yyyy'
+                        required={true}
+                        value={item.fch_fin}
+                        handleOnChange={(event) => {
+                          handleChangesOnNewSalary(event,index)
+                        }}   >
+                        Fecha fin
+                      </LabelElement>
+                      {(item.id_salario !== 1) ?                   
+                        <IconButtonSmallSecondary
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleDeleteNewSalary(index);
+                          }} >
+                            <SymbolDelete />
+                        </IconButtonSmallSecondary>
+                        : ''}
+                      {index+1 == contractSalary.length ?                   
+                        <IconButtonSmallSecondary
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleAddNewSalary(SalaryComb+1);
+                          }} >
+                            <SymbolAdd />
+                        </IconButtonSmallSecondary>
+                        : ''}
+                    </FormSimplePanelRow>
+                    
+                  </div>
+                );
+              })
+            }
+            { creatingContractError? 
+              <FormSimplePanelRow
+              className='cm-u-centerText'>
+                <span className='error'>{creatingContractError}</span>
+              </FormSimplePanelRow>
+              : ''
+            }
+            <FormSimplePanelRow
+              className='cm-u-centerText'>
+              <ButtonMousePrimary
+                onClick={handleAddNewContract}
+                >Guardar</ButtonMousePrimary>
+              <ButtonMouseGhost
+                onClick={() => {
+                  setNewContract(false);
+                  setContractSalary([{id_salario:1,flag_bruto_neto:'',fch_inicio:'',fch_fin:'',num_salario_fijo:''}]); 
+                  window.scrollTo(0,0);
+                }}
+                >Cancelar</ButtonMouseGhost>
+            </FormSimplePanelRow>
+          </SimpleAccordionContent>
+        </>
+      )
+    }
+  }
+
+  //editar un contrato existente
+  const getDetailContract = useSaveData();
+
+  const handleEditContract = (id) => {
+    getDetailContract.uploadData('players/getDetailContract',{'id_contrato':id})
+  }
+
+  useEffect(()=>{
+    if(getDetailContract.responseUpload) {
+      console.log('detailContract',getDetailContract.responseUpload);
+      setDetailContractData(getDetailContract.responseUpload.contrato);
+      setDetailSalaryData(getDetailContract.responseUpload.salario_fijo);
+    }
+  },[getDetailContract.responseUpload])
+
+  useEffect(()=>{
+    if (detailContractData) {
+      console.log(detailContractData);
+      setNewContract(false);
+      setContractSalary([{id_salario:1,flag_bruto_neto:'',fch_inicio:'',fch_fin:'',num_salario_fijo:''}]); 
+      // window.scrollTo(0,0);
+      setEditContract(true);
+    }
+  },[detailContractData])
+
+  useEffect(()=>{
+    if (detailSalaryData) console.log(detailSalaryData)
+  },[detailSalaryData])
+
+  const renderEditContractLayer = () => {
+    if (editContract) {
+      return (
+        <>
+          <SimpleAccordionContent>
+            <header className="cm-l-body-static-header--inTab" style={{marginTop:'0'}}>
+              <p className="cm-u-text-black-cat">Editar contrato seleccionado</p>
+            </header>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='contractDescription'
+                type='text'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Descripción corta'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                defaultValue={detailContractData[0].descripcion || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...detailContractData];
+                  onChangeValue[0]["descripcion"] = e.target.value;
+                  setDetailContractData(onChangeValue); }}
+                >
+                Descripcion
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>                   
+              <LabelSelectElementAssist
+                htmlFor='contractType'
+                labelText='Tipo de contrato'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                defaultValue={detailContractData[0].desc_tipo_contrato || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...detailContractData];
+                  onChangeValue[0]["desc_tipo_contrato"] = e.target.value;
+                  setDetailContractData(onChangeValue); }}
+                >
+                  <option value=''>Selecciona</option>
+                  {contractTypes?.map(item => {
+                      const selected = detailContractData[0].desc_tipo_contrato == item.desc_tipo_contrato ? 'selected' : '';
+                      return (
+                        <option value={item.desc_tipo_contrato} selected={selected}>{item.desc_tipo_contrato}</option>
+                      );
+                    })
+                  }
+              </LabelSelectElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>                   
+              <LabelSelectElementAssist
+                htmlFor='procedureType'
+                labelText='Tipo de procedimiento'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                defaultValue={detailContractData[0].desc_tipo_procedimiento || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...detailContractData];
+                  onChangeValue[0]["desc_tipo_procedimiento"] = e.target.value;
+                  setDetailContractData(onChangeValue); }}
+                >
+                  <option value=''>Selecciona</option>
+                  {
+                    procedureTypes?.map(item => {
+                      const selected = detailContractData[0].desc_tipo_procedimiento == item.desc_tipo_procedimiento ? 'selected' : '';
+                      return (
+                        <option value={item.desc_tipo_procedimiento} selected={selected}>{item.desc_tipo_procedimiento}</option>
+                      );
+                    })
+                  }
+              </LabelSelectElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelSelectElementAssist
+                htmlFor='playerTeamOrigin'
+                labelText='Club Origen'
+                assistanceText='Este campo es obligatorio'
+                required={true}
+                defaultValue={detailContractData[0].id_club_origen || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...detailContractData];
+                  onChangeValue[0]["id_club_origen"] = e.target.value;
+                  setDetailContractData(onChangeValue); }}
+                >
+                  <option value=''>Selecciona</option>
+                  { teams?.map(item => {
+                    const selected = detailContractData[0].id_club_origen == item.id_club_opta ? 'selected' : '';
+                    return (
+                      <option key={item.id_club_opta} value={item.id_club_opta} selected={selected}>{item.desc_nombre_club}</option>
+                    );
+                  })}
+              </LabelSelectElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelSelectElementAssist
+                htmlFor='playerTeamDestination'
+                labelText='Club Destino'
+                assistanceText='Este campo es obligatorio'
+                required={true}
+                defaultValue={detailContractData[0].id_club_destino || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...detailContractData];
+                  onChangeValue[0]["id_club_destino"] = e.target.value;
+                  setDetailContractData(onChangeValue); }}
+                >
+                  <option value=''>Selecciona</option>
+                  { teams?.map(item => {
+                    const selected = detailContractData[0].id_club_destino == item.id_club_opta ? 'selected' : '';
+                    return (
+                      <option key={item.id_club_opta} value={item.id_club_opta} selected={selected}>{item.desc_nombre_club}</option>
+                    );
+                  })}
+              </LabelSelectElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='contractStartDate'
+                type='date'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='dd/mm/yyyy'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                value={detailContractData[0].fch_inicio_contrato || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...detailContractData];
+                  onChangeValue[0]["fch_inicio_contrato"] = e.target.value;
+                  setDetailContractData(onChangeValue); }}
+                >
+                Fecha inicio contrato
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='contractRealStartDate'
+                type='date'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='dd/mm/yyyy'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                value={detailContractData[0].fch_inicio_contrato_real || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...detailContractData];
+                  onChangeValue[0]["fch_inicio_contrato_real"] = e.target.value;
+                  setDetailContractData(onChangeValue); }}
+                >
+                Fecha inicio contrato real
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='contractEndDate'
+                type='date'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='dd/mm/yyyy'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                value={detailContractData[0].fch_fin_contrato || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...detailContractData];
+                  onChangeValue[0]["fch_fin_contrato"] = e.target.value;
+                  setDetailContractData(onChangeValue); }}
+                >
+                Fecha fin contrato
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='amountFixedContract'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Importe en €'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                value={detailContractData[0].imp_contrato_fijo || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...detailContractData];
+                  onChangeValue[0]["imp_contrato_fijo"] = e.target.value;
+                  setDetailContractData(onChangeValue); }}
+
+                >
+                Importe contrato fijo
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='amountVariableContract'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Importe en €'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                value={detailContractData[0].imp_contrato_variable || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...detailContractData];
+                  onChangeValue[0]["imp_contrato_variable"] = e.target.value;
+                  setDetailContractData(onChangeValue); }}
+                >
+                Importe contrato variable
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='amountFixedSalary'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Importe en €'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                value={detailContractData[0].imp_salario_total || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...detailContractData];
+                  onChangeValue[0]["imp_salario_total"] = e.target.value;
+                  setDetailContractData(onChangeValue); }}
+                >
+                Importe salario fijo
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='amountVariableSalary'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Importe en €'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                value={detailContractData[0].imp_salario_variable || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...detailContractData];
+                  onChangeValue[0]["imp_salario_variable"] = e.target.value;
+                  setDetailContractData(onChangeValue); }}
+                >
+                Importe salario variable
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='clubPercentage'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Porcentaje (%)'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                value={detailContractData[0].pct_pago_atm || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...detailContractData];
+                  onChangeValue[0]["pct_pago_atm"] = e.target.value;
+                  setDetailContractData(onChangeValue); }}
+                >
+                Porcentaje pago club
+              </LabelElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelElementAssist
+                htmlFor='terminationClause'
+                type='number'
+                className='panel-field-long'
+                autoComplete='off'
+                placeholder='Importe en €'
+                required={true}
+                assistanceText='Este campo es obligatorio'
+                value={detailContractData[0].imp_clausula_rescision || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...detailContractData];
+                  onChangeValue[0]["imp_clausula_rescision"] = e.target.value;
+                  setDetailContractData(onChangeValue); }}
+                >
+                Importe cláusula rescisión
+              </LabelElementAssist>
+              <FormSimplePanelRow>
+                <LabelSelectElement
+                  htmlFor='contractIntermediary1'
+                  labelText='Intermediario'
+                  required={true}
+                  defaultValue={detailContractData[0].id_intermediario_1 || ''}
+                  handleOnChange={e => {
+                    let onChangeValue = [...detailContractData];
+                    onChangeValue[0]["id_intermediario_1"] = e.target.value;
+                    setDetailContractData(onChangeValue); }}
+                  >
+                    <option value=''>Selecciona</option>
+                    { intermediaries?.map(item => {
+                      const selected = detailContractData[0].id_intermediario_1 == item.id_intermediario ? 'selected' : ''
+                      return (
+                        <option key={item.id_intermediario} value={item.id_intermediario} selected={selected}>{item.nombre}</option>
+                      );
+                    })}
+                </LabelSelectElement>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelSelectElement
+                  htmlFor='contractIntermediary2'
+                  labelText='Intermediario'
+                  required={true}
+                  defaultValue={detailContractData[0].id_intermediario_2 || ''}
+                  handleOnChange={e => {
+                    let onChangeValue = [...detailContractData];
+                    onChangeValue[0]["id_intermediario_2"] = e.target.value;
+                    setDetailContractData(onChangeValue); }}
+                  >
+                    <option value=''>Selecciona</option>
+                    { intermediaries?.map(item => {
+                      const selected = detailContractData[0].id_intermediario_2 == item.id_intermediario ? 'selected' : ''
+                      return (
+                        <option key={item.id_intermediario} value={item.id_intermediario} selected={selected}>{item.nombre}</option>
+                      );
+                    })}
+                </LabelSelectElement>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelSelectElement
+                  htmlFor='contractIntermediary3'
+                  labelText='Intermediario'
+                  required={true}
+                  defaultValue={detailContractData[0].id_intermediario_3 || ''}
+                  handleOnChange={e => {
+                    let onChangeValue = [...detailContractData];
+                    onChangeValue[0]["id_intermediario_3"] = e.target.value;
+                    setDetailContractData(onChangeValue); }}
+                  >
+                    <option value=''>Selecciona</option>
+                    { intermediaries?.map(item => {
+                      const selected = detailContractData[0].id_intermediario_3 == item.id_intermediario ? 'selected' : ''
+                      return (
+                        <option key={item.id_intermediario} value={item.id_intermediario} selected={selected}>{item.nombre}</option>
+                      );
+                    })}
+                </LabelSelectElement>
+              </FormSimplePanelRow>
+            </FormSimplePanelRow>
+            {
+              detailSalaryData.map((item,index) => {
+                
+                return (
+                  <div key={index} className='cm-u-spacer-mb-bigger'>
+                    <FormSimplePanelRow >
+                      <LabelElement
+                        htmlFor='num_salario_fijo'
+                        type='number'
+                        className='panel-field-short'
+                        autoComplete='off'
+                        placeholder='Importe salario'
+                        required={true}
+                        value={item.num_salario_fijo || ''}
+                        handleOnChange={e => {
+                          let onChangeValue = [...detailSalaryData];
+                          onChangeValue[index]["num_salario_fijo"] = e.target.value;
+                          setDetailSalaryData(onChangeValue); }}
+                        >
+                        Salario fijo
+                      </LabelElement>
+                      <LabelElementToggle2Sides
+                        htmlFor='flag_bruto_neto'
+                        titleClassNameLeft='cm-u-textRight'
+                        textLeft='Bruto'
+                        titleClassNameRight='cm-u-spacer-mr-medium'
+                        textRight='Neto'
+                        required={true}
+                        checked={(item.flag_bruto_neto === '1') || (item.flag_bruto_neto === true)  ? true : false}
+                        handleOnChange={e => {
+                          let onChangeValue = [...detailSalaryData];
+                          onChangeValue[index]["flag_bruto_neto"] = e.target.checked;
+                          setDetailSalaryData(onChangeValue); }}
+                        ></LabelElementToggle2Sides>
+                      <LabelElement
+                        htmlFor='fch_inicio'
+                        type='date'
+                        className='panel-field-flexible'
+                        autoComplete='off'
+                        placeholder='dd/mm/yyyy'
+                        required={true}
+                        value={item.fch_inicio || ''}
+                        handleOnChange={e => {
+                          let onChangeValue = [...detailSalaryData];
+                          onChangeValue[index]["fch_inicio"] = e.target.value;
+                          setDetailSalaryData(onChangeValue); }}
+                        >
+                        Fecha inicio
+                      </LabelElement>
+                      <LabelElement
+                        htmlFor='fch_fin'
+                        type='date'
+                        className='panel-field-flexible'
+                        autoComplete='off'
+                        placeholder='dd/mm/yyyy'
+                        required={true}
+                        value={item.fch_fin || ''}
+                        handleOnChange={e => {
+                          let onChangeValue = [...detailSalaryData];
+                          onChangeValue[index]["fch_fin"] = e.target.value;
+                          setDetailSalaryData(onChangeValue); }}
+                        >
+                        Fecha fin
+                      </LabelElement>
+                      {(index !== 0) ?                   
+                        <IconButtonSmallSecondary
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const newSalariesArray = [...detailSalaryData];
+                            newSalariesArray.splice(index,1);
+                            setDetailSalaryData(newSalariesArray);
+                          }} >
+                            <SymbolDelete />
+                        </IconButtonSmallSecondary>
+                        : ''}
+                      {index+1 == detailSalaryData.length ?                   
+                        <IconButtonSmallSecondary
+                          onClick={(e) => {
+                            e.preventDefault();
+                            // handleAddNewSalary(index+1);
+                            setDetailSalaryData([...detailSalaryData, {id_salario_fijo:index+1,flag_bruto_neto:'',fch_inicio:'',fch_fin:'',num_salario_fijo:''}]) 
+                          }} >
+                            <SymbolAdd />
+                        </IconButtonSmallSecondary>
+                        : ''}
+                    </FormSimplePanelRow>
+                    
+                  </div>
+                );
+              })
+            }
+            { creatingContractError? 
+              <FormSimplePanelRow
+              className='cm-u-centerText'>
+                <span className='error'>{creatingContractError}</span>
+              </FormSimplePanelRow>
+              : ''
+            }
+            <FormSimplePanelRow
+              className='cm-u-centerText'>
+              <ButtonMousePrimary
+                onClick={handleSaveEditedContract}
+                >Guardar</ButtonMousePrimary>
+              <ButtonMouseGhost
+                onClick={() => {
+                  setEditContract(false);
+                  setDetailContractData(null);
+                  setDetailSalaryData(null);
+                  window.scrollTo(0,0);
+                }}
+                >Cancelar</ButtonMouseGhost>
+            </FormSimplePanelRow>
+          </SimpleAccordionContent>
+        </>
+      );
+    }
+  }
+
+  //guardar un nuevo contrato
+  const saveEditedContract = useSaveData();
+
+  const handleSaveEditedContract = (e) => {
+    e.preventDefault();
+    const formData = new FormData(form.current);
+
+    const salarios = detailSalaryData;
+
+    const data = {
+      id_jugador: userParamString,
+      desc_tipo_contrato: formData.get('contractType'),
+      desc_tipo_procedimiento: formData.get('procedureType'),
+      descripcion: formData.get('contractDescription'),
+      id_plantilla: context.activeEntity.toString(),
+      id_club_origen: formData.get('playerTeamOrigin'),
+      id_club_destino: formData.get('playerTeamDestination'),
+      fch_inicio_contrato: formData.get('contractStartDate'),
+      fch_inicio_contrato_real: formData.get('contractRealStartDate'),
+      fch_fin_contrato: formData.get('contractEndDate'),
+      imp_contrato_fijo: formData.get('amountFixedContract'),
+      imp_contrato_variable: formData.get('amountVariableContract'),
+      imp_salario_total: formData.get('amountFixedSalary'),
+      imp_salario_variable: formData.get('amountVariableSalary'),
+      pct_pago_atm: formData.get('clubPercentage'),
+      imp_clausula_rescision: formData.get('terminationClause'),
+      id_intermediario_1: formData.get('contractIntermediary1'),
+      id_intermediario_2: formData.get('contractIntermediary2'),
+      id_intermediario_3: formData.get('contractIntermediary3'),
+      salario_fijo:salarios,
+    }
+
+    const editedContract = {
+      id_contrato: editedContractId,
+    }
+
+
+    if (data) {
+      for (const [key, value] of Object.entries(data)) {        
+        if (value == '-1' || value == '') {
+          setCreatingContractError('Es necesario rellenar todos los campos');
+          break;
+        } else {
+          editedContract[key] = value;
+        } 
+      }
+
+      if (Object.keys(data).length === (Object.keys(editedContract).length - 1)) {
+        console.log('contrato que guardo', editedContract);
+        saveNewContract.uploadData('players/editContract',editedContract)        
+        setEditContract(false);
+        setDetailContractData(null);
+        setDetailSalaryData(null)
+        window.scrollTo(0,0);
+      }
+    } 
+  }
+
+  //mirar la respuesta de subir datos al terminar de guardar el contrato editado
+  useEffect(()=> {
+    if (saveEditedContract.responseUpload) {
+      console.log(saveEditedContract.responseUpload);
+      if (saveEditedContract.responseUpload.status === 'ok') { 
+        setCreatingContractError(null)
+        getPlayersAgain();
+      } else {
+        setCreatingContractError('Existe un error en el formulario, inténtelo de nuevo')
+      }
+    }
+  },[saveEditedContract.responseUpload])
+
+  //----------------------------------------------------------//
+  //variables
+
+  useEffect(()=> {
+    if (variableExpressions) console.log('variableExpressions', variableExpressions);
+  },[variableExpressions])
+
   //añadir una nueva expresion completa a la variable
   const handleAddNewVariableExpression = (number) => {
-    setVariableExpressions([...variableExpressions, {id_ExprComb:number, id_expresion_concatenacion:'', id_expresion:'',id_expresion_operador:'',id_expresion_tipo:'',id_expresion_valor:null,condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]) 
+    setVariableExpressions([...variableExpressions, {id_ExprComb:number,bonus_prima:'',id_expresion_concatenacion:'', id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]) 
    }
  
    //manejar cambios en los campos de la expresion
@@ -161,6 +1365,13 @@ export default function EditPlayerPage () {
      onChangeValue[index][name] = value;
      setVariableExpressions(onChangeValue);
    }
+
+   const handleChangesOnNewVariableExpressionToggle = (event, index) => {
+    let {name, checked} = event.target;
+    let onChangeValue = [...variableExpressions];
+    onChangeValue[index][name] = checked ? 1 : 0;
+    setVariableExpressions(onChangeValue);
+  }
  
    const handleDeleteNewVariableExpression = (index) => {
      const newExpressionsArray = [...variableExpressions];
@@ -183,7 +1394,171 @@ export default function EditPlayerPage () {
     newConditionsArray.splice(indexCond, 1);
     newExpressionsArray[indexExpr]["condiciones"] = newConditionsArray;    
     setVariableExpressions(newExpressionsArray);
+  }
+  
+  //pedir datos para buscar en una expresion tipo search
+  const getExprSearch = useSaveData();
+  const searchExpression = (id, search) => {
+    getExprSearch.uploadData('players/searchComboValues',{'id':id, 'search':search})
+  }
+  //guardar datos busqueda expresion
+  useEffect(()=> {
+    if (getExprSearch.responseUpload) {
+      console.log('resultados de busqueda',getExprSearch.responseUpload)
+      setSearchExpResults(getExprSearch.responseUpload.data);
+      setShowSearchExpResults(true);
+    }
+  },[getExprSearch.responseUpload])
+
+  //render caja de resultados busqueda expresion
+  const renderSearchExpResults = (index) => {
+    if (showSearchExpResults && searchExpResults?.length == 0) {
+      return (
+        <div className='cm-c-dropdown-select__results-box'><span>No hay resultados</span></div>
+      );
+    } else if (showSearchExpResults && searchExpResults?.length > 0) {
+      return (
+        <div className='cm-c-dropdown-select__results-box'>
+          {
+            searchExpResults.map(item => {
+     
+              return (
+                <span
+                  className='result'
+                  key={item.id}
+                  onClick={e => {
+                    e.preventDefault();
+                    let onChangeValue = [...variableExpressions];
+                    onChangeValue[index]["id_expresion_valor"] = item.id.toString();
+                    setVariableExpressions(onChangeValue);
+                    setSearchExpResults(item.value);
+                    setShowSearchExpResults(false);
+                  }}  >
+                    {item.value}
+                </span>
+              );
+            })
+          }
+        </div>
+      );
+    }
+  }
+
+  //render campo valor de expresion dependiendo de tipo de expresión
+  const renderExprCondValueField = (idExpresion, index) => {
+    let type = null;
+    let result= null;
+    let comboVal = null;
+    if (idExpresion !== '') {
+      type = variableCombos.expresion.filter(item => item.id.includes(idExpresion));
+      result = type[0]?.type;
+      comboVal = type[0]?.comboVal;
+    }
+    if (result === 'texto') {
+      return (
+        <LabelElement
+          htmlFor='id_expresion_valor'
+          placeholder='introduce valor'
+          type='number'
+          className='cm-c-form-simple'
+          value={variableExpressions[index]?.id_expresion_valor}
+          handleOnChange={(event) => {
+            handleChangesOnNewVariableExpression(event,index);
+        }} />
+      );
+    } else if (result === 'combo') {
+      return (
+        <SelectIconShorter
+          name='id_expresion_valor'
+          value={variableExpressions[index]?.id_expresion_valor || ''}
+          handleOnChange={(e) => {
+            handleChangesOnNewVariableExpression(e,index);                           
+          }} >
+          <option value=''>Selecciona</option>
+          { comboVal.map((item) => {
+              return (
+                <option key={item.id} value={item.id}>{item.value}</option>
+              );
+          })}
+        </SelectIconShorter>  
+      );
+    } else if (result === 'search') {
+      return (
+        <div className='cm-c-dropdown-select'>
+          <LabelElement
+            htmlFor='id_expresion_valor'
+            type='text'
+            className='cm-c-form-simple'
+            autoComplete='off'
+            placeholder='Escribe para buscar'
+            required={true}
+            value={searchExpSelected}
+            handleOnChange={(e)=>{
+              console.log(e.target.value);
+              setSearchExpSelected(e.target.value);
+              if (e.target.value.length >= 2 ) {
+                searchExpression(idExpresion, e.target.value)
+              } else if ((e.target.value.length < 2 )) {
+                setSearchExpResults(null);
+                setShowSearchExpResults(false);
+                
+              }
+            }}
+  
+            />
+          {renderSearchExpResults(index)}
+        </div>
+      );
+    }
   }  
+
+  //pedir datos para buscar en una condicion tipo search
+  const getCondSearch = useSaveData();
+  const searchCondition = (id, search) => {
+    getCondSearch.uploadData('players/searchComboValues',{'id':id, 'search':search})
+  }
+  //guardar datos busqueda jugador
+  useEffect(()=> {
+    if (getCondSearch.responseUpload) {
+      console.log(getCondSearch.responseUpload)
+      setSearchCondResults(getCondSearch.responseUpload.data);
+      setShowSearchCondResults(true);
+    }
+  },[getCondSearch.responseUpload])
+
+  //render caja de resultados busqueda jugador
+  const renderSearchCondResults = (indexExpr, indexCond) => {
+    if (showSearchCondResults && searchCondResults?.length == 0) {
+      return (
+        <div className='cm-c-dropdown-select__results-box'><span>No hay resultados</span></div>
+      );
+    } else if (showSearchCondResults && searchCondResults?.length > 0) {
+      return (
+        <div className='cm-c-dropdown-select__results-box'>
+          {
+            searchCondResults.map(item => {
+              console.log(item);
+              return (
+                <span
+                  className='result'
+                  key={item.id}
+                  onClick={e => {
+                    e.preventDefault();
+                    let onChangeValue = [...variableExpressions];
+                    onChangeValue[indexExpr]["condiciones"][indexCond]["id_condicion_valor"] = item.id.toString();
+                    setVariableExpressions(onChangeValue);
+                    setSearchCondSelected(item.value);
+                    setShowSearchCondResults(false);
+                  }}  >
+                    {item.value}
+                </span>
+              );
+            })
+          }
+        </div>
+      );
+    }
+  }
 
   //render campo valor condicion dependiendo del escogido en condicion
   const renderConditionValueField = (idCondicion, indexExpr, indexCond) => {
@@ -234,210 +1609,44 @@ export default function EditPlayerPage () {
             <option value=''>Selecciona</option>
             { comboVal.map((item) => {
                 return (
-                  <option key={item.id_condVal} value={item.id_condVal}>{item.value}</option>
+                  <option key={item.id} value={item.id}>{item.value}</option>
                 );
             })}
           </SelectIconShorter>  
         </>  
       );
-    }
-  }
-
-  //render acordeon variable existente
-  const renderVariableLayer = () => {
-    if (showVariable === true ) {
-      console.log('savedVariables',savedVariables);
-      console.log('activeVariable',activeVariable);
+    } else if (result === 'search') {
       return (
-        <>
-        <SimpleAccordionContent
-          className='cm-u-spacer-mt-large'>
-          <header className="cm-l-body-static-header--inTab" style={{marginTop:'0'}}>
-            <p className="cm-u-text-black-cat">Variable {`${activeVariable+1}`}</p>
-          </header>
-          
-            {savedVariables[activeVariable].expresiones.map((item,index) => {
-              return (
-                <>
-                  <div className='cm-u-spacer-mb-bigger'>
-                    {item.id_expresion_concatenacion !== '' ? 
-                      <FormSimplePanelRow>                   
-                        <LabelSelectShorterElement
-                          htmlFor='id_expresion_concatenacion'
-                          labelText='Nueva expresión'
-                          disabled='disabled'
-                          value={item.id_expresion_concatenacion}
-                          >
-                            <option value={item.id_expresion_concatenacion} selected='selected'>{item.id_expresion_concatenacion}</option>
-                        </LabelSelectShorterElement>
-                      </FormSimplePanelRow>
-                      :
-                      ''}
-                    <FormSimplePanelRow>
-                      <LabelSelectShorterElement
-                        htmlFor='id_expresion'
-                        labelText='Expresión'
-                        disabled='disabled'
-                        value={item.id_expresion}             
-                        >
-                          <option value={item.id_expresion} selected='selected'>{item.id_expresion}</option>
-                      </LabelSelectShorterElement>
-                      <SelectIconShorter
-                        name='id_expresion_operador'
-                        value={item.id_expresion_operador}
-                        disabled='disabled'>
-                          <option value={item.id_expresion_operador} selected='selected'>{item.id_expresion_operador}</option>
-                      </SelectIconShorter>
-                      <LabelElement
-                        htmlFor='id_expresion_valor'
-                        placeholder='introduce valor'
-                        type='number'
-                        className='cm-c-form-simple'
-                        disabled='disabled'
-                        value={item.id_expresion_valor}
-                        /> 
-                    </FormSimplePanelRow>
-                    {item.condiciones.map((condicion, index2) => {
-                      return(
-                        <>
-                          <FormSimplePanelRow key={index2}>
-                            <LabelSelectShorterElement
-                              htmlFor='id_condicion'
-                              labelText='Condición'
-                              disabled='disabled'
-                              value={condicion.id_condicion}
-                              >
-                                <option value={condicion.id_condicion} selected='selected'>{condicion.id_condicion}</option>
-                            </LabelSelectShorterElement>
-                            <SelectIconShorter
-                              name='id_condicion_operador'
-                              value={condicion.id_condicion_operador}
-                              >
-                                <option value={condicion.id_condicion_operador} selected='selected'>{condicion.id_condicion_operador}</option>
-                            </SelectIconShorter>
-                            {condicion.id_condicion_tipo === 'texto' ?
-                              <LabelElement
-                                htmlFor='id_condicion_valor'
-                                placeholder='introduce valor'
-                                type='text'
-                                className='cm-c-form-simple'
-                                value={condicion.id_condicion_valor}
-                                disabled='disabled'
-                                />
-                                :
-                                <SelectIconShorter
-                                  name='id_condicion_valor'
-                                  value={condicion.id_condicion_valor}
-                                  disabled='disabled'
-                                  >
-                                  <option value={condicion.id_condicion_valor} selected='selected'>{condicion.id_condicion_valor}</option>
-                                </SelectIconShorter>  
-                            }
-                            
-                          </FormSimplePanelRow>
-                        </>
-                      )
-                    })}
-                  </div>
-                </>
+        <div className='cm-c-dropdown-select'>
+          <LabelElement
+            htmlFor='id_condicion_valor'
+            type='text'
+            className='cm-c-form-simple'
+            autoComplete='off'
+            placeholder='Escribe para buscar'
+            required={true}
+            value={searchCondSelected}
+            handleOnChange={(e)=>{
+              console.log(e.target.value);
+              setSearchCondSelected(e.target.value);
+              if (e.target.value.length >= 2 ) {
+                searchCondition(idCondicion, e.target.value)
+              } else if ((e.target.value.length < 2 )) {
+                setSearchCondResults(null);
+                setShowSearchCondResults(false);
                 
-              );
-            })}
-            <FormSimplePanelRow>
-              <LabelElement
-                htmlFor='bloque'
-                placeholder='introduce bloque'
-                type='number'
-                className='panel-field-long'
-                value={savedVariables[activeVariable].bloque}
-                disabled='disabled'
-                >Bloque 
-              </LabelElement> 
-              <LabelSelectElement
-                htmlFor='tipo_importe'
-                labelText='Tipo importe'
-                value={savedVariables[activeVariable].tipo_importe}
-                disabled='diabled'
-                >
-                  <option value={savedVariables[activeVariable].tipo_importe} selected='selected'>{savedVariables[activeVariable].tipo_importe}</option>
-              </LabelSelectElement>
-            </FormSimplePanelRow>
-            <FormSimplePanelRow>
-              <LabelElementAssist
-                htmlFor='variableAmount'
-                placeholder='introduce valor'
-                type='number'
-                className='panel-field-long'
-                value={savedVariables[activeVariable].importe}
-                disabled='disabled'>
-                  Importe
-                </LabelElementAssist> 
-            </FormSimplePanelRow>
-            <FormSimplePanelRow>
-              <LabelSelectElement
-                htmlFor='variableBeneficiary'
-                labelText='Beneficiario'
-                disabled='disabled'
-                value={savedVariables[activeVariable].nombre || savedVariables[activeVariable].id_beneficiario}>
-                  <option value={savedVariables[activeVariable].nombre || savedVariables[activeVariable].id_beneficiario} selected='selected'>{savedVariables[activeVariable].nombre || savedVariables[activeVariable].id_beneficiario}</option>
-              </LabelSelectElement>
-            </FormSimplePanelRow>
-            <FormSimplePanelRow>
-              <LabelElement
-                htmlFor='dateSince'
-                type='date'
-                className='panel-field-short'
-                disabled='disabled'
-                value={savedVariables[activeVariable].fecha_desde}>
-                Vigencia desde
-              </LabelElement>
-              <LabelElement
-                htmlFor='dateTo'
-                type='date'
-                className='panel-field-short panel-field-short--inline'
-                disabled='disabledd'
-                value={savedVariables[activeVariable].fecha_hasta}>
-                hasta
-              </LabelElement>
-            </FormSimplePanelRow>
-            <FormSimplePanelRow>
-              <LabelElementToggle
-                  htmlFor='amortizable'
-                  checked={savedVariables[activeVariable].amortizable === 1 ? 'checked' : ''}
-                  disabled='disabled'>
-                  Amortizable
-              </LabelElementToggle>
-            </FormSimplePanelRow>
-          
-          
-          <FormSimplePanelRow
-            className='cm-u-centerText'>
-            <ButtonMousePrimary
-              onClick={(event) => {
-                event.preventDefault;
-                const newVariablesArray = [...savedVariables];
-                newVariablesArray.splice(activeVariable-1, 1);
-                console.log(newVariablesArray);
-                setSavedVariables(newVariablesArray);
-                setShowVariable(false);
-              }}
-              >Borrar</ButtonMousePrimary>
-            <ButtonMouseGhost
-              onClick={() => {
-                setShowVariable(false);
-              }}
-              >Cancelar</ButtonMouseGhost>
-          </FormSimplePanelRow>
-        </SimpleAccordionContent>
-        </>
-      );     
+              }
+            }}
+  
+            />
+          {renderSearchCondResults(indexExpr, indexCond)}
+        </div>
+      );
     }
-    
   }
 
   //render acordeon nueva variable
   const renderNewVariableLayer = () => {
-
     if (showNewVariableLayer === true) {
       return (
         <>
@@ -449,25 +1658,34 @@ export default function EditPlayerPage () {
             const ExprComb = item.id_ExprComb;  
             return (
               <div key={ExprComb} className='cm-u-spacer-mb-bigger'>
-                {(item.id_ExprComb !== 1) ?
-                    <FormSimplePanelRow>                   
-                      <LabelSelectShorterElement
-                        htmlFor='id_expresion_concatenacion'
-                        labelText='Nueva expresión'
-                        value={item.id_expresion_concatenacion}
-                        handleOnChange={(event) => {
-                          handleChangesOnNewVariableExpression(event,index)
-                        }} >
-                          <option value=''>Selecciona</option>
-                        <option value='y'>Y</option>
-                        <option value='o'>O</option>
-                      </LabelSelectShorterElement>
-                    </FormSimplePanelRow>
-                    : ''}
-                  <FormSimplePanelRow>
+                <FormSimplePanelRow>
+                  {(item.id_ExprComb !== 1) ?
+                    <LabelSelectShorterElement
+                      htmlFor='id_expresion_concatenacion'
+                      labelText='Nueva expresión'
+                      value={item.id_expresion_concatenacion}
+                      handleOnChange={(event) => {
+                        handleChangesOnNewVariableExpression(event,index)
+                      }} >
+                        <option value=''>Selecciona</option>
+                      <option value='y'>Y</option>
+                      <option value='o'>O</option>
+                    </LabelSelectShorterElement>
+                  : ''}
+                  <LabelElementToggle2SidesPanel
+                    textLeft='Bonus'
+                    textRight='Prima'
+                    htmlFor='bonus_prima'
+                    checked={item.bonus_prima === 1 ? true : ''}
+                    handleOnChange={(event) => {
+                      handleChangesOnNewVariableExpressionToggle(event, index);
+                    }}>
+                    {(item.id_ExprComb !== 1) ?  '' : 'Expresión'}
+                  </LabelElementToggle2SidesPanel>
+                </FormSimplePanelRow>
+                <FormSimplePanelRow>
                   <LabelSelectShorterElement
-                    htmlFor='id_expresion'
-                    labelText={(item.id_ExprComb !== 1) ?  '' : 'Expresión'}
+                    htmlFor='id_expresion'                    
                     value={item.id_expresion}
                     handleOnChange={(event) => {
                       handleChangesOnNewVariableExpression(event,index)
@@ -487,19 +1705,12 @@ export default function EditPlayerPage () {
                       handleChangesOnNewVariableExpression(event,index)
                     }} >
                       <option value=''>Operador</option>
-                    <option value='='>Igual a</option>
-                    <option value='<'>Menor qué</option>
-                    <option value='>'>Mayor qué</option>
+                    <option value='='>=</option>
+                    <option value='<'>&lt;</option>
+                    <option value='>'>&gt;</option>
                   </SelectIconShorter>
-                  <LabelElement
-                    htmlFor='id_expresion_valor'
-                    placeholder='introduce valor'
-                    type='number'
-                    className='cm-c-form-simple'
-                    value={item.id_expresion_valor}
-                    handleOnChange={(event) => {
-                      handleChangesOnNewVariableExpression(event,index)
-                    }} /> 
+                  {renderExprCondValueField(variableExpressions[index].id_expresion, index)}
+
                   {(item.id_ExprComb !== 1) ?                   
                     <IconButtonSmallSecondary
                       onClick={(e) => {
@@ -519,73 +1730,80 @@ export default function EditPlayerPage () {
                     </IconButtonSmallSecondary>
                     : ''}
                 </FormSimplePanelRow>
-                { variableExpressions[index].condiciones.map((item, index2) => {
-                  return(
-                    <>
-                      <FormSimplePanelRow key={index2}>
-                        <LabelSelectShorterElement
-                          htmlFor='id_condicion'
-                          labelText='Condición'
-                          value={variableExpressions[index].condiciones[index2].id_condicion || ''}
-                          handleOnChange={(e) => {
-                            let onChangeValue = [...variableExpressions];
-                            onChangeValue[index]["condiciones"][index2]["id_condicion"] = e.target.value;
-                            setVariableExpressions(onChangeValue);                            
-                          }}
-                          >
-                            <option value=''>Condicion</option>
-                            { variableCombos.condition?.map((item) => {
-                                return (
-                                  <option key={item.id} value={item.id}>{item.value}</option>
-                                );
-                            })}
-                        </LabelSelectShorterElement>
-                        <SelectIconShorter
-                          name='id_condicion_operador'
-                          value={variableExpressions[index].condiciones[index2].id_condicion_operador || ''}
-                          handleOnChange={(e) => {
-                            let onChangeValue = [...variableExpressions];
-                            onChangeValue[index]["condiciones"][index2]["id_condicion_operador"] = e.target.value;
-                            setVariableExpressions(onChangeValue);                            
-                          }}
-                          >
-                            <option value=''>Operador</option>
-                            <option value='='>Igual a</option>
-                            <option value='<'>Menor qué</option>
-                            <option value='>'>Mayor qué</option>
-                        </SelectIconShorter>
-                        {renderConditionValueField(variableExpressions[index].condiciones[index2].id_condicion, index, index2)}
-
-                        {(index2 !== 0) ?                   
-                          <IconButtonSmallSecondary
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleDeleteNewCond(index, index2);
-                            }} >
-                              <SymbolDelete />
-                          </IconButtonSmallSecondary>
-                        : ''}
-                        {index2+1 == variableExpressions[index].condiciones.length ?                   
-                          <IconButtonSmallSecondary
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleAddNewCond(index, index2+1);
-                            }} >
-                              <SymbolAdd />
-                          </IconButtonSmallSecondary>
-                        : ''}
-                      </FormSimplePanelRow>
-                    </>
-                  )
-                })}
-                </div>
+                { item.bonus_prima === 1 ?
+                  <>
+                    {
+                      variableExpressions[index].condiciones.map((item, index2) => {
+                        return(
+                          <>
+                            <FormSimplePanelRow key={index2}>
+                              <LabelSelectShorterElement
+                                htmlFor='id_condicion'
+                                labelText='Condición'
+                                value={variableExpressions[index].condiciones[index2].id_condicion || ''}
+                                handleOnChange={(e) => {
+                                  let onChangeValue = [...variableExpressions];
+                                  onChangeValue[index]["condiciones"][index2]["id_condicion"] = e.target.value;
+                                  setVariableExpressions(onChangeValue);                            
+                                }}
+                                >
+                                  <option value=''>Condicion</option>
+                                  { variableCombos.condition?.map((item) => {
+                                      return (
+                                        <option key={item.id} value={item.id}>{item.value}</option>
+                                      );
+                                  })}
+                              </LabelSelectShorterElement>
+                              <SelectIconShorter
+                                name='id_condicion_operador'
+                                value={variableExpressions[index].condiciones[index2].id_condicion_operador || ''}
+                                handleOnChange={(e) => {
+                                  let onChangeValue = [...variableExpressions];
+                                  onChangeValue[index]["condiciones"][index2]["id_condicion_operador"] = e.target.value;
+                                  setVariableExpressions(onChangeValue);                            
+                                }}
+                                >
+                                  <option value=''>Operador</option>
+                                  <option value='='>=</option>
+                                  <option value='<'>&lt;</option>
+                                  <option value='>'>&gt;</option>
+                              </SelectIconShorter>
+                              {renderConditionValueField(variableExpressions[index].condiciones[index2].id_condicion, index, index2)}
+      
+                              {(index2 !== 0) ?                   
+                                <IconButtonSmallSecondary
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleDeleteNewCond(index, index2);
+                                  }} >
+                                    <SymbolDelete />
+                                </IconButtonSmallSecondary>
+                              : ''}
+                              {index2+1 == variableExpressions[index].condiciones.length ?                   
+                                <IconButtonSmallSecondary
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleAddNewCond(index, index2+1);
+                                  }} >
+                                    <SymbolAdd />
+                                </IconButtonSmallSecondary>
+                              : ''}
+                            </FormSimplePanelRow>
+                          </>
+                        )
+                      })
+                    }
+                  </>
+                  : ''
+                }
+              </div>
             );
           })}
           <FormSimplePanelRow>
             <LabelElement
               htmlFor='bloque'
               placeholder='introduce bloque'
-              type='number'
+              type='text'
               className='panel-field-long'
               >Bloque 
             </LabelElement> 
@@ -600,8 +1818,8 @@ export default function EditPlayerPage () {
           <FormSimplePanelRow>
             <LabelElementAssist
               htmlFor='variableAmount'
-              placeholder='introduce valor'
-              type='number'
+              placeholder='Importe en €'
+              type='text'
               className='panel-field-long'>
                 Importe
               </LabelElementAssist> 
@@ -646,7 +1864,7 @@ export default function EditPlayerPage () {
             <ButtonMouseGhost
               onClick={() => {
                 setShowNewVariableLayer(false);
-                setVariableExpressions([{id_ExprComb:1,id_expresion:'',id_expresion_operador:'',id_expresion_valor:null,condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]); 
+                setVariableExpressions([{id_ExprComb:1,bonus_prima:'',id_expresion_concatenacion:'', id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]) 
               }}
               >Cancelar</ButtonMouseGhost>
           </FormSimplePanelRow>
@@ -657,30 +1875,70 @@ export default function EditPlayerPage () {
   }
 
   //guardar una nueva variable
+  const saveClausula = useSaveData();
+
   const handleSaveNewVariable = (e) => {
     e.preventDefault();
     const formData = new FormData(form.current);
     const amortizableVal = document.getElementById('amortizable').checked;
-
-
+    //const bonusPrimaVal = document.getElementById('bonus_prima').checked;
     const expresiones = variableExpressions;
+    console.log(typeof(expresiones));
 
     const data = {
       expresiones,
-      bloque: parseFloat(formData.get('bloque')),
+      // bonus_prima:bonusPrimaVal ? 1 : 0,
+      bloque: formData.get('bloque'),
       tipo_importe: formData.get('tipo_importe'),
       fecha_desde: formData.get('dateSince'),
       fecha_hasta: formData.get('dateTo'),
       amortizable: amortizableVal ? 1 : 0,
-      importe: parseFloat(formData.get('variableAmount')),
-      id_beneficiario: parseFloat(formData.get('variableBeneficiary')),
+      importe: formData.get('variableAmount'),
+      id_beneficiario: formData.get('variableBeneficiary'),
     }
 
-    // console.log(data);
-    setSavedVariables([...savedVariables, data]);
-    setShowNewVariableLayer(false);
-    setVariableExpressions([{id_ExprComb:1,id_expresion_concatenacion:'',id_expresion:'',id_expresion_operador:'',id_expresion_tipo:'',id_expresion_valor:null,condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);   
+    const dataSent = {
+      'id_jugador': userParamString,
+      'variable': data,
+    }
+
+    console.log('variable que guardo', data);
+    console.log('variable que mando', dataSent);
+
+    saveClausula.uploadData('players/createClausula', dataSent);
+    // setSavedVariables([...savedVariables, dataSent]);    
   }
+
+  useEffect(()=>{
+    if (saveClausula.responseUpload) {
+      console.log (saveClausula.responseUpload);
+      if (saveClausula.responseUpload.status === 'ok') {
+        setShowNewVariableLayer(false);
+        setVariableExpressions([{id_ExprComb:1,bonus_prima:'',id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
+        getPlayersAgain();
+      } else {
+        setError('Existe un error en el formulario, inténtelo de nuevo')
+      }
+    }
+  },[saveClausula.responseUpload])
+
+
+  //borrar una variable
+  const deleteClausula = useSaveData();
+
+  const handleDeleteClausula = (id) => {
+    deleteClausula.uploadData('players/removeClausula', {'id_clausula':id.toString()})
+  }
+
+  useEffect(()=>{
+    if (deleteClausula.responseUpload){
+      console.log(deleteClausula.responseUpload);
+      getPlayersAgain();
+    }
+  },[deleteClausula.responseUpload])
+
+  //------------------------------------------------------------//
+  //documentos
 
   //render acordeon upload docs
   const renderUploadDocsLayer = () => {
@@ -730,76 +1988,76 @@ export default function EditPlayerPage () {
     setShowUploadDoc(false);
   }
 
-  const handleSave = (e) => {
-    e.preventDefault();
-    const formData = new FormData(form.current);
+  // const handleSave = (e) => {
+  //   e.preventDefault();
+  //   const formData = new FormData(form.current);
 
-    const playerComunitarioVal = document.getElementById('playerComunitario').checked;
-    const playerResidenciaVal = document.getElementById('playerResidencia').checked;
-    const savedVariablesInState = savedVariables;
-    const idContrato = playerData.id_contrato;
+  //   const playerComunitarioVal = document.getElementById('playerComunitario').checked;
+  //   const playerResidenciaVal = document.getElementById('playerResidencia').checked;
+  //   const savedVariablesInState = savedVariables;
+  //   const idContrato = playerData.id_contrato;
 
-    const data = {
-      id_intermediario: formData.get('playerIntermediary') || '',
-      id_posicion: formData.get('playerPosition') || '',
-      id_club_origen: formData.get('playerTeamOrigin') || '',
-      // id_contrato: formData.get('playerContract') || '',
-      nombre: formData.get('playerName') || '',
-      apellido1: formData.get('playerLastname1') || '',
-      apellido2: formData.get('playerLastname2') || '',
-      alias: formData.get('playerAlias') || '',
-      desc_dorsal: formData.get('playerDorsal') || '',
-      nacionalidad1: formData.get('playerNationality1') || '',
-      nacionalidad2: formData.get('playerNationality2') || '',
-      fch_nacimiento: formData.get('playerBornDate') || '',
-      dni_nie: formData.get('playerDNI') || '',
-      pasaporte1: formData.get('playerPassport1Nr') || '',
-      pasaporte2: formData.get('playerPassport2Nr') || '',
-      nss: formData.get('playerNSS') || '',
-      caducidad_pasaporte1: formData.get('playerPassport1Date') || '',
-      caducidad_pasaporte2: formData.get('playerPassport2Date') || '',
-      caducidad_dni: formData.get('playerDNIdate') || '',
-      residencia: playerResidenciaVal ? 1 : 0,
-      comunitario: playerComunitarioVal ? 1 : 0,
-      peso: formData.get('playerWeight') || '',
-      altura: formData.get('playerHeight') || '',
-      valor_mercado: formData.get('playerMarketValue') || '',
-      savedVariables: savedVariablesInState,
-      documentos: uploadedFiles 
-    }
+  //   const data = {
+  //     id_intermediario: formData.get('playerIntermediary') || '',
+  //     id_posicion: formData.get('playerPosition') || '',
+  //     id_club_origen: formData.get('playerTeamOrigin') || '',
+  //     // id_contrato: formData.get('playerContract') || '',
+  //     nombre: formData.get('playerName') || '',
+  //     apellido1: formData.get('playerLastname1') || '',
+  //     apellido2: formData.get('playerLastname2') || '',
+  //     alias: formData.get('playerAlias') || '',
+  //     desc_dorsal: formData.get('playerDorsal') || '',
+  //     nacionalidad1: formData.get('playerNationality1') || '',
+  //     nacionalidad2: formData.get('playerNationality2') || '',
+  //     fch_nacimiento: formData.get('playerBornDate') || '',
+  //     dni_nie: formData.get('playerDNI') || '',
+  //     pasaporte1: formData.get('playerPassport1Nr') || '',
+  //     pasaporte2: formData.get('playerPassport2Nr') || '',
+  //     nss: formData.get('playerNSS') || '',
+  //     caducidad_pasaporte1: formData.get('playerPassport1Date') || '',
+  //     caducidad_pasaporte2: formData.get('playerPassport2Date') || '',
+  //     caducidad_dni: formData.get('playerDNIdate') || '',
+  //     residencia: playerResidenciaVal ? 1 : 0,
+  //     comunitario: playerComunitarioVal ? 1 : 0,
+  //     peso: formData.get('playerWeight') || '',
+  //     altura: formData.get('playerHeight') || '',
+  //     valor_mercado: formData.get('playerMarketValue') || '',
+  //     savedVariables: savedVariablesInState,
+  //     documentos: uploadedFiles 
+  //   }
 
-    const dataSent = {
-      'id_jugador':userParam.toString(),
-      'id_intermediario': data.id_intermediario,
-      'id_posicion': data.id_posicion,
-      'id_club_origen': data.id_club_origen,
-      'id_contrato':idContrato,
-      'nombre': data.nombre,
-      'apellido1': data.apellido1,
-      'apellido2': data.apellido2,
-      'alias': data.alias,
-      'desc_dorsal': data.desc_dorsal,
-      'nacionalidad1': data.nacionalidad1,
-      'nacionalidad2': data.nacionalidad2,
-      'fch_nacimiento': data.fch_nacimiento,
-      'dni_nie': data.dni_nie,
-      'pasaporte1': data.pasaporte1,
-      'pasaporte2': data.pasaporte2,
-      'nss': data.nss,
-      'caducidad_pasaporte1': data.caducidad_pasaporte1,
-      'caducidad_pasaporte2': data.caducidad_pasaporte2,
-      'caducidad_dni': data.caducidad_dni,
-      'residencia': data.residencia.toString(),
-      'comunitario': data.comunitario.toString(),
-      'peso': data.peso,
-      'altura': data.altura,
-      'valor_mercado': data.valor_mercado,
-      'variables':data.savedVariables,
-      'documentos': data.documentos || [],
-    }
-    console.log(dataSent);
-    updatePlayer.uploadData('players/edit',dataSent);
-  }
+  //   const dataSent = {
+  //     'id_jugador':userParam.toString(),
+  //     'id_intermediario': data.id_intermediario,
+  //     'id_posicion': data.id_posicion,
+  //     'id_club_origen': data.id_club_origen,
+  //     'id_contrato':idContrato,
+  //     'nombre': data.nombre,
+  //     'apellido1': data.apellido1,
+  //     'apellido2': data.apellido2,
+  //     'alias': data.alias,
+  //     'desc_dorsal': data.desc_dorsal,
+  //     'nacionalidad1': data.nacionalidad1,
+  //     'nacionalidad2': data.nacionalidad2,
+  //     'fch_nacimiento': data.fch_nacimiento,
+  //     'dni_nie': data.dni_nie,
+  //     'pasaporte1': data.pasaporte1,
+  //     'pasaporte2': data.pasaporte2,
+  //     'nss': data.nss,
+  //     'caducidad_pasaporte1': data.caducidad_pasaporte1,
+  //     'caducidad_pasaporte2': data.caducidad_pasaporte2,
+  //     'caducidad_dni': data.caducidad_dni,
+  //     'residencia': data.residencia.toString(),
+  //     'comunitario': data.comunitario.toString(),
+  //     'peso': data.peso,
+  //     'altura': data.altura,
+  //     'valor_mercado': data.valor_mercado,
+  //     'variables':data.savedVariables,
+  //     'documentos': data.documentos || [],
+  //   }
+  //   console.log(dataSent);
+  //   updatePlayer.uploadData('players/edit',dataSent);
+  // }
 
   //mirar la respuesta de subir datos para setear error
   useEffect(()=> {
@@ -871,10 +2129,10 @@ export default function EditPlayerPage () {
                 {`${playerData.nombre} ${playerData.apellido1}`}
               </TitleBar__TitleAvatar>
               <TitleBar__Tools>
-                <ButtonMousePrimary
+                {/* <ButtonMousePrimary
                   onClick={handleSave}>
                   Guardar
-                </ButtonMousePrimary>
+                </ButtonMousePrimary> */}
                 <IconButtonSmallPrimary
                   onClick={() => setModal(true)}>
                   <SymbolDelete/>
@@ -890,10 +2148,8 @@ export default function EditPlayerPage () {
               <FormTabs>
                 <FormTabs__LinksWrapper>
                   <TabLink target='general'>General</TabLink>
-                  <TabLink target='deportivo'>Deportivo</TabLink>
                   <TabLink target='contractual'>Contractual</TabLink>
                   <TabLink target='variables'>Variables</TabLink>
-                  <TabLink target='documentos'>Documentos</TabLink>
                 </FormTabs__LinksWrapper>
               </FormTabs>
             </FormTabs__ToolBarWrapper>
@@ -909,25 +2165,41 @@ export default function EditPlayerPage () {
                       <FormSimplePanelRow>
                         <LabelElementToggle
                           htmlFor='playerComunitario'
-                          checked={playerData.comunitario ? 'checked':''}
-                          handleOnChange={e => {setPlayerData({...playerData, comunitario: e.target.checked})}}>
+                          checked={(playerData.comunitario === '1' || playerData.comunitario === 1 || playerData.comunitario === true) ? 'checked':''}
+                          handleOnChange={e => {
+                            const checked = e.target.checked === true ? '1' : '0';                      
+                            setPlayerData({...playerData, 'comunitario': checked})
+                            }}>
                           Jugador comunitario
                         </LabelElementToggle>
                       </FormSimplePanelRow>
                       <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerName'
-                          type='text'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='Nombre'
-                          required='required'
-                          assistanceText='Este campo es obligatorio'
-                          value={playerData.nombre}
-                          handleOnChange={e => {setPlayerData({...playerData, nombre: e.target.value})}}
-                          >
-                          Nombre
-                        </LabelElementAssist>
+                        <div className='cm-c-dropdown-select'>
+                          <LabelElementAssist
+                            htmlFor='playerName'
+                            type='text'
+                            className='panel-field-long'
+                            autoComplete='off'
+                            placeholder='Escribe para buscar'
+                            required={true}
+                            assistanceText='Este campo es obligatorio'
+                            value={optaSelectedPlayer.desc_nombre_jugador}
+                            handleOnChange={(e)=>{
+                              setOptaSelectedPlayer(e.target.value);
+                              if (e.target.value.length > 2 ) {
+                                searchPlayer(e.target.value)
+                              } else if ((e.target.value.length <= 2 )) {
+                                setOptaPlayersList(null);
+                                setOptaSelectedPlayer('');
+                                setOptaResultsBox(false);
+                                
+                              }
+                            }} >
+                            Nombre
+                          </LabelElementAssist>
+                          {renderSearchPlayerResults()}
+                        </div>
+
                       </FormSimplePanelRow>
                       <FormSimplePanelRow>
                         <LabelElementAssist
@@ -1108,23 +2380,26 @@ export default function EditPlayerPage () {
                       <FormSimplePanelRow>
                         <LabelElementToggle
                           htmlFor='playerResidencia'
-                          checked={playerData.residencia ? 'checked':''}
-                          handleOnChange={e => {setPlayerData({...playerData, residencia: e.target.checked})}}>
+                          checked={(playerData.residencia === 1 || playerData.residencia === '1' || playerData.residencia === true) ? 'checked':''}
+                          handleOnChange={e => {
+                            const checked = e.target.checked === true ? '1' : '0';  
+                            setPlayerData({...playerData, residencia: checked})}}
+                          >
                           Permiso residencia
                         </LabelElementToggle>
                       </FormSimplePanelRow>
-                    </TabContent>
-                    <TabContent id='deportivo'>
                       <FormSimplePanelRow>
                         <LabelSelectElement
                           htmlFor='playerPosition'
                           labelText='Posicion'
                           value={playerData.id_posicion || ''}
-                          handleOnChange={e => {setPlayerData({...playerData, id_posicion: e.target.value})}} >
+                          handleOnChange={e => {setPlayerData({...playerData, id_posicion: e.target.value})}}
+                          >
                             <option value=''>Selecciona</option>
                             { positions?.map(item => {
+                              const selected = playerData.id_posicion == item.id_posicion ? 'selected' : '';
                               return (
-                                <option key={item.id_posicion} value={item.id_posicion}>{item.desc_posicion}</option>
+                                <option key={item.id_posicion} value={item.id_posicion} selected={selected}>{item.desc_posicion}</option>
                               );
                             })}
                         </LabelSelectElement>
@@ -1136,61 +2411,19 @@ export default function EditPlayerPage () {
                           className='panel-field-long'
                           autoComplete='off'
                           placeholder='Dorsal'
-                          value={playerData.desc_dorsal || ''}
+                          value={playerData.desc_dorsal | ''}
                           handleOnChange={e => {setPlayerData({...playerData, desc_dorsal: e.target.value})}}
                           >
                           Dorsal
                         </LabelElementAssist>
                       </FormSimplePanelRow>
                       <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerWeight'
-                          type='text'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='Peso'
-                          value={playerData.peso || ''}
-                          handleOnChange={e => {setPlayerData({...playerData, peso: e.target.value})}}
-                          >
-                          Peso
-                        </LabelElementAssist>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerHeight'
-                          type='text'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='Altura'
-                          value={playerData.altura || ''}
-                          handleOnChange={e => {setPlayerData({...playerData, altura: e.target.value})}}
-                          >
-                          Altura
-                        </LabelElementAssist>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerMarketValue'
-                          type='number'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='Introduce euros'
-                          assistanceText='€'
-                          value={playerData.valor_mercado || ''}
-                          handleOnChange={e => {setPlayerData({...playerData, valor_mercado: e.target.value})}}
-                          >
-                          Valoración económica mercado
-                        </LabelElementAssist>
-                      </FormSimplePanelRow>
-                    </TabContent>
-                    <TabContent id='contractual'>
-                      <FormSimplePanelRow>
-                        <LabelSelectElement
+                      <LabelSelectElement
                           htmlFor='playerTeamOrigin'
-                          labelText='Equipo Origen'
+                          labelText='Club Origen'
                           value={playerData.id_club_origen || ''}
-                          handleOnChange={e => {setPlayerData({...playerData, id_club: e.target.value})}}>
-                            <option value=''>Selecciona</option>                            
+                          handleOnChange={e => {setPlayerData({...playerData, id_club_origen: e.target.value})}}
+                          >
                             { teams?.map(item => {
                               const selected = playerData.id_club_origen == item.id_club_opta ? 'selected' : '';
                               return (
@@ -1201,60 +2434,134 @@ export default function EditPlayerPage () {
                       </FormSimplePanelRow>
                       <FormSimplePanelRow>
                         <LabelElementAssist
-                          htmlFor='playerEntidad'
+                          htmlFor='playerMarketValue'
                           type='text'
                           className='panel-field-long'
                           autoComplete='off'
-                          placeholder='entidad'
-                          readOnly='readonly'
-                          value={playerData.desc_entidad || ''}
-                          handleOnChange={e => {setPlayerData({...playerData, desc_entidad: e.target.value})}}
+                          placeholder='Introduce euros'
+                          assistanceText='€'
+                          value={playerData.valor_mercado | ''}
+                          handleOnChange={e => {setPlayerData({...playerData, valor_mercado: e.target.value})}}
                           >
-                          Entidad
+                          Valoración económica mercado
                         </LabelElementAssist>
                       </FormSimplePanelRow>
                       <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerPlantilla'
-                          type='text'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='plantilla'
-                          readOnly='readonly'
-                          value={playerData.desc_plantilla || ''}
-                          handleOnChange={e => {setPlayerData({...playerData, desc_plantilla: e.target.value})}}
-                          >
-                          Plantilla
-                        </LabelElementAssist>
+                          <LabelElementAssist
+                            htmlFor='playerContractEndDate'
+                            type='date'
+                            className='panel-field-long'
+                            autoComplete='off'
+                            value={playerData.fecha_fin_contrato | ''}
+                            handleOnChange={e => {setPlayerData({...playerData, fecha_fin_contrato: e.target.value})}}
+                            >
+                            Fecha fin contrato
+                          </LabelElementAssist>
                       </FormSimplePanelRow>
                       <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerPlantilla'
-                          type='text'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='salario'
-                          readOnly='readonly'
-                          value={playerData.imp_salario_total || ''}
-                          handleOnChange={e => {setPlayerData({...playerData, imp_salario_total: e.target.value})}}
-                          >
-                          Salario total
-                        </LabelElementAssist>
+                        <LabelElementToggle
+                          htmlFor='playerCotonu' >
+                          Cotonú
+                        </LabelElementToggle>
                       </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelSelectElement
-                          htmlFor='playerIntermediary'
-                          labelText='Intermediario'
-                          value={playerData.id_intermediario || ''}
-                          handleOnChange={e => {setPlayerData({...playerData, id_intermediario: e.target.value})}}>
-                            <option value=''>Selecciona</option>
-                            { intermediaries?.map(item => {
-                              return (
-                                <option key={item.id_intermediario} value={item.id_intermediario}>{item.nombre}</option>
-                              );
-                            })}
-                        </LabelSelectElement>
+                      {createPlayerError &&
+                        <FormSimpleRow className='cm-u-centerText'>
+                          <span className='error'>{createPlayerError}</span>
+                        </FormSimpleRow>
+                      }
+                      <FormSimplePanelRow className='cm-u-centerText cm-u-spacer-mb-huge'>                                              
+                        <ButtonMousePrimary
+                          onClick={handleSavePlayer}>
+                          Actualizar
+                        </ButtonMousePrimary>                          
                       </FormSimplePanelRow>
+                    </TabContent>
+                    <TabContent id='contractual'>
+                    <TableDataWrapper
+                      className='cm-u-spacer-mt-big'>
+                        <TableDataHeader>
+                          <TableCellMedium>Tipo de Contrato</TableCellMedium>
+                          <TableCellMedium>Tipo de Procedimiento</TableCellMedium>
+                          <TableCellMedium>Fecha Inicio - Fecha Fin</TableCellMedium>
+                          <TableCellMedium className='cm-u-centerText'>Activo</TableCellMedium>
+                          <TableCellShort className='cm-u-centerText'>Editar</TableCellShort>
+                          <TableCellShort className='cm-u-centerText'>Borrar</TableCellShort>
+                        </TableDataHeader>
+                        { playerContracts ? 
+                          <>
+                            {
+                              playerContracts?.map(item => {   
+                                   
+                                return (
+                                  <TableDataRow key={item.id_contrato}>
+                                    <TableCellMedium>{item.desc_tipo_contrato}</TableCellMedium>
+                                    <TableCellMedium>{item.desc_tipo_procedimiento}</TableCellMedium>
+                                    <TableCellMedium>{item.fecha_ini_fin}</TableCellMedium>
+                                    <TableCellMedium className='cm-u-centerText'>
+                                      <input 
+                                        type='radio' 
+                                        name='selected'
+                                        checked={(item.id_contrato == activeContractId) ? true : ''} 
+                                        onClick={() => {
+                                          setActiveContractId(item.id_contrato);
+                                        }} />
+                                    </TableCellMedium>
+                                    <TableCellShort className='cm-u-centerText'>
+                                      <IconButtonSmallerPrimary
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          setEditedContractId(item.id_contrato);
+                                          handleEditContract(item.id_contrato);
+                                        }}>
+                                        <SymbolEdit />
+                                      </IconButtonSmallerPrimary>
+                                    </TableCellShort>
+                                    <TableCellShort className='cm-u-centerText'>
+                                      <IconButtonSmallerPrimary
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          handleDeleteContract(item.id_contrato);
+                                        }}>
+                                        <SymbolDelete />
+                                      </IconButtonSmallerPrimary>
+                                    </TableCellShort>
+                                  </TableDataRow>
+                                )
+                              })
+                            }
+                          </>
+                          : 
+                          <>
+                            <FormSimplePanelRow className='cm-u-centerText'>
+                              <span className='warning'>No hay ningún contrato añadido</span>
+                            </FormSimplePanelRow>
+                          </>
+                        }
+                        
+                        {/* Acordeon crear o editar contrato */}
+                        <SimpleAccordion>
+                          <SimpleAccordionTrigger
+                            className='cm-u-spacer-mb-bigger'>
+                            <HeadContentTitleBar>
+                              <TitleBar__Title></TitleBar__Title>
+                              <TitleBar__Tools>
+                                <IconButtonSmallPrimary
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setNewContract(true);
+                                    setEditContract(false);
+                                    setDetailContractData(null);
+                                    setDetailSalaryData(null);
+                                  }} >
+                                    <SymbolAdd />
+                                </IconButtonSmallPrimary>
+                              </TitleBar__Tools>
+                            </HeadContentTitleBar>
+                          </SimpleAccordionTrigger>
+                          {renderNewContractLayer()}
+                          {renderEditContractLayer()}
+                        </SimpleAccordion>
+                      </TableDataWrapper>
                     </TabContent>
                     <TabContent id='variables'>
                        {/* Tabla Variables creadas */}
@@ -1266,7 +2573,6 @@ export default function EditPlayerPage () {
                           </TableDataHeader>
                           
                           { savedVariables?.map((item, index) => {   
-                            // const idClausula = item.id_clausula;
                             return (
                               <TableDataRow key={index}>
                                 <TableCellLong>{`Variable ${index+1}`}</TableCellLong>
@@ -1277,13 +2583,10 @@ export default function EditPlayerPage () {
                                     dataValue={index}
                                     onClick={(event) => {
                                       event.preventDefault();
-                                      console.log('click variable',index);
-                                      console.log(savedVariables);
-                                      setActiveVariable(index);                                    
-                                      setShowVariable(true);
+                                      handleDeleteClausula(item.id_clausula);
                                     }}
                                     >
-                                  <SymbolSearch />
+                                  <SymbolDelete />
                                 </IconButtonSmallerPrimary>
                               </TableCellMedium>
                             </TableDataRow>
@@ -1291,8 +2594,6 @@ export default function EditPlayerPage () {
                           })}
                         </TableDataWrapper>  
 
-                        {/* Acordeon ver variable existente */}
-                        {renderVariableLayer()}
 
                          {/* Acordeon crear variable */}
                           <SimpleAccordion>
@@ -1305,6 +2606,7 @@ export default function EditPlayerPage () {
                                     onClick={(e) => {
                                       e.preventDefault();
                                       setShowNewVariableLayer(true);
+                                      console.log(variableCombos);
                                     }} >
                                       <SymbolAdd />
                                   </IconButtonSmallPrimary>
@@ -1315,7 +2617,7 @@ export default function EditPlayerPage () {
                           </SimpleAccordion>              
 
                     </TabContent>
-                    <TabContent id='documentos'>
+                    {/* <TabContent id='documentos'>
                       <SimpleAccordion>
                         <SimpleAccordionTrigger
                           className='cm-u-spacer-mb-bigger'>
@@ -1361,7 +2663,7 @@ export default function EditPlayerPage () {
                             })
                           }
                       </TableDataWrapper>
-                    </TabContent>
+                    </TabContent> */}
                   </FormTabs__ContentWrapper>
                 </FormTabs>
                 {error &&

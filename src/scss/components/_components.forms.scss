@@ -235,9 +235,8 @@
 
 .cm-c-select-icon {
     $block:&;
-    border:1px solid getColor(primaryLight);
-    border-radius: getSize($small);
-    height:calc(getSize($larger) - 2px);
+    
+    height:getSize($larger) ;
     display: inline-flex;
     overflow: hidden;
     position:relative;
@@ -248,11 +247,13 @@
     }
 
     &__select {
+        $block:&;
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
         background: transparent;
-        border:0;
+        border:1px solid getColor(primaryLight);
+        border-radius: getSize($small);
         color:getColor(scarpaFlow);
         outline: none;
         padding: 0 getSize($medium);
@@ -260,6 +261,10 @@
         
         @include font-size($defFontSizeDT, $lineHeightDT);
         @include cm-qs-normal;
+
+        &:required {
+            border:2px solid getColor(primary);
+        }
     }
 
     &--focus {
@@ -354,4 +359,9 @@
             }
         }
     }
+
+    .cm-c-form-simple +  .cm-c-dropdown-select__results-box {
+        left:0;
+    }
+    
 }

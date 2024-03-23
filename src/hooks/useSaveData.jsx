@@ -10,7 +10,7 @@ export const useSaveData = (endpoint,parameters) => {
 
     await Api.call.post(endpoint.toString(),parameters,{ headers:headers})
     .then(response => {
-      console.log(response.data)
+      // console.log(response.data)
       setResponseUpload(response.data)
     })
     .catch(err => {

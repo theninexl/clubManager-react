@@ -59,7 +59,7 @@ table {
 
 html {
   font-size: 62.5%; /*Transform to base 10 for easier REM calculations*/
-  box-sizing: border-box;
+  box-sizing: content-box;
 }
 
 body {
@@ -162,6 +162,15 @@ strong {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #F93A3A;
+}
+
+.warning {
+  font-family: "Quicksand", sans-serif;
+  font-weight: 700;
+  font-stretch: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #FECD39;
 }
 
 .material-symbols-outlined {
@@ -301,9 +310,13 @@ strong {
   text-align: left;
   width: 160px;
 }
-.cm-l-form-panel__row .panel-field-long input[type=text], .cm-l-form-panel__row .panel-field-long input[type=email], .cm-l-form-panel__row .panel-field-long input[type=password], .cm-l-form-panel__row .panel-field-long input[type=date], .cm-l-form-panel__row .panel-field-long input[type=number], .cm-l-form-panel__row .panel-field-long .cm-c-field-icon, .cm-l-form-panel__row .panel-field-long .cm-c-select-icon {
-  width: 256px;
-  max-width: 256px;
+.cm-l-form-panel__row .panel-field-long input[type=text], .cm-l-form-panel__row .panel-field-long input[type=email], .cm-l-form-panel__row .panel-field-long input[type=password], .cm-l-form-panel__row .panel-field-long input[type=date], .cm-l-form-panel__row .panel-field-long input[type=number] {
+  width: 346px;
+  max-width: 346px;
+}
+.cm-l-form-panel__row .panel-field-long .cm-c-field-icon, .cm-l-form-panel__row .panel-field-long .cm-c-select-icon {
+  width: 352px;
+  max-width: 352px;
 }
 .cm-l-form-panel__row .panel-field-long span.assistance, .cm-l-form-panel__row .panel-field-long span.error {
   flex-grow: 1;
@@ -329,7 +342,8 @@ strong {
 }
 .cm-l-form-panel__row .panel-field-short input[type=text], .cm-l-form-panel__row .panel-field-short input[type=email], .cm-l-form-panel__row .panel-field-short input[type=password], .cm-l-form-panel__row .panel-field-short input[type=date], .cm-l-form-panel__row .panel-field-short .cm-c-field-icon, .cm-l-form-panel__row .panel-field-short .cm-c-select-icon {
   flex-grow: 1;
-  max-width: 256px;
+  min-width: 352px;
+  max-width: 352px;
 }
 .cm-l-form-panel__row .panel-field-short span.assistance, .cm-l-form-panel__row .panel-field-short span.error {
   margin-left: 168px;
@@ -1944,9 +1958,7 @@ strong {
 }
 
 .cm-c-select-icon {
-  border: 1px solid rgba(44, 50, 95, 0.5);
-  border-radius: 8px;
-  height: 38px;
+  height: 40px;
   display: inline-flex;
   overflow: hidden;
   position: relative;
@@ -1960,7 +1972,8 @@ strong {
   -moz-appearance: none;
   appearance: none;
   background: transparent;
-  border: 0;
+  border: 1px solid rgba(44, 50, 95, 0.5);
+  border-radius: 8px;
   color: #454548;
   outline: none;
   padding: 0 12px;
@@ -1974,6 +1987,9 @@ strong {
   font-stretch: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+.cm-c-select-icon__select:required {
+  border: 2px solid #2C325F;
 }
 .cm-c-select-icon--focus {
   border-color: #2C325F;
@@ -2069,6 +2085,9 @@ strong {
 .cm-c-dropdown-select__results-box span.result:hover {
   background-color: #2C325F;
   color: #FFFFFF;
+}
+.cm-c-dropdown-select .cm-c-form-simple + .cm-c-dropdown-select__results-box {
+  left: 0;
 }
 
 .cm-c-overlay--notifications, .cm-c-overlay--activeUser {
