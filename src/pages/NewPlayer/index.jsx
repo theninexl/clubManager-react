@@ -184,80 +184,79 @@ export default function NewPlayerPage () {
 
     const playerComunitarioVal = document.getElementById('playerComunitario').checked;
     const playerResidenciaVal = document.getElementById('playerResidencia').checked;
-    const savedVariablesInState = savedVariables;
+
 
     const data = {
-      id_jugador:formData.get('playerId'),
-      nombre: formData.get('playerName'),
-      apellido1: formData.get('playerLastname1'),
-      apellido2: formData.get('playerLastname2'),
-      alias: formData.get('playerAlias'),
+      id_opta:formData.get('playerId'),
+      desc_nombre: formData.get('playerName'),
+      desc_apellido1: formData.get('playerLastname1'),
+      //apellido2: formData.get('playerLastname2'),
+      desc_alias: formData.get('playerAlias'),
       fch_nacimiento: formData.get('playerBornDate'),
-      residencia: playerResidenciaVal ? 1 : 0,
-      comunitario: playerComunitarioVal ? 1 : 0,
-      nacionalidad1: formData.get('playerNationality1'),
-      pasaporte1: formData.get('playerPassport1Nr'),
-      caducidad_pasaporte1: formData.get('playerPassport1Date'),
-      nacionalidad2: formData.get('playerNationality2'),
-      pasaporte2: formData.get('playerPassport2Nr'),
-      caducidad_pasaporte2: formData.get('playerPassport2Date'),
-      dni_nie: formData.get('playerDNI'),
-      caducidad_dni: formData.get('playerDNIdate'),
-      nss: formData.get('playerNSS'),
+      flag_residencia: playerResidenciaVal ? 1 : 0,
+      flag_comunitario: playerComunitarioVal ? 1 : 0,
+      id_nacionalidad1: formData.get('playerNationality1'),
+      desc_pasaporte1: formData.get('playerPassport1Nr'),
+      fch_caducidad_pasaporte1: formData.get('playerPassport1Date'),
+      id_nacionalidad2: formData.get('playerNationality2'),
+      desc_pasaporte2: formData.get('playerPassport2Nr'),
+      fch_caducidad_pasaporte2: formData.get('playerPassport2Date'),
+      desc_dni_nie: formData.get('playerDNI'),
+      fch_caducidad_dni: formData.get('playerDNIdate'),
+      desc_nss: formData.get('playerNSS'),
       desc_dorsal: formData.get('playerDorsal'),
       id_posicion: formData.get('playerPosition'),
-      id_intermediario: '',
-      id_club_origen: formData.get('playerTeamOrigin'),
+      //id_intermediario: '',
+      //id_club_origen: formData.get('playerTeamOrigin'),
       valor_mercado: formData.get('playerMarketValue'),
-      fecha_fin_contrato: formData.get('playerContractEndDate'),
-      // cotonu: formData.get('playerCotonu'),     
+      //fecha_fin_contrato: formData.get('playerContractEndDate'),
+      //cotonu: formData.get('playerCotonu'),     
     }
 
     const dataSent = {
-      'id_jugador':'',
-      'nombre': '',
-      'apellido1': '',
-      'apellido2': data.apellido2,
-      'alias': data.alias,
+      'id_opta':data.id_opta,
+      'desc_nombre': '',
+      'desc_apellido1': '',
+      'desc_alias': data.desc_alias,
       'fch_nacimiento': data.fch_nacimiento,
-      'residencia': data.residencia.toString(),
-      'comunitario': data.comunitario.toString(),
-      'nacionalidad1': data.nacionalidad1,
-      'pasaporte1': data.pasaporte1,
-      'caducidad_pasaporte1': data.caducidad_pasaporte1,
-      'nacionalidad2': data.nacionalidad2,
-      'pasaporte2': data.pasaporte2,
-      'caducidad_pasaporte2': data.caducidad_pasaporte2,
-      'dni_nie': data.dni_nie,
-      'caducidad_dni': data.caducidad_dni,
-      'nss': data.nss,
+      'flag_residencia': data.flag_residencia.toString(),
+      'flag_comunitario': data.flag_comunitario.toString(),
+      'id_nacionalidad1': data.id_nacionalidad1,
+      'desc_pasaporte1': data.desc_pasaporte1,
+      'fch_caducidad_pasaporte1': data.fch_caducidad_pasaporte1,
+      'id_nacionalidad2': data.id_nacionalidad2,
+      'desc_pasaporte2': data.desc_pasaporte2,
+      'fch_caducidad_pasaporte2': data.fch_caducidad_pasaporte2,
+      'desc_dni_nie': data.desc_dni_nie,
+      'fch_caducidad_dni': data.fch_caducidad_dni,
+      'desc_nss': data.desc_nss,
       'desc_dorsal': data.desc_dorsal,
       'id_posicion': data.id_posicion,
-      'id_intermediario': '',
-      'id_club_origen': data.id_club_origen,
+      // 'id_intermediario': '',
+      // 'id_club_origen': data.id_club_origen,
       'valor_mercado': data.valor_mercado,
-      'fecha_fin_contrato': data.fecha_fin_contrato,
+      // 'fecha_fin_contrato': data.fecha_fin_contrato,
       // 'cotonu', data.cotonu,
     }
 
-    if (data.nombre === '') {
+    if (data.desc_nombre === '') {
       setCreatePlayerError('Tienes que rellenar los campos mínimos obligatorios');
     } else {
-      dataSent['nombre'] = data.nombre;
-      if (data.apellido1 === '') {
+      dataSent['desc_nombre'] = data.desc_nombre;
+      if (data.desc_apellido1=== '') {
         setCreatePlayerError('Tienes que rellenar los campos mínimos obligatorios');
       } else {       
-        dataSent['apellido1'] = data.apellido1;    
-        console.log('jugador que creo', dataSent);    
+        dataSent['desc_apellido1'] = data.desc_apellido1;    
+        console.log('jugador que creooooo', dataSent);    
         saveUpdatePlayer(dataSent);
       }
     }    
   }
 
   const saveUpdatePlayer = (data) => {
-    console.log('createPlayerCompleted', createPlayerCompleted);
-    console.log('data.id_jugador', data);
-    console.log('createdPlayerId',createdPlayerId);
+    // console.log('createPlayerCompleted', createPlayerCompleted);
+    // console.log('data.id_jugador', data);
+    // console.log('createdPlayerId',createdPlayerId);
 
     if (!createPlayerCompleted) {
         setCreatedPlayerData(data);
@@ -1599,7 +1598,7 @@ export default function NewPlayerPage () {
                           Apellido
                         </LabelElementAssist>
                       </FormSimplePanelRow>
-                      <FormSimplePanelRow>
+                      {/* <FormSimplePanelRow>
                         <LabelElement
                           htmlFor='playerLastname2'
                           type='text'
@@ -1609,7 +1608,7 @@ export default function NewPlayerPage () {
                           >
                           Apellido
                         </LabelElement>
-                      </FormSimplePanelRow>
+                      </FormSimplePanelRow> */}
                       <FormSimplePanelRow>
                         <LabelElementAssist
                           htmlFor='playerAlias'
@@ -1761,8 +1760,8 @@ export default function NewPlayerPage () {
                           Dorsal
                         </LabelElementAssist>
                       </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                      <LabelSelectElement
+                      {/*<FormSimplePanelRow>
+                       <LabelSelectElement
                           htmlFor='playerTeamOrigin'
                           labelText='Club Origen'>
                             { teams?.map(item => {
@@ -1771,7 +1770,7 @@ export default function NewPlayerPage () {
                               );
                             })}
                         </LabelSelectElement>
-                      </FormSimplePanelRow>
+                      </FormSimplePanelRow> */}
                       {/* <FormSimplePanelRow>
                         <LabelSelectElement
                           htmlFor='playerIntermediary'
@@ -1795,7 +1794,7 @@ export default function NewPlayerPage () {
                           >
                           Valoración económica mercado
                         </LabelElementAssist>
-                        <FormSimplePanelRow>
+                        {/* <FormSimplePanelRow>
                           <LabelElementAssist
                             htmlFor='playerContractEndDate'
                             type='date'
@@ -1804,7 +1803,7 @@ export default function NewPlayerPage () {
                             >
                             Fecha fin contrato
                           </LabelElementAssist>
-                      </FormSimplePanelRow>
+                      </FormSimplePanelRow> */}
                       <FormSimplePanelRow>
                         <LabelElementToggle
                           htmlFor='playerCotonu' >

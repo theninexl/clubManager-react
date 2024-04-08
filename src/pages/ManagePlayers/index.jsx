@@ -33,7 +33,9 @@ export default function ManagePlayersPage () {
       } else if (responseGetData.status === 409) { setErrorMsg('El usuario que estás intentnado crear ya existe')
       } else if (responseGetData.code === 'ERR_NETWORK') { setErrorMsg('Error de conexión, inténtelo más tarde')
       } else if (responseGetData.code === 'ERR_BAD_RESPONSE') { setErrorMsg('Error de conexión, inténtelo más tarde')
-      } else if (responseGetData.status === 'ok') { setAllPlayers(responseGetData.data.data);
+      } else if (responseGetData.status === 'ok') { 
+        console.log(responseGetData);
+        // setAllPlayers(responseGetData.data.data);
       } else {
         setErrorMsg('No hay datos disponibles. Vuelve a intentarlo');
       }
