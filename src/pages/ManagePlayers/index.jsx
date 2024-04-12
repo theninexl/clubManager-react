@@ -95,8 +95,6 @@ export default function ManagePlayersPage () {
                 <TableCellMedium>Posicion</TableCellMedium>
                 <TableCellMedium>Salario total</TableCellMedium>
                 <TableCellMedium>Variable</TableCellMedium>
-                <TableCellShort className='cm-u-centerText'>Edad</TableCellShort>
-                <TableCellMedium className='cm-u-centerText'>Fecha Fin Contrato</TableCellMedium>
                 <TableCellShort className='cm-u-centerText'>Activo</TableCellShort>
                 <TableCellShort>&nbsp;</TableCellShort>
               </TableDataHeader>
@@ -117,8 +115,6 @@ export default function ManagePlayersPage () {
                         <TableCellMedium>{player.desc_posicion}</TableCellMedium>
                         <TableCellMedium>{player.imp_salario_total}</TableCellMedium>
                         <TableCellMedium>{player.imp_variable}</TableCellMedium>
-                        <TableCellShort className='cm-u-centerText'>{player.edad || ''}</TableCellShort>
-                        <TableCellMedium className='cm-u-centerText'>{player.fecha_fin_contrato || ''}</TableCellMedium>
                         <TableCellShort className='cm-u-centerText'>
                           { player.activo === 'SI' ?
                             <IconButtonSmallerSuccess>
