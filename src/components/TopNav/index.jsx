@@ -34,19 +34,18 @@ export default function TopNav () {
 
   useEffect(()=> {
     if (getNotifications.responseGetData) {
-      // console.log(getNotifications.responseGetData.data.status);
-
-      if (getNotifications.responseGetData.data.status == 'ok') {
-        context.setNotifications(getNotifications.responseGetData.data.data);
-        const unReadNotifs = context.notifications.filter(notif => notif.leido === false);
-        context.setUnreadNotifications(unReadNotifs.length)
-      } else if (getNotifications.responseGetData.response.status === 401) { 
+      if (getNotifications.responseGetData?.response?.status === 401) {
         //seteo signout y account en localStorage y context
         const stringifiedSignOut = JSON.stringify(true);
         localStorage.setItem('CMSign-out',stringifiedSignOut);
         context.setSignOut(true);
         localStorage.removeItem('CMAccount');
         context.setAccount({});
+        navigate('/login');
+      } else if (getNotifications.responseGetData?.data?.status == 'ok') {
+        context.setNotifications(getNotifications.responseGetData.data.data);
+        const unReadNotifs = context.notifications.filter(notif => notif.leido === false);
+        context.setUnreadNotifications(unReadNotifs.length)
       }
     }
    },[getNotifications.responseGetData])
@@ -55,9 +54,9 @@ export default function TopNav () {
    const getEntities = useGetData('header/getDetail');
 
    useEffect(()=> {
-     if (getEntities.responseGetData) {
+    if (getEntities.responseGetData) {
        //setHeaderEntities(getEntities.responseGetData.data.entidades);
-       context.setEntities(getEntities.responseGetData.data.entidades);
+       context.setEntities(getEntities.responseGetData?.data?.entidades);
      }
     },[getEntities.responseGetData])
 

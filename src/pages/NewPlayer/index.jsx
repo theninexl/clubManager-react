@@ -254,9 +254,6 @@ export default function NewPlayerPage () {
   }
 
   const saveUpdatePlayer = (data) => {
-    // console.log('createPlayerCompleted', createPlayerCompleted);
-    // console.log('data.id_jugador', data);
-    // console.log('createdPlayerId',createdPlayerId);
 
     if (!createPlayerCompleted) {
         setCreatedPlayerData(data);
@@ -287,7 +284,7 @@ export default function NewPlayerPage () {
         if (!createdPlayerId) setCreatedPlayerId(createNewPlayer.responseUpload.id_jugador);
         window.scrollTo(0,0);
         setCreatePlayerCompleted(true)
-        setCreatedPlayerName({'nombre':createdPlayerData.nombre ,'apellido1':createdPlayerData.apellido1})
+        setCreatedPlayerName({'nombre':createdPlayerData.desc_nombre ,'apellido1':createdPlayerData.desc_apellido1})
         setContractsTabsActive(true);
         updateActiveTab(2);
         setContractsCompleted(true);
@@ -408,7 +405,7 @@ export default function NewPlayerPage () {
 
   useEffect(() => {
     if (savedContracts) {
-      console.log(savedContracts);
+      console.log('savedContracts', savedContracts);
     }
   },[savedContracts])
 
@@ -435,23 +432,17 @@ export default function NewPlayerPage () {
   const handleSaveContracts = (e) => {
     e.preventDefault();
     if (!activeContractId) {
-      setActiveContractError('Tienes que señalar un contrato vigente')
+      setActiveContractError('Tienes que seleccionar un contrato para poder continuar')
     } else {
-      assignContract.uploadData('players/setContract',{id_jugador:createdPlayerId.toString(), id_contrato:activeContractId.toString()});   
+      //assignContract.uploadData('players/setContract',{id_jugador:createdPlayerId.toString(), id_contrato:activeContractId.toString()});  
+      //si se ha seleccionado un contrato como "activo", paso a la Tab de variables
       setActiveContractError();
-      console.log('savedContracts:', savedContracts);   
+      console.log('savedContracts:', savedContracts);  
+      console.log('activeContractId', activeContractId);
+      setVariableTabsActive(true);
+      updateActiveTab(3); 
     }
   }
-
-  useEffect(()=>{
-    if (assignContract.responseUpload) {
-      console.log(assignContract.responseUpload)
-      if (assignContract.responseUpload.status === 'ok') {
-        setVariableTabsActive(true);
-        updateActiveTab(3);
-      }
-    }
-  },[assignContract.responseUpload])
 
   useEffect(()=>{
     if (activeContractId) {
@@ -465,7 +456,6 @@ export default function NewPlayerPage () {
   useEffect(()=>{
     if (activeContractData) {
       console.log('activeContractData',activeContractData);
-      assignContract.uploadData('players/setContract',{id_jugador:createdPlayerId.toString(), id_contrato:activeContractId.toString()});
     }
   },[activeContractData])  
 
@@ -818,7 +808,7 @@ export default function NewPlayerPage () {
 
   useEffect(() => {
     if (variableExpressions) {
-      console.log(variableExpressions);
+      console.log('variableExpressions',variableExpressions);
     }
   },[variableExpressions])
 
@@ -1369,7 +1359,8 @@ export default function NewPlayerPage () {
     }
 
     const dataSent = {
-      'id_jugador': createdPlayerId,
+      // 'id_jugador': createdPlayerId,
+      'id_contrato': activeContractId,
       'variable': data,
     }
 
@@ -1760,29 +1751,6 @@ export default function NewPlayerPage () {
                           Dorsal
                         </LabelElementAssist>
                       </FormSimplePanelRow>
-                      {/*<FormSimplePanelRow>
-                       <LabelSelectElement
-                          htmlFor='playerTeamOrigin'
-                          labelText='Club Origen'>
-                            { teams?.map(item => {
-                              return (
-                                <option key={item.id_club_opta} value={item.id_club_opta}>{item.desc_nombre_club}</option>
-                              );
-                            })}
-                        </LabelSelectElement>
-                      </FormSimplePanelRow> */}
-                      {/* <FormSimplePanelRow>
-                        <LabelSelectElement
-                          htmlFor='playerIntermediary'
-                          labelText='Intermediario'>
-                            <option value=''>Selecciona</option>
-                            { intermediaries?.map(item => {
-                              return (
-                                <option key={item.id_intermediario} value={item.id_intermediario}>{item.nombre}</option>
-                              );
-                            })}
-                        </LabelSelectElement>
-                      </FormSimplePanelRow> */}
                       <FormSimplePanelRow>
                         <LabelElementAssist
                           htmlFor='playerMarketValue'
@@ -1794,16 +1762,7 @@ export default function NewPlayerPage () {
                           >
                           Valoración económica mercado
                         </LabelElementAssist>
-                        {/* <FormSimplePanelRow>
-                          <LabelElementAssist
-                            htmlFor='playerContractEndDate'
-                            type='date'
-                            className='panel-field-long'
-                            autoComplete='off'
-                            >
-                            Fecha fin contrato
-                          </LabelElementAssist>
-                      </FormSimplePanelRow> */}
+                      </FormSimplePanelRow>
                       <FormSimplePanelRow>
                         <LabelElementToggle
                           htmlFor='playerCotonu' >
@@ -1811,7 +1770,7 @@ export default function NewPlayerPage () {
                         </LabelElementToggle>
                       </FormSimplePanelRow>
                       
-                      </FormSimplePanelRow>
+
                       {createPlayerError &&
                         <FormSimpleRow className='cm-u-centerText'>
                           <span className='error'>{createPlayerError}</span>
@@ -1931,7 +1890,7 @@ export default function NewPlayerPage () {
                         <TableDataWrapper
                           className='cm-u-spacer-mt-big'>
                             <TableDataHeader>
-                              <TableCellLong>Contrato activo</TableCellLong>
+                              <TableCellLong>Contrato seleccionado</TableCellLong>
                             </TableDataHeader>
                             <TableDataRow className='cm-u-spacer-mb-bigger'>
                               <TableCellMedium>{activeContractData[0].descripcion}</TableCellMedium>
@@ -1965,7 +1924,7 @@ export default function NewPlayerPage () {
                                         // console.log('borro variable');
                                         const newVariablesArray = [...savedVariables];
                                         newVariablesArray.splice(index, 1);
-                                        console.log(newVariablesArray);
+                                        // console.log(newVariablesArray);
                                         setSavedVariables(newVariablesArray);
                                       }}
                                       >
@@ -1990,7 +1949,7 @@ export default function NewPlayerPage () {
                                   onClick={(e) => {
                                     e.preventDefault();
                                     setShowNewVariableLayer(true);
-                                    console.log(variableCombos);
+                                    // console.log(variableCombos);
                                   }} >
                                     <SymbolAdd />
                                 </IconButtonSmallPrimary>
