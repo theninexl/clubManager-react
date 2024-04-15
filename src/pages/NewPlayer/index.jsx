@@ -1114,8 +1114,17 @@ export default function NewPlayerPage () {
         <>
         <SimpleAccordionContent>
           <header className="cm-l-body-static-header--inTab" style={{marginTop:'0'}}>
-                <p className="cm-u-text-black-cat">Añadir nueva variable</p>
-            </header>
+              <p className="cm-u-text-black-cat">Añadir nueva variable</p>
+          </header>
+          <FormSimplePanelRow>
+            <LabelElement
+              htmlFor='descripcion'
+              placeholder='Descripción'
+              type='text'
+              className='panel-field-long'
+              >Descripción
+            </LabelElement> 
+          </FormSimplePanelRow>
           {variableExpressions.map((item,index) => {
             const ExprComb = item.id_ExprComb;  
             return (
@@ -1261,6 +1270,7 @@ export default function NewPlayerPage () {
               </div>
             );
           })}
+         
           <FormSimplePanelRow>
             <LabelElement
               htmlFor='bloque'
@@ -1349,6 +1359,7 @@ export default function NewPlayerPage () {
 
     const data = {
       expresiones,
+      desc_alias: formData.get('descripcion'),
       bloque: formData.get('bloque'),
       tipo_importe: formData.get('tipo_importe'),
       fecha_desde: formData.get('dateSince'),
@@ -1364,8 +1375,8 @@ export default function NewPlayerPage () {
       'variable': data,
     }
 
-    console.log('variable que guardo', data);
-    console.log('variable que mando', dataSent);
+    // console.log('variable que guardo', data);
+    // console.log('variable que mando', dataSent);
 
     saveClausula.uploadData('players/createClausula', dataSent);
     setSavedVariables([...savedVariables, dataSent]);    
@@ -1905,7 +1916,7 @@ export default function NewPlayerPage () {
                             { savedVariables?.map((item, index) => {                            
                               return (
                                 <TableDataRow key={index}>
-                                  <TableCellLong>{`Variable ${index+1}`}</TableCellLong>
+                                  <TableCellLong>{`Variable ${item.variable?.desc_alias}`}</TableCellLong>
                                   <TableCellMedium
                                     className='cm-u-textRight'>
                                     {/* <IconButtonSmallerPrimary

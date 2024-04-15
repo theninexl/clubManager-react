@@ -1661,8 +1661,17 @@ export default function EditPlayerPage () {
         <>
         <SimpleAccordionContent>
           <header className="cm-l-body-static-header--inTab" style={{marginTop:'0'}}>
-                <p className="cm-u-text-black-cat">Añadir nueva variable</p>
-            </header>
+            <p className="cm-u-text-black-cat">Añadir nueva variable</p>
+          </header>
+          <FormSimplePanelRow>
+            <LabelElement
+              htmlFor='descripcion'
+              placeholder='Descripción'
+              type='text'
+              className='panel-field-long'
+              >Descripción
+            </LabelElement> 
+          </FormSimplePanelRow>
           {variableExpressions.map((item,index) => {
             const ExprComb = item.id_ExprComb;  
             return (
@@ -1896,7 +1905,7 @@ export default function EditPlayerPage () {
 
     const data = {
       expresiones,
-      // bonus_prima:bonusPrimaVal ? 1 : 0,
+      desc_alias: formData.get('descripcion'),
       bloque: formData.get('bloque'),
       tipo_importe: formData.get('tipo_importe'),
       fecha_desde: formData.get('dateSince'),
@@ -2509,7 +2518,7 @@ export default function EditPlayerPage () {
                           { savedVariables?.map((item, index) => {   
                             return (
                               <TableDataRow key={index}>
-                                <TableCellLong>{`Variable ${index+1}`}</TableCellLong>
+                                <TableCellLong>{`${item?.desc_alias}`}</TableCellLong>
                                 <TableCellMedium
                                   className='cm-u-textRight'>
                                 <span>&nbsp;&nbsp;</span>
