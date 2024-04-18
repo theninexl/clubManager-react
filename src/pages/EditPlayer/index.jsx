@@ -1911,7 +1911,7 @@ export default function EditPlayerPage () {
       fecha_desde: formData.get('dateSince'),
       fecha_hasta: formData.get('dateTo'),
       amortizable: amortizableVal ? 1 : 0,
-      importe: formData.get('variableAmount'),
+      num_importe: formData.get('variableAmount'),
       id_beneficiario: formData.get('variableBeneficiary'),
     }
 
