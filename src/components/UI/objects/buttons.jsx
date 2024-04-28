@@ -68,6 +68,17 @@ export const ButtonMousePrimary = ({ children, className, id, onClick }) => {
   );
 }
 
+export const ButtonMouseTransparent = ({ children, className, id, onClick }) => {
+  return (
+    <button
+      className={`cm-o-button-mouse--transparent ${className}`}
+      id={id}
+      onClick={onClick} >
+      { children }
+    </button>
+  );
+}
+
 export const ButtonMouseGhost = ({ children, className, id, onClick }) => {
   return (
     <button

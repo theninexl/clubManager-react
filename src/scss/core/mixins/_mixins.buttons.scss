@@ -22,7 +22,11 @@
 @mixin button-transparent {
     color:getColor(primary);
     background-color: getColor(white);
-    box-shadow:0px 0px 0px 2px getColor(primary) inset;
+    box-shadow:0px 0px 0px 1px getColor(scarpaFlowLight) inset;
+
+    &:hover {
+        background-color: getColor(scarpaHover);
+    }
 }
 
 @mixin button-ghost {

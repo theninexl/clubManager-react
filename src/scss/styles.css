@@ -610,10 +610,13 @@ strong {
   -moz-osx-font-smoothing: grayscale;
   color: #2C325F;
   background-color: #FFFFFF;
-  box-shadow: 0px 0px 0px 2px #2C325F inset;
+  box-shadow: 0px 0px 0px 1px #E1E1E1 inset;
 }
 .cm-o-button-cat--transparent:hover {
   text-decoration: none;
+}
+.cm-o-button-cat--transparent:hover {
+  background-color: rgba(69, 69, 72, 0.05);
 }
 .cm-o-button-cat--ghost {
   padding: 4px 8px;
@@ -719,10 +722,13 @@ strong {
   -moz-osx-font-smoothing: grayscale;
   color: #2C325F;
   background-color: #FFFFFF;
-  box-shadow: 0px 0px 0px 2px #2C325F inset;
+  box-shadow: 0px 0px 0px 1px #E1E1E1 inset;
 }
 .cm-o-button-cat-small--transparent:hover {
   text-decoration: none;
+}
+.cm-o-button-cat-small--transparent:hover {
+  background-color: rgba(69, 69, 72, 0.05);
 }
 .cm-o-button-cat-small--ghost {
   padding: 4px 16px;
@@ -809,10 +815,13 @@ strong {
   -moz-osx-font-smoothing: grayscale;
   color: #2C325F;
   background-color: #FFFFFF;
-  box-shadow: 0px 0px 0px 2px #2C325F inset;
+  box-shadow: 0px 0px 0px 1px #E1E1E1 inset;
 }
 .cm-o-button-mouse--transparent:hover {
   text-decoration: none;
+}
+.cm-o-button-mouse--transparent:hover {
+  background-color: rgba(69, 69, 72, 0.05);
 }
 .cm-o-button-mouse--ghost {
   height: 40px;
@@ -899,10 +908,13 @@ strong {
   -moz-osx-font-smoothing: grayscale;
   color: #2C325F;
   background-color: #FFFFFF;
-  box-shadow: 0px 0px 0px 2px #2C325F inset;
+  box-shadow: 0px 0px 0px 1px #E1E1E1 inset;
 }
 .cm-o-button-dog--transparent:hover {
   text-decoration: none;
+}
+.cm-o-button-dog--transparent:hover {
+  background-color: rgba(69, 69, 72, 0.05);
 }
 .cm-o-button-dog--ghost {
   padding: 12px 8px;
@@ -1886,7 +1898,7 @@ strong {
 }
 .cm-c-field-icon__input {
   border: 0;
-  color: rgba(44, 50, 95, 0.5);
+  color: #2C325F;
   outline: none;
   text-indent: 12px;
   flex-grow: 1;
@@ -2147,8 +2159,10 @@ strong {
   box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.1);
   margin: 0 auto;
   padding: 24px;
-  position: relative;
-  top: 40%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 352px;
 }
 .cm-c-modal__smallContent .modal-footer {
@@ -2161,16 +2175,27 @@ strong {
   border: 2px solid #E1E1E1;
   border-radius: 8px;
   box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
   margin: 0 auto;
+  min-height: 50vh;
+  max-height: 80vh;
   padding: 24px;
-  position: relative;
-  top: 15%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 928px;
+}
+.cm-c-modal__bigContent .modal-body {
+  flex-grow: 1;
+  overflow: auto;
 }
 .cm-c-modal__bigContent .modal-footer {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: end;
+  gap: 16px;
 }
 
 .cm-c-salary-widget {

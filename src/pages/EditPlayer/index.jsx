@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useSaveData } from "../../hooks/useSaveData";
 import { useGetData } from "../../hooks/useGetData";
 import { AsideMenu } from "../../components/AsideMenu";
+import { ModalPlayerCopyVariables } from "../../components/Modals/ModalPlayerCopyVariables"
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
 import { CentralBody, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
-import { ButtonCatPrimary, ButtonCatTransparent, ButtonMouseGhost, ButtonMousePrimary, IconButtonSmallPrimary, IconButtonSmallSecondary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
-import { SymbolAdd, SymbolBack, SymbolDelete, SymbolEdit, SymbolSearch } from "../../components/UI/objects/symbols";
+import { ButtonCatPrimary, ButtonCatTransparent, ButtonMouseGhost, ButtonMousePrimary, ButtonMouseTransparent, IconButtonSmallPrimary, IconButtonSmallSecondary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
+import { SymbolAdd, SymbolBack, SymbolDelete, SymbolEdit } from "../../components/UI/objects/symbols";
 import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElement, LabelElementAssist, LabelElementToggle, LabelElementToggle2Sides, LabelElementToggle2SidesPanel, LabelSelectElement, LabelSelectElementAssist, LabelSelectShorterElement, SelectIconShorter, } from "../../components/UI/components/form simple/formSimple";
 import { FormTabs, FormTabs__ContentWrapper, FormTabs__LinksWrapper, FormTabs__ToolBarWrapper, TabContent, TabLink } from "../../components/UI/components/formTabs/formTabs";
 import { SimpleAccordion, SimpleAccordionContent,  SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
@@ -101,7 +102,9 @@ export default function EditPlayerPage () {
   //array con combinaciones de sueldo que edito
   const [detailSalaryData, setDetailSalaryData] = useState(null);
 
-
+  //estados variables
+  //mostrar/ocultar modal copiar variables
+  const [modalImportVar, setModalImportVar] = useState(false);
   //donde guardo la info de los posibles combos de cada combinacion Exprexion+Condiciones
   const [variableCombos, setVariableCombos] = useState([]);
   //variable activa cuando estoy inspeccionado una ya creada
@@ -121,9 +124,7 @@ export default function EditPlayerPage () {
   //guardar resultados search conditions
   const [searchCondSelected, setSearchCondSelected] = useState(null);
   const [searchCondResults, setSearchCondResults] = useState(null);
-  const [showSearchCondResults, setShowSearchCondResults] = useState(false);
- 
-  
+  const [showSearchCondResults, setShowSearchCondResults] = useState(false);  
 
   useEffect(()=>{
     manageTabs();
@@ -209,7 +210,7 @@ export default function EditPlayerPage () {
   //guardar datos busqueda jugador
   useEffect(()=> {
     if (getOptaPlayer.responseUpload) {
-      console.log('optaPlayer',getOptaPlayer.responseUpload);
+      //console.log('optaPlayer',getOptaPlayer.responseUpload);
       setOptaPlayersList(getOptaPlayer.responseUpload.data);
       setOptaResultsBox(true);
     }
@@ -235,10 +236,10 @@ export default function EditPlayerPage () {
                     setOptaSelectedPlayer(item);
                     setOptaResultsBox(false);
                     
-                    setPlayerData({...playerData, desc_apellido1: item.desc_apellido1, nombre: item.desc_nombre  })
+                    setPlayerData({...playerData, desc_apellido1: item.desc_apellido_jugador, nombre: item.desc_nombre_jugador  })
                     // setPlayerData({...playerData, nombre: item.desc_nombre_jugador });
                   }}  >
-                    {item.desc_nombre} {item.desc_apellido1}
+                    {item.desc_nombre_jugador} {item.desc_apellido_jugador}
                 </span>
               );
             })
@@ -276,7 +277,7 @@ export default function EditPlayerPage () {
   //mirar la respuesta de subir datos al crear jugador para setear error
   useEffect(()=> {
     if (createNewPlayer.responseUpload) {
-      console.log(createNewPlayer.responseUpload);      
+      //console.log(createNewPlayer.responseUpload);      
       if (createNewPlayer.responseUpload.status === 'ok') { 
         window.scrollTo(0,0);        
       } else {
@@ -417,7 +418,7 @@ export default function EditPlayerPage () {
       }
 
       if (Object.keys(data).length === (Object.keys(savedContract).length - 1)) {
-        console.log('contrato que guardo', data);
+        //console.log('contrato que guardo', data);
         saveNewContract.uploadData('players/createContract',data)        
         setNewContract(false);
         setContractSalary([{id_salario:1,flag_bruto_neto:'',fch_inicio:'',fch_fin:'',num_salario_fijo:''}]);
@@ -429,10 +430,10 @@ export default function EditPlayerPage () {
   //mirar la respuesta de subir datos al crear jugador para setear error
   useEffect(()=> {
     if (saveNewContract.responseUpload) {
-      console.log(saveNewContract.responseUpload);
+      //console.log(saveNewContract.responseUpload);
       if (saveNewContract.responseUpload.code === 'ERR_NETWORK') { setCreatePlayerError('Error de conexión, inténtelo más tarde')
       } else if (saveNewContract.responseUpload.status === 'ok') { 
-        console.log('id_contrato', saveNewContract.responseUpload.id_contrato)
+        //console.log('id_contrato', saveNewContract.responseUpload.id_contrato)
         getPlayersAgain();
       } else {
         setCreatePlayerError('Existe un error en el formulario, inténtelo de nuevo')
@@ -447,7 +448,7 @@ export default function EditPlayerPage () {
 
   useEffect(()=>{
     if (deleteContract.responseUpload) {
-      console.log(deleteContract.responseUpload);
+      //console.log(deleteContract.responseUpload);
       getPlayersAgain();
     }
   },[deleteContract.responseUpload])
@@ -810,7 +811,7 @@ export default function EditPlayerPage () {
 
   useEffect(()=>{
     if(getDetailContract.responseUpload) {
-      console.log('detailContract',getDetailContract.responseUpload);
+      //console.log('detailContract',getDetailContract.responseUpload);
       setDetailContractData(getDetailContract.responseUpload.contrato);
       setDetailSalaryData(getDetailContract.responseUpload.salario_fijo);
     }
@@ -818,7 +819,7 @@ export default function EditPlayerPage () {
 
   useEffect(()=>{
     if (detailContractData) {
-      console.log(detailContractData);
+      //console.log(detailContractData);
       setNewContract(false);
       setContractSalary([{id_salario:1,flag_bruto_neto:'',fch_inicio:'',fch_fin:'',num_salario_fijo:''}]); 
       // window.scrollTo(0,0);
@@ -826,9 +827,9 @@ export default function EditPlayerPage () {
     }
   },[detailContractData])
 
-  useEffect(()=>{
-    if (detailSalaryData) console.log(detailSalaryData)
-  },[detailSalaryData])
+  // useEffect(()=>{
+  //   if (detailSalaryData) console.log(detailSalaryData)
+  // },[detailSalaryData])
 
   const renderEditContractLayer = () => {
     if (editContract) {
@@ -1332,7 +1333,7 @@ export default function EditPlayerPage () {
       }
 
       if (Object.keys(data).length === (Object.keys(editedContract).length - 1)) {
-        console.log('contrato que guardo', editedContract);
+        //console.log('contrato que guardo', editedContract);
         saveNewContract.uploadData('players/editContract',editedContract)        
         setEditContract(false);
         setDetailContractData(null);
@@ -1345,7 +1346,7 @@ export default function EditPlayerPage () {
   //mirar la respuesta de subir datos al terminar de guardar el contrato editado
   useEffect(()=> {
     if (saveEditedContract.responseUpload) {
-      console.log(saveEditedContract.responseUpload);
+      //console.log(saveEditedContract.responseUpload);
       if (saveEditedContract.responseUpload.status === 'ok') { 
         setCreatingContractError(null)
         getPlayersAgain();
@@ -1413,7 +1414,7 @@ export default function EditPlayerPage () {
   //guardar datos busqueda expresion
   useEffect(()=> {
     if (getExprSearch.responseUpload) {
-      console.log('resultados de busqueda',getExprSearch.responseUpload)
+      //console.log('resultados de busqueda',getExprSearch.responseUpload)
       setSearchExpResults(getExprSearch.responseUpload.data);
       setShowSearchExpResults(true);
     }
@@ -1503,7 +1504,7 @@ export default function EditPlayerPage () {
             required={true}
             value={searchExpSelected}
             handleOnChange={(e)=>{
-              console.log(e.target.value);
+              //console.log(e.target.value);
               setSearchExpSelected(e.target.value);
               if (e.target.value.length >= 2 ) {
                 searchExpression(idExpresion, e.target.value)
@@ -1529,7 +1530,7 @@ export default function EditPlayerPage () {
   //guardar datos busqueda jugador
   useEffect(()=> {
     if (getCondSearch.responseUpload) {
-      console.log(getCondSearch.responseUpload)
+      //console.log(getCondSearch.responseUpload)
       setSearchCondResults(getCondSearch.responseUpload.data);
       setShowSearchCondResults(true);
     }
@@ -1546,7 +1547,7 @@ export default function EditPlayerPage () {
         <div className='cm-c-dropdown-select__results-box'>
           {
             searchCondResults.map(item => {
-              console.log(item);
+              //console.log(item);
               return (
                 <span
                   className='result'
@@ -1636,7 +1637,7 @@ export default function EditPlayerPage () {
             required={true}
             value={searchCondSelected}
             handleOnChange={(e)=>{
-              console.log(e.target.value);
+              //console.log(e.target.value);
               setSearchCondSelected(e.target.value);
               if (e.target.value.length >= 2 ) {
                 searchCondition(idCondicion, e.target.value)
@@ -1724,8 +1725,8 @@ export default function EditPlayerPage () {
                     }} >
                       <option value=''>Operador</option>
                     <option value='='>=</option>
-                    <option value='<'>&lt;</option>
-                    <option value='>'>&gt;</option>
+                    <option value='<'>&lt;=</option>
+                    <option value='>'>&gt;=</option>
                   </SelectIconShorter>
                   {renderExprCondValueField(variableExpressions[index].id_expresion, index)}
 
@@ -1783,8 +1784,8 @@ export default function EditPlayerPage () {
                                 >
                                   <option value=''>Operador</option>
                                   <option value='='>=</option>
-                                  <option value='<'>&lt;</option>
-                                  <option value='>'>&gt;</option>
+                                  <option value='<'>&lt;=</option>
+                                  <option value='>'>&gt;=</option>
                               </SelectIconShorter>
                               {renderConditionValueField(variableExpressions[index].condiciones[index2].id_condicion, index, index2)}
       
@@ -1901,7 +1902,7 @@ export default function EditPlayerPage () {
     const amortizableVal = document.getElementById('amortizable').checked;
     //const bonusPrimaVal = document.getElementById('bonus_prima').checked;
     const expresiones = variableExpressions;
-    console.log(typeof(expresiones));
+    //console.log(typeof(expresiones));
 
     const data = {
       expresiones,
@@ -1929,7 +1930,7 @@ export default function EditPlayerPage () {
 
   useEffect(()=>{
     if (saveClausula.responseUpload) {
-      console.log (saveClausula.responseUpload);
+      //console.log (saveClausula.responseUpload);
       if (saveClausula.responseUpload.status === 'ok') {
         setShowNewVariableLayer(false);
         setVariableExpressions([{id_ExprComb:1,bonus_prima:'',id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
@@ -1957,6 +1958,15 @@ export default function EditPlayerPage () {
       //getPlayersAgain();
     }
   },[deleteClausula.responseUpload])
+
+  //volver a pedir variables al cerror modal copiar variables
+  useEffect(()=>{
+    if(activeContractId) {
+      //vuelve a pedir el detalle de clausula con el listado de arriba
+      getDetalleClausula.uploadData('players/getDetail_clausula',{id_contrato:activeContractId.toString()}); 
+    }
+  },[modalImportVar])
+
 
   //------------------------------------------------------------//
   //documentos
@@ -2012,7 +2022,7 @@ export default function EditPlayerPage () {
   //mirar la respuesta de subir datos para setear error
   useEffect(()=> {
     if (updatePlayer.responseUpload) {
-      console.log(updatePlayer.responseUpload);
+      //console.log(updatePlayer.responseUpload);
       if (updatePlayer.responseUpload.status === 409) { setError('El jugador que estás intentnado editar ya existe')
       } else if (updatePlayer.responseUpload.code === 'ERR_NETWORK') { setError('Error de conexión, inténtelo más tarde')
       } else if (updatePlayer.responseUpload.status === 'ok') { navigate('/manage-players');
@@ -2029,7 +2039,7 @@ export default function EditPlayerPage () {
   //mirar la respuesta de subir datos para setear error
   useEffect(()=> {
     if (deletePlayer.responseUpload) {
-      console.log(deletePlayer.responseUpload);
+      //console.log(deletePlayer.responseUpload);
       if (deletePlayer.responseUpload.status === 409) { setError('El jugador que estás intentnado borrar no existe')
       } else if (deletePlayer.responseUpload.code === 'ERR_NETWORK') { setError('Error de conexión, inténtelo más tarde')
       } else if (deletePlayer.responseUpload.status === 'ok') { navigate('/manage-players');
@@ -2046,7 +2056,7 @@ export default function EditPlayerPage () {
           <ModalContent__Small>
             <ModalBody
               className='cm-u-spacer-mb-bigger'>
-                <h3 className="cm-u-text-black-cat">{`¿Estas seguro de borrar a ${playerData.nombre} ${playerData.apellido1} con ID:${userParam}?`}</h3>
+                <h3 className="cm-u-text-black-cat">{`¿Estas seguro de borrar a ${playerData.desc_nombre} ${playerData.desc_apellido1}?`}</h3>
               </ModalBody>
             <ModalFooter>
               <ButtonCatTransparent
@@ -2064,9 +2074,19 @@ export default function EditPlayerPage () {
     }
   }
 
+  const renderModalImportVar = () => {
+
+  }
+
   return (
     <>
       {renderModal()}
+      <ModalPlayerCopyVariables
+        state={modalImportVar}
+        setState={setModalImportVar}
+        playerId={userParam}
+        activeContractId={activeContractId}
+      />
       <HalfContainer  id='usersList'>
         <HalfContainerAside>
           <AsideMenu />
@@ -2133,7 +2153,7 @@ export default function EditPlayerPage () {
                             placeholder='Escribe para buscar'
                             required={true}
                             assistanceText='Este campo es obligatorio'
-                            value={optaSelectedPlayer.desc_nombre}
+                            value={optaSelectedPlayer.desc_nombre_jugador || optaSelectedPlayer.desc_nombre}
                             handleOnChange={(e)=>{
                               setOptaSelectedPlayer(e.target.value);
                               if (e.target.value.length > 2 ) {
@@ -2504,7 +2524,7 @@ export default function EditPlayerPage () {
                           : 
                           <>
                             <TableDataRow className='cm-u-spacer-mb-bigger cm-u-centerText'>
-                              <p className="error">Selecciona un contrato antes de poder acceder a sus variables</p>
+                              <p className="error">Has de seleccionar un contrato antes de poder acceder a sus variables o crear nuevas</p>
                             </TableDataRow>
                           </>
 
@@ -2545,14 +2565,33 @@ export default function EditPlayerPage () {
                               <HeadContentTitleBar>
                                 <TitleBar__Title></TitleBar__Title>
                                 <TitleBar__Tools>
-                                  <IconButtonSmallPrimary
+                                { activeContractData && 
+                                  <>
+                                    <ButtonMousePrimary
                                     onClick={(e) => {
                                       e.preventDefault();
                                       setShowNewVariableLayer(true);
-                                      console.log(variableCombos);
+                                    }}
+                                    >
+                                      Nueva
+                                    </ButtonMousePrimary>
+                                    <ButtonMouseTransparent
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        setModalImportVar(!modalImportVar);
+                                      }}
+                                    >
+                                      Importar
+                                    </ButtonMouseTransparent>
+                                  </>
+                                  }
+                                  {/* <IconButtonSmallPrimary
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      setShowNewVariableLayer(true);
                                     }} >
                                       <SymbolAdd />
-                                  </IconButtonSmallPrimary>
+                                  </IconButtonSmallPrimary> */}
                                 </TitleBar__Tools>
                               </HeadContentTitleBar>
                             </SimpleAccordionTrigger>

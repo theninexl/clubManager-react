@@ -311,15 +311,20 @@ export const SelectIcon = ({ children, style, id, placeholder, name, value, defa
   )
 }
 
-export const FieldWithIcon = ({ children }) => {
+export const FieldWithIcon = ({ children, className }) => {
   return (
-    <div className='cm-c-field-icon'>{ children }</div>
+    <div className={`cm-c-field-icon ${className}`}>{ children }</div>
   );
 }
 
-export const FieldWithIcon__input =({ children, name, placeholder }) => {
+export const FieldWithIcon__input =({ name, placeholder, value, handleOnChange }) => {
   return (
-    <input className='cm-c-field-icon__input' name={name} id={name} placeholder={placeholder} />
+    <input 
+      className='cm-c-field-icon__input' 
+      name={name} id={name} 
+      placeholder={placeholder}
+      value={value}
+      onChange={handleOnChange} />
   );
 }
 

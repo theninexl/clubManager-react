@@ -170,7 +170,7 @@
     &__input {
         $block:&;
         border:0;
-        color:getColor(primaryLight);
+        color:getColor(primary);
         outline: none;
         text-indent: getSize($medium);
         flex-grow:1;

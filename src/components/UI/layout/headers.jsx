@@ -5,3 +5,11 @@ export const RegularHeader = ({ children, className }) => {
     </header>
   );
 }
+
+export const StaticBodyHeader = ({ children, className }) => {
+  return (
+    <header className={`cm-l-body-static-header ${className}`}>
+      { children }
+    </header>
+  );
+}

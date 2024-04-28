@@ -6,13 +6,14 @@ import { useSaveData } from "../../hooks/useSaveData";
 import { AsideMenu } from "../../components/AsideMenu";
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
 import { CentralBody, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
-import { ButtonMouseDisabled, ButtonMouseGhost, ButtonMousePrimary, IconButtonSmallPrimary, IconButtonSmallSecondary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
+import { ButtonMouseDisabled, ButtonMouseGhost, ButtonMousePrimary, ButtonMouseTransparent, IconButtonSmallPrimary, IconButtonSmallSecondary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
 import { SymbolAdd, SymbolBack, SymbolDelete, SymbolEdit } from "../../components/UI/objects/symbols";
 import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, HiddenElement, LabelElement, LabelElementAssist, LabelElementToggle, LabelElementToggle2Sides, LabelElementToggle2SidesPanel, LabelSelectElement, LabelSelectElementAssist, LabelSelectShorterElement, SelectIcon, SelectIconShorter } from "../../components/UI/components/form simple/formSimple";
 import { FormTabs, FormTabs__ContentWrapper, FormTabs__LinksWrapper, FormTabs__ToolBarWrapper, TabContent, TabLink } from "../../components/UI/components/formTabs/formTabs";
 import { SimpleAccordion, SimpleAccordionContent, SimpleAccordionLink, SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
 import { FileDrop } from "../../components/UI/components/form simple/fileDrop";
 import { TableCellLong, TableCellMedium, TableCellShort, TableDataHeader, TableDataRow, TableDataWrapper } from "../../components/UI/layout/tableData";
+import { ModalPlayerCopyVariables } from "../../components/Modals/ModalPlayerCopyVariables";
 
 
 export default function NewPlayerPage () {
@@ -67,6 +68,8 @@ export default function NewPlayerPage () {
   const [activeContractData, setActiveContractData] = useState();
   const [activeContractError, setActiveContractError] = useState(false);
 
+  //mostrar/ocultar modal copiar variables
+  const [modalImportVar, setModalImportVar] = useState(false);
   //si muestro o no la capa de creacion de variable
   const [showNewVariableLayer, setShowNewVariableLayer ] = useState(false);
   //donde guardo la info de los posibles combos de cada combinacion Exprexion+Condiciones
@@ -140,7 +143,7 @@ export default function NewPlayerPage () {
   //guardar datos busqueda jugador
   useEffect(()=> {
     if (getOptaPlayer.responseUpload) {
-      console.log(getOptaPlayer.responseUpload);
+      // console.log(getOptaPlayer.responseUpload);
       setOptaPlayersList(getOptaPlayer.responseUpload.data);
       setOptaResultsBox(true);
     }
@@ -248,7 +251,7 @@ export default function NewPlayerPage () {
         setCreatePlayerError('Tienes que rellenar los campos mínimos obligatorios');
       } else {       
         dataSent['desc_apellido1'] = data.desc_apellido1;    
-        console.log('jugador que creooooo', dataSent);    
+        // console.log('jugador que creooooo', dataSent);    
         saveUpdatePlayer(dataSent);
       }
     }    
@@ -264,7 +267,7 @@ export default function NewPlayerPage () {
         data['id_jugador'] = createdPlayerId.toString();
       }
       setCreatedPlayerData(data);
-      console.log('dataSent',data);
+      // console.log('dataSent',data);
       createNewPlayer.uploadData('players/edit',data);
     }
   }
@@ -272,7 +275,7 @@ export default function NewPlayerPage () {
   //mirar la respuesta de subir datos al crear jugador para setear error
   useEffect(()=> {
     if (createNewPlayer.responseUpload) {
-      console.log(createNewPlayer.responseUpload);
+      // console.log(createNewPlayer.responseUpload);
       if (createNewPlayer.responseUpload.status === 409) { 
         setCreatePlayerCompleted(false);
         setCreatedPlayerData(null);
@@ -394,7 +397,7 @@ export default function NewPlayerPage () {
       }
 
       if (Object.keys(data).length === (Object.keys(savedContract).length - 1)) {
-        console.log('contrato que guardo', data);
+        // console.log('contrato que guardo', data);
         saveNewContract.uploadData('players/createContract',data)
         setSavedContracts([...savedContracts, savedContract]);
         setNewContract(false);
@@ -406,17 +409,17 @@ export default function NewPlayerPage () {
 
   useEffect(() => {
     if (savedContracts) {
-      console.log('savedContracts', savedContracts);
+      // console.log('savedContracts', savedContracts);
     }
   },[savedContracts])
 
   //mirar la respuesta de subir datos al crear jugador para setear error
   useEffect(()=> {
     if (saveNewContract.responseUpload) {
-      console.log(saveNewContract.responseUpload);
+      // console.log(saveNewContract.responseUpload);
       if (saveNewContract.responseUpload.code === 'ERR_NETWORK') { setCreatePlayerError('Error de conexión, inténtelo más tarde')
       } else if (saveNewContract.responseUpload.status === 'ok') { 
-        console.log('id_contrato', saveNewContract.responseUpload.id_contrato)
+        // console.log('id_contrato', saveNewContract.responseUpload.id_contrato)
         let onSaveContract = [...savedContracts];
         const index = onSaveContract.length - 1;
         onSaveContract[index]["id_contrato"] = saveNewContract.responseUpload.id_contrato;
@@ -438,8 +441,8 @@ export default function NewPlayerPage () {
       //assignContract.uploadData('players/setContract',{id_jugador:createdPlayerId.toString(), id_contrato:activeContractId.toString()});  
       //si se ha seleccionado un contrato como "activo", paso a la Tab de variables
       setActiveContractError();
-      console.log('savedContracts:', savedContracts);  
-      console.log('activeContractId', activeContractId);
+      // console.log('savedContracts:', savedContracts);  
+      // console.log('activeContractId', activeContractId);
       setVariableTabsActive(true);
       updateActiveTab(3); 
     }
@@ -450,13 +453,14 @@ export default function NewPlayerPage () {
       const filteredActiveContract = savedContracts.filter((contract) => {
         return contract.id_contrato == activeContractId;
       }) 
-      setActiveContractData(filteredActiveContract); 
+      setActiveContractData(filteredActiveContract);
+      handleActivateContract(activeContractId); 
     }
   },[activeContractId])
 
   useEffect(()=>{
     if (activeContractData) {
-      console.log('activeContractData',activeContractData);
+      // console.log('activeContractData',activeContractData);
     }
   },[activeContractData])  
 
@@ -813,6 +817,18 @@ export default function NewPlayerPage () {
     }
   },[variableExpressions])
 
+  //pedir detalle de clausula cuando seleccionamos un contrato
+  const getDetalleClausula = useSaveData();
+  const handleActivateContract = (id) => {
+    getDetalleClausula.uploadData('players/getDetail_clausula',{id_contrato:id.toString()}); 
+  }
+
+  useEffect(()=>{
+    if (getDetalleClausula.responseUpload) {
+      setSavedVariables(getDetalleClausula.responseUpload?.variables)
+    }
+  },[getDetalleClausula.responseUpload])
+
   //----------------------------------------------------------//
   //variables
 
@@ -867,7 +883,7 @@ export default function NewPlayerPage () {
   //guardar datos busqueda expresion
   useEffect(()=> {
     if (getExprSearch.responseUpload) {
-      console.log('resultados de busqueda',getExprSearch.responseUpload)
+      // console.log('resultados de busqueda',getExprSearch.responseUpload)
       setSearchExpResults(getExprSearch.responseUpload.data);
       setShowSearchExpResults(true);
     }
@@ -983,7 +999,7 @@ export default function NewPlayerPage () {
   //guardar datos busqueda jugador
   useEffect(()=> {
     if (getCondSearch.responseUpload) {
-      console.log(getCondSearch.responseUpload)
+      // console.log(getCondSearch.responseUpload)
       setSearchCondResults(getCondSearch.responseUpload.data);
       setShowSearchCondResults(true);
     }
@@ -1000,7 +1016,7 @@ export default function NewPlayerPage () {
         <div className='cm-c-dropdown-select__results-box'>
           {
             searchCondResults.map(item => {
-              console.log(item);
+              // console.log(item);
               return (
                 <span
                   className='result'
@@ -1090,7 +1106,7 @@ export default function NewPlayerPage () {
             required={true}
             value={searchCondSelected}
             handleOnChange={(e)=>{
-              console.log(e.target.value);
+              //console.log(e.target.value);
               setSearchCondSelected(e.target.value);
               if (e.target.value.length >= 2 ) {
                 searchCondition(idCondicion, e.target.value)
@@ -1178,8 +1194,8 @@ export default function NewPlayerPage () {
                     }} >
                       <option value=''>Operador</option>
                     <option value='='>=</option>
-                    <option value='<'>&lt;</option>
-                    <option value='>'>&gt;</option>
+                    <option value='<'>&lt;=</option>
+                    <option value='>'>&gt;=</option>
                   </SelectIconShorter>
                   {renderExprCondValueField(variableExpressions[index].id_expresion, index)}
 
@@ -1237,8 +1253,8 @@ export default function NewPlayerPage () {
                                 >
                                   <option value=''>Operador</option>
                                   <option value='='>=</option>
-                                  <option value='<'>&lt;</option>
-                                  <option value='>'>&gt;</option>
+                                  <option value='<'>&lt;=</option>
+                                  <option value='>'>&gt;=</option>
                               </SelectIconShorter>
                               {renderConditionValueField(variableExpressions[index].condiciones[index2].id_condicion, index, index2)}
       
@@ -1387,16 +1403,41 @@ export default function NewPlayerPage () {
     if (saveClausula.responseUpload) {
       if (saveClausula.responseUpload.status === 'ok') {
         setShowNewVariableLayer(false);
-        setVariableExpressions([{id_ExprComb:1,id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);   
+        setVariableExpressions([{id_ExprComb:1,id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]); 
+        //vuelve a pedir el detalle de clausula con el listado de arriba
+        getDetalleClausula.uploadData('players/getDetail_clausula',{id_contrato:activeContractId.toString()});   
       } else {
         setError('Existe un error en el formulario, inténtelo de nuevo')
       }
     }
   },[saveClausula.responseUpload])
 
-  useEffect(()=> {
-    console.log(savedVariables);
-  },[savedVariables])
+  //borrar una variable
+  const deleteClausula = useSaveData();
+
+  const handleDeleteClausula = (id) => {
+    deleteClausula.uploadData('players/removeClausula', {'id_clausula':id.toString()})
+  }
+
+  useEffect(()=>{
+    if (deleteClausula.responseUpload){
+      //vuelve a pedir el detalle de clausula con el listado de arriba
+      getDetalleClausula.uploadData('players/getDetail_clausula',{id_contrato:activeContractId.toString()}); 
+      //getPlayersAgain();
+    }
+  },[deleteClausula.responseUpload])
+
+  //volver a pedir variables al cerror modal copiar variables
+  useEffect(()=>{
+    if(activeContractId) {
+      //vuelve a pedir el detalle de clausula con el listado de arriba
+      getDetalleClausula.uploadData('players/getDetail_clausula',{id_contrato:activeContractId.toString()}); 
+    }
+  },[modalImportVar])
+
+  // useEffect(()=> {
+  //   console.log(savedVariables);
+  // },[savedVariables])
  
 
   //------------------------------------------------------------//
@@ -1488,8 +1529,16 @@ export default function NewPlayerPage () {
   //   }
   // },[responseUpload])
 
+  
+
   return (
     <>
+      <ModalPlayerCopyVariables
+        state={modalImportVar}
+        setState={setModalImportVar}
+        playerId={createdPlayerId}
+        activeContractId={activeContractId}
+      />
       <HalfContainer  id='usersList'>
         <HalfContainerAside>
           <AsideMenu />
@@ -1547,259 +1596,244 @@ export default function NewPlayerPage () {
             <FormSimplePanel
               innerRef={form}
               autoComplete='off'>
-                <FormTabs>
-                  <FormTabs__ContentWrapper>
-                    <TabContent className={activeTab === 1 ? '' : 'hideContent'}>
+              <FormTabs>
+                <FormTabs__ContentWrapper>
+                  <TabContent className={activeTab === 1 ? '' : 'hideContent'}>
                     <FormSimplePanelRow>
                       <LabelElementToggle
-                          htmlFor='playerComunitario' >
-                          Jugador comunitario
-                        </LabelElementToggle>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <HiddenElement
-                          htmlFor='playerId'
-                          value={optaSelectedPlayer.id_jugador_opta || ''} />
-                        <div className='cm-c-dropdown-select'>
-                          <LabelElementAssist
-                            htmlFor='playerName'
-                            type='text'
-                            className='panel-field-long'
-                            autoComplete='off'
-                            placeholder='Escribe para buscar'
-                            required={true}
-                            assistanceText='Este campo es obligatorio'
-                            value={optaSelectedPlayer.desc_nombre_jugador}
-                            handleOnChange={(e)=>{
-                              setOptaSelectedPlayer(e.target.value);
-                              if (e.target.value.length > 2 ) {
-                                searchPlayer(e.target.value)
-                              } else if ((e.target.value.length <= 2 )) {
-                                setOptaPlayersList(null);
-                                setOptaSelectedPlayer('');
-                                setOptaResultsBox(false);
-                                
-                              }
-                            }} >
-                            Nombre
-                          </LabelElementAssist>
-                          {renderSearchPlayerResults()}
-                        </div>
-
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
+                        htmlFor='playerComunitario' >
+                        Jugador comunitario
+                      </LabelElementToggle>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <HiddenElement
+                        htmlFor='playerId'
+                        value={optaSelectedPlayer.id_jugador_opta || ''} />
+                      <div className='cm-c-dropdown-select'>
                         <LabelElementAssist
-                          htmlFor='playerLastname1'
+                          htmlFor='playerName'
                           type='text'
                           className='panel-field-long'
                           autoComplete='off'
-                          placeholder='Apellido'
+                          placeholder='Escribe para buscar'
                           required={true}
                           assistanceText='Este campo es obligatorio'
-                          value={optaSelectedPlayer.desc_apellido_jugador || ''}
-                          >
-                          Apellido
+                          value={optaSelectedPlayer.desc_nombre_jugador}
+                          handleOnChange={(e)=>{
+                            setOptaSelectedPlayer(e.target.value);
+                            if (e.target.value.length > 2 ) {
+                              searchPlayer(e.target.value)
+                            } else if ((e.target.value.length <= 2 )) {
+                              setOptaPlayersList(null);
+                              setOptaSelectedPlayer('');
+                              setOptaResultsBox(false);
+                              
+                            }
+                          }} >
+                          Nombre
                         </LabelElementAssist>
-                      </FormSimplePanelRow>
-                      {/* <FormSimplePanelRow>
-                        <LabelElement
-                          htmlFor='playerLastname2'
-                          type='text'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='Segundo apellido'
-                          >
-                          Apellido
-                        </LabelElement>
-                      </FormSimplePanelRow> */}
-                      <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerAlias'
-                          type='text'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='Alias'
-                          >
-                          Alias
-                        </LabelElementAssist>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerBornDate'
-                          type='date'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='dd/mm/yyyy'
-                          value={optaSelectedPlayer.fch_nacimiento || ''}
-                          >
-                          Fecha nacimiento
-                        </LabelElementAssist>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelSelectElement
-                          htmlFor='playerNationality1'
-                          labelText='Nacionalidad'>
-                            <option value=''>Selecciona</option>
-                            { countries?.map(country => {
-                              return (
-                                <option key={country.id_pais} value={country.id_pais}>{country.desc_nombre_pais}</option>
-                              );
-                            })}
-                        </LabelSelectElement>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelSelectElement
-                          htmlFor='playerNationality2'
-                          labelText='Nacionalidad 2'>
-                            <option value=''>Selecciona</option>
-                            { countries?.map(country => {
-                              return (
-                                <option key={country.id_pais} value={country.id_pais}>{country.desc_nombre_pais}</option>
-                              );
-                            })}
-                        </LabelSelectElement>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerNSS'
-                          type='number'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='Nº Seguridad Social'
-                          >
-                          Nº Seguridad Social
-                        </LabelElementAssist>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerDNI'
-                          type='text'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='DNI / NIE'
-                          >
-                          DNI / NIE
-                        </LabelElementAssist>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerDNIdate'
-                          type='date'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          >
-                          Caducidad DNI / NIE
-                        </LabelElementAssist>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerPassport1Nr'
-                          type='text'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='Numero pasaporte'
-                          >
-                          Pasaporte 1
-                        </LabelElementAssist>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerPassport1Date'
-                          type='date'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          >
-                          Caducidad pasaporte
-                        </LabelElementAssist>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerPassport2Nr'
-                          type='text'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='Numero pasaporte'
-                          >
-                          Pasaporte 2
-                        </LabelElementAssist>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerPassport2Date'
-                          type='date'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          >
-                          Caducidad pasaporte 2
-                        </LabelElementAssist>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelElementToggle
-                          htmlFor='playerResidencia' >
-                          Permiso residencia
-                        </LabelElementToggle>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelSelectElement
-                          htmlFor='playerPosition'
-                          labelText='Posicion'>
-                            <option value=''>Selecciona</option>
-                            { positions?.map(item => {
-                              return (
-                                <option key={item.id_posicion} value={item.id_posicion}>{item.desc_posicion}</option>
-                              );
-                            })}
-                        </LabelSelectElement>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerDorsal'
-                          type='number'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='Dorsal'
-
-                          >
-                          Dorsal
-                        </LabelElementAssist>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelElementAssist
-                          htmlFor='playerMarketValue'
-                          type='text'
-                          className='panel-field-long'
-                          autoComplete='off'
-                          placeholder='Introduce euros'
-                          assistanceText='€'
-                          >
-                          Valoración económica mercado
-                        </LabelElementAssist>
-                      </FormSimplePanelRow>
-                      <FormSimplePanelRow>
-                        <LabelElementToggle
-                          htmlFor='playerCotonu' >
-                          Cotonú
-                        </LabelElementToggle>
-                      </FormSimplePanelRow>
-                      
-
-                      {createPlayerError &&
-                        <FormSimpleRow className='cm-u-centerText'>
-                          <span className='error'>{createPlayerError}</span>
-                        </FormSimpleRow>
-                      }
-                      <FormSimplePanelRow className='cm-u-centerText'>                                              
-                        <ButtonMousePrimary
-                          onClick={handleSavePlayer}>
-                          { !contractsCompleted ? 'Guardar y Continuar' : 'Actualizar' }
-                        </ButtonMousePrimary>                          
-                        <ButtonMouseGhost
-                          onClick={() => {
-                            navigate('/manage-players')}} >
-                          Cancelar
-                        </ButtonMouseGhost>
-                      </FormSimplePanelRow>
-                    </TabContent>   
+                        {renderSearchPlayerResults()}
+                      </div>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <LabelElementAssist
+                        htmlFor='playerLastname1'
+                        type='text'
+                        className='panel-field-long'
+                        autoComplete='off'
+                        placeholder='Apellido'
+                        required={true}
+                        assistanceText='Este campo es obligatorio'
+                        value={optaSelectedPlayer.desc_apellido_jugador || ''}
+                        >
+                        Apellido
+                      </LabelElementAssist>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <LabelElementAssist
+                        htmlFor='playerAlias'
+                        type='text'
+                        className='panel-field-long'
+                        autoComplete='off'
+                        placeholder='Alias'
+                        >
+                        Alias
+                      </LabelElementAssist>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <LabelElementAssist
+                        htmlFor='playerBornDate'
+                        type='date'
+                        className='panel-field-long'
+                        autoComplete='off'
+                        placeholder='dd/mm/yyyy'
+                        value={optaSelectedPlayer.fch_nacimiento || ''}
+                        >
+                        Fecha nacimiento
+                      </LabelElementAssist>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <LabelSelectElement
+                        htmlFor='playerNationality1'
+                        labelText='Nacionalidad'>
+                          <option value=''>Selecciona</option>
+                          { countries?.map(country => {
+                            return (
+                              <option key={country.id_pais} value={country.id_pais}>{country.desc_nombre_pais}</option>
+                            );
+                          })}
+                      </LabelSelectElement>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <LabelSelectElement
+                        htmlFor='playerNationality2'
+                        labelText='Nacionalidad 2'>
+                          <option value=''>Selecciona</option>
+                          { countries?.map(country => {
+                            return (
+                              <option key={country.id_pais} value={country.id_pais}>{country.desc_nombre_pais}</option>
+                            );
+                          })}
+                      </LabelSelectElement>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <LabelElementAssist
+                        htmlFor='playerNSS'
+                        type='number'
+                        className='panel-field-long'
+                        autoComplete='off'
+                        placeholder='Nº Seguridad Social'
+                        >
+                        Nº Seguridad Social
+                      </LabelElementAssist>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <LabelElementAssist
+                        htmlFor='playerDNI'
+                        type='text'
+                        className='panel-field-long'
+                        autoComplete='off'
+                        placeholder='DNI / NIE'
+                        >
+                        DNI / NIE
+                      </LabelElementAssist>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <LabelElementAssist
+                        htmlFor='playerDNIdate'
+                        type='date'
+                        className='panel-field-long'
+                        autoComplete='off'
+                        >
+                        Caducidad DNI / NIE
+                      </LabelElementAssist>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <LabelElementAssist
+                        htmlFor='playerPassport1Nr'
+                        type='text'
+                        className='panel-field-long'
+                        autoComplete='off'
+                        placeholder='Numero pasaporte'
+                        >
+                        Pasaporte 1
+                      </LabelElementAssist>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <LabelElementAssist
+                        htmlFor='playerPassport1Date'
+                        type='date'
+                        className='panel-field-long'
+                        autoComplete='off'
+                        >
+                        Caducidad pasaporte
+                      </LabelElementAssist>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <LabelElementAssist
+                        htmlFor='playerPassport2Nr'
+                        type='text'
+                        className='panel-field-long'
+                        autoComplete='off'
+                        placeholder='Numero pasaporte'
+                        >
+                        Pasaporte 2
+                      </LabelElementAssist>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <LabelElementAssist
+                        htmlFor='playerPassport2Date'
+                        type='date'
+                        className='panel-field-long'
+                        autoComplete='off'
+                        >
+                        Caducidad pasaporte 2
+                      </LabelElementAssist>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <LabelElementToggle
+                        htmlFor='playerResidencia' >
+                        Permiso residencia
+                      </LabelElementToggle>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <LabelSelectElement
+                        htmlFor='playerPosition'
+                        labelText='Posicion'>
+                          <option value=''>Selecciona</option>
+                          { positions?.map(item => {
+                            return (
+                              <option key={item.id_posicion} value={item.id_posicion}>{item.desc_posicion}</option>
+                            );
+                          })}
+                      </LabelSelectElement>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <LabelElementAssist
+                        htmlFor='playerDorsal'
+                        type='text'
+                        className='panel-field-long'
+                        autoComplete='off'
+                        placeholder='Dorsal'
+                        >
+                        Dorsal
+                      </LabelElementAssist>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <LabelElementAssist
+                        htmlFor='playerMarketValue'
+                        type='text'
+                        className='panel-field-long'
+                        autoComplete='off'
+                        placeholder='Introduce euros'
+                        assistanceText='€'
+                        >
+                        Valoración económica mercado
+                      </LabelElementAssist>
+                    </FormSimplePanelRow>
+                    <FormSimplePanelRow>
+                      <LabelElementToggle
+                        htmlFor='playerCotonu' >
+                        Cotonú
+                      </LabelElementToggle>
+                    </FormSimplePanelRow>
+                    {createPlayerError &&
+                      <FormSimpleRow className='cm-u-centerText'>
+                        <span className='error'>{createPlayerError}</span>
+                      </FormSimpleRow>
+                    }
+                    <FormSimplePanelRow className='cm-u-centerText'>                                              
+                      <ButtonMousePrimary
+                        onClick={handleSavePlayer}>
+                        { !contractsCompleted ? 'Guardar y Continuar' : 'Actualizar' }
+                      </ButtonMousePrimary>                          
+                      <ButtonMouseGhost
+                        onClick={() => {
+                          navigate('/manage-players')}} >
+                        Cancelar
+                      </ButtonMouseGhost>
+                    </FormSimplePanelRow>
+                  </TabContent>   
                     { contractsTabsActive?      
                       <TabContent className={activeTab === 2 ? '' : 'hideContent'}>
                         <TableDataWrapper
@@ -1914,10 +1948,10 @@ export default function NewPlayerPage () {
                               <TableCellLong>Variables añadidas</TableCellLong>
                               <TableCellShort></TableCellShort>
                             </TableDataHeader>
-                            { savedVariables?.map((item, index) => {                            
+                            { savedVariables?.map((item) => {                       
                               return (
-                                <TableDataRow key={index}>
-                                  <TableCellLong>{`Variable ${item.variable?.desc_alias}`}</TableCellLong>
+                                <TableDataRow key={item.id_clausula}>
+                                  <TableCellLong>{`${item.desc_alias}`}</TableCellLong>
                                   <TableCellMedium
                                     className='cm-u-textRight'>
                                     {/* <IconButtonSmallerPrimary
@@ -1932,12 +1966,9 @@ export default function NewPlayerPage () {
                                     </IconButtonSmallerPrimary> */}
                                   <span>&nbsp;&nbsp;</span>
                                     <IconButtonSmallerPrimary
-                                      onClick={(index) => {
-                                        // console.log('borro variable');
-                                        const newVariablesArray = [...savedVariables];
-                                        newVariablesArray.splice(index, 1);
-                                        // console.log(newVariablesArray);
-                                        setSavedVariables(newVariablesArray);
+                                      onClick={(event) => {
+                                        event.preventDefault();
+                                        handleDeleteClausula(item.id_clausula);
                                       }}
                                       >
                                     <SymbolDelete />
@@ -1957,14 +1988,33 @@ export default function NewPlayerPage () {
                             <HeadContentTitleBar>
                               <TitleBar__Title></TitleBar__Title>
                               <TitleBar__Tools>
-                                <IconButtonSmallPrimary
+                              { activeContractData && 
+                                <>
+                                  <ButtonMousePrimary
                                   onClick={(e) => {
                                     e.preventDefault();
                                     setShowNewVariableLayer(true);
-                                    // console.log(variableCombos);
+                                  }}
+                                  >
+                                    Nueva
+                                  </ButtonMousePrimary>
+                                  <ButtonMouseTransparent
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      setModalImportVar(!modalImportVar);
+                                    }}
+                                  >
+                                    Importar
+                                  </ButtonMouseTransparent>
+                                </>
+                                }
+                                {/* <IconButtonSmallPrimary
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setShowNewVariableLayer(true);
                                   }} >
                                     <SymbolAdd />
-                                </IconButtonSmallPrimary>
+                                </IconButtonSmallPrimary> */}
                               </TitleBar__Tools>
                             </HeadContentTitleBar>
                           </SimpleAccordionTrigger>
