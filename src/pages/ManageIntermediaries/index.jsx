@@ -26,6 +26,7 @@ export default function ManageIntermediariesPage () {
 
   useEffect(()=>{
     if (responseGetData){
+      console.log(responseGetData);
       setAllIntermediaries(responseGetData.data.data);
     }
   },[responseGetData])
@@ -76,12 +77,10 @@ export default function ManageIntermediariesPage () {
           </HeadContent>
 
           <CentralBody>
-            <CentralBody__Header>Jugadores</CentralBody__Header>
+            <CentralBody__Header>Intermediarios</CentralBody__Header>
             <TableDataWrapper className='cm-u-spacer-mb-huge'>
               <TableDataHeader>
                 <TableCellMedium>Nombre</TableCellMedium>
-                <TableCellMedium>Territorio</TableCellMedium>
-                <TableCellMedium>Teléfono</TableCellMedium>
                 <TableCellMedium>Jugadores gestionados</TableCellMedium>
                 <TableCellShort>&nbsp;</TableCellShort>
               </TableDataHeader>
@@ -91,9 +90,7 @@ export default function ManageIntermediariesPage () {
                     
                     return (
                       <TableDataRow key={intermediary.id_intermediario} >
-                        <TableCellMedium>{intermediary.nombre}</TableCellMedium>
-                        <TableCellMedium>{intermediary.territorio}</TableCellMedium>
-                        <TableCellMedium>{intermediary.num_telefono}</TableCellMedium>
+                        <TableCellMedium>{intermediary.desc_nombre}</TableCellMedium>
                         <TableCellMedium>{intermediary.jugadores_gestionados}</TableCellMedium>
                         <TableCellShort className='cm-u-centerText' >
                           <IconButtonSmallerPrimary

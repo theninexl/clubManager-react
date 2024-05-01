@@ -267,7 +267,7 @@ export default function EditPlayerPage () {
     playerData.valor_mercado = playerData.valor_mercado.toString();
 
     if (playerData.desc_nombre === '' || playerData.desc_apellido1 === '') {
-      setCreatePlayerError('Tienes que rellenar los campos mínimos obligatorios');
+      setCreatePlayerError('Debe completar la información de los campos obligatorios');
     } else {
         // console.log('dataUpdated',playerData);
         createNewPlayer.uploadData('players/edit',playerData);
@@ -470,7 +470,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='Descripción corta'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Descripcion
               </LabelElementAssist>
@@ -480,7 +480,7 @@ export default function EditPlayerPage () {
                 htmlFor='contractType'
                 labelText='Tipo de contrato'
                 required={true}
-                assistanceText='Este campo es obligatorio'>
+                assistanceText='*'>
                   <option value=''>Selecciona</option>
                   {
                     contractTypes.map(item => {
@@ -496,7 +496,7 @@ export default function EditPlayerPage () {
                 htmlFor='procedureType'
                 labelText='Tipo de procedimiento'
                 required={true}
-                assistanceText='Este campo es obligatorio'>
+                assistanceText='*'>
                   <option value=''>Selecciona</option>
                   {
                     procedureTypes.map(item => {
@@ -511,7 +511,7 @@ export default function EditPlayerPage () {
               <LabelSelectElementAssist
                 htmlFor='playerTeamOrigin'
                 labelText='Club Origen'
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 required={true}>
                   <option value=''>Selecciona</option>
                   { teams?.map(item => {
@@ -525,7 +525,7 @@ export default function EditPlayerPage () {
               <LabelSelectElementAssist
                 htmlFor='playerTeamDestination'
                 labelText='Club Destino'
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 required={true}>
                   <option value=''>Selecciona</option>
                   { teams?.map(item => {
@@ -543,7 +543,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='dd/mm/yyyy'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Fecha inicio contrato
               </LabelElementAssist>
@@ -556,7 +556,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='dd/mm/yyyy'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Fecha inicio contrato real
               </LabelElementAssist>
@@ -569,7 +569,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='dd/mm/yyyy'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Fecha fin contrato
               </LabelElementAssist>
@@ -582,7 +582,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='Importe en €'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Importe contrato fijo
               </LabelElementAssist>
@@ -595,7 +595,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='Importe en €e'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Importe contrato variable
               </LabelElementAssist>
@@ -608,7 +608,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='Importe en €'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Importe salario fijo
               </LabelElementAssist>
@@ -621,7 +621,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='Importe en €'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Importe salario variable
               </LabelElementAssist>
@@ -634,7 +634,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='Porcentaje (%)'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Porcentaje pago club
               </LabelElementAssist>
@@ -647,7 +647,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='Importe en €'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Importe cláusula rescisión
               </LabelElementAssist>
@@ -847,7 +847,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='Descripción corta'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 defaultValue={detailContractData[0].descripcion || ''}
                 handleOnChange={e => {
                   let onChangeValue = [...detailContractData];
@@ -862,7 +862,7 @@ export default function EditPlayerPage () {
                 htmlFor='contractType'
                 labelText='Tipo de contrato'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 defaultValue={detailContractData[0].desc_tipo_contrato || ''}
                 handleOnChange={e => {
                   let onChangeValue = [...detailContractData];
@@ -884,7 +884,7 @@ export default function EditPlayerPage () {
                 htmlFor='procedureType'
                 labelText='Tipo de procedimiento'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 defaultValue={detailContractData[0].desc_tipo_procedimiento || ''}
                 handleOnChange={e => {
                   let onChangeValue = [...detailContractData];
@@ -906,7 +906,7 @@ export default function EditPlayerPage () {
               <LabelSelectElementAssist
                 htmlFor='playerTeamOrigin'
                 labelText='Club Origen'
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 required={true}
                 defaultValue={detailContractData[0].id_club_origen || ''}
                 handleOnChange={e => {
@@ -927,7 +927,7 @@ export default function EditPlayerPage () {
               <LabelSelectElementAssist
                 htmlFor='playerTeamDestination'
                 labelText='Club Destino'
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 required={true}
                 defaultValue={detailContractData[0].id_club_destino || ''}
                 handleOnChange={e => {
@@ -952,7 +952,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='dd/mm/yyyy'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 value={detailContractData[0].fch_inicio_contrato || ''}
                 handleOnChange={e => {
                   let onChangeValue = [...detailContractData];
@@ -970,7 +970,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='dd/mm/yyyy'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 value={detailContractData[0].fch_inicio_contrato_real || ''}
                 handleOnChange={e => {
                   let onChangeValue = [...detailContractData];
@@ -988,7 +988,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='dd/mm/yyyy'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 value={detailContractData[0].fch_fin_contrato || ''}
                 handleOnChange={e => {
                   let onChangeValue = [...detailContractData];
@@ -1006,7 +1006,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='Importe en €'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 value={detailContractData[0].imp_contrato_fijo || ''}
                 handleOnChange={e => {
                   let onChangeValue = [...detailContractData];
@@ -1025,7 +1025,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='Importe en €'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 value={detailContractData[0].imp_contrato_variable || ''}
                 handleOnChange={e => {
                   let onChangeValue = [...detailContractData];
@@ -1043,7 +1043,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='Importe en €'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 value={detailContractData[0].imp_salario_total || ''}
                 handleOnChange={e => {
                   let onChangeValue = [...detailContractData];
@@ -1061,7 +1061,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='Importe en €'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 value={detailContractData[0].imp_salario_variable || ''}
                 handleOnChange={e => {
                   let onChangeValue = [...detailContractData];
@@ -1079,7 +1079,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='Porcentaje (%)'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 value={detailContractData[0].pct_pago_atm || ''}
                 handleOnChange={e => {
                   let onChangeValue = [...detailContractData];
@@ -1097,7 +1097,7 @@ export default function EditPlayerPage () {
                 autoComplete='off'
                 placeholder='Importe en €'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 value={detailContractData[0].imp_clausula_rescision || ''}
                 handleOnChange={e => {
                   let onChangeValue = [...detailContractData];
@@ -1724,9 +1724,8 @@ export default function EditPlayerPage () {
                       handleChangesOnNewVariableExpression(event,index)
                     }} >
                       <option value=''>Operador</option>
-                    <option value='='>=</option>
-                    <option value='<'>&lt;=</option>
-                    <option value='>'>&gt;=</option>
+                    <option value='<='>=</option>
+                    <option value='>='>&gt;=</option>
                   </SelectIconShorter>
                   {renderExprCondValueField(variableExpressions[index].id_expresion, index)}
 
@@ -1783,9 +1782,8 @@ export default function EditPlayerPage () {
                                 }}
                                 >
                                   <option value=''>Operador</option>
-                                  <option value='='>=</option>
-                                  <option value='<'>&lt;=</option>
-                                  <option value='>'>&gt;=</option>
+                                  <option value='<='>=</option>
+                                  <option value='>='>&gt;=</option>
                               </SelectIconShorter>
                               {renderConditionValueField(variableExpressions[index].condiciones[index2].id_condicion, index, index2)}
       
@@ -2074,10 +2072,6 @@ export default function EditPlayerPage () {
     }
   }
 
-  const renderModalImportVar = () => {
-
-  }
-
   return (
     <>
       {renderModal()}
@@ -2119,7 +2113,7 @@ export default function EditPlayerPage () {
                 <FormTabs__LinksWrapper>
                   <TabLink target='general'>General</TabLink>
                   <TabLink target='contractual'>Contractual</TabLink>
-                  <TabLink target='variables'>Variables</TabLink>
+                  <TabLink target='variables'>Cláusulas</TabLink>
                 </FormTabs__LinksWrapper>
               </FormTabs>
             </FormTabs__ToolBarWrapper>
@@ -2152,7 +2146,7 @@ export default function EditPlayerPage () {
                             autoComplete='off'
                             placeholder='Escribe para buscar'
                             required={true}
-                            assistanceText='Este campo es obligatorio'
+                            assistanceText='*'
                             value={optaSelectedPlayer.desc_nombre_jugador || optaSelectedPlayer.desc_nombre}
                             handleOnChange={(e)=>{
                               setOptaSelectedPlayer(e.target.value);
@@ -2179,7 +2173,7 @@ export default function EditPlayerPage () {
                           autoComplete='off'
                           placeholder='Apellido'
                           required='required'
-                          assistanceText='Este campo es obligatorio'
+                          assistanceText='*'
                           value={playerData.desc_apellido1 || ''}
                           handleOnChange={e => {setPlayerData({...playerData, desc_apellido1: e.target.value})}}
                           >
@@ -2477,7 +2471,7 @@ export default function EditPlayerPage () {
                             playerContracts && activeContractData ? '':
                               <>
                                 <TableDataRow className='cm-u-spacer-mb-bigger cm-u-centerText'>
-                                  <p className="error">Es necesario seleccionar un contrato para ver sus variables</p>
+                                  <p className="error">Seleccione un contrato para ver las cláusulas</p>
                                 </TableDataRow>
                               </>
                           }
@@ -2524,14 +2518,14 @@ export default function EditPlayerPage () {
                           : 
                           <>
                             <TableDataRow className='cm-u-spacer-mb-bigger cm-u-centerText'>
-                              <p className="error">Has de seleccionar un contrato antes de poder acceder a sus variables o crear nuevas</p>
+                              <p className="error">Seleccione un contrato para ver las cláusulas</p>
                             </TableDataRow>
                           </>
 
                         }
                         
                           <TableDataHeader>
-                            <TableCellLong>Variables añadidas</TableCellLong>
+                            <TableCellLong>Cláusulas añadidas</TableCellLong>
                             <TableCellShort></TableCellShort>
                           </TableDataHeader>
                           

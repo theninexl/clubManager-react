@@ -244,11 +244,11 @@ export default function NewPlayerPage () {
     }
 
     if (data.desc_nombre === '') {
-      setCreatePlayerError('Tienes que rellenar los campos mínimos obligatorios');
+      setCreatePlayerError('Debe completar la información de los campos obligatorios');
     } else {
       dataSent['desc_nombre'] = data.desc_nombre;
       if (data.desc_apellido1=== '') {
-        setCreatePlayerError('Tienes que rellenar los campos mínimos obligatorios');
+        setCreatePlayerError('Debe completar la información de los campos obligatorios');
       } else {       
         dataSent['desc_apellido1'] = data.desc_apellido1;    
         // console.log('jugador que creooooo', dataSent);    
@@ -481,7 +481,7 @@ export default function NewPlayerPage () {
                 autoComplete='off'
                 placeholder='Descripción corta'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Descripcion
               </LabelElementAssist>
@@ -491,7 +491,7 @@ export default function NewPlayerPage () {
                 htmlFor='contractType'
                 labelText='Tipo de contrato'
                 required={true}
-                assistanceText='Este campo es obligatorio'>
+                assistanceText='*'>
                   <option value=''>Selecciona</option>
                   {
                     contractTypes.map(item => {
@@ -507,7 +507,7 @@ export default function NewPlayerPage () {
                 htmlFor='procedureType'
                 labelText='Tipo de procedimiento'
                 required={true}
-                assistanceText='Este campo es obligatorio'>
+                assistanceText='*'>
                   <option value=''>Selecciona</option>
                   {
                     procedureTypes.map(item => {
@@ -522,7 +522,7 @@ export default function NewPlayerPage () {
               <LabelSelectElementAssist
                 htmlFor='playerTeamOrigin'
                 labelText='Club Origen'
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 required={true}>
                   <option value=''>Selecciona</option>
                   { teams?.map(item => {
@@ -536,7 +536,7 @@ export default function NewPlayerPage () {
               <LabelSelectElementAssist
                 htmlFor='playerTeamDestination'
                 labelText='Club Destino'
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 required={true}>
                   <option value=''>Selecciona</option>
                   { teams?.map(item => {
@@ -554,7 +554,7 @@ export default function NewPlayerPage () {
                 autoComplete='off'
                 placeholder='dd/mm/yyyy'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Fecha inicio contrato
               </LabelElementAssist>
@@ -567,7 +567,7 @@ export default function NewPlayerPage () {
                 autoComplete='off'
                 placeholder='dd/mm/yyyy'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Fecha inicio contrato real
               </LabelElementAssist>
@@ -580,7 +580,7 @@ export default function NewPlayerPage () {
                 autoComplete='off'
                 placeholder='dd/mm/yyyy'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Fecha fin contrato
               </LabelElementAssist>
@@ -593,7 +593,7 @@ export default function NewPlayerPage () {
                 autoComplete='off'
                 placeholder='Importe en €'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Importe contrato fijo
               </LabelElementAssist>
@@ -606,9 +606,9 @@ export default function NewPlayerPage () {
                 autoComplete='off'
                 placeholder='Importe en €'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
-                Importe contrato variable
+                Importe contrato cláusula
               </LabelElementAssist>
             </FormSimplePanelRow>
             <FormSimplePanelRow>
@@ -619,7 +619,7 @@ export default function NewPlayerPage () {
                 autoComplete='off'
                 placeholder='Importe en €'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Importe salario fijo
               </LabelElementAssist>
@@ -632,9 +632,9 @@ export default function NewPlayerPage () {
                 autoComplete='off'
                 placeholder='Importe en €'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
-                Importe salario variable
+                Importe salario cláusula
               </LabelElementAssist>
             </FormSimplePanelRow>
             <FormSimplePanelRow>
@@ -645,7 +645,7 @@ export default function NewPlayerPage () {
                 autoComplete='off'
                 placeholder='Porcentaje (%)'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Porcentaje pago club
               </LabelElementAssist>
@@ -658,7 +658,7 @@ export default function NewPlayerPage () {
                 autoComplete='off'
                 placeholder='Importe en €'
                 required={true}
-                assistanceText='Este campo es obligatorio'
+                assistanceText='*'
                 >
                 Importe cláusula rescisión
               </LabelElementAssist>
@@ -1131,7 +1131,7 @@ export default function NewPlayerPage () {
         <>
         <SimpleAccordionContent>
           <header className="cm-l-body-static-header--inTab" style={{marginTop:'0'}}>
-              <p className="cm-u-text-black-cat">Añadir nueva variable</p>
+              <p className="cm-u-text-black-cat">Nueva cláusula</p>
           </header>
           <FormSimplePanelRow>
             <LabelElement
@@ -1193,9 +1193,8 @@ export default function NewPlayerPage () {
                       handleChangesOnNewVariableExpression(event,index)
                     }} >
                       <option value=''>Operador</option>
-                    <option value='='>=</option>
-                    <option value='<'>&lt;=</option>
-                    <option value='>'>&gt;=</option>
+                      <option value='<='>=</option>
+                    <option value='>='>&gt;=</option>
                   </SelectIconShorter>
                   {renderExprCondValueField(variableExpressions[index].id_expresion, index)}
 
@@ -1252,9 +1251,8 @@ export default function NewPlayerPage () {
                                 }}
                                 >
                                   <option value=''>Operador</option>
-                                  <option value='='>=</option>
-                                  <option value='<'>&lt;=</option>
-                                  <option value='>'>&gt;=</option>
+                                  <option value='<='>=</option>
+                                  <option value='>='>&gt;=</option>
                               </SelectIconShorter>
                               {renderConditionValueField(variableExpressions[index].condiciones[index2].id_condicion, index, index2)}
       
@@ -1584,7 +1582,7 @@ export default function NewPlayerPage () {
                     <TabLink 
                     className={activeTab === 3 ? 'active' : ''} 
                     handleOnClick={()=> updateActiveTab(3)}
-                    >Variables</TabLink>  
+                    >Cláusulas</TabLink>  
                     :''
                   }             
                 </FormTabs__LinksWrapper>
@@ -1617,7 +1615,7 @@ export default function NewPlayerPage () {
                           autoComplete='off'
                           placeholder='Escribe para buscar'
                           required={true}
-                          assistanceText='Este campo es obligatorio'
+                          assistanceText='*'
                           value={optaSelectedPlayer.desc_nombre_jugador}
                           handleOnChange={(e)=>{
                             setOptaSelectedPlayer(e.target.value);
@@ -1643,7 +1641,7 @@ export default function NewPlayerPage () {
                         autoComplete='off'
                         placeholder='Apellido'
                         required={true}
-                        assistanceText='Este campo es obligatorio'
+                        assistanceText='*'
                         value={optaSelectedPlayer.desc_apellido_jugador || ''}
                         >
                         Apellido
@@ -1945,7 +1943,7 @@ export default function NewPlayerPage () {
                               <TableCellMedium>{activeContractData[0].fch_inicio_contrato} - {activeContractData[0].fch_fin_contrato}</TableCellMedium>
                             </TableDataRow>
                             <TableDataHeader>
-                              <TableCellLong>Variables añadidas</TableCellLong>
+                              <TableCellLong>Cláusulas añadidas</TableCellLong>
                               <TableCellShort></TableCellShort>
                             </TableDataHeader>
                             { savedVariables?.map((item) => {                       

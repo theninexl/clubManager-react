@@ -76,29 +76,22 @@ export default function ManageTeamsPage () {
           </HeadContent>
 
           <CentralBody>
-            <CentralBody__Header>Jugadores</CentralBody__Header>
+            <CentralBody__Header>Equipos</CentralBody__Header>
             <TableDataWrapper className='cm-u-spacer-mb-huge'>
               <TableDataHeader>
                 <TableCellMedium>Nombre</TableCellMedium>
-                <TableCellMedium>Pais</TableCellMedium>
-                <TableCellMedium>Liga</TableCellMedium>
-                <TableCellMedium>Contacto</TableCellMedium>
                 <TableCellShort>&nbsp;</TableCellShort>
               </TableDataHeader>
               <div>
                 {
                   allTeams?.map(team => {
-                    
                     return (
-                      <TableDataRow key={team.id_club_opta} >
+                      <TableDataRow key={team.id_equipo} >
                         <TableCellMedium>{team.desc_nombre_club}</TableCellMedium>
-                        <TableCellMedium>{team.desc_nombre_pais}</TableCellMedium>
-                        <TableCellMedium>{team.desc_liga}</TableCellMedium>
-                        <TableCellMedium>{team.desc_contacto}</TableCellMedium>
                         <TableCellShort className='cm-u-centerText' >
                           <IconButtonSmallerPrimary
                             onClick={() => {
-                              navigate(`/edit-team?team=${team.id_club_opta}`)
+                              navigate(`/edit-team?team=${team.id_equipo}`)
                             }}>
                             <SymbolEdit/>
                           </IconButtonSmallerPrimary>

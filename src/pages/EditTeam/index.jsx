@@ -28,20 +28,30 @@ export default function EditTeamPage () {
   // variables y estados locales
   const [error, setError] = useState(null);
   const [modal, setModal] = useState(false);
-  const [allLeagues, setAllLeagues] = useState();
   const [countries, setCountries] = useState(null);
+  const [allTeamType, setAllTeamType] = useState(null);
   const [teamDetail, setTeamDetail] = useState({
-    "id_pais": '',
-    "desc_nombre_pais": '',
-    "id_liga": '',
-    "desc_liga": '',
     "desc_nombre_club": '',
-    "desc_contacto": '',
-    "desc_telefono": '',
-    "desc_email": '',
+    "id_pais": '',
+    "id_tipo_equipo": '',
+
+    "desc_num_telefono_contacto_1": '',
+    "desc_email_contacto_1": '',
+    "desc_nombre_contacto_1": '',
+    "desc_cargo_contacto_1": '',
+
+    "desc_num_telefono_contacto_2": '',
+    "desc_email_contacto_2": '',
+    "desc_nombre_contacto_2": '',
+    "desc_cargo_contacto_2": '',
+
+    "desc_num_telefono_contacto_3": '',
+    "desc_email_contacto_3": '',
+    "desc_nombre_contacto_3": '',
+    "desc_cargo_contacto_3": ''
 });
   
-
+ 
   const renderDeleteUserBtn = () => {
     if (userParam !== 'new') {
       return (
@@ -53,25 +63,22 @@ export default function EditTeamPage () {
     }
   }
 
-  //pedir ligas, paises
-  const getTeamDetail = useGetData('teams/getDetail',{'id_club':userParam});
+ const getTeamDetail = useGetData('teams/getDetail',{'id_equipo':userParam});
   useEffect (() => {
     if (getTeamDetail.responseGetData) {
-      console.log(getTeamDetail.responseGetData);
       setTeamDetail(getTeamDetail.responseGetData.data)
     }
   },[getTeamDetail.responseGetData])
-
-  //pedir ligas, paises
-  const getLeagues = useGetData('masters/getAllLigue');
-  useEffect (() => {
-    if (getLeagues.responseGetData) setAllLeagues(getLeagues.responseGetData.data.data);
-  },[getLeagues.responseGetData])
 
   const getCountries = useGetData('masters/getAllCountry');
   useEffect (() => {
     if (getCountries.responseGetData) setCountries(getCountries.responseGetData.data.data);
   },[getCountries.responseGetData])
+
+  const getTeamType = useGetData('masters/getAllTeamType');
+  useEffect (() => {
+    if (getTeamType.responseGetData) setAllTeamType(getTeamType.responseGetData.data.data);;
+  },[getTeamType.responseGetData])
 
 
 
@@ -81,21 +88,45 @@ export default function EditTeamPage () {
 
     const data = {
       desc_nombre_club: formData.get('teamName'),
-      id_pais: formData.get('teamCountry'),
-      id_liga: formData.get('teamLeague'),
-      desc_contacto: formData.get('teamContactName'),
-      desc_telefono: formData.get('teamContactPhone'),
-      desc_email: formData.get('teamContactEmail'),
+      id_pais: formData.get('id_pais'),
+      id_tipo_equipo: formData.get('id_tipo_equipo'),
+
+      desc_num_telefono_contacto_1: formData.get('desc_num_telefono_contacto_1'),
+      desc_email_contacto_1: formData.get('desc_email_contacto_1'),
+      desc_nombre_contacto_1: formData.get('desc_nombre_contacto_1'),
+      desc_cargo_contacto_1: formData.get('desc_cargo_contacto_1'),
+
+      desc_num_telefono_contacto_2: formData.get('desc_num_telefono_contacto_2'),
+      desc_email_contacto_2: formData.get('desc_email_contacto_2'),
+      desc_nombre_contacto_2: formData.get('desc_nombre_contacto_2'),
+      desc_cargo_contacto_2: formData.get('desc_cargo_contacto_2'),
+
+      desc_num_telefono_contacto_3: formData.get('desc_num_telefono_contacto_3'),
+      desc_email_contacto_3: formData.get('desc_email_contacto_3'),
+      desc_nombre_contacto_3: formData.get('desc_nombre_contacto_3'),
+      desc_cargo_contacto_3: formData.get('desc_cargo_contacto_3')
     }
 
     const dataSent = {
-      id_club: userParam,
-      id_pais: data.id_pais,
-      id_liga: data.id_liga,
+      id_equipo: userParam,
       desc_nombre_club: data.desc_nombre_club,
-      desc_contacto: data.desc_contacto,
-      desc_telefono: data.desc_telefono,
-      desc_email: data.desc_email,
+      id_pais: data.id_pais,
+      id_tipo_equipo: data.id_tipo_equipo,
+
+      desc_num_telefono_contacto_1: data.desc_num_telefono_contacto_1,
+      desc_email_contacto_1: data.desc_email_contacto_1,
+      desc_nombre_contacto_1: data.desc_nombre_contacto_1,
+      desc_cargo_contacto_1: data.desc_cargo_contacto_1,
+
+      desc_num_telefono_contacto_2: data.desc_num_telefono_contacto_2,
+      desc_email_contacto_2: data.desc_email_contacto_2,
+      desc_nombre_contacto_2: data.desc_nombre_contacto_2,
+      desc_cargo_contacto_2: data.desc_cargo_contacto_2,
+
+      desc_num_telefono_contacto_3: data.desc_num_telefono_contacto_3,
+      desc_email_contacto_3: data.desc_email_contacto_3,
+      desc_nombre_contacto_3: data.desc_nombre_contacto_3,
+      desc_cargo_contacto_3: data.desc_cargo_contacto_3
   }
 
   updateTeam.uploadData('teams/edit',dataSent);
@@ -104,8 +135,7 @@ export default function EditTeamPage () {
   //mirar la respuesta de subir datos para setear error
   useEffect(()=> {
     if (updateTeam.responseUpload) {
-      console.log(updateTeam.responseUpload);
-      if (updateTeam.responseUpload.status === 409) { setError('El usuario que estás intentnado crear ya existe')
+      if (updateTeam.responseUpload.status === 409) { setError('El equipo ya existe')
       } else if (updateTeam.responseUpload.code === 'ERR_NETWORK') { setError('Error de conexión, inténtelo más tarde')
       } else if (updateTeam.responseUpload.status === 'ok') { navigate('/manage-teams');
       } else {
@@ -116,14 +146,13 @@ export default function EditTeamPage () {
 
   const handleTeamDelete = () => {
     
-    deleteTeam.uploadData('teams/remove',{'id_club_opta':userParam});
+    deleteTeam.uploadData('teams/remove',{'id_equipo':userParam});
   }
 
   //mirar la respuesta de borrar usuario para setear error
   useEffect(()=> {
     if (deleteTeam.responseUpload) {
-      console.log(deleteTeam.responseUpload);
-      if (deleteTeam.responseUpload.status === 409) { setError('El usuario que estás borrar no existe')
+      if (deleteTeam.responseUpload.status === 409) { setError('El equipo no existe')
       } else if (deleteTeam.responseUpload.code === 'ERR_NETWORK') { setError('Error de conexión, inténtelo más tarde')
       } else if (deleteTeam.responseUpload.status === 'ok') { navigate('/manage-teams');
       } else {
@@ -139,7 +168,7 @@ export default function EditTeamPage () {
           <ModalContent__Small>
             <ModalBody
               className='cm-u-spacer-mb-bigger'>
-                <h3 class="cm-u-text-black-cat">¿Estas seguro?</h3>
+                <h3 class="cm-u-text-black-cat">¿Está seguro?</h3>
               </ModalBody>
             <ModalFooter>
               <ButtonCatTransparent
@@ -204,76 +233,225 @@ export default function EditTeamPage () {
                   Nombre
                 </LabelElementAssist>
               </FormSimplePanelRow>
+               
               <FormSimplePanelRow>
                 <LabelSelectElement
-                  htmlFor='teamCountry'
+                  htmlFor='id_pais'
                   labelText='Pais'
-                  value={teamDetail.id_pais || ''}
-                  handleOnChange={e => {setTeamDetail({...teamDetail, id_pais: e.target.value})}} >
+                  defaultValue={teamDetail.id_pais || ''}
+                  handleOnChange={e => {
+                    setTeamDetail({...teamDetail, id_pais: e.target.value.toString()})
+                    }} >
                     <option value=''>Selecciona</option>
-                    { countries?.map(item => {
+                    { countries?.map(country => {
+                      const selected = teamDetail.id_pais == country.id_pais ? 'selected' : '';
                       return (
-                        <option key={item.id_pais} value={item.id_pais}>{item.desc_nombre_pais}</option>
+                        <option key={country.id_pais} value={country.id_pais} selected={selected}>{country.desc_pais}</option>
                       );
                     })}
                 </LabelSelectElement>
               </FormSimplePanelRow>
+              
+              
               <FormSimplePanelRow>
                 <LabelSelectElement
-                  htmlFor='teamLeague'
-                  labelText='Liga'
-                  value={teamDetail.id_liga || ''}
-                  handleOnChange={e => {setTeamDetail({...teamDetail, id_liga: e.target.value})}} >
+                  htmlFor='id_tipo_equipo'
+                  labelText='Tipo equipo'
+                  defaultValue={teamDetail.id_tipo_equipo || ''}
+                  handleOnChange={e => {
+                    setTeamDetail({...teamDetail, id_tipo_equipo: e.target.value.toString()})
+                    }} >
                     <option value=''>Selecciona</option>
-                    { allLeagues?.map(item => {
+                    { allTeamType?.map(item => {
+                      const selected = teamDetail.id_tipo_equipo == item.id_tipo_equipo ? 'selected' : '';
                       return (
-                        <option key={item.id_liga} value={item.id_liga}>{item.desc_liga}</option>
+                        <option key={item.id_tipo_equipo} value={item.id_tipo_equipo} selected={selected}>{item.desc_web}</option>
                       );
                     })}
                 </LabelSelectElement>
               </FormSimplePanelRow>
               <FormSimplePanelRow>
                 <LabelElementAssist
-                  htmlFor='teamContactName'
+                  htmlFor='desc_nombre_contacto_1'
                   type='text'
                   className='panel-field-long'
                   autoComplete='off'
-                  placeholder='Nombre contacto'
+                  placeholder='Nombre contacto 1'
                   required='required'
-                  value={teamDetail.desc_contacto}
-                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_contacto: e.target.value})}}                      
+                  value={teamDetail.desc_nombre_contacto_1}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_nombre_contacto_1: e.target.value})}}                      
                   >
-                  Nombre contacto
+                  Nombre contacto 1
                 </LabelElementAssist>
               </FormSimplePanelRow>
               <FormSimplePanelRow>
                 <LabelElementAssist
-                  htmlFor='teamContactPhone'
-                  type='number'
+                  htmlFor='desc_cargo_contacto_1'
+                  type='text'
                   className='panel-field-long'
                   autoComplete='off'
-                  placeholder='Teléfono contacto'
+                  placeholder='Cargo contacto 1'
                   required='required'
-                  value={teamDetail.desc_telefono}
-                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_telefono: e.target.value})}}                      
+                  value={teamDetail.desc_cargo_contacto_1}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_cargo_contacto_1: e.target.value})}}                      
                   >
-                  Teléfono contacto
+                  Cargo contacto 1
                 </LabelElementAssist>
               </FormSimplePanelRow>
               <FormSimplePanelRow>
                 <LabelElementAssist
-                  htmlFor='teamContactEmail'
-                  type='email'
+                  htmlFor='desc_num_telefono_contacto_1'
+                  type='text'
                   className='panel-field-long'
                   autoComplete='off'
-                  placeholder='Email contacto'
+                  placeholder='Teléfono contacto 1'
                   required='required'
-                  value={teamDetail.desc_email}
-                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_email: e.target.value})}}                      
+                  value={teamDetail.desc_num_telefono_contacto_1}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_num_telefono_contacto_1: e.target.value})}}                      
                   >
-                  Email contacto
+                  Teléfono contacto 1
                 </LabelElementAssist>
               </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_email_contacto_1'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Email contacto 1'
+                  required='required'
+                  value={teamDetail.desc_email_contacto_1}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_email_contacto_1: e.target.value})}}                      
+                  >
+                  Email contacto 1
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_nombre_contacto_2'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Nombre contacto 2'
+                  required='required'
+                  value={teamDetail.desc_nombre_contacto_2}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_nombre_contacto_2: e.target.value})}}                      
+                  >
+                  Nombre contacto 2
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_cargo_contacto_2'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Cargo contacto 2'
+                  required='required'
+                  value={teamDetail.desc_cargo_contacto_2}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_cargo_contacto_2: e.target.value})}}                      
+                  >
+                  Cargo contacto 2
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_num_telefono_contacto_2'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Teléfono contacto 2'
+                  required='required'
+                  value={teamDetail.desc_num_telefono_contacto_2}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_num_telefono_contacto_2: e.target.value})}}                      
+                  >
+                  Teléfono contacto 2
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_email_contacto_2'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Email contacto 2'
+                  required='required'
+                  value={teamDetail.desc_email_contacto_2}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_email_contacto_2: e.target.value})}}                      
+                  >
+                  Email contacto 2
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_nombre_contacto_3'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Nombre contacto 3'
+                  required='required'
+                  value={teamDetail.desc_nombre_contacto_3}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_nombre_contacto_3: e.target.value})}}                      
+                  >
+                  Nombre contacto 3
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_cargo_contacto_3'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Cargo contacto 3'
+                  required='required'
+                  value={teamDetail.desc_cargo_contacto_3}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_cargo_contacto_3: e.target.value})}}                      
+                  >
+                  Cargo contacto 3
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_num_telefono_contacto_3'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Teléfono contacto 3'
+                  required='required'
+                  value={teamDetail.desc_num_telefono_contacto_3}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_num_telefono_contacto_3: e.target.value})}}                      
+                  >
+                  Teléfono contacto 3
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_email_contacto_3'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Email contacto 3'
+                  required='required'
+                  value={teamDetail.desc_email_contacto_3}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_email_contacto_3: e.target.value})}}                      
+                  >
+                  Email contacto 3
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              
+
+
+
+
+
+
+
+
+
+
+
                 {error &&
                   <FormSimpleRow className='cm-u-centerText'>
                     <span className='error'>{error}</span>

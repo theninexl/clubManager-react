@@ -25,16 +25,17 @@ export default function NewTeamPage () {
   const [countries, setCountries] = useState(null);
 
 
-  //pedir ligas, paises
-  const getLeagues = useGetData('masters/getAllLigue');
-  useEffect (() => {
-    if (getLeagues.responseGetData) setAllLeagues(getLeagues.responseGetData.data.data);;
-  },[getLeagues.responseGetData])
-
   const getCountries = useGetData('masters/getAllCountry');
   useEffect (() => {
     if (getCountries.responseGetData) setCountries(getCountries.responseGetData.data.data);
   },[getCountries.responseGetData])
+
+  const getTeamType = useGetData('masters/getAllTeamType');
+  useEffect (() => {
+    if (getTeamType.responseGetData) setAllLeagues(getTeamType.responseGetData.data.data);;
+  },[getTeamType.responseGetData])
+
+  
 
 
   const handleSave = (e) => {
@@ -42,21 +43,45 @@ export default function NewTeamPage () {
     const formData = new FormData(form.current);
 
     const data = {
-      desc_nombre_club: formData.get('teamName'),
-      id_pais: formData.get('teamCountry'),
-      id_liga: formData.get('teamLeague'),
-      desc_contacto: formData.get('teamContactName'),
-      desc_telefono: formData.get('teamContactPhone'),
-      desc_email: formData.get('teamContactEmail'),
+      desc_nombre_club: formData.get('desc_nombre_club'),
+      id_pais: formData.get('id_pais'),
+      id_tipo_equipo: formData.get('id_tipo_equipo'),
+
+      desc_num_telefono_contacto_1: formData.get('desc_num_telefono_contacto_1'),
+      desc_email_contacto_1: formData.get('desc_email_contacto_1'),
+      desc_nombre_contacto_1: formData.get('desc_nombre_contacto_1'),
+      desc_cargo_contacto_1: formData.get('desc_cargo_contacto_1'),
+
+      desc_num_telefono_contacto_2: formData.get('desc_num_telefono_contacto_2'),
+      desc_email_contacto_2: formData.get('desc_email_contacto_2'),
+      desc_nombre_contacto_2: formData.get('desc_nombre_contacto_2'),
+      desc_cargo_contacto_2: formData.get('desc_cargo_contacto_2'),
+
+      desc_num_telefono_contacto_3: formData.get('desc_num_telefono_contacto_3'),
+      desc_email_contacto_3: formData.get('desc_email_contacto_3'),
+      desc_nombre_contacto_3: formData.get('desc_nombre_contacto_3'),
+      desc_cargo_contacto_3: formData.get('desc_cargo_contacto_3')
     }
 
     const dataSent = {
-      id_pais: data.id_pais,
-      id_liga: data.id_liga,
       desc_nombre_club: data.desc_nombre_club,
-      desc_contacto: data.desc_contacto,
-      desc_telefono: data.desc_telefono,
-      desc_email: data.desc_email,
+      id_pais: data.id_pais,
+      id_tipo_equipo: data.id_tipo_equipo,
+
+      desc_num_telefono_contacto_1: data.desc_num_telefono_contacto_1,
+      desc_email_contacto_1: data.desc_email_contacto_1,
+      desc_nombre_contacto_1: data.desc_nombre_contacto_1,
+      desc_cargo_contacto_1: data.desc_cargo_contacto_1,
+
+      desc_num_telefono_contacto_2: data.desc_num_telefono_contacto_2,
+      desc_email_contacto_2: data.desc_email_contacto_2,
+      desc_nombre_contacto_2: data.desc_nombre_contacto_2,
+      desc_cargo_contacto_2: data.desc_cargo_contacto_2,
+
+      desc_num_telefono_contacto_3: data.desc_num_telefono_contacto_3,
+      desc_email_contacto_3: data.desc_email_contacto_3,
+      desc_nombre_contacto_3: data.desc_nombre_contacto_3,
+      desc_cargo_contacto_3: data.desc_cargo_contacto_3
   }
 
   uploadData('teams/create',dataSent);
@@ -67,7 +92,7 @@ export default function NewTeamPage () {
   useEffect(()=> {
     if (responseUpload) {
       console.log(responseUpload);
-      if (responseUpload.status === 409) { setError('El equipo que estás intentnado crear ya existe')
+      if (responseUpload.status === 409) { setError('El equipo ya existe')
       } else if (responseUpload.code === 'ERR_NETWORK') { setError('Error de conexión, inténtelo más tarde')
       } else if (responseUpload.status === 'ok') { navigate('/manage-teams');
       } else {
@@ -109,7 +134,7 @@ export default function NewTeamPage () {
               autoComplete='off'>
               <FormSimplePanelRow>
                 <LabelElementAssist
-                  htmlFor='teamName'
+                  htmlFor='desc_nombre_club'
                   type='text'
                   className='panel-field-long'
                   autoComplete='off'
@@ -121,64 +146,165 @@ export default function NewTeamPage () {
               </FormSimplePanelRow>
               <FormSimplePanelRow>
                 <LabelSelectElement
-                  htmlFor='teamCountry'
+                  htmlFor='id_pais'
                   labelText='Pais' >
-                    <option value=''>Selecciona</option>
+                    <option value=''>Seleccionar</option>
                     { countries?.map(item => {
                       return (
-                        <option key={item.id_pais} value={item.id_pais}>{item.desc_nombre_pais}</option>
+                        <option key={item.id_pais} value={item.id_pais}>{item.desc_pais}</option>
                       );
                     })}
                 </LabelSelectElement>
               </FormSimplePanelRow>
               <FormSimplePanelRow>
                 <LabelSelectElement
-                  htmlFor='teamLeague'
-                  labelText='Liga' >
-                    <option value=''>Selecciona</option>
+                  htmlFor='id_tipo_equipo'
+                  labelText='Tipo Equipo' >
+                    <option value=''>Seleccionar</option>
                     { allLeagues?.map(item => {
                       return (
-                        <option key={item.id_liga} value={item.id_liga}>{item.desc_liga}</option>
+                        <option key={item.id_tipo_equipo} value={item.id_tipo_equipo}>{item.desc_web}</option>
                       );
                     })}
                 </LabelSelectElement>
               </FormSimplePanelRow>
+
+
               <FormSimplePanelRow>
                 <LabelElementAssist
-                  htmlFor='teamContactName'
+                  htmlFor='desc_nombre_contacto_1'
                   type='text'
                   className='panel-field-long'
                   autoComplete='off'
-                  placeholder='Nombre contacto'
-                  required='required'                    
+                  placeholder='Nombre contacto 1'
                   >
-                  Nombre contacto
+                  Nombre contacto 1
                 </LabelElementAssist>
               </FormSimplePanelRow>
               <FormSimplePanelRow>
                 <LabelElementAssist
-                  htmlFor='teamContactPhone'
-                  type='number'
+                  htmlFor='desc_cargo_contacto_1'
+                  type='text'
                   className='panel-field-long'
                   autoComplete='off'
-                  placeholder='Teléfono contacto'
-                  required='required'                   
+                  placeholder='Cargo contacto 1'
                   >
-                  Teléfono contacto
+                  Cargo contacto 1
                 </LabelElementAssist>
               </FormSimplePanelRow>
               <FormSimplePanelRow>
                 <LabelElementAssist
-                  htmlFor='teamContactEmail'
-                  type='email'
+                  htmlFor='desc_num_telefono_contacto_1'
+                  type='text'
                   className='panel-field-long'
                   autoComplete='off'
-                  placeholder='Email contacto'
-                  required='required'                   
+                  placeholder='Teléfono contacto 1'
                   >
-                  Email contacto
+                  Teléfono contacto 1
                 </LabelElementAssist>
               </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_email_contacto_1'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Email contacto 1'  
+                  >
+                  Email contacto 1
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_nombre_contacto_2'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Nombre contacto 2'     
+                  >
+                  Nombre contacto 2
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_cargo_contacto_2'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Cargo contacto 2'   
+                  >
+                  Cargo contacto 2
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_num_telefono_contacto_2'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Teléfono contacto 2'      
+                  >
+                  Teléfono contacto 2
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_email_contacto_2'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Email contacto 2'   
+                  >
+                  Email contacto 2
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_nombre_contacto_3'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Nombre contacto 3'           
+                  >
+                  Nombre contacto 3
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_cargo_contacto_3'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Cargo contacto 3'          
+                  >
+                  Cargo contacto 3
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_num_telefono_contacto_3'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Teléfono contacto 3'              
+                  >
+                  Teléfono contacto 3
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_email_contacto_3'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Email contacto 3'                   
+                  >
+                  Email contacto 3
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              
                 {error &&
                   <FormSimpleRow className='cm-u-centerText'>
                     <span className='error'>{error}</span>

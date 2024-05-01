@@ -26,25 +26,29 @@ export default function EditIntermediaryPage () {
   const queryParams = new URLSearchParams(window.location.search);
   const userParam = queryParams.get('intermediary');
 
-
   // variables y estados locales
   const [error, setError] = useState(null);
   const [modal, setModal] = useState(false);
   const [intermDetail, setIntermDetail] = useState({
-    "desc_email": '',
-    "num_telefono": '',
-    "territorio": '',
+    "desc_nombre": '',
+    "desc_cif": '',
     "desc_direccion": '',
     "desc_codigo_postal": '',
-    "desc_cif": '',
-    "nombre_contacto": '',
-    "apellido1_contacto": '',
-    "apellido2_contacto": '',
-    "nacionalidad_contacto": '',
-    "nss_contacto": '',
-    "pasaporte_contacto": '',
-    "dni_nie_contacto": '',
-    "pct_beneficio": '',
+
+    "desc_num_telefono_contacto_1": '',
+    "desc_email_contacto_1": '',
+    "desc_nombre_contacto_1": '',
+    "desc_cargo_contacto_1": '',
+
+    "desc_num_telefono_contacto_2": '',
+    "desc_email_contacto_2": '',
+    "desc_nombre_contacto_2": '',
+    "desc_cargo_contacto_2": '',
+
+    "desc_num_telefono_contacto_3": '',
+    "desc_email_contacto_3": '',
+    "desc_nombre_contacto_3": '',
+    "desc_cargo_contacto_3": ''
   });
   
 
@@ -71,39 +75,53 @@ export default function EditIntermediaryPage () {
     e.preventDefault();
     const formData = new FormData(form.current);
 
+    
+
     const data = {
-      nombre_contacto: formData.get('intermName'),
-      apellido1_contacto: formData.get('intermLastname1'),
-      apellido2_contacto: formData.get('intermLastname2'),
-      territorio: formData.get('intermTerritory'),
-      pct_beneficio: formData.get('intermPct'),
-      nacionalidad_contacto: formData.get('intermCountry'),
-      dni_nie_contacto: formData.get('intermDni'),
-      pasaporte_contacto: formData.get('intermPassport'),
-      nss_contacto: formData.get('intermNss'),
-      num_telefono: formData.get('intermPhone'),
-      desc_email: formData.get('intermEmail'),
-      desc_cif: formData.get('intermTaxNr'),
-      desc_direccion: formData.get('intermAddress'),
-      desc_codigo_postal: formData.get('intermPostcode'),
+      desc_nombre: formData.get('desc_nombre'),
+      desc_cif: formData.get('desc_cif'),
+      desc_direccion: formData.get('desc_direccion'),
+      desc_codigo_postal: formData.get('desc_codigo_postal'),
+
+      desc_num_telefono_contacto_1: formData.get('desc_num_telefono_contacto_1'),
+      desc_email_contacto_1: formData.get('desc_email_contacto_1'),
+      desc_nombre_contacto_1: formData.get('desc_nombre_contacto_1'),
+      desc_cargo_contacto_1: formData.get('desc_cargo_contacto_1'),
+
+      desc_num_telefono_contacto_2: formData.get('desc_num_telefono_contacto_2'),
+      desc_email_contacto_2: formData.get('desc_email_contacto_2'),
+      desc_nombre_contacto_2: formData.get('desc_nombre_contacto_2'),
+      desc_cargo_contacto_2: formData.get('desc_cargo_contacto_2'),
+
+      desc_num_telefono_contacto_3: formData.get('desc_num_telefono_contacto_3'),
+      desc_email_contacto_3: formData.get('desc_email_contacto_3'),
+      desc_nombre_contacto_3: formData.get('desc_nombre_contacto_3'),
+      desc_cargo_contacto_3: formData.get('desc_cargo_contacto_3')
     }
+
+    
 
     const dataSent = {
       id_intermediario: userParam,
-      nombre_contacto: data.nombre_contacto,
-      apellido1_contacto: data.apellido1_contacto,
-      apellido2_contacto: data.apellido2_contacto,
-      territorio: data.territorio,
-      pct_beneficio: data.pct_beneficio,
-      nacionalidad_contacto: data.nacionalidad_contacto,
-      dni_nie_contacto: data.dni_nie_contacto,
-      pasaporte_contacto: data.pasaporte_contacto,
-      nss_contacto: data.nss_contacto,
-      num_telefono: data.num_telefono,
-      desc_email: data.desc_email,
+      desc_nombre: data.desc_nombre,
       desc_cif: data.desc_cif,
       desc_direccion: data.desc_direccion,
       desc_codigo_postal: data.desc_codigo_postal,
+
+      desc_num_telefono_contacto_1: data.desc_num_telefono_contacto_1,
+      desc_email_contacto_1: data.desc_email_contacto_1,
+      desc_nombre_contacto_1: data.desc_nombre_contacto_1,
+      desc_cargo_contacto_1: data.desc_cargo_contacto_1,
+
+      desc_num_telefono_contacto_2: data.desc_num_telefono_contacto_2,
+      desc_email_contacto_2: data.desc_email_contacto_2,
+      desc_nombre_contacto_2: data.desc_nombre_contacto_2,
+      desc_cargo_contacto_2: data.desc_cargo_contacto_2,
+
+      desc_num_telefono_contacto_3: data.desc_num_telefono_contacto_3,
+      desc_email_contacto_3: data.desc_email_contacto_3,
+      desc_nombre_contacto_3: data.desc_nombre_contacto_3,
+      desc_cargo_contacto_3: data.desc_cargo_contacto_3
   }
 
   updateInterm.uploadData('intermediaries/edit',dataSent);
@@ -113,7 +131,7 @@ export default function EditIntermediaryPage () {
   useEffect(()=> {
     if (updateInterm.responseUpload) {
       console.log(updateInterm.responseUpload);
-      if (updateInterm.responseUpload.status === 409) { setError('El intermediario que estás intentnado editar ya existe')
+      if (updateInterm.responseUpload.status === 409) { setError('El intermediario ya existe')
       } else if (updateInterm.responseUpload.code === 'ERR_NETWORK') { setError('Error de conexión, inténtelo más tarde')
       } else if (updateInterm.responseUpload.status === 'ok') { navigate('/manage-intermediaries');
       } else {
@@ -129,7 +147,7 @@ export default function EditIntermediaryPage () {
   //mirar la respuesta de subir datos para setear error
   useEffect(()=> {
     if (deleteInterm.responseUpload) {
-      if (deleteInterm.responseUpload.status === 409) { setError('El intermediario que estás intentando borrar no existe')
+      if (deleteInterm.responseUpload.status === 409) { setError('El intermediario no existe')
       } else if (deleteInterm.responseUpload.code === 'ERR_NETWORK') { setError('Error de conexión, inténtelo más tarde')
       } else if (deleteInterm.responseUpload.status === 'ok') { navigate('/manage-intermediaries');
       } else {
@@ -145,7 +163,7 @@ export default function EditIntermediaryPage () {
           <ModalContent__Small>
             <ModalBody
               className='cm-u-spacer-mb-bigger'>
-                <h3 className="cm-u-text-black-cat">¿Estas seguro?</h3>
+                <h3 className="cm-u-text-black-cat">¿Está seguro?</h3>
               </ModalBody>
             <ModalFooter>
               <ButtonCatTransparent
@@ -198,150 +216,20 @@ export default function EditIntermediaryPage () {
               autoComplete='off'>
               <FormSimplePanelRow>
                 <LabelElementAssist
-                  htmlFor='intermName'
+                  htmlFor='desc_nombre'
                   type='text'
                   className='panel-field-long'
                   autoComplete='off'
                   placeholder='Nombre'
                   required='required'
-                  value={intermDetail.nombre_contacto}
-                  handleOnChange={e => {setIntermDetail({...intermDetail, nombre_contacto: e.target.value})}} >
+                  value={intermDetail.desc_nombre}
+                  handleOnChange={e => {setIntermDetail({...intermDetail, desc_nombre: e.target.value})}} >
                   Nombre
                 </LabelElementAssist>
               </FormSimplePanelRow>
               <FormSimplePanelRow>
                 <LabelElementAssist
-                  htmlFor='intermLastname1'
-                  type='text'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='Apellido'
-                  required='required'
-                  value={intermDetail.apellido1_contacto}
-                  handleOnChange={e => {setIntermDetail({...intermDetail, apellido1_contacto: e.target.value})}} >
-                  Apellido 1
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermLastname2'
-                  type='text'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='Apellido'
-                  required='required'
-                  value={intermDetail.apellido2_contacto}
-                  handleOnChange={e => {setIntermDetail({...intermDetail, apellido2_contacto: e.target.value})}} >
-                  Apellido 2
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermTerritory'
-                  type='text'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='Territorio'
-                  required='required'
-                  value={intermDetail.territorio}
-                  handleOnChange={e => {setIntermDetail({...intermDetail, territorio: e.target.value})}} >
-                  Territorio
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermPct'
-                  type='number'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='Porcentaje beneficio %'
-                  required='required'
-                  value={intermDetail.pct_beneficio}
-                  handleOnChange={e => {setIntermDetail({...intermDetail, pct_beneficio: e.target.value})}} >
-                  Porcentaje beneficio
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermCountry'
-                  type='text'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='País'
-                  required='required'
-                  value={intermDetail.nacionalidad_contacto}
-                  handleOnChange={e => {setIntermDetail({...intermDetail, nacionalidad_contacto: e.target.value})}} >
-                  Nacionalidad
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermDni'
-                  type='text'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='DNI/NIE'
-                  required='required'
-                  value={intermDetail.dni_nie_contacto}
-                  handleOnChange={e => {setIntermDetail({...intermDetail, dni_nie_contacto: e.target.value})}} >
-                  DNI / NIE
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermPassport'
-                  type='text'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='Pasaporte'
-                  required='required'
-                  value={intermDetail.pasaporte_contacto}
-                  handleOnChange={e => {setIntermDetail({...intermDetail, pasaporte_contacto: e.target.value})}} >
-                  Pasaporte
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermNss'
-                  type='text'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='NSS'
-                  required='required'
-                  value={intermDetail.nss_contacto}
-                  handleOnChange={e => {setIntermDetail({...intermDetail, nss_contacto: e.target.value})}} >
-                  Seguridad Social
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermPhone'
-                  type='number'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='telefono'
-                  required='required'
-                  value={intermDetail.num_telefono}
-                  handleOnChange={e => {setIntermDetail({...intermDetail, num_telefono: e.target.value})}} >
-                  Teléfono
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermEmail'
-                  type='email'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='email'
-                  required='required'
-                  value={intermDetail.desc_email}
-                  handleOnChange={e => {setIntermDetail({...intermDetail, desc_email: e.target.value})}} >
-                  Email
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermTaxNr'
+                  htmlFor='desc_cif'
                   type='text'
                   className='panel-field-long'
                   autoComplete='off'
@@ -354,11 +242,11 @@ export default function EditIntermediaryPage () {
               </FormSimplePanelRow>
               <FormSimplePanelRow>
                 <LabelElementAssist
-                  htmlFor='intermAddress'
+                  htmlFor='desc_direccion'
                   type='text'
                   className='panel-field-long'
                   autoComplete='off'
-                  placeholder='Direccion'
+                  placeholder='Dirección'
                   required='required'
                   value={intermDetail.desc_direccion}
                   handleOnChange={e => {setIntermDetail({...intermDetail, desc_direccion: e.target.value})}} >
@@ -367,7 +255,7 @@ export default function EditIntermediaryPage () {
               </FormSimplePanelRow>
               <FormSimplePanelRow>
                 <LabelElementAssist
-                  htmlFor='intermPostcode'
+                  htmlFor='desc_codigo_postal'
                   type='text'
                   className='panel-field-long'
                   autoComplete='off'
@@ -378,6 +266,182 @@ export default function EditIntermediaryPage () {
                   Código Postal
                 </LabelElementAssist>
               </FormSimplePanelRow>
+              
+              
+
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_nombre_contacto_1'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Nombre contacto 1'
+                  required='required'
+                  value={teamDetail.desc_nombre_contacto_1}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_nombre_contacto_1: e.target.value})}}                      
+                  >
+                  Nombre contacto 1
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_cargo_contacto_1'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Cargo contacto 1'
+                  required='required'
+                  value={teamDetail.desc_cargo_contacto_1}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_cargo_contacto_1: e.target.value})}}                      
+                  >
+                  Cargo contacto 1
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_num_telefono_contacto_1'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Teléfono contacto 1'
+                  required='required'
+                  value={teamDetail.desc_num_telefono_contacto_1}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_num_telefono_contacto_1: e.target.value})}}                      
+                  >
+                  Teléfono contacto 1
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_email_contacto_1'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Email contacto 1'
+                  required='required'
+                  value={teamDetail.desc_email_contacto_1}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_email_contacto_1: e.target.value})}}                      
+                  >
+                  Email contacto 1
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_nombre_contacto_2'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Nombre contacto 2'
+                  required='required'
+                  value={teamDetail.desc_nombre_contacto_2}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_nombre_contacto_2: e.target.value})}}                      
+                  >
+                  Nombre contacto 2
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_cargo_contacto_2'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Cargo contacto 2'
+                  required='required'
+                  value={teamDetail.desc_cargo_contacto_2}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_cargo_contacto_2: e.target.value})}}                      
+                  >
+                  Cargo contacto 2
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_num_telefono_contacto_2'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Teléfono contacto 2'
+                  required='required'
+                  value={teamDetail.desc_num_telefono_contacto_2}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_num_telefono_contacto_2: e.target.value})}}                      
+                  >
+                  Teléfono contacto 2
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_email_contacto_2'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Email contacto 2'
+                  required='required'
+                  value={teamDetail.desc_email_contacto_2}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_email_contacto_2: e.target.value})}}                      
+                  >
+                  Email contacto 2
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_nombre_contacto_3'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Nombre contacto 3'
+                  required='required'
+                  value={teamDetail.desc_nombre_contacto_3}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_nombre_contacto_3: e.target.value})}}                      
+                  >
+                  Nombre contacto 3
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_cargo_contacto_3'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Cargo contacto 3'
+                  required='required'
+                  value={teamDetail.desc_cargo_contacto_3}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_cargo_contacto_3: e.target.value})}}                      
+                  >
+                  Cargo contacto 3
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_num_telefono_contacto_3'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Teléfono contacto 3'
+                  required='required'
+                  value={teamDetail.desc_num_telefono_contacto_3}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_num_telefono_contacto_3: e.target.value})}}                      
+                  >
+                  Teléfono contacto 3
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_email_contacto_3'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Email contacto 3'
+                  required='required'
+                  value={teamDetail.desc_email_contacto_3}
+                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_email_contacto_3: e.target.value})}}                      
+                  >
+                  Email contacto 3
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              
+              
+              
              
                 {error &&
                   <FormSimpleRow className='cm-u-centerText'>

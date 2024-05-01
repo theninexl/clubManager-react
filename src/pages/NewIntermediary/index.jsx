@@ -29,40 +29,50 @@ export default function NewIntermediaryPage () {
   const handleSave = (e) => {
     e.preventDefault();
     const formData = new FormData(form.current);
-
+    
     const data = {
-      nombre_contacto: formData.get('intermName'),
-      apellido1_contacto: formData.get('intermLastname1'),
-      apellido2_contacto: formData.get('intermLastname2'),
-      territorio: formData.get('intermTerritory'),
-      pct_beneficio: formData.get('intermPct'),
-      nacionalidad_contacto: formData.get('intermCountry'),
-      dni_nie_contacto: formData.get('intermDni'),
-      pasaporte_contacto: formData.get('intermPassport'),
-      nss_contacto: formData.get('intermNss'),
-      num_telefono: formData.get('intermPhone'),
-      desc_email: formData.get('intermEmail'),
-      desc_cif: formData.get('intermTaxNr'),
-      desc_direccion: formData.get('intermAddress'),
-      desc_codigo_postal: formData.get('intermPostcode'),
-    }
+      desc_nombre: formData.get('desc_nombre'),
+      desc_cif: formData.get('desc_cif'),
+      desc_direccion: formData.get('desc_direccion'),
+      desc_codigo_postal: formData.get('desc_codigo_postal'),
 
+      desc_num_telefono_contacto_1: formData.get('desc_num_telefono_contacto_1'),
+      desc_email_contacto_1: formData.get('desc_email_contacto_1'),
+      desc_nombre_contacto_1: formData.get('desc_nombre_contacto_1'),
+      desc_cargo_contacto_1: formData.get('desc_cargo_contacto_1'),
+
+      desc_num_telefono_contacto_2: formData.get('desc_num_telefono_contacto_2'),
+      desc_email_contacto_2: formData.get('desc_email_contacto_2'),
+      desc_nombre_contacto_2: formData.get('desc_nombre_contacto_2'),
+      desc_cargo_contacto_2: formData.get('desc_cargo_contacto_2'),
+
+      desc_num_telefono_contacto_3: formData.get('desc_num_telefono_contacto_3'),
+      desc_email_contacto_3: formData.get('desc_email_contacto_3'),
+      desc_nombre_contacto_3: formData.get('desc_nombre_contacto_3'),
+      desc_cargo_contacto_3: formData.get('desc_cargo_contacto_3')
+    }
+    
     const dataSent = {
       id_intermediario: userParam,
-      nombre_contacto: data.nombre_contacto,
-      apellido1_contacto: data.apellido1_contacto,
-      apellido2_contacto: data.apellido2_contacto,
-      territorio: data.territorio,
-      pct_beneficio: data.pct_beneficio,
-      nacionalidad_contacto: data.nacionalidad_contacto,
-      dni_nie_contacto: data.dni_nie_contacto,
-      pasaporte_contacto: data.pasaporte_contacto,
-      nss_contacto: data.nss_contacto,
-      num_telefono: data.num_telefono,
-      desc_email: data.desc_email,
+      desc_nombre: data.desc_nombre,
       desc_cif: data.desc_cif,
       desc_direccion: data.desc_direccion,
       desc_codigo_postal: data.desc_codigo_postal,
+
+      desc_num_telefono_contacto_1: data.desc_num_telefono_contacto_1,
+      desc_email_contacto_1: data.desc_email_contacto_1,
+      desc_nombre_contacto_1: data.desc_nombre_contacto_1,
+      desc_cargo_contacto_1: data.desc_cargo_contacto_1,
+
+      desc_num_telefono_contacto_2: data.desc_num_telefono_contacto_2,
+      desc_email_contacto_2: data.desc_email_contacto_2,
+      desc_nombre_contacto_2: data.desc_nombre_contacto_2,
+      desc_cargo_contacto_2: data.desc_cargo_contacto_2,
+
+      desc_num_telefono_contacto_3: data.desc_num_telefono_contacto_3,
+      desc_email_contacto_3: data.desc_email_contacto_3,
+      desc_nombre_contacto_3: data.desc_nombre_contacto_3,
+      desc_cargo_contacto_3: data.desc_cargo_contacto_3
   }
 
   uploadData('intermediaries/create',dataSent);
@@ -73,7 +83,7 @@ export default function NewIntermediaryPage () {
   useEffect(()=> {
     if (responseUpload) {
       console.log(responseUpload);
-      if (responseUpload.status === 409) { setError('El intermediario que estás intentando crear ya existe')
+      if (responseUpload.status === 409) { setError('El intermediario ya existe')
       } else if (responseUpload.code === 'ERR_NETWORK') { setError('Error de conexión, inténtelo más tarde')
       } else if (responseUpload.status === 'ok') { navigate('/manage-intermediaries');
       } else {
@@ -117,7 +127,8 @@ export default function NewIntermediaryPage () {
               autoComplete='off'>
               <FormSimplePanelRow>
                 <LabelElementAssist
-                  htmlFor='intermName'
+                
+                  htmlFor='desc_nombre'
                   type='text'
                   className='panel-field-long'
                   autoComplete='off'
@@ -128,117 +139,7 @@ export default function NewIntermediaryPage () {
               </FormSimplePanelRow>
               <FormSimplePanelRow>
                 <LabelElementAssist
-                  htmlFor='intermLastname1'
-                  type='text'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='Apellido'
-                  required='required' >
-                  Apellido 1
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermLastname2'
-                  type='text'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='Apellido'
-                  required='required' >
-                  Apellido 2
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermTerritory'
-                  type='text'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='Territorio'
-                  required='required' >
-                  Territorio
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermPct'
-                  type='number'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='Porcentaje beneficio %'
-                  required='required' >
-                  Porcentaje beneficio
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermCountry'
-                  type='text'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='País'
-                  required='required' >
-                  Nacionalidad
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermDni'
-                  type='text'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='DNI/NIE'
-                  required='required' >
-                  DNI / NIE
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermPassport'
-                  type='text'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='Pasaporte'
-                  required='required' >
-                  Pasaporte
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermNss'
-                  type='text'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='NSS'
-                  required='required' >
-                  Seguridad Social
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermPhone'
-                  type='number'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='telefono'
-                  required='required'>
-                  Teléfono
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermEmail'
-                  type='email'
-                  className='panel-field-long'
-                  autoComplete='off'
-                  placeholder='email'
-                  required='required' >
-                  Email
-                </LabelElementAssist>
-              </FormSimplePanelRow>
-              <FormSimplePanelRow>
-                <LabelElementAssist
-                  htmlFor='intermTaxNr'
+                  htmlFor='desc_cif'
                   type='text'
                   className='panel-field-long'
                   autoComplete='off'
@@ -249,7 +150,7 @@ export default function NewIntermediaryPage () {
               </FormSimplePanelRow>
               <FormSimplePanelRow>
                 <LabelElementAssist
-                  htmlFor='intermAddress'
+                  htmlFor='desc_direccion'
                   type='text'
                   className='panel-field-long'
                   autoComplete='off'
@@ -260,7 +161,7 @@ export default function NewIntermediaryPage () {
               </FormSimplePanelRow>
               <FormSimplePanelRow>
                 <LabelElementAssist
-                  htmlFor='intermPostcode'
+                  htmlFor='desc_codigo_postal'
                   type='text'
                   className='panel-field-long'
                   autoComplete='off'
@@ -270,6 +171,141 @@ export default function NewIntermediaryPage () {
                 </LabelElementAssist>
               </FormSimplePanelRow>
              
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_nombre_contacto_1'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Nombre contacto 1'
+                  >
+                  Nombre contacto 1
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_cargo_contacto_1'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Cargo contacto 1'
+                  >
+                  Cargo contacto 1
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_num_telefono_contacto_1'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Teléfono contacto 1'
+                  >
+                  Teléfono contacto 1
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_email_contacto_1'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Email contacto 1'  
+                  >
+                  Email contacto 1
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_nombre_contacto_2'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Nombre contacto 2'     
+                  >
+                  Nombre contacto 2
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_cargo_contacto_2'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Cargo contacto 2'   
+                  >
+                  Cargo contacto 2
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_num_telefono_contacto_2'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Teléfono contacto 2'      
+                  >
+                  Teléfono contacto 2
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_email_contacto_2'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Email contacto 2'   
+                  >
+                  Email contacto 2
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_nombre_contacto_3'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Nombre contacto 3'           
+                  >
+                  Nombre contacto 3
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_cargo_contacto_3'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Cargo contacto 3'          
+                  >
+                  Cargo contacto 3
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_num_telefono_contacto_3'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Teléfono contacto 3'              
+                  >
+                  Teléfono contacto 3
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+              <FormSimplePanelRow>
+                <LabelElementAssist
+                  htmlFor='desc_email_contacto_3'
+                  type='text'
+                  className='panel-field-long'
+                  autoComplete='off'
+                  placeholder='Email contacto 3'                   
+                  >
+                  Email contacto 3
+                </LabelElementAssist>
+              </FormSimplePanelRow>
+
                 {error &&
                   <FormSimpleRow className='cm-u-centerText'>
                     <span className='error'>{error}</span>

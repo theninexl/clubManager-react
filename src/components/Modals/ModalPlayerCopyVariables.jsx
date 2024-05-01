@@ -16,7 +16,7 @@ export const ModalPlayerCopyVariables = ({ state, setState, playerId, activeCont
     const [selectedPlayer, setSelectedPlayer] = useState('');
     const [resultsBox, setResultsBox] = useState(false);
     //variables jugador seleccionado
-    const [variablesListMsg, setVariablesListMsg] = useState('Selecciona un jugador');
+    const [variablesListMsg, setVariablesListMsg] = useState('Seleccione un jugador');
     const [selectedPlayerVars, setSelectedPlayerVars] = useState(null);
 
     //vacias estados primera vez
@@ -48,9 +48,9 @@ export const ModalPlayerCopyVariables = ({ state, setState, playerId, activeCont
       //console.log('clausulas jugador',selectedPlayer.id_jugador,getClausulaList.responseUpload);
       if (getClausulaList.responseUpload?.data) {
         setSelectedPlayerVars(getClausulaList.responseUpload.data);
-        setVariablesListMsg('Selecciona un jugador')
+        setVariablesListMsg('Seleccione un jugador')
       } else {
-        setVariablesListMsg('No existen variables creadas para el jugador seleccionado')
+        setVariablesListMsg('No existen cláusulas para el jugador seleccionado')
       }
     },[getClausulaList.responseUpload])
 
@@ -85,14 +85,14 @@ export const ModalPlayerCopyVariables = ({ state, setState, playerId, activeCont
                   <FieldWithIcon>
                     <FieldWithIcon__input 
                       name='searchPlayer'
-                      placeholder='Busca jugador'
+                      placeholder='Buscar jugador'
                       value={writtenPlayer}
                       handleOnChange={(e) => {
                         setWrittenPlayer(e.target.value);
-                        if (e.target.value.length > 2 ) {
+                        if (e.target.value.length > 1 ) {
                           searchPlayers(e.target.value);
                           setResultsBox(true);
-                        } else if ((e.target.value.length <= 2 )) {
+                        } else if ((e.target.value.length <= 1 )) {
                           setPlayersList('');
                           setSelectedPlayer('');
                           setResultsBox(false);
@@ -112,7 +112,7 @@ export const ModalPlayerCopyVariables = ({ state, setState, playerId, activeCont
               </FormSimpleHrz>
               {/* Resultados */}
               <RegularContainer>
-                <StaticBodyHeader className='cm-u-spacer-mb-bigger'><span className='cm-u-text-black-cat'>Variables creadas</span></StaticBodyHeader>
+                <StaticBodyHeader className='cm-u-spacer-mb-bigger'><span className='cm-u-text-black-cat'>Cláusulas</span></StaticBodyHeader>
                 <TableDataWrapper>
                   { selectedPlayerVars ? 
                     <>
@@ -129,7 +129,7 @@ export const ModalPlayerCopyVariables = ({ state, setState, playerId, activeCont
                                   copySelectedVariable(item.id_clausula)
                                 }}
                               >
-                                Importar
+                                Copiar
                               </ButtonCatPrimary>
                             </TableCellMedium>
                           </TableDataRow>
@@ -152,7 +152,7 @@ export const ModalPlayerCopyVariables = ({ state, setState, playerId, activeCont
                   setSelectedPlayer('');
                   setState(!state);
                 }}>
-                  Cerrar
+                  Cancelar
               </ButtonCatTransparent>
             </ModalFooter>
           </ModalContent__Big>
