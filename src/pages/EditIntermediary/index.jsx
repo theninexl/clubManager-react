@@ -277,8 +277,8 @@ export default function EditIntermediaryPage () {
                   autoComplete='off'
                   placeholder='Nombre contacto 1'
                   required='required'
-                  value={teamDetail.desc_nombre_contacto_1}
-                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_nombre_contacto_1: e.target.value})}}                      
+                  value={intermDetail.desc_nombre_contacto_1}
+                  handleOnChange={e => {setIntermDetail({...intermDetail, desc_nombre_contacto_1: e.target.value})}}                      
                   >
                   Nombre contacto 1
                 </LabelElementAssist>
@@ -291,8 +291,8 @@ export default function EditIntermediaryPage () {
                   autoComplete='off'
                   placeholder='Cargo contacto 1'
                   required='required'
-                  value={teamDetail.desc_cargo_contacto_1}
-                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_cargo_contacto_1: e.target.value})}}                      
+                  value={intermDetail.desc_cargo_contacto_1}
+                  handleOnChange={e => {setIntermDetail({...intermDetail, desc_cargo_contacto_1: e.target.value})}}                      
                   >
                   Cargo contacto 1
                 </LabelElementAssist>
@@ -305,8 +305,8 @@ export default function EditIntermediaryPage () {
                   autoComplete='off'
                   placeholder='Teléfono contacto 1'
                   required='required'
-                  value={teamDetail.desc_num_telefono_contacto_1}
-                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_num_telefono_contacto_1: e.target.value})}}                      
+                  value={intermDetail.desc_num_telefono_contacto_1}
+                  handleOnChange={e => {setIntermDetail({...intermDetail, desc_num_telefono_contacto_1: e.target.value})}}                      
                   >
                   Teléfono contacto 1
                 </LabelElementAssist>
@@ -319,8 +319,8 @@ export default function EditIntermediaryPage () {
                   autoComplete='off'
                   placeholder='Email contacto 1'
                   required='required'
-                  value={teamDetail.desc_email_contacto_1}
-                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_email_contacto_1: e.target.value})}}                      
+                  value={intermDetail.desc_email_contacto_1}
+                  handleOnChange={e => {setIntermDetail({...intermDetail, desc_email_contacto_1: e.target.value})}}                      
                   >
                   Email contacto 1
                 </LabelElementAssist>
@@ -334,8 +334,8 @@ export default function EditIntermediaryPage () {
                   autoComplete='off'
                   placeholder='Nombre contacto 2'
                   required='required'
-                  value={teamDetail.desc_nombre_contacto_2}
-                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_nombre_contacto_2: e.target.value})}}                      
+                  value={intermDetail.desc_nombre_contacto_2}
+                  handleOnChange={e => {setIntermDetail({...intermDetail, desc_nombre_contacto_2: e.target.value})}}                      
                   >
                   Nombre contacto 2
                 </LabelElementAssist>
@@ -348,8 +348,8 @@ export default function EditIntermediaryPage () {
                   autoComplete='off'
                   placeholder='Cargo contacto 2'
                   required='required'
-                  value={teamDetail.desc_cargo_contacto_2}
-                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_cargo_contacto_2: e.target.value})}}                      
+                  value={intermDetail.desc_cargo_contacto_2}
+                  handleOnChange={e => {setIntermDetail({...intermDetail, desc_cargo_contacto_2: e.target.value})}}                      
                   >
                   Cargo contacto 2
                 </LabelElementAssist>
@@ -362,8 +362,8 @@ export default function EditIntermediaryPage () {
                   autoComplete='off'
                   placeholder='Teléfono contacto 2'
                   required='required'
-                  value={teamDetail.desc_num_telefono_contacto_2}
-                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_num_telefono_contacto_2: e.target.value})}}                      
+                  value={intermDetail.desc_num_telefono_contacto_2}
+                  handleOnChange={e => {setIntermDetail({...intermDetail, desc_num_telefono_contacto_2: e.target.value})}}                      
                   >
                   Teléfono contacto 2
                 </LabelElementAssist>
@@ -376,8 +376,8 @@ export default function EditIntermediaryPage () {
                   autoComplete='off'
                   placeholder='Email contacto 2'
                   required='required'
-                  value={teamDetail.desc_email_contacto_2}
-                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_email_contacto_2: e.target.value})}}                      
+                  value={intermDetail.desc_email_contacto_2}
+                  handleOnChange={e => {setIntermDetail({...intermDetail, desc_email_contacto_2: e.target.value})}}                      
                   >
                   Email contacto 2
                 </LabelElementAssist>
@@ -391,8 +391,8 @@ export default function EditIntermediaryPage () {
                   autoComplete='off'
                   placeholder='Nombre contacto 3'
                   required='required'
-                  value={teamDetail.desc_nombre_contacto_3}
-                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_nombre_contacto_3: e.target.value})}}                      
+                  value={intermDetail.desc_nombre_contacto_3}
+                  handleOnChange={e => {setIntermDetail({...intermDetail, desc_nombre_contacto_3: e.target.value})}}                      
                   >
                   Nombre contacto 3
                 </LabelElementAssist>
@@ -405,8 +405,8 @@ export default function EditIntermediaryPage () {
                   autoComplete='off'
                   placeholder='Cargo contacto 3'
                   required='required'
-                  value={teamDetail.desc_cargo_contacto_3}
-                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_cargo_contacto_3: e.target.value})}}                      
+                  value={intermDetail.desc_cargo_contacto_3}
+                  handleOnChange={e => {setIntermDetail({...intermDetail, desc_cargo_contacto_3: e.target.value})}}                      
                   >
                   Cargo contacto 3
                 </LabelElementAssist>
@@ -419,8 +419,8 @@ export default function EditIntermediaryPage () {
                   autoComplete='off'
                   placeholder='Teléfono contacto 3'
                   required='required'
-                  value={teamDetail.desc_num_telefono_contacto_3}
-                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_num_telefono_contacto_3: e.target.value})}}                      
+                  value={intermDetail.desc_num_telefono_contacto_3}
+                  handleOnChange={e => {setIntermDetail({...intermDetail, desc_num_telefono_contacto_3: e.target.value})}}                      
                   >
                   Teléfono contacto 3
                 </LabelElementAssist>
@@ -433,8 +433,8 @@ export default function EditIntermediaryPage () {
                   autoComplete='off'
                   placeholder='Email contacto 3'
                   required='required'
-                  value={teamDetail.desc_email_contacto_3}
-                  handleOnChange={e => {setTeamDetail({...teamDetail, desc_email_contacto_3: e.target.value})}}                      
+                  value={intermDetail.desc_email_contacto_3}
+                  handleOnChange={e => {setIntermDetail({...intermDetail, desc_email_contacto_3: e.target.value})}}                      
                   >
                   Email contacto 3
                 </LabelElementAssist>

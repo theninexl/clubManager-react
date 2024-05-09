@@ -8,6 +8,7 @@ const baseURL = `http://${SERVER}:${PORT}/api/`;
 export const Api = {
   call: axios.create({
     baseURL:baseURL,
+    timeout: 2500,
     headers: {
         'Content-Type': 'application/json;charset=utf-8'
     }

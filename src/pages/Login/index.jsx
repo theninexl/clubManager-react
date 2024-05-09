@@ -17,6 +17,7 @@ export default function Login () {
 
   const handleLogin = (e) => {
     e.preventDefault();
+    setError('');
     const formData = new FormData(form.current);
     const data = {
       email: formData.get('loginEmail'),
@@ -33,8 +34,9 @@ export default function Login () {
       handleSignIn()
 
     }).catch(err => {
-      console.log(err);
+      //console.log(err);
       if (err.code === 'ERR_NETWORK') setError('Error de conexión, inténtelo más tarde')
+      else if (err.code === 'ECONNABORTED') setError('El servidor está tardando en responder, inténtelo más tarde')
       else if (err.response.status === 409) setError('Email o contraseña incorrectos')
       else setError('Error al realizar la solicitud')
     })
