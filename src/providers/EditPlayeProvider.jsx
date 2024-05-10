@@ -115,6 +115,44 @@ export const EditPlayerContextProvider = ({ children }) => {
   //array con combinaciones de clausula rescision que edito
   const [detailTerminationData, setDetailTerminationData] = useState(null);
 
+  //estados variables
+  //mostrar/ocultar modal copiar variables
+  const [modalImportVar, setModalImportVar] = useState(false);
+  //donde guardo la info de los posibles combos de cada combinacion Exprexion+Condiciones
+  const [variableCombos, setVariableCombos] = useState([]);
+  //variable activa cuando estoy inspeccionado una ya creada
+  const [activeVariable, setActiveVariable] = useState(null);
+  //array con las variables creades
+  const [savedVariables, setSavedVariables] = useState([]);
+  //mostrar/ocultar capa de variable ya creada
+  const [showVariable, setShowVariable] = useState(false);
+  //mostrar/ocultar capa de nueva variable
+  const [showNewVariableLayer, setShowNewVariableLayer ] = useState(false);
+  //array para guardar las nuevas expresiones añadidas a cada variable
+  const [variableExpressions, setVariableExpressions] = useState([
+    { id_ExprComb:1,
+      bonus_prima:'',
+      id_expresion_concatenacion:'',
+      id_expresion:'',
+      id_expresion_operador:'',
+      id_expresion_valor:'', 
+      operador:'',
+      condiciones:[{
+        id_condicion:'',
+        id_condicion_operador:'',
+        id_condicion_tipo:'',
+        id_condicion_valor:''
+      }]
+    }]);
+  //guardar resultados search expressions
+  const [searchExpSelected, setSearchExpSelected] = useState(null);
+  const [searchExpResults, setSearchExpResults] = useState(null);
+  const [showSearchExpResults, setShowSearchExpResults] = useState(false);  
+  //guardar resultados search conditions
+  const [searchCondSelected, setSearchCondSelected] = useState(null);
+  const [searchCondResults, setSearchCondResults] = useState(null);
+  const [showSearchCondResults, setShowSearchCondResults] = useState(false);  
+
 
   return (
     <editPlayerContext.Provider
@@ -138,6 +176,19 @@ export const EditPlayerContextProvider = ({ children }) => {
         detailContractData,setDetailContractData,
         detailSalaryData,setDetailSalaryData,
         detailTerminationData,setDetailTerminationData,
+        modalImportVar,setModalImportVar,
+        variableCombos,setVariableCombos,
+        activeVariable,setActiveVariable,
+        savedVariables,setSavedVariables,
+        showVariable,setShowVariable,
+        showNewVariableLayer,setShowNewVariableLayer,
+        variableExpressions, setVariableExpressions,
+        searchExpSelected,setSearchExpSelected,
+        searchExpResults,setSearchExpResults,
+        showSearchExpResults,setShowSearchExpResults,
+        searchCondSelected,setSearchCondSelected,
+        searchCondResults,setSearchCondResults,
+        showSearchCondResults,setShowSearchCondResults,
       }}
     >
       { children }

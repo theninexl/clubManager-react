@@ -20,6 +20,7 @@ import { FileDrop } from "../../components/UI/components/form simple/fileDrop";
 import { TableCellLong, TableCellMedium, TableCellShort, TableDataHeader, TableDataRow, TableDataWrapper } from "../../components/UI/layout/tableData";
 import { useGlobalContext } from "../../providers/globalContextProvider";
 import { ModalBody, ModalContainer, ModalContent__Small, ModalFooter } from "../../components/UI/components/modal/modal";
+import { EditVariablesTab } from "./EditVariablesTab";
 
 
 export default function EditPlayerPage () {  
@@ -85,41 +86,41 @@ export default function EditPlayerPage () {
 
   //estados variables
   //mostrar/ocultar modal copiar variables
-  const [modalImportVar, setModalImportVar] = useState(false);
-  //donde guardo la info de los posibles combos de cada combinacion Exprexion+Condiciones
-  const [variableCombos, setVariableCombos] = useState([]);
-  //variable activa cuando estoy inspeccionado una ya creada
-  const [activeVariable, setActiveVariable] = useState(null);
-  //array con las variables creades
-  const [savedVariables, setSavedVariables] = useState([]);
-  //mostrar/ocultar capa de variable ya creada
-  const [showVariable, setShowVariable] = useState(false);
-  //mostrar/ocultar capa de nueva variable
-  const [showNewVariableLayer, setShowNewVariableLayer ] = useState(false);
-  //array para guardar las nuevas expresiones añadidas a cada variable
-  const [variableExpressions, setVariableExpressions] = useState([
-    { id_ExprComb:1,
-      bonus_prima:'',
-      id_expresion_concatenacion:'',
-      id_expresion:'',
-      id_expresion_operador:'',
-      id_expresion_valor:'', 
-      operador:'',
-      condiciones:[{
-        id_condicion:'',
-        id_condicion_operador:'',
-        id_condicion_tipo:'',
-        id_condicion_valor:''
-      }]
-    }]);
-  //guardar resultados search expressions
-  const [searchExpSelected, setSearchExpSelected] = useState(null);
-  const [searchExpResults, setSearchExpResults] = useState(null);
-  const [showSearchExpResults, setShowSearchExpResults] = useState(false);  
-  //guardar resultados search conditions
-  const [searchCondSelected, setSearchCondSelected] = useState(null);
-  const [searchCondResults, setSearchCondResults] = useState(null);
-  const [showSearchCondResults, setShowSearchCondResults] = useState(false);  
+  // const [modalImportVar, setModalImportVar] = useState(false);
+  // //donde guardo la info de los posibles combos de cada combinacion Exprexion+Condiciones
+  // const [variableCombos, setVariableCombos] = useState([]);
+  // //variable activa cuando estoy inspeccionado una ya creada
+  // const [activeVariable, setActiveVariable] = useState(null);
+  // //array con las variables creades
+  // const [savedVariables, setSavedVariables] = useState([]);
+  // //mostrar/ocultar capa de variable ya creada
+  // const [showVariable, setShowVariable] = useState(false);
+  // //mostrar/ocultar capa de nueva variable
+  // const [showNewVariableLayer, setShowNewVariableLayer ] = useState(false);
+  // //array para guardar las nuevas expresiones añadidas a cada variable
+  // const [variableExpressions, setVariableExpressions] = useState([
+  //   { id_ExprComb:1,
+  //     bonus_prima:'',
+  //     id_expresion_concatenacion:'',
+  //     id_expresion:'',
+  //     id_expresion_operador:'',
+  //     id_expresion_valor:'', 
+  //     operador:'',
+  //     condiciones:[{
+  //       id_condicion:'',
+  //       id_condicion_operador:'',
+  //       id_condicion_tipo:'',
+  //       id_condicion_valor:''
+  //     }]
+  //   }]);
+  // //guardar resultados search expressions
+  // const [searchExpSelected, setSearchExpSelected] = useState(null);
+  // const [searchExpResults, setSearchExpResults] = useState(null);
+  // const [showSearchExpResults, setShowSearchExpResults] = useState(false);  
+  // //guardar resultados search conditions
+  // const [searchCondSelected, setSearchCondSelected] = useState(null);
+  // const [searchCondResults, setSearchCondResults] = useState(null);
+  // const [showSearchCondResults, setShowSearchCondResults] = useState(false);  
 
   useEffect(()=>{
     manageTabs();
@@ -162,12 +163,12 @@ export default function EditPlayerPage () {
   },[getTeams.responseGetData])
 
   //pedir combos creación de variables
-  const getNewVariableCombos = useGetData('players/getCombosValues');
-  useEffect (() => {
-    if (getNewVariableCombos.responseGetData) {
-      setVariableCombos(getNewVariableCombos.responseGetData.data.data);
-    }
-  },[getNewVariableCombos.responseGetData])
+  // const getNewVariableCombos = useGetData('players/getCombosValues');
+  // useEffect (() => {
+  //   if (getNewVariableCombos.responseGetData) {
+  //     setVariableCombos(getNewVariableCombos.responseGetData.data.data);
+  //   }
+  // },[getNewVariableCombos.responseGetData])
 
 
   //-----------------------------------------------------------------------------//
@@ -990,52 +991,52 @@ export default function EditPlayerPage () {
   //documentos
 
   //render acordeon upload docs
-  const renderUploadDocsLayer = () => {
-    if (showUploadDoc === true) {
-      return (
-        <SimpleAccordionContent
-          id='docUploadContent'>
-            <header className="cm-l-body-static-header--inTab" style={{marginTop:'0'}}>
-                <p className="cm-u-text-black-cat">Añadir documento</p>
-            </header>
-            <FormSimplePanelRow>
-              <LabelElementAssist
-                htmlFor='documentDescription'
-                type='text'
-                className='panel-field-long'
-                autoComplete='off'
-                placeholder='Descripcion'
-                >
-                Descripción
-              </LabelElementAssist>
-            </FormSimplePanelRow>
-            <FormSimplePanelRow>
-              <FileDrop
-                htmlFor='addFileInput'
-                placeholder={context.fileNewPlayerUploaded ? context.fileNewPlayerUploaded : 'Seleccionar o arrastrar'} >
-                  Archivo
-              </FileDrop>
-            </FormSimplePanelRow>
-            <FormSimplePanelRow
-              className='cm-u-centerText'>
-              <ButtonMousePrimary
-                onClick={handleFile}>Guardar</ButtonMousePrimary>
-              <ButtonMouseGhost
-                onClick={() => setShowUploadDoc(false)}
-                >Cancelar</ButtonMouseGhost>
-            </FormSimplePanelRow>
-        </SimpleAccordionContent>
-      );
-    }
-  }
+  // const renderUploadDocsLayer = () => {
+  //   if (showUploadDoc === true) {
+  //     return (
+  //       <SimpleAccordionContent
+  //         id='docUploadContent'>
+  //           <header className="cm-l-body-static-header--inTab" style={{marginTop:'0'}}>
+  //               <p className="cm-u-text-black-cat">Añadir documento</p>
+  //           </header>
+  //           <FormSimplePanelRow>
+  //             <LabelElementAssist
+  //               htmlFor='documentDescription'
+  //               type='text'
+  //               className='panel-field-long'
+  //               autoComplete='off'
+  //               placeholder='Descripcion'
+  //               >
+  //               Descripción
+  //             </LabelElementAssist>
+  //           </FormSimplePanelRow>
+  //           <FormSimplePanelRow>
+  //             <FileDrop
+  //               htmlFor='addFileInput'
+  //               placeholder={context.fileNewPlayerUploaded ? context.fileNewPlayerUploaded : 'Seleccionar o arrastrar'} >
+  //                 Archivo
+  //             </FileDrop>
+  //           </FormSimplePanelRow>
+  //           <FormSimplePanelRow
+  //             className='cm-u-centerText'>
+  //             <ButtonMousePrimary
+  //               onClick={handleFile}>Guardar</ButtonMousePrimary>
+  //             <ButtonMouseGhost
+  //               onClick={() => setShowUploadDoc(false)}
+  //               >Cancelar</ButtonMouseGhost>
+  //           </FormSimplePanelRow>
+  //       </SimpleAccordionContent>
+  //     );
+  //   }
+  // }
 
-  const handleFile = (e) => {
-    e.preventDefault();
-    const desc = document.getElementById('documentDescription').value;
-    setUploadedFiles([...uploadedFiles, { desc_documento: desc, documento: context.fileNewPlayerUploaded }])
-    context.setFileNewPlayerUploaded(null);
-    setShowUploadDoc(false);
-  }
+  // const handleFile = (e) => {
+  //   e.preventDefault();
+  //   const desc = document.getElementById('documentDescription').value;
+  //   setUploadedFiles([...uploadedFiles, { desc_documento: desc, documento: context.fileNewPlayerUploaded }])
+  //   context.setFileNewPlayerUploaded(null);
+  //   setShowUploadDoc(false);
+  // }
 
   //mirar la respuesta de subir datos para setear error
   useEffect(()=> {
@@ -1164,26 +1165,12 @@ export default function EditPlayerPage () {
                         </TabContent>
                       <TabContent id='variables'>
                         {/* Tabla Variables creadas */}
+                        <EditVariablesTab
+                          form={form}
+                          idJugador={userParamString}
+                        />
                         {/* <TableDataWrapper className='cm-u-spacer-mt-big'>
-                          <TableDataHeader>
-                            <TableCellLong>Contrato seleccionado</TableCellLong>
-                          </TableDataHeader>
-                          { activeContractData ? 
-                            <>
-                              <TableDataRow className='cm-u-spacer-mb-bigger'>
-                                <TableCellMedium>{activeContractData[0].desc_tipo_contrato}</TableCellMedium>
-                                <TableCellMedium>{activeContractData[0].desc_tipo_procedimiento}</TableCellMedium>
-                                <TableCellMedium>{activeContractData[0].fecha_ini_fin}</TableCellMedium>
-                              </TableDataRow>
-                            </>
-                            : 
-                            <>
-                              <TableDataRow className='cm-u-spacer-mb-bigger cm-u-centerText'>
-                                <p className="error">Seleccione un contrato para ver las cláusulas</p>
-                              </TableDataRow>
-                            </>
-
-                          }
+                          
                           
                             <TableDataHeader>
                               <TableCellLong>Cláusulas añadidas</TableCellLong>
@@ -1250,7 +1237,7 @@ export default function EditPlayerPage () {
                                   </TitleBar__Tools>
                                 </HeadContentTitleBar>
                               </SimpleAccordionTrigger>
-                              {renderNewVariableLayer()}
+                              {/* {renderNewVariableLayer()} */}
                             </SimpleAccordion>              
 
                       </TabContent>

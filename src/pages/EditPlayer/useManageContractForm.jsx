@@ -254,12 +254,9 @@ export const useManageContractForm = (form, idJugador) => {
 
   useEffect(()=> {
     if (editPlayerContext.activeContractId) {
-      console.log('activo contrato', editPlayerContext.activeContractId)
       handleActivateContract(editPlayerContext.activeContractId);
-      console.log('editPlayerContext.playerContracts', editPlayerContext.playerContracts);
-      //const filteredActiveContract = editPlayerContext.playerContracts.filter(item => item.id_contrato === editPlayerContext.activeContractId);
-      console.log('filteredActiveContract',filteredActiveContract)
-      // editPlayerContext.setActiveContractData(filteredActiveContract); 
+      const filteredActiveContract = editPlayerContext.playerDataContracts.filter(item => item.id_contrato === editPlayerContext.activeContractId);
+      editPlayerContext.setActiveContractData(filteredActiveContract); 
     }
   },[editPlayerContext.activeContractId])
 
