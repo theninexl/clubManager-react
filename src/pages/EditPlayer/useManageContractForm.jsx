@@ -183,7 +183,6 @@ export const useManageContractForm = (form, idJugador) => {
     } 
   }
 
-  //mirar la respuesta de subir datos 
   useEffect(()=> {
     if (saveNewContract.responseUpload) {
       //console.log(saveNewContract.responseUpload);
@@ -217,6 +216,70 @@ export const useManageContractForm = (form, idJugador) => {
      }
    },[deleteContract.responseUpload])
 
+  //editar un contrato que ya existe
+  const getDetailContract = useSaveData();
+
+  const handleEditContract = (id) => {
+    getDetailContract.uploadData('players/getDetailContract',{'id_contrato':id})
+  }
+
+  useEffect(()=>{
+    if(getDetailContract.responseUpload) {
+      console.log('detailContract',getDetailContract.responseUpload);
+      editPlayerContext.setDetailContractData(getDetailContract.responseUpload.contrato);
+      editPlayerContext.setDetailSalaryData(getDetailContract.responseUpload.salario_fijo);
+      editPlayerContext.setDetailTerminationData(getDetailContract.responseUpload.clausula_rescision);
+    }
+  },[getDetailContract.responseUpload])
+
+  useEffect(()=>{
+    if (editPlayerContext.detailContractData) {
+      //console.log(detailContractData);
+      editPlayerContext.setNewContract(false);
+      editPlayerContext.setContractSalary([{id_salario_fijo:1,flag_bruto_neto:0,fch_inicio:'',fch_fin:'',num_salario_fijo:''}]); 
+      // window.scrollTo(0,0);
+      editPlayerContext.setEditContract(true);
+    }
+  },[editPlayerContext.detailContractData])
+
+
+  //seleccionar activo un contrato del listado de contratos existentes
+  useEffect(()=>{
+    if (editPlayerContext.playerContracts) {
+      editPlayerContext.playerContracts.map(contract => {
+        if (contract.seleccionado === 1) editPlayerContext.setActiveContractId (contract.id_contrato);
+      })
+    }
+  },[editPlayerContext.playerContracts])
+
+  useEffect(()=> {
+    if (editPlayerContext.activeContractId) {
+      console.log('activo contrato', editPlayerContext.activeContractId)
+      handleActivateContract(editPlayerContext.activeContractId);
+      console.log('editPlayerContext.playerContracts', editPlayerContext.playerContracts);
+      //const filteredActiveContract = editPlayerContext.playerContracts.filter(item => item.id_contrato === editPlayerContext.activeContractId);
+      console.log('filteredActiveContract',filteredActiveContract)
+      // editPlayerContext.setActiveContractData(filteredActiveContract); 
+    }
+  },[editPlayerContext.activeContractId])
+
+  useEffect(()=>{
+    console.log('activeContractData',editPlayerContext.activeContractData)
+  },[editPlayerContext.activeContractData])
+
+  //pedir detalle de clausula cuando seleccionamos un contrato
+  const getDetalleClausula = useSaveData();
+  const handleActivateContract = (id) => {
+    getDetalleClausula.uploadData('players/getDetail_clausula',{id_contrato:id.toString()}); 
+  }
+
+  useEffect(()=>{
+    if (getDetalleClausula.responseUpload) {
+      console.log(getDetalleClausula.responseUpload);
+      // editPlayerContext.setSavedVariables(getDetalleClausula.responseUpload?.variables)
+    }
+  },[getDetalleClausula.responseUpload])
+
   
 
   return {
@@ -232,5 +295,6 @@ export const useManageContractForm = (form, idJugador) => {
     handleChangesOnNewTerminationClauseIfToggle,
     handleAddNewContract,
     handleDeleteContract,
+    handleEditContract,
   }
 }

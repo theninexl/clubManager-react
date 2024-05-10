@@ -61,6 +61,25 @@ export const EditPlayerContextProvider = ({ children }) => {
       val_clau_rescision:0,
     }
   ]  
+
+  const contractTypes = [
+    { desc_tipo_contrato: 'Laboral', id: 1 },
+    { desc_tipo_contrato: 'Transfer. permanente', id: 2 },
+    { desc_tipo_contrato: 'Transfer. temporal', id: 3 },
+    { desc_tipo_contrato: 'Intermediación', id: 4 },
+    { desc_tipo_contrato: 'Liquidación', id: 5 },
+  ]
+
+  const procedureTypes = [
+    { desc_tipo_procedimiento: 'Alta traspaso', id: 1 },
+    { desc_tipo_procedimiento: 'Alta cesión', id: 2 },
+    { desc_tipo_procedimiento: 'Alta libre', id: 3 },
+    { desc_tipo_procedimiento: 'Baja traspaso', id: 4 },
+    { desc_tipo_procedimiento: 'Baja cesión', id: 5 },
+    { desc_tipo_procedimiento: 'Baja rescisión', id: 6 },
+    { desc_tipo_procedimiento: 'Pago cláusula', id: 7 },
+  ]  
+
   const [creatingContractError, setCreatingContractError] = useState();
 
   //id contracto activo
@@ -105,6 +124,8 @@ export const EditPlayerContextProvider = ({ children }) => {
         playerDataVariables,setPlayerDataVariables,
         defaultContractSalaryArray,
         defaultContractTerminationArray,
+        contractTypes,
+        procedureTypes,
         creatingContractError,setCreatingContractError,
         activeContractId,setActiveContractId,
         activeContractData,setActiveContractData,
