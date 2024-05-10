@@ -1,10 +1,13 @@
 import { useEffect } from "react";
+import { useGlobalContext } from "../../providers/globalContextProvider";
 import { useEditPlayerDataContext } from "../../providers/EditPlayeProvider"
 import { useSaveData } from "../../hooks/useSaveData";
 import { useGetPlayerData } from "./useGetPlayerData";
 
 
+
 export const useManageContractForm = (form, idJugador) => {
+  const globalContext = useGlobalContext();
   const editPlayerContext = useEditPlayerDataContext();
 
   //llamar al hook de getPlayerData para poder pedir datos de nuevo una vez guardados/borrados contratos
@@ -247,18 +250,18 @@ export const useManageContractForm = (form, idJugador) => {
   useEffect(()=>{
     if (editPlayerContext.playerContracts) {
       editPlayerContext.playerContracts.map(contract => {
-        if (contract.seleccionado === 1) editPlayerContext.setActiveContractId (contract.id_contrato);
+        if (contract.seleccionado === 1) globalContext.setActiveContractId (contract.id_contrato);
       })
     }
   },[editPlayerContext.playerContracts])
 
   useEffect(()=> {
-    if (editPlayerContext.activeContractId) {
-      handleActivateContract(editPlayerContext.activeContractId);
-      const filteredActiveContract = editPlayerContext.playerDataContracts.filter(item => item.id_contrato === editPlayerContext.activeContractId);
+    if (globalContext.activeContractId) {
+      handleActivateContract(globalContext.activeContractId);
+      const filteredActiveContract = editPlayerContext.playerDataContracts.filter(item => item.id_contrato === globalContext.activeContractId);
       editPlayerContext.setActiveContractData(filteredActiveContract); 
     }
-  },[editPlayerContext.activeContractId])
+  },[globalContext.activeContractId])
 
   useEffect(()=>{
     console.log('activeContractData',editPlayerContext.activeContractData)

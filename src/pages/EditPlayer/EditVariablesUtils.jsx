@@ -5,6 +5,7 @@ import { SymbolAdd, SymbolDelete } from "../../components/UI/objects/symbols";
 import { SimpleAccordion, SimpleAccordionContent, SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
 import { HeadContentTitleBar, TitleBar__Title, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
 import { FormSimplePanelRow, LabelElement, LabelElementAssist, LabelElementToggle, LabelElementToggle2SidesPanel, LabelSelectElement, LabelSelectShorterElement, SelectIconShorter } from "../../components/UI/components/form simple/formSimple";
+import { useGlobalContext } from "../../providers/globalContextProvider";
 
 export const ListSelectedContract = () => {
   const editPlayerContext = useEditPlayerDataContext();
@@ -76,6 +77,7 @@ export const ListVariablesForSelectedContract = ({ handleDeleteClausula }) => {
 }
 
 export const VariableDataLayer = ({ handleChangesOnNewVariableExpression,handleChangesOnNewVariableExpressionToggle, handleDeleteNewVariableExpression, handleAddNewVariableExpression,handleDeleteNewCond,handleAddNewCond }) => {
+  const globalContext = useGlobalContext();
   const editPlayerContext = useEditPlayerDataContext();
 
   return (
@@ -100,7 +102,7 @@ export const VariableDataLayer = ({ handleChangesOnNewVariableExpression,handleC
                 <ButtonMouseTransparent
                   onClick={(e) => {
                     e.preventDefault();
-                    // setModalImportVar(!modalImportVar);
+                    globalContext.setModalImportVar(!globalContext.modalImportVar);
                   }}
                 >
                   Importar

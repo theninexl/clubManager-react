@@ -1,3 +1,4 @@
+import { useGlobalContext } from "../../providers/globalContextProvider";
 import { useEditPlayerDataContext } from "../../providers/EditPlayeProvider";
 import { FormSimplePanel, FormSimplePanelRow, LabelElement, LabelElementAssist, LabelElementToggle2Sides, LabelSelectElement, LabelSelectElementAssist, LabelSelectShorterElement } from "../../components/UI/components/form simple/formSimple";
 import { SimpleAccordion, SimpleAccordionContent, SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
@@ -7,6 +8,7 @@ import { TableCellMedium, TableCellShort, TableDataHeader, TableDataRow } from "
 import { HeadContentTitleBar, TitleBar__Title, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
 
 
+
 //buscar nombre de equipo para rellenar beneficiarios 
 const searchName = (id,stateList,keyId,keyName ) => {
   const result = stateList.find(item => item[keyId] == id);
@@ -14,6 +16,7 @@ const searchName = (id,stateList,keyId,keyName ) => {
 }
 
 export const ListPlayerContracts = ({ handleDeleteContract,handleEditContract }) => {
+  const globalContext = useGlobalContext();
   const editPlayerContext = useEditPlayerDataContext();
 
   return (
@@ -37,9 +40,9 @@ export const ListPlayerContracts = ({ handleDeleteContract,handleEditContract })
                       <input 
                         type='radio' 
                         name='selected'
-                        checked={(item.id_contrato == editPlayerContext.activeContractId) ? true : ''} 
+                        checked={(item.id_contrato == globalContext.activeContractId) ? true : ''} 
                         onClick={() => {
-                          editPlayerContext.setActiveContractId(item.id_contrato);
+                          globalContext.setActiveContractId(item.id_contrato);
                         }} />
                     </TableCellShort>
                     <TableCellMedium>{item.desc_descripcion}</TableCellMedium>
@@ -79,7 +82,7 @@ export const ListPlayerContracts = ({ handleDeleteContract,handleEditContract })
           </>
         }
         {
-          editPlayerContext.activeContractId === null && editPlayerContext.playerDataContracts.length > 0 ? 
+          globalContext.activeContractId === null && editPlayerContext.playerDataContracts.length > 0 ? 
           <>
             <TableDataRow className='cm-u-spacer-mb-bigger cm-u-centerText'>
               <p className="warning">Seleccione un contrato como activo para ver las cláusulas</p>

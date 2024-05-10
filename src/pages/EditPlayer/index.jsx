@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSaveData } from "../../hooks/useSaveData";
 import { useGetData } from "../../hooks/useGetData";
-import { EditPlayerContextProvider } from "../../providers/EditPlayeProvider";
+import { EditPlayerContextProvider, useEditPlayerDataContext } from "../../providers/EditPlayeProvider";
 import { EditPlayerTab } from "./EditPlayerTab";
 import { EditContractsTab } from "./EditContractsTab";
 import { AsideMenu } from "../../components/AsideMenu";
@@ -23,8 +23,11 @@ import { ModalBody, ModalContainer, ModalContent__Small, ModalFooter } from "../
 import { EditVariablesTab } from "./EditVariablesTab";
 
 
+
 export default function EditPlayerPage () {  
   const context = useGlobalContext();
+  const editPlayerContext = useEditPlayerDataContext();
+  
 
   //navegar
   const navigate = useNavigate();
@@ -84,8 +87,8 @@ export default function EditPlayerPage () {
   
   
 
-  //estados variables
-  //mostrar/ocultar modal copiar variables
+  // estados variables
+  // mostrar/ocultar modal copiar variables
   // const [modalImportVar, setModalImportVar] = useState(false);
   // //donde guardo la info de los posibles combos de cada combinacion Exprexion+Condiciones
   // const [variableCombos, setVariableCombos] = useState([]);
@@ -1093,16 +1096,17 @@ export default function EditPlayerPage () {
     }
   }
 
+
   return (
     <>
       <EditPlayerContextProvider>
         {renderModal()}
-        {/* <ModalPlayerCopyVariables
-          state={modalImportVar}
-          setState={setModalImportVar}
+        <ModalPlayerCopyVariables
+          state={context.modalImportVar}
+          setState={context.setModalImportVar}
           playerId={userParam}
-          activeContractId={activeContractId}
-        /> */}
+          activeContractId={context.activeContractId}
+        />
         <HalfContainer id='usersList'>
           <HalfContainerAside>
             <AsideMenu />
@@ -1115,10 +1119,6 @@ export default function EditPlayerPage () {
                   {`${playerData.desc_nombre} ${playerData.desc_apellido1}`}
                 </TitleBar__TitleAvatar>
                 <TitleBar__Tools>
-                  {/* <ButtonMousePrimary
-                    onClick={handleSave}>
-                    Guardar
-                  </ButtonMousePrimary> */}
                   <IconButtonSmallPrimary
                     onClick={() => setModal(true)}>
                     <SymbolDelete/>
@@ -1169,77 +1169,6 @@ export default function EditPlayerPage () {
                           form={form}
                           idJugador={userParamString}
                         />
-                        {/* <TableDataWrapper className='cm-u-spacer-mt-big'>
-                          
-                          
-                            <TableDataHeader>
-                              <TableCellLong>Cláusulas añadidas</TableCellLong>
-                              <TableCellShort></TableCellShort>
-                            </TableDataHeader>
-                            
-                            { savedVariables?.map((item, index) => {   
-                              return (
-                                <TableDataRow key={index}>
-                                  <TableCellLong>{`${item?.desc_alias}`}</TableCellLong>
-                                  <TableCellMedium
-                                    className='cm-u-textRight'>
-                                  <span>&nbsp;&nbsp;</span>
-                                    <IconButtonSmallerPrimary
-                                      dataValue={index}
-                                      onClick={(event) => {
-                                        event.preventDefault();
-                                        handleDeleteClausula(item.id_clausula);
-                                      }}
-                                      >
-                                    <SymbolDelete />
-                                  </IconButtonSmallerPrimary>
-                                </TableCellMedium>
-                              </TableDataRow>
-                              )
-                            })}
-                          </TableDataWrapper>   */}
-
-
-                          {/* Acordeon crear variable */}
-                            <SimpleAccordion>
-                              <SimpleAccordionTrigger
-                                className='cm-u-spacer-mb-bigger'>
-                                <HeadContentTitleBar>
-                                  <TitleBar__Title></TitleBar__Title>
-                                  <TitleBar__Tools>
-                                  {/* { activeContractData && 
-                                    <>
-                                      <ButtonMousePrimary
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        setShowNewVariableLayer(true);
-                                      }}
-                                      >
-                                        Nueva
-                                      </ButtonMousePrimary>
-                                      <ButtonMouseTransparent
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          setModalImportVar(!modalImportVar);
-                                        }}
-                                      >
-                                        Importar
-                                      </ButtonMouseTransparent>
-                                    </>
-                                    } */}
-                                    {/* <IconButtonSmallPrimary
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        setShowNewVariableLayer(true);
-                                      }} >
-                                        <SymbolAdd />
-                                    </IconButtonSmallPrimary> */}
-                                  </TitleBar__Tools>
-                                </HeadContentTitleBar>
-                              </SimpleAccordionTrigger>
-                              {/* {renderNewVariableLayer()} */}
-                            </SimpleAccordion>              
-
                       </TabContent>
                       {/* <TabContent id='documentos'>
                         <SimpleAccordion>

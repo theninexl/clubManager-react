@@ -82,8 +82,7 @@ export const EditPlayerContextProvider = ({ children }) => {
 
   const [creatingContractError, setCreatingContractError] = useState();
 
-  //id contracto activo
-  const [activeContractId, setActiveContractId] = useState(null);
+
   //contrato activo
   const [activeContractData, setActiveContractData] = useState(null);
   //mostrar capa crear nuevo contrato
@@ -116,8 +115,6 @@ export const EditPlayerContextProvider = ({ children }) => {
   const [detailTerminationData, setDetailTerminationData] = useState(null);
 
   //estados variables
-  //mostrar/ocultar modal copiar variables
-  const [modalImportVar, setModalImportVar] = useState(false);
   //donde guardo la info de los posibles combos de cada combinacion Exprexion+Condiciones
   const [variableCombos, setVariableCombos] = useState([]);
   //variable activa cuando estoy inspeccionado una ya creada
@@ -165,7 +162,6 @@ export const EditPlayerContextProvider = ({ children }) => {
         contractTypes,
         procedureTypes,
         creatingContractError,setCreatingContractError,
-        activeContractId,setActiveContractId,
         activeContractData,setActiveContractData,
         newContract,setNewContract,
         newContractDataForSalaryComb,setNewContractDataForSalaryComb,
@@ -176,7 +172,6 @@ export const EditPlayerContextProvider = ({ children }) => {
         detailContractData,setDetailContractData,
         detailSalaryData,setDetailSalaryData,
         detailTerminationData,setDetailTerminationData,
-        modalImportVar,setModalImportVar,
         variableCombos,setVariableCombos,
         activeVariable,setActiveVariable,
         savedVariables,setSavedVariables,

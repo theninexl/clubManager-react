@@ -1,9 +1,12 @@
 import { useEffect } from "react";
 import { useManageVariablesForm } from "./useManageVariablesForm"
+import { useEditPlayerDataContext } from "../../providers/EditPlayeProvider";
 import { ListSelectedContract, ListVariablesForSelectedContract, VariableDataLayer } from "./EditVariablesUtils";
 import { TableDataWrapper } from "../../components/UI/layout/tableData";
+import { ModalPlayerCopyVariables } from "../../components/Modals/ModalPlayerCopyVariables";
 
 export const EditVariablesTab = ({ form, idJugador }) => {
+  const editPlayerContext = useEditPlayerDataContext();
   //hook variables
   const {
     handleAddNewVariableExpression,

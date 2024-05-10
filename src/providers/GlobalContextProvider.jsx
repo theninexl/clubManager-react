@@ -45,6 +45,11 @@ export const GlobalContextProvider = ({ children }) => {
   //uploadedDocs new Player
   const [fileNewPlayerUploaded, setFileNewPlayerUploaded] = useState([]);
 
+  //contrato activo en edicion de jugadores
+  const [activeContractId, setActiveContractId] = useState(null);
+  //mostrar/ocultar modal copiar variables en edicion de jugadores
+  const [modalImportVar, setModalImportVar] = useState(false);
+
   return (
     <globalContext.Provider 
       value={{
@@ -61,7 +66,11 @@ export const GlobalContextProvider = ({ children }) => {
         unreadNotifications,
         setUnreadNotifications,
         fileNewPlayerUploaded,
-        setFileNewPlayerUploaded
+        setFileNewPlayerUploaded,
+        activeContractId,
+        setActiveContractId,
+        modalImportVar,
+        setModalImportVar,
       }}
     >
       {children}

@@ -153,7 +153,7 @@ export default function TopNav () {
   },[path])
 
   useEffect(()=>{
-    console.log(context.entities)
+    // console.log(context.entities)
     if (context.entities) {
       context.setActiveEntity(context?.entities[0]?.id_entidad)
     } 
