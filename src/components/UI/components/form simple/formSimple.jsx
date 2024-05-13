@@ -1,3 +1,5 @@
+import { useNumberFormatter } from "../../../../hooks/useNumberFormatter";
+
 export const FormSimple = ({ children, className, id, innerRef, autoComplete }) => {
   return (
     <form 
@@ -75,7 +77,7 @@ export const LabelElement = ({ children, style, className, htmlFor, type, placeh
   );
 } 
 
-export const LabelElementAssist = ({ children, style, className, htmlFor , type, placeholder, value, handleOnChange, required, disabled, readOnly, assistanceText,autoComplete, role, format, defaultValue }) => {
+export const LabelElementAssist = ({ children, style, className, htmlFor , type, placeholder, value, handleOnChange, required, disabled, readOnly, assistanceText,autoComplete, role, format, defaultValue, handleOnBlur }) => {
   return (
     <label
       htmlFor={htmlFor}
@@ -88,6 +90,7 @@ export const LabelElementAssist = ({ children, style, className, htmlFor , type,
         name={htmlFor}
         id={htmlFor}
         onChange={handleOnChange}
+        onBlur={handleOnBlur}
         placeholder={placeholder}
         autoComplete={autoComplete}
         role={role}

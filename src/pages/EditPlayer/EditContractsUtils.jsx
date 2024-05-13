@@ -56,6 +56,7 @@ export const ListPlayerContracts = ({ handleDeleteContract,handleEditContract })
                           e.preventDefault();
                           editPlayerContext.setEditedContractId(item.id_contrato);
                           handleEditContract(item.id_contrato);
+                          console.log('editar contrato id', item.id_contrato);
                         }}>
                         <SymbolEdit />
                       </IconButtonSmallerPrimary>
@@ -95,7 +96,7 @@ export const ListPlayerContracts = ({ handleDeleteContract,handleEditContract })
   )
 }
 
-export const ContractDataLayer = ({ form, idJugador, teams, intermediaries, handleAddNewSalaryComb, handleChangesOnNewSalaryComb,handleDeleteNewSalaryComb,handleAddNewFixedSalaryLine,handleDeleteNewFixedSalaryLine, handleAddNewTerminationClause, handleDeleteNewTerminationClause, handleChangesOnNewTerminationClause, handleChangesOnNewTerminationClauseIfToggle, handleAddNewContract  }) => {
+export const ContractDataLayer = ({ form, idJugador, teams, intermediaries, handleAddNewSalaryComb, handleChangesOnNewSalaryComb,handleDeleteNewSalaryComb, handleAddNewSalaryCombEdit, handleDeleteNewSalaryCombEdit, handleAddNewFixedSalaryLine,handleDeleteNewFixedSalaryLine, handleDeleteNewFixedSalaryLineEdit, handleAddNewFixedSalaryLineEdit, handleAddNewTerminationClause, handleDeleteNewTerminationClause, handleAddEditTerminationClause,  handleDeleteEditTerminationClause, handleChangesOnNewTerminationClause, handleChangesOnNewTerminationClauseIfToggle, handleChangesOnEditTerminationClause, handleChangesOnEditTerminationClauseIfToggle,  handleAddNewContract, handleSaveEditedContract  }) => {
 
   const editPlayerContext = useEditPlayerDataContext();
     
@@ -143,6 +144,16 @@ export const ContractDataLayer = ({ form, idJugador, teams, intermediaries, hand
             <EditContractForm
               teams={teams}
               intermediaries={intermediaries}
+              idJugador={idJugador}
+              handleAddNewSalaryCombEdit={handleAddNewSalaryCombEdit}
+              handleDeleteNewSalaryCombEdit={handleDeleteNewSalaryCombEdit}
+              handleAddNewFixedSalaryLineEdit={handleAddNewFixedSalaryLineEdit}
+              handleDeleteNewFixedSalaryLineEdit={handleDeleteNewFixedSalaryLineEdit}
+              handleChangesOnEditTerminationClause={handleChangesOnEditTerminationClause}
+              handleChangesOnEditTerminationClauseIfToggle={handleChangesOnEditTerminationClauseIfToggle}
+              handleSaveEditedContract={handleSaveEditedContract}
+              handleAddEditTerminationClause={handleAddEditTerminationClause}
+              handleDeleteEditTerminationClause={handleDeleteEditTerminationClause}
             />
           }
           {/* {renderEditContractLayer()} */}
@@ -457,7 +468,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
   
 }
 
-const EditContractForm = ({ teams, intermediaries }) => {
+const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalaryCombEdit, handleDeleteNewSalaryCombEdit, handleAddNewFixedSalaryLineEdit, handleDeleteNewFixedSalaryLineEdit, handleSaveEditedContract, handleChangesOnEditTerminationClause, handleChangesOnEditTerminationClauseIfToggle, handleAddEditTerminationClause,  handleDeleteEditTerminationClause, }) => {
   const editPlayerContext = useEditPlayerDataContext();
 
   return (
@@ -633,7 +644,7 @@ const EditContractForm = ({ teams, intermediaries }) => {
             autoComplete='off'
             placeholder='dd/mm/yyyy'
             required={true}
-            assistanceText='*'
+            assistanceText=''
             value={editPlayerContext.detailContractData[0].dt_fin_contrato || ''}
             handleOnChange={e => {
               let onChangeValue = [...editPlayerContext.detailContractData];
@@ -742,100 +753,23 @@ const EditContractForm = ({ teams, intermediaries }) => {
             { (editPlayerContext.detailContractData[0].desc_tipo_contrato === 'Laboral') ? 'Salario fijo' : 'Importe fijo'}
             </strong></p>
         </FormSimplePanelRow>
-        
-        {
-          editPlayerContext.detailSalaryData.map((item,index) => {
-            console.log('item detail Salary', item)
-            return (
-              <div key={index} className='cm-u-spacer-mb-bigger'>
-                <FormSimplePanelRow >
-                  <LabelElement
-                    htmlFor='val_salario_fijo'
-                    type='number'
-                    className='panel-field-short'
-                    autoComplete='off'
-                    placeholder='Importe en euros'
-                    required={true}
-                    value={item.val_salario_fijo || ''}
-                    handleOnChange={e => {
-                      let onChangeValue = [...editPlayerContext.detailSalaryData];
-                      onChangeValue[index]["val_salario_fijo"] = e.target.value;
-                      editPlayerContext.setDetailSalaryData(onChangeValue); }}
-                    >
-                    
-                  </LabelElement>
-                  <LabelElementToggle2Sides
-                    htmlFor='flag_bruto_neto'
-                    titleClassNameLeft='cm-u-textRight'
-                    textLeft='Bruto'
-                    titleClassNameRight='cm-u-spacer-mr-medium'
-                    textRight='Neto'
-                    required={true}
-                    checked={(item.flag_bruto_neto == 1) || (item.flag_bruto_neto === true)  ? true : false}
-                    handleOnChange={e => {
-                      let onChangeValue = [...editPlayerContext.detailSalaryData];
-                      onChangeValue[index]["flag_bruto_neto"] = e.target.checked;
-                      editPlayerContext.setDetailSalaryData(onChangeValue); }}
-                    ></LabelElementToggle2Sides>
-                  <LabelElement
-                    htmlFor='dt_inicio'
-                    type='date'
-                    className='panel-field-flexible'
-                    autoComplete='off'
-                    placeholder='dd/mm/yyyy'
-                    required={true}
-                    value={item.dt_inicio || ''}
-                    handleOnChange={e => {
-                      let onChangeValue = [...editPlayerContext.detailSalaryData];
-                      onChangeValue[index]["dt_inicio"] = e.target.value;
-                      editPlayerContext.setDetailSalaryData(onChangeValue); }}
-                    >
-                    Fecha inicio
-                  </LabelElement>
-                  <LabelElement
-                    htmlFor='dt_fin'
-                    type='date'
-                    className='panel-field-flexible'
-                    autoComplete='off'
-                    placeholder='dd/mm/yyyy'
-                    required={true}
-                    value={item.dt_fin || ''}
-                    handleOnChange={e => {
-                      let onChangeValue = [...editPlayerContext.detailSalaryData];
-                      onChangeValue[index]["dt_fin"] = e.target.value;
-                      editPlayerContext.setDetailSalaryData(onChangeValue); }}
-                    >
-                    Fecha fin
-                  </LabelElement>
-                  {(index !== 0) ?                   
-                    <IconButtonSmallSecondary
-                      onClick={(e) => {
-                        e.preventDefault();
-                        const newSalariesArray = [...editPlayerContext.detailSalaryData];
-                        newSalariesArray.splice(index,1);
-                        editPlayerContext.setDetailSalaryData(newSalariesArray);
-                      }} >
-                        <SymbolDelete />
-                    </IconButtonSmallSecondary>
-                    : ''}
-                  {index+1 == editPlayerContext.detailSalaryData.length ?                   
-                    <IconButtonSmallSecondary
-                      onClick={(e) => {
-                        e.preventDefault();
-                        // handleAddNewSalary(index+1);
-                        editPlayerContext.setDetailSalaryData([...editPlayerContext.detailSalaryData, {id_salario_fijo:index+1,flag_bruto_neto:0,fch_inicio:'',fch_fin:'',num_salario_fijo:''}]) 
-                      }} >
-                        <SymbolAdd />
-                    </IconButtonSmallSecondary>
-                    : ''}
-                </FormSimplePanelRow>
-                
-              </div>
-            );
-          })
-        }
+
+        <EditSalaryLine 
+          teams={teams}
+          intermediaries={intermediaries}
+          idJugador={idJugador}
+          handleAddNewSalaryCombEdit={handleAddNewSalaryCombEdit}
+          handleDeleteNewSalaryCombEdit={handleDeleteNewSalaryCombEdit}
+          handleAddNewFixedSalaryLineEdit={handleAddNewFixedSalaryLineEdit}
+          handleDeleteNewFixedSalaryLineEdit={handleDeleteNewFixedSalaryLineEdit}
+        />
         <FormSimplePanel><p><strong>Clausula de rescisión</strong></p></FormSimplePanel>
-        {/* { renderEditTerminationClause() } */}
+        <EditTerminationClauseLine
+          handleChangesOnEditTerminationClause={handleChangesOnEditTerminationClause}
+          handleChangesOnEditTerminationClauseIfToggle={handleChangesOnEditTerminationClauseIfToggle}
+          handleAddEditTerminationClause={handleAddEditTerminationClause}
+          handleDeleteEditTerminationClause={handleDeleteEditTerminationClause}
+        />
         { editPlayerContext.creatingContractError? 
           <FormSimplePanelRow
           className='cm-u-centerText'>
@@ -846,7 +780,7 @@ const EditContractForm = ({ teams, intermediaries }) => {
         <FormSimplePanelRow
           className='cm-u-centerText'>
           <ButtonMousePrimary
-            // onClick={handleSaveEditedContract}
+            onClick={handleSaveEditedContract}
             >Guardar</ButtonMousePrimary>
           <ButtonMouseGhost
             onClick={() => {
@@ -863,7 +797,7 @@ const EditContractForm = ({ teams, intermediaries }) => {
 }
 
 
-const NewSalaryLine = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb, handleDeleteNewSalaryComb,handleAddNewFixedSalaryLine,handleDeleteNewFixedSalaryLine, teams,intermediaries, idJugador }) => {
+const NewSalaryLine = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb, handleDeleteNewSalaryComb, handleAddNewFixedSalaryLine,handleDeleteNewFixedSalaryLine, teams, intermediaries, idJugador }) => {
 
   const editPlayerContext = useEditPlayerDataContext();
 
@@ -920,58 +854,62 @@ const NewSalaryLine = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb, h
   )
 }
 
-// const EditSalaryLine = () => {
-//   const editPlayerContext = useEditPlayerDataContext();
-//   return (
-//     {
-//       editPlayerContext.detailSalaryData.map((item,index) => {
-//         const SalaryComb = item.id_salaryComb; 
+const EditSalaryLine = ({ teams, intermediaries, idJugador, handleAddNewSalaryCombEdit, handleDeleteNewSalaryCombEdit, handleAddNewFixedSalaryLineEdit, handleDeleteNewFixedSalaryLineEdit }) => {
+  const editPlayerContext = useEditPlayerDataContext();
+  return (
+    <>
+      { console.log('detailSalaryData', editPlayerContext.detailSalaryData) }
+      {
+      editPlayerContext.detailSalaryData.map((item,index) => {
+        const SalaryComb = index;
+        return (
+          <div key={index} data-id={index}  className='cm-u-spacer-mb-bigger'>
+            { editPlayerContext.detailContractData[0].desc_tipo_contrato ==  'Liquidación' &&
+              <>
+                <FormSimplePanelRow>
+                  <LabelElementAssist
+                    htmlFor='importe_fijo'
+                    type='number'
+                    className='panel-field-long'
+                    autoComplete='off'
+                    placeholder='introduce importe'
+                    required={true}
+                    assistanceText=''
+                    defaultValue={item.importe_fijo}
+                    handleOnChange={(e) => {
+                      let onChangeValue = [...editPlayerContext.detailSalaryData];
+                      onChangeValue[index]["importe_fijo"] = e.target.value;
+                      editPlayerContext.setDetailSalaryData(onChangeValue);           
+                      }}
+                    >
+                    Importe en euros*
+                  </LabelElementAssist>
+                </FormSimplePanelRow>
+              </>
+            }
+            <BeneficiaryItemEdit
+              item={item}
+              index={index}
+              teams={teams}
+              intermediaries={intermediaries}
+              idJugador={idJugador}
+              salaryComb={SalaryComb}
+              handleAddNewSalaryCombEdit={handleAddNewSalaryCombEdit}
+              handleDeleteNewSalaryCombEdit={handleDeleteNewSalaryCombEdit}
+            />
 
-//         return (
-//           <div key={item.id_salaryComb} data-id={item.id_salaryComb}  className='cm-u-spacer-mb-bigger'>
-//             { editPlayerContext.newContractDataForSalaryComb.descType === 5 &&
-//               <>
-//                 <FormSimplePanelRow>
-//                   <LabelElementAssist
-//                     htmlFor='importe_fijo'
-//                     type='number'
-//                     className='panel-field-long'
-//                     autoComplete='off'
-//                     placeholder='introduce importe'
-//                     required={true}
-//                     assistanceText=''
-//                     // defaultValue={contractSalary[index].importe_fijo}
-//                     // handleOnChange={e => {
-//                     //   handleChangesOnNewSalaryComb(e, index)
-//                     //   }
-//                     // }
-//                     >
-//                     Importe en euros*
-//                   </LabelElementAssist>
-//                 </FormSimplePanelRow>
-//               </>
-//             }
-//             <BeneficiaryItem 
-//               item={item}
-//               index={index}
-//               handleAddNewSalaryComb={handleAddNewSalaryComb}
-//               handleChangesOnNewSalaryComb={handleChangesOnNewSalaryComb}
-//               handleDeleteNewSalaryComb={handleDeleteNewSalaryComb}
-//               teams={teams}
-//               intermediaries={intermediaries}
-//               idJugador={idJugador}
-//             />
-//             <SalaryLineItem
-//               index={index}
-//               handleAddNewFixedSalaryLine={handleAddNewFixedSalaryLine}
-//               handleDeleteNewFixedSalaryLine={handleDeleteNewFixedSalaryLine}
-//                />
-//           </div>
-//         );
-//       })
-//     }
-//   );
-// }
+            <SalaryLineItemEdit
+              index={index}
+              handleAddNewFixedSalaryLineEdit={handleAddNewFixedSalaryLineEdit}
+              handleDeleteNewFixedSalaryLineEdit={handleDeleteNewFixedSalaryLineEdit}
+               />
+          </div>
+        );
+      })
+    }
+    </>
+  );
+}
 
 const BeneficiaryItem = ({ item, index, SalaryComb, handleAddNewSalaryComb, handleChangesOnNewSalaryComb, handleDeleteNewSalaryComb, teams, intermediaries, idJugador }) => {
 
@@ -1019,6 +957,63 @@ const BeneficiaryItem = ({ item, index, SalaryComb, handleAddNewSalaryComb, hand
       </>
     )
   }
+}
+
+const BeneficiaryItemEdit = ({ item, index, teams, intermediaries, idJugador, salaryComb, handleAddNewSalaryCombEdit, handleDeleteNewSalaryCombEdit, }) => {
+  
+  const editPlayerContext = useEditPlayerDataContext();
+  return (
+    <>
+      { (editPlayerContext.detailContractData[0].desc_tipo_contrato ==  'Intermediación' || editPlayerContext.detailContractData[0].desc_tipo_contrato ==  'Liquidación') && 
+        <>
+          {/* {console.log('index', index)}
+          {console.log('item', item)}
+          {console.log('desctype', editPlayerContext.detailContractData[0].desc_tipo_contrato)}
+          {console.log('detailSalaryData lengh', editPlayerContext.detailSalaryData.length)} */}
+          <FormSimplePanelRow>
+            <LabelSelectShorterElement
+              htmlFor='beneficiario'
+              labelText='Beneficiario'
+              required={true}
+              defaultValue={editPlayerContext.detailSalaryData[index].id_contraparte}
+              handleOnChange={e => {
+                // console.log('event beneficiario', e.target);
+                //handleChangesOnNewSalaryComb(e, index)
+                }
+              }
+              >
+                <option value=''>Selecciona</option>
+                <BeneficiaryOptionsEdit
+                  index={index}
+                  teams={teams}
+                  intermediaries={intermediaries}
+                  idJugador={idJugador}
+                />
+            </LabelSelectShorterElement>
+            {(index > 0) ?                   
+            <IconButtonSmallSecondary
+              onClick={(e) => {
+                e.preventDefault();
+                console.log('click');
+                handleDeleteNewSalaryCombEdit(index);
+              }} >
+                <SymbolDelete />
+            </IconButtonSmallSecondary>
+            : ''}
+          {(index+1 == editPlayerContext.detailSalaryData.length && editPlayerContext.detailSalaryData.length <= 2) ?  
+            <IconButtonSmallSecondary
+              onClick={(e) => {
+                e.preventDefault();
+                handleAddNewSalaryCombEdit();
+              }} >
+                <SymbolAdd />
+            </IconButtonSmallSecondary>
+            : ''}
+          </FormSimplePanelRow>
+        </>
+      }
+    </>
+  );
 }
 
 const BeneficiaryOptions = ({ teams, intermediaries, idJugador }) => {
@@ -1131,8 +1126,165 @@ const BeneficiaryOptions = ({ teams, intermediaries, idJugador }) => {
   )
 }
 
+const BeneficiaryOptionsEdit = ({ index, teams, intermediaries, idJugador }) => {
+  const editPlayerContext = useEditPlayerDataContext();
+
+  return (
+    <>
+      { (editPlayerContext.detailContractData[0].desc_tipo_contrato ==  'Transfer. permanente' || editPlayerContext.detailContractData[0].desc_tipo_contrato ==  'Transfer. temporal') &&
+        <>
+          { editPlayerContext.detailContractData[0].id_club_origen && (()=>{
+              let selected = editPlayerContext.detailContractData[0].id_club_origen == editPlayerContext.detailSalaryData[index].id_contraparte ? 'selected' : '';
+              return <option 
+                key={editPlayerContext.detailContractData[0].id_club_origen} 
+                value={editPlayerContext.detailContractData[0].id_club_origen}
+                selected={selected}
+                >
+                  {searchName(editPlayerContext.detailContractData[0].id_club_origen,teams,'id_equipo','desc_nombre_club')}
+              </option>
+              })()
+          }
+
+          { editPlayerContext.detailContractData[0].id_club_destino && (()=>{
+              let selected = editPlayerContext.detailContractData[0].id_club_destino == editPlayerContext.detailSalaryData[index].id_contraparte ? 'selected' : '';
+              console.log('selected:', selected)
+              return (
+                <option 
+                    key={editPlayerContext.detailContractData[0].id_club_destino} 
+                    value={editPlayerContext.detailContractData[0].id_club_destino}
+                    selected={selected}
+                  >
+                    {searchName(editPlayerContext.detailContractData[0].id_club_destino,teams,'id_equipo','desc_nombre_club')}
+                  </option>
+          )})()
+          }
+        </>
+      }
+      { editPlayerContext.detailContractData[0].desc_tipo_contrato ==  'Intermediación' &&
+        <>
+          { editPlayerContext.detailContractData[0].id_intermediario_1 !=0 &&
+            (()=>{
+              let selected = editPlayerContext.detailContractData[0].id_intermediario_1 == editPlayerContext.detailSalaryData[index].id_contraparte ? 'selected' : '';
+              return <option 
+                key={editPlayerContext.detailContractData[0].id_intermediario_1} 
+                value={editPlayerContext.detailContractData[0].id_intermediario_1}
+                selected={selected}
+                >
+                  {searchName(editPlayerContext.detailContractData[0].id_intermediario_1,intermediaries,'id_intermediario','nombre')}
+              </option>
+            })()
+          }
+
+          { editPlayerContext.detailContractData[0].id_intermediario_2 !=0 &&
+            (()=>{
+              let selected = editPlayerContext.detailContractData[0].id_intermediario_2 == editPlayerContext.detailSalaryData[index].id_contraparte ? 'selected' : '';
+              return <option 
+                key={editPlayerContext.detailContractData[0].id_intermediario_2} 
+                value={editPlayerContext.detailContractData[0].id_intermediario_2}
+                selected={selected}
+                >
+                  {searchName(editPlayerContext.detailContractData[0].id_intermediario_2,intermediaries,'id_intermediario','nombre')}
+              </option>
+            })()
+          }
+
+          { editPlayerContext.detailContractData[0].id_intermediario_3 !=0 &&
+            (()=>{
+              let selected = editPlayerContext.detailContractData[0].id_intermediario_3 == editPlayerContext.detailSalaryData[index].id_contraparte ? 'selected' : '';
+              return <option 
+                key={editPlayerContext.detailContractData[0].id_intermediario_3} 
+                value={editPlayerContext.detailContractData[0].id_intermediario_3}
+                selected={selected}
+                >
+                  {searchName(editPlayerContext.detailContractData[0].id_intermediario_3,intermediaries,'id_intermediario','nombre')}
+              </option>
+            })()
+          }
+        </>
+      }
+      {
+        editPlayerContext.detailContractData[0].desc_tipo_contrato ==  'Liquidación' &&
+        <>
+          {console.log('entidad:',editPlayerContext.detailSalaryData[index].desc_tipo_entidad)}
+          <option 
+            key={idJugador} 
+            value={`${idJugador}#Jugador`}
+            selected={editPlayerContext.detailSalaryData[index].desc_tipo_entidad === 'Jugador' ? 'selected': ''}
+          >
+            {`${editPlayerContext.playerDataDetails.desc_nombre} ${editPlayerContext.playerDataDetails.desc_apellido1}`}
+          </option>
+          { editPlayerContext.detailContractData[0].id_club_origen && (()=>{
+              let selected = ((editPlayerContext.detailContractData[0].id_club_origen == editPlayerContext.detailSalaryData[index].id_contraparte) && editPlayerContext.detailSalaryData[index].desc_tipo_entidad === 'Club')  ? 'selected' : '';
+              return <option 
+                key={editPlayerContext.detailContractData[0].id_club_origen} 
+                value={editPlayerContext.detailContractData[0].id_club_origen}
+                selected={selected}
+                >
+                  {searchName(editPlayerContext.detailContractData[0].id_club_origen,teams,'id_equipo','desc_nombre_club')}
+              </option>
+              })()
+          }
+
+          { editPlayerContext.detailContractData[0].id_club_destino && (()=>{
+              let selected = ((editPlayerContext.detailContractData[0].id_club_destino == editPlayerContext.detailSalaryData[index].id_contraparte) && editPlayerContext.detailSalaryData[index].desc_tipo_entidad === 'Club') ? 'selected' : '';
+              return (
+                <option 
+                    key={editPlayerContext.detailContractData[0].id_club_destino} 
+                    value={editPlayerContext.detailContractData[0].id_club_destino}
+                    selected={selected}
+                  >
+                    {searchName(editPlayerContext.detailContractData[0].id_club_destino,teams,'id_equipo','desc_nombre_club')}
+                  </option>
+          )})()
+          }
+          { editPlayerContext.detailContractData[0].id_intermediario_1 !=0 &&
+            (()=>{
+              let selected = ((editPlayerContext.detailContractData[0].id_intermediario_1 == editPlayerContext.detailSalaryData[index].id_contraparte) && editPlayerContext.detailSalaryData[index].desc_tipo_entidad === 'Intermediario') ? 'selected' : '';
+              return <option 
+                key={editPlayerContext.detailContractData[0].id_intermediario_1} 
+                value={editPlayerContext.detailContractData[0].id_intermediario_1}
+                selected={selected}
+                >
+                  {searchName(editPlayerContext.detailContractData[0].id_intermediario_1,intermediaries,'id_intermediario','nombre')}
+              </option>
+            })()
+          }
+
+          { editPlayerContext.detailContractData[0].id_intermediario_2 !=0 &&
+            (()=>{
+              let selected = ((editPlayerContext.detailContractData[0].id_intermediario_2 == editPlayerContext.detailSalaryData[index].id_contraparte) && editPlayerContext.detailSalaryData[index].desc_tipo_entidad === 'Intermediario') ? 'selected' : '';
+              return <option 
+                key={editPlayerContext.detailContractData[0].id_intermediario_2} 
+                value={editPlayerContext.detailContractData[0].id_intermediario_2}
+                selected={selected}
+                >
+                  {searchName(editPlayerContext.detailContractData[0].id_intermediario_2,intermediaries,'id_intermediario','nombre')}
+              </option>
+            })()
+          }
+
+          { editPlayerContext.detailContractData[0].id_intermediario_3 !=0 &&
+            (()=>{
+              let selected = ((editPlayerContext.detailContractData[0].id_intermediario_3 == editPlayerContext.detailSalaryData[index].id_contraparte) && editPlayerContext.detailSalaryData[index].desc_tipo_entidad === 'Intermediario') ? 'selected' : '';
+              return <option 
+                key={editPlayerContext.detailContractData[0].id_intermediario_3} 
+                value={editPlayerContext.detailContractData[0].id_intermediario_3}
+                selected={selected}
+                >
+                  {searchName(editPlayerContext.detailContractData[0].id_intermediario_3,intermediaries,'id_intermediario','nombre')}
+              </option>
+            })()
+          }
+        </>
+      }
+    </>
+  );
+}
+
 const SalaryLineItem = ({ index, handleAddNewFixedSalaryLine, handleDeleteNewFixedSalaryLine }) => {
   const editPlayerContext = useEditPlayerDataContext();
+
+  
 
   if ( editPlayerContext.newContractDataForSalaryComb.descType < 5 ) {
     // console.log('contractSalary',contractSalary, index)
@@ -1234,6 +1386,110 @@ const SalaryLineItem = ({ index, handleAddNewFixedSalaryLine, handleDeleteNewFix
     );
   }
 }
+const SalaryLineItemEdit = ({ index, handleAddNewFixedSalaryLineEdit, handleDeleteNewFixedSalaryLineEdit }) => {
+  const editPlayerContext = useEditPlayerDataContext();
+
+  
+
+  if ( editPlayerContext.detailContractData[0].desc_tipo_contrato !=  'Liquidación' ) {
+    return (
+      <>
+        {
+          editPlayerContext.detailSalaryData[index].salaryComb.map((item, index2) => {
+            return (
+              <>
+                <FormSimplePanelRow key={index}>
+                  <LabelElement
+                    htmlFor='val_salario_fijo'
+                    type='number'
+                    className='panel-field-short'
+                    autoComplete='off'
+                    placeholder='Importe en €'
+                    required={true}
+                    value={editPlayerContext.detailSalaryData[index].salaryComb[index2].val_salario_fijo || ''}
+                    handleOnChange={(e) => {
+                      let onChangeValue = [...editPlayerContext.detailSalaryData];
+                      onChangeValue[index]["salaryComb"][index2]["val_salario_fijo"] = e.target.value;
+                      editPlayerContext.setDetailSalaryData(onChangeValue);                            
+                    }}
+                    >
+                    
+                  </LabelElement>
+                  <LabelElementToggle2Sides
+                    htmlFor='flag_bruto_neto'
+                    titleClassNameLeft='cm-u-textRight'
+                    textLeft='Bruto'
+                    titleClassNameRight='cm-u-spacer-mr-medium'
+                    textRight='Netor'
+                    required={true}
+                    checked={editPlayerContext.detailSalaryData[index].salaryComb[index2].flag_bruto_neto == '1' ? true : ''}
+                    handleOnChange={(event) => {
+                      let {name, checked} = event.target;
+                      let onChangeValue = [...editPlayerContext.detailSalaryData];
+                      onChangeValue[index]["salaryComb"][index2][name] = checked ? '1' : '0';
+                      editPlayerContext.setDetailSalaryData(onChangeValue);
+                    }} 
+                    handleClick={e => { e.preventDefault; console.log('toggle');}}
+                    />
+                  <LabelElement
+                    htmlFor='dt_inicio'
+                    type='date'
+                    className='panel-field-flexible'
+                    autoComplete='off'
+                    placeholder='dd/mm/yyyy'
+                    required={true}
+                    value={editPlayerContext.detailSalaryData[index].salaryComb[index2].dt_inicio || ''}
+                    handleOnChange={(e) => {
+                      let onChangeValue = [...editPlayerContext.detailSalaryData];
+                      onChangeValue[index]["salaryComb"][index2]["dt_inicio"] = e.target.value;
+                      editPlayerContext.setDetailSalaryData(onChangeValue);                            
+                    }}
+                    >
+                    Fecha inicio
+                  </LabelElement>
+                  <LabelElement
+                    htmlFor='dt_fin'
+                    type='date'
+                    className='panel-field-flexible'
+                    autoComplete='off'
+                    placeholder='dd/mm/yyyy'
+                    required={true}
+                    value={editPlayerContext.detailSalaryData[index].salaryComb[index2].dt_fin || ''}
+                    handleOnChange={(e) => {
+                      let onChangeValue = [...editPlayerContext.detailSalaryData];
+                      onChangeValue[index]["salaryComb"][index2]["dt_fin"] = e.target.value;
+                      editPlayerContext.setDetailSalaryData(onChangeValue);                            
+                    }} 
+                    >
+                    Fecha fin
+                  </LabelElement>
+                  {(index2 !== 0) ?                   
+                    <IconButtonSmallSecondary
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDeleteNewFixedSalaryLineEdit(index, index2);
+                      }} >
+                        <SymbolDelete />
+                    </IconButtonSmallSecondary>
+                    : ''}
+                  {index2+1 == editPlayerContext.detailSalaryData[index].salaryComb.length ?                   
+                    <IconButtonSmallSecondary
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleAddNewFixedSalaryLineEdit(index, index2+1);
+                      }} >
+                        <SymbolAdd />
+                    </IconButtonSmallSecondary>
+                    : ''}
+                </FormSimplePanelRow>
+              </>
+            );
+          })
+        }
+      </>
+    );
+  }
+}
 
 //render linea clausula rescision
 const NewTerminationClauseLine = ({ handleAddNewTerminationClause, handleDeleteNewTerminationClause, handleChangesOnNewTerminationClause, handleChangesOnNewTerminationClauseIfToggle }) => {
@@ -1312,6 +1568,96 @@ const NewTerminationClauseLine = ({ handleAddNewTerminationClause, handleDeleteN
                     onClick={(e) => {
                       e.preventDefault();
                       handleAddNewTerminationClause(TermComb+1);
+                    }} >
+                      <SymbolAdd />
+                  </IconButtonSmallSecondary>
+                  : ''}
+              </FormSimplePanelRow>
+              
+            </div>
+          );
+        })
+      }
+    </>
+  )
+}
+
+const EditTerminationClauseLine = ({ handleAddNewTerminationClause, handleDeleteNewTerminationClause, handleChangesOnEditTerminationClause, handleChangesOnEditTerminationClauseIfToggle, handleAddEditTerminationClause,  handleDeleteEditTerminationClause, }) => {
+  const editPlayerContext = useEditPlayerDataContext();
+
+  return (
+    <>
+      {
+        editPlayerContext.detailTerminationData.map((item,index) => {
+          const TermComb = index;  
+          return (
+            <div key={index} data-id={index}  className='cm-u-spacer-mb-bigger'>
+              <FormSimplePanelRow >
+                <LabelElement
+                  htmlFor='val_clau_rescision'
+                  type='number'
+                  className='panel-field-short'
+                  autoComplete='off'
+                  placeholder='Importe en €'
+                  required={true}
+                  value={editPlayerContext.detailTerminationData[index].val_clau_rescision || ''}
+                  handleOnChange={(event) => {
+                    handleChangesOnEditTerminationClause(event,index)
+                  }}
+                  >
+                  
+                </LabelElement>
+                <LabelElementToggle2Sides
+                  htmlFor='flag_bruto_neto'
+                  titleClassNameLeft='cm-u-textRight'
+                  textLeft='Bruto'
+                  titleClassNameRight='cm-u-spacer-mr-medium'
+                  textRight='Neto'
+                  required={true}
+                  checked={item.flag_bruto_neto}
+                  handleOnChange={(event) => {
+                    handleChangesOnEditTerminationClauseIfToggle(event,index)
+                  }} />
+                <LabelElement
+                  htmlFor='dt_inicio'
+                  type='date'
+                  className='panel-field-flexible'
+                  autoComplete='off'
+                  placeholder='dd/mm/yyyy'
+                  required={true}
+                  value={item.dt_inicio}
+                  handleOnChange={(event) => {
+                    handleChangesOnEditTerminationClause(event,index)
+                  }}   >
+                  Fecha inicio
+                </LabelElement>
+                <LabelElement
+                  htmlFor='dt_fin'
+                  type='date'
+                  className='panel-field-flexible'
+                  autoComplete='off'
+                  placeholder='dd/mm/yyyy'
+                  required={true}
+                  value={item.dt_fin}
+                  handleOnChange={(event) => {
+                    handleChangesOnEditTerminationClause(event,index)
+                  }}   >
+                  Fecha fin
+                </LabelElement>
+                {(index > 0) ?                   
+                  <IconButtonSmallSecondary
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleDeleteEditTerminationClause(index);
+                    }} >
+                      <SymbolDelete />
+                  </IconButtonSmallSecondary>
+                  : ''}
+                {index+1 == editPlayerContext.detailTerminationData.length ?                   
+                  <IconButtonSmallSecondary
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleAddEditTerminationClause(index+1);
                     }} >
                       <SymbolAdd />
                   </IconButtonSmallSecondary>

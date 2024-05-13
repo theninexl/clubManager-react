@@ -18,7 +18,7 @@ export const useGetPlayerData = (idJugador) => {
   
   useEffect (() => {
     if (getPlayerData.responseUpload) {
-      // console.log('getPlayerDetail respuesta:',getPlayerData.responseUpload);
+      console.log('getPlayerDetail respuesta:',getPlayerData.responseUpload);
       editPlayerContext.setPlayerDataDetails(getPlayerData.responseUpload?.jugador[0])
       editPlayerContext.setPlayerDataContracts(getPlayerData.responseUpload?.contratos)
       editPlayerContext.setPlayerDataVariables(getPlayerData.responseUpload?.variables)

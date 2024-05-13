@@ -3,18 +3,21 @@ import { useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../../providers/globalContextProvider";
 import { useGetData } from "../../hooks/useGetData";
 import { useSaveData } from "../../hooks/useSaveData";
+import { useNumberFormatter } from "../../hooks/useNumberFormatter";
 import { AsideMenu } from "../../components/AsideMenu";
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
 import { CentralBody, HeadContent, HeadContentTitleBar, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
 import { ButtonMouseGhost, ButtonMousePrimary, IconButtonSmallPrimary } from "../../components/UI/objects/buttons";
 import { SymbolBack } from "../../components/UI/objects/symbols";
-import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, HiddenElement, LabelElement, LabelElementAssist, LabelElementToggle, LabelElementToggle2Sides, LabelElementToggle2SidesPanel, LabelSelectElement, LabelSelectElementAssist, LabelSelectShorterElement, SelectIcon, SelectIconShorter } from "../../components/UI/components/form simple/formSimple";
+import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElementAssist, LabelElementToggle, LabelSelectElement, } from "../../components/UI/components/form simple/formSimple";
 import { FormTabs, FormTabs__ContentWrapper, FormTabs__LinksWrapper, FormTabs__ToolBarWrapper, TabContent, TabLink } from "../../components/UI/components/formTabs/formTabs";
 
 
 export default function NewPlayerPage () {
 
   const context = useGlobalContext();
+
+  const formatNumber = useNumberFormatter ();
 
   //hook guardar datos
   const { uploadData, responseUpload } = useSaveData();
@@ -302,9 +305,9 @@ export default function NewPlayerPage () {
                         type='text'
                         className='panel-field-long'
                         autoComplete='off'
-                        placeholder='Alias'
+                        placeholder='Nombre deportivo'
                         >
-                        Alias
+                        Nombre deportivo
                       </LabelElementAssist>
                     </FormSimplePanelRow>
                     <FormSimplePanelRow>
@@ -449,6 +452,8 @@ export default function NewPlayerPage () {
                         autoComplete='off'
                         placeholder='Introduce euros'
                         assistanceText='Introduce euros €'
+                        value={formatNumber.value}
+                        handleOnChange={formatNumber.formatnr}
                         >
                         Valoración económica mercado
                       </LabelElementAssist>
@@ -468,7 +473,7 @@ export default function NewPlayerPage () {
                     <FormSimplePanelRow>
                       <LabelElementToggle
                         htmlFor='playerCotonu' >
-                        Cotonú
+                        Acuerdo Samoa
                       </LabelElementToggle>
                     </FormSimplePanelRow>
                     {createPlayerError &&

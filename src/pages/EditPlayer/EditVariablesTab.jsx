@@ -1,13 +1,11 @@
 import { useEffect } from "react";
 import { useManageVariablesForm } from "./useManageVariablesForm"
-import { useEditPlayerDataContext } from "../../providers/EditPlayeProvider";
 import { ListSelectedContract, ListVariablesForSelectedContract, VariableDataLayer } from "./EditVariablesUtils";
 import { TableDataWrapper } from "../../components/UI/layout/tableData";
-import { ModalPlayerCopyVariables } from "../../components/Modals/ModalPlayerCopyVariables";
+// import { ModalPlayerCopyVariables } from "../../components/Modals/ModalPlayerCopyVariables";
 
 export const EditVariablesTab = ({ form, idJugador }) => {
-  const editPlayerContext = useEditPlayerDataContext();
-  //hook variables
+
   const {
     handleAddNewVariableExpression,
     handleChangesOnNewVariableExpression,
@@ -16,12 +14,13 @@ export const EditVariablesTab = ({ form, idJugador }) => {
     handleAddNewCond,
     handleDeleteNewCond,
     searchExpression,
+    searchCondition,
     handleDeleteClausula,
     getNewVariableCombos,
-  } = useManageVariablesForm(form, idJugador);
+    handleSaveNewVariable,
+  } = useManageVariablesForm( form, idJugador )
 
   useEffect(() => {
-    console.log('llamar a getVariableCombos')
     getNewVariableCombos();
   },[])
 
@@ -38,6 +37,9 @@ export const EditVariablesTab = ({ form, idJugador }) => {
         handleAddNewVariableExpression={handleAddNewVariableExpression}
         handleAddNewCond={handleAddNewCond}
         handleDeleteNewCond={handleDeleteNewCond}
+        searchExpression={searchExpression}
+        searchCondition={searchCondition}
+        handleSaveNewVariable={handleSaveNewVariable}
       />
     </TableDataWrapper>
   );

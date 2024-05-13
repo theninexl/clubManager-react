@@ -1,35 +1,42 @@
 import { useEffect } from "react";
+import { useGlobalContext } from "../../providers/globalContextProvider";
+import { useEditPlayerDataContext } from "../../providers/EditPlayeProvider";
 import { useSaveData } from "../../hooks/useSaveData";
 import { useGetPlayerData } from "./useGetPlayerData";
-import { useEditPlayerDataContext } from "../../providers/EditPlayeProvider";
 
-export const useManageVariablesForm = ({ form, idJugador }) => {
-  const editPlayerContext = useEditPlayerDataContext();
+export const useManageVariablesForm = (form, idJugador) => {
+  const globalContext = useGlobalContext();
+  const editPlayerContext = useEditPlayerDataContext(); 
 
   //llamar al hook de getPlayerData para poder pedir datos de nuevo una vez guardadas/borradas variables
   const { getPlayerDetail } = useGetPlayerData();
 
-  const getVariableCombos = useSaveData();
-  
-  const getNewVariableCombos = () => {
-    console.log('llamada a getCombosValues');
-    getVariableCombos.uploadData('players/getCombosValues');
-  };
+   const getVariableCombos = useSaveData();
+   const getNewVariableCombos = () => {
+    getVariableCombos.uploadData('players/getCombosValues',{});
+   }
+   useEffect(()=>{
+    console.log('combos values', getVariableCombos.responseUpload);
+     if (getVariableCombos.responseUpload) {     
+      console.log('variables combos', getVariableCombos.responseUpload.data);
+      editPlayerContext.setVariableCombos(getVariableCombos.responseUpload?.data);
+     }
+   },[getVariableCombos.responseUpload])
 
-  useEffect (() => {
-    console.log('variable combos', getVariableCombos.responseGetData)
-    if (getVariableCombos.responseGetData) {
-      
-      editPlayerContext.setVariableCombos(getNewVariableCombos.responseGetData.data.data);
-    }
-  },[getVariableCombos.responseUpload])
+   //pedir detalle de clausula cuando seleccionamos un contrato
+  const getDetalleClausula = useSaveData();  
+
+  // const getClausulas = () => {
+
+  // }
+  
 
   //añadir una nueva expresion completa a la variable
   const handleAddNewVariableExpression = (number) => {
     editPlayerContext.setVariableExpressions([...editPlayerContext.variableExpressions, {id_ExprComb:number,bonus_prima:'',id_expresion_concatenacion:'', id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]) 
    }
  
-   //manejar cambios en los campos de la expresion
+  //  //manejar cambios en los campos de la expresion
    const handleChangesOnNewVariableExpression = (event, index) => {
      let {name, value} = event.target;
      let onChangeValue = [...editPlayerContext.variableExpressions];
@@ -70,8 +77,8 @@ export const useManageVariablesForm = ({ form, idJugador }) => {
   //pedir datos para buscar en una expresion tipo search
   const getExprSearch = useSaveData();
   const searchExpression = (id, search) => {
-    getExprSearch.uploadData('players/searchComboValues',{'id':id, 'search':search})
-  }
+    getExprSearch.uploadData('players/searchComboValues',{'id':id, 'search':search})}
+  
   //guardar datos busqueda expresion
   useEffect(()=> {
     if (getExprSearch.responseUpload) {
@@ -81,9 +88,21 @@ export const useManageVariablesForm = ({ form, idJugador }) => {
     }
   },[getExprSearch.responseUpload])
 
-  //pedir detalle de clausula cuando seleccionamos un contrato
-  const getDetalleClausula = useSaveData();
-  
+  //pedir datos para buscar en una condicion tipo search
+  const getCondSearch = useSaveData();
+  const searchCondition = (id, search) => {
+    console.log('llamo a search Condition');
+    getCondSearch.uploadData('players/searchComboValues',{'id':id, 'search':search})
+  }
+  //guardar datos busqueda jugador
+  useEffect(()=> {
+    if (getCondSearch.responseUpload) {
+      console.log(getCondSearch.responseUpload)
+      editPlayerContext.setSearchCondResults(getCondSearch.responseUpload.data);
+      editPlayerContext.setShowSearchCondResults(true);
+    }
+  },[getCondSearch.responseUpload])
+
 
   //borrar una variable
   const deleteClausula = useSaveData();
@@ -99,7 +118,60 @@ export const useManageVariablesForm = ({ form, idJugador }) => {
     }
   },[deleteClausula.responseUpload])
 
+  //guardar una nueva variable
+  const saveClausula = useSaveData();
+
+  const handleSaveNewVariable = (e) => {
+    e.preventDefault();
+    console.log('form en hook variables', form);
+    
+    const formData = new FormData(form.current);
+    const amortizableVal = document.getElementById('amortizable').checked;
+    //const bonusPrimaVal = document.getElementById('bonus_prima').checked;
+    const expresiones = editPlayerContext.variableExpressions;
+    //console.log(typeof(expresiones));
+
+    const data = {
+      expresiones,
+      desc_alias: formData.get('descripcion'),
+      bloque: formData.get('bloque'),
+      tipo_importe: formData.get('tipo_importe'),
+      fecha_desde: formData.get('dateSince'),
+      fecha_hasta: formData.get('dateTo'),
+      amortizable: amortizableVal ? 1 : 0,
+      num_importe: formData.get('variableAmount'),
+      id_beneficiario: formData.get('variableBeneficiary'),
+    }
+
+    const dataSent = {
+      'id_contrato': globalContext.activeContractId,
+      'variable': data,
+    }
+
+    // console.log('variable que guardo', data);
+    // console.log('variable que mando', dataSent);
+
+    saveClausula.uploadData('players/createClausula', dataSent);
+    // setSavedVariables([...savedVariables, dataSent]);    
+  }
+
+  useEffect(()=>{
+    if (saveClausula.responseUpload) {
+      //console.log (saveClausula.responseUpload);
+      if (saveClausula.responseUpload.status === 'ok') {
+        editPlayerContext.setShowNewVariableLayer(false);
+        editPlayerContext.setVariableExpressions([{id_ExprComb:1,bonus_prima:'',id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
+        //vuelve a pedir el detalle de clausula con el listado de arriba
+        getDetalleClausula.uploadData('players/getDetail_clausula',{id_contrato:globalContext.activeContractId.toString()}); 
+        //getPlayersAgain();
+      } else {
+        editPlayerContext.setError('Existe un error en el formulario, inténtelo de nuevo')
+      }
+    }
+  },[saveClausula.responseUpload])
+
   return {
+    getNewVariableCombos,
     handleAddNewVariableExpression,
     handleChangesOnNewVariableExpression,
     handleChangesOnNewVariableExpressionToggle,
@@ -107,7 +179,8 @@ export const useManageVariablesForm = ({ form, idJugador }) => {
     handleAddNewCond,
     handleDeleteNewCond,
     searchExpression,
+    searchCondition,
     handleDeleteClausula,
-    getNewVariableCombos,
-  };
+    handleSaveNewVariable,
+  }
 }

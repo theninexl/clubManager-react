@@ -4,8 +4,7 @@ import { useGetPlayerData } from "./useGetPlayerData";
 import { useSaveData } from "../../hooks/useSaveData";
 import { FormSimplePanelRow, FormSimpleRow, LabelElementAssist, LabelElementToggle, LabelSelectElement } from "../../components/UI/components/form simple/formSimple"
 import { ButtonMousePrimary } from "../../components/UI/objects/buttons"
-
-
+import { useNumberFormatter } from "../../hooks/useNumberFormatter";
 
 export const EditPlayerTab = ({ idJugador, playerTypes, countries, positions }) => {
   
@@ -22,6 +21,19 @@ export const EditPlayerTab = ({ idJugador, playerTypes, countries, positions }) 
   useEffect(() => {
     getPlayerDetail(idJugador);
   },[])
+
+  // Función para formatear el número
+  const formatNumber = (inputValue) => {
+    const numericValue = inputValue.replace(/\D/g, '');
+    const formattedValue = numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return formattedValue;
+  };
+
+  // Función para manejar cambios en el número formateado
+  const handleNumberChange = (event) => {
+    const formattedNumber = formatNumber(event.target.value);
+    editPlayerContext.setPlayerDataDetails({...editPlayerContext.playerDataDetails, val_valor_mercado: formattedNumber})
+  };
 
 
   //guardar cambios edicion jugador
@@ -64,7 +76,7 @@ export const EditPlayerTab = ({ idJugador, playerTypes, countries, positions }) 
       'id_nacionalidad2': editPlayerContext.playerDataDetails.id_nacionalidad2,
       'id_posicion': editPlayerContext.playerDataDetails.id_posicion,
       'id_tipo_jugador': editPlayerContext.playerDataDetails.id_tipo_jugador,
-      'val_valor_mercado': editPlayerContext.playerDataDetails.val_valor_mercado,
+      'val_valor_mercado': editPlayerContext.playerDataDetails.val_valor_mercado.toString(),
   }
 
     if (editPlayerContext.playerDataDetails.desc_nombre === '' || editPlayerContext.playerDataDetails.desc_apellido1 === '') {
@@ -92,51 +104,51 @@ export const EditPlayerTab = ({ idJugador, playerTypes, countries, positions }) 
   //ESTO NO FUNCIONA AHORA PORQUE ESTÁ DESACTIVADO TEMPORALMENTE
 
   //pedir datos para buscar un jugador
-  const getOptaPlayer = useSaveData();
-  const searchPlayer = (search) => {
-    getOptaPlayer.uploadData('players/searchPlayerOpta',{'search':search})
-  }
+  // const getOptaPlayer = useSaveData();
+  // const searchPlayer = (search) => {
+  //   getOptaPlayer.uploadData('players/searchPlayerOpta',{'search':search})
+  // }
   //guardar datos busqueda jugador
-  useEffect(()=> {
-    if (getOptaPlayer.responseUpload) {
-      //console.log('optaPlayer',getOptaPlayer.responseUpload);
-      setOptaPlayersList(getOptaPlayer.responseUpload.data);
-      setOptaResultsBox(true);
-    }
-  },[getOptaPlayer.responseUpload])
+  // useEffect(()=> {
+  //   if (getOptaPlayer.responseUpload) {
+  //     //console.log('optaPlayer',getOptaPlayer.responseUpload);
+  //     setOptaPlayersList(getOptaPlayer.responseUpload.data);
+  //     setOptaResultsBox(true);
+  //   }
+  // },[getOptaPlayer.responseUpload])
 
   //render caja de resultados busqueda jugador
-  const renderSearchPlayerResults = () => {
-    if (optaResultsBox && optaPlayersList?.length == 0) {
-      return (
-        <div className='cm-c-dropdown-select__results-box'><span>No hay resultados</span></div>
-      );
-    } else if (optaResultsBox && optaPlayersList?.length > 0) {
-      return (
-        <div className='cm-c-dropdown-select__results-box'>
-          {
-            optaPlayersList.map(item => {
-              return (
-                <span
-                  className='result'
-                  key={item.id_jugador_opta}
-                  onClick={e => {
-                    e.preventDefault();
-                    setOptaSelectedPlayer(item);
-                    setOptaResultsBox(false);
+  // const renderSearchPlayerResults = () => {
+  //   if (optaResultsBox && optaPlayersList?.length == 0) {
+  //     return (
+  //       <div className='cm-c-dropdown-select__results-box'><span>No hay resultados</span></div>
+  //     );
+  //   } else if (optaResultsBox && optaPlayersList?.length > 0) {
+  //     return (
+  //       <div className='cm-c-dropdown-select__results-box'>
+  //         {
+  //           optaPlayersList.map(item => {
+  //             return (
+  //               <span
+  //                 className='result'
+  //                 key={item.id_jugador_opta}
+  //                 onClick={e => {
+  //                   e.preventDefault();
+  //                   setOptaSelectedPlayer(item);
+  //                   setOptaResultsBox(false);
                     
-                    setPlayerData({...playerData, desc_apellido1: item.desc_apellido_jugador, nombre: item.desc_nombre_jugador  })
-                    // setPlayerData({...playerData, nombre: item.desc_nombre_jugador });
-                  }}  >
-                    {item.desc_nombre_jugador} {item.desc_apellido_jugador}
-                </span>
-              );
-            })
-          }
-        </div>
-      );
-    }
-  }
+  //                   setPlayerData({...playerData, desc_apellido1: item.desc_apellido_jugador, nombre: item.desc_nombre_jugador  })
+  //                   // setPlayerData({...playerData, nombre: item.desc_nombre_jugador });
+  //                 }}  >
+  //                   {item.desc_nombre_jugador} {item.desc_apellido_jugador}
+  //               </span>
+  //             );
+  //           })
+  //         }
+  //       </div>
+  //     );
+  //   }
+  // }
 
   return (
     <>
@@ -393,8 +405,9 @@ export const EditPlayerTab = ({ idJugador, playerTypes, countries, positions }) 
           autoComplete='off'
           placeholder='Introduce euros'
           assistanceText='valor en euros €'
-          value={editPlayerContext.playerDataDetails.val_valor_mercado | ''}
-          handleOnChange={e => {editPlayerContext.setPlayerDataDetails({...editPlayerContext.playerDataDetails, val_valor_mercado: e.target.value})}}
+          value={editPlayerContext.playerDataDetails.val_valor_mercado || ''}
+          // handleOnChange={e => {editPlayerContext.setPlayerDataDetails({...editPlayerContext.playerDataDetails, val_valor_mercado: e.target.value})}}
+          handleOnChange={handleNumberChange}
           >
           Valoración económica mercado
         </LabelElementAssist>

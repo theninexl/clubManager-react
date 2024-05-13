@@ -76,7 +76,7 @@ export const ListVariablesForSelectedContract = ({ handleDeleteClausula }) => {
   )
 }
 
-export const VariableDataLayer = ({ handleChangesOnNewVariableExpression,handleChangesOnNewVariableExpressionToggle, handleDeleteNewVariableExpression, handleAddNewVariableExpression,handleDeleteNewCond,handleAddNewCond }) => {
+export const VariableDataLayer = ({ handleChangesOnNewVariableExpression,handleChangesOnNewVariableExpressionToggle, handleDeleteNewVariableExpression, handleAddNewVariableExpression,handleDeleteNewCond,handleAddNewCond, searchExpression, searchCondition, handleSaveNewVariable, }) => {
   const globalContext = useGlobalContext();
   const editPlayerContext = useEditPlayerDataContext();
 
@@ -120,6 +120,9 @@ export const VariableDataLayer = ({ handleChangesOnNewVariableExpression,handleC
             handleAddNewVariableExpression={handleAddNewVariableExpression}
             handleDeleteNewCond={handleDeleteNewCond}
             handleAddNewCond={handleAddNewCond}
+            searchExpression={searchExpression}
+            searchCondition={searchCondition}
+            handleSaveNewVariable={handleSaveNewVariable}
           />
         }
       </SimpleAccordion>   
@@ -127,7 +130,7 @@ export const VariableDataLayer = ({ handleChangesOnNewVariableExpression,handleC
   )
 }
 
-const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOnNewVariableExpressionToggle, handleDeleteNewVariableExpression, handleAddNewVariableExpression, handleDeleteNewCond, handleAddNewCond }) => {
+const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOnNewVariableExpressionToggle, handleDeleteNewVariableExpression, handleAddNewVariableExpression, handleDeleteNewCond, handleAddNewCond, searchExpression, searchCondition, handleSaveNewVariable }) => {
   const editPlayerContext = useEditPlayerDataContext();
   return (
     <>
@@ -145,7 +148,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
             </LabelElement> 
           </FormSimplePanelRow>
           {editPlayerContext.variableExpressions.map((item,index) => {
-            const ExprComb = item.id_ExprComb;  
+            const ExprComb = item.id_ExprComb;
             return (
               <div key={ExprComb} className='cm-u-spacer-mb-bigger'>
                 <FormSimplePanelRow>
@@ -198,7 +201,12 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
                     <option value='<='>=</option>
                     <option value='>='>&gt;=</option>
                   </SelectIconShorter>
-                  {/* {renderExprCondValueField(variableExpressions[index].id_expresion, index)} */}
+                  <ExprCondValueField
+                    idExpresion={editPlayerContext.variableExpressions[index].id_expresion}
+                    index={index}
+                    handleChangesOnNewVariableExpression={handleChangesOnNewVariableExpression}
+                    searchExpression={searchExpression}
+                  />
 
                   {(item.id_ExprComb !== 1) ?                   
                     <IconButtonSmallSecondary
@@ -233,7 +241,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
                                 handleOnChange={(e) => {
                                   let onChangeValue = [...editPlayerContext.variableExpressions];
                                   onChangeValue[index]["condiciones"][index2]["id_condicion"] = e.target.value;
-                                  editPlayerContext.setVariableExpressions(onChangeValue);                            
+                                  editPlayerContext.setVariableExpressions(onChangeValue);                        
                                 }}
                                 >
                                   <option value=''>Condicion</option>
@@ -257,11 +265,11 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
                                   <option value='>='>&gt;=</option>
                               </SelectIconShorter>
 
-                              <ExprCondValueField 
-                                idExpresion={editPlayerContext.variableExpressions[index].condiciones[index2].id_condicion}
-                                index={index}
-                                index2={index2}
-                                handleChangesOnNewVariableExpression={handleChangesOnNewVariableExpression}
+                              <ConditionValueField 
+                                idCondicion={editPlayerContext.variableExpressions[index].condiciones[index2].id_condicion}
+                                indexExpr={index}
+                                indexCond={index2}
+                                searchCondition={searchCondition}
                               />
                               
       
@@ -354,7 +362,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
           <FormSimplePanelRow
             className='cm-u-centerText'>
             <ButtonMousePrimary
-              // onClick={handleSaveNewVariable}
+              onClick={handleSaveNewVariable}
               >Guardar</ButtonMousePrimary>
             <ButtonMouseGhost
               onClick={() => {
@@ -367,6 +375,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
     </>
   )
 }
+
 
 //render campo valor de expresion dependiendo de tipo de expresión
 const ExprCondValueField = ({ idExpresion, index,  handleChangesOnNewVariableExpression,  }) => {
@@ -439,6 +448,99 @@ const ExprCondValueField = ({ idExpresion, index,  handleChangesOnNewVariableExp
   }
 } 
 
+//render campo valor condicion dependiendo del escogido en condicion
+const ConditionValueField = ({ idCondicion, indexExpr, indexCond, searchCondition, }) => {
+  const editPlayerContext = useEditPlayerDataContext();
+
+  let filter = null;
+  let result = null;
+  let comboVal = null;
+  if (idCondicion !== '') {
+    filter = editPlayerContext.variableCombos.condition.filter(item => item.id.includes(idCondicion));
+    result = filter[0]?.type;
+    comboVal = filter[0]?.comboVal;
+  }
+
+
+  if (result === 'texto') { 
+    return (
+      <>
+        <LabelElement
+        htmlFor='id_condicion_valor'
+        placeholder='introduce valor'
+        type='number'
+        className='cm-c-form-simple'
+        value={editPlayerContext.variableExpressions[indexExpr]?.condiciones[indexCond]?.id_condicion_valor || ''}
+        handleOnChange={(e) => {
+          let onChangeValue = [...editPlayerContext.variableExpressions];
+          onChangeValue[indexExpr]["condiciones"][indexCond]["id_condicion_valor"] = e.target.value;
+          editPlayerContext.setVariableExpressions(onChangeValue);
+          let onChangeType = [...editPlayerContext.variableExpressions];
+          onChangeType[indexExpr]["condiciones"][indexCond]["id_condicion_tipo"] = 'texto';
+          editPlayerContext.setVariableExpressions(onChangeType);                             
+        }}
+         />
+      </>          
+    );
+  } else if (result === 'combo') {
+    return (
+      <>
+        <SelectIconShorter
+          name='id_condicion_valor'
+          value={editPlayerContext.variableExpressions[indexExpr]?.condiciones[indexCond]?.id_condicion_valor || ''}
+          handleOnChange={(e) => {
+            let onChangeValue = [...editPlayerContext.variableExpressions];
+            onChangeValue[indexExpr]["condiciones"][indexCond]["id_condicion_valor"] = e.target.value;
+            editPlayerContext.setVariableExpressions(onChangeValue);
+            let onChangeType = [...editPlayerContext.variableExpressions];
+            onChangeType[indexExpr]["condiciones"][indexCond]["id_condicion_tipo"] = 'combo';
+            editPlayerContext.setVariableExpressions(onChangeType);                             
+          }} >
+          <option value=''>Selecciona</option>
+          { comboVal.map((item) => {
+              return (
+                <option key={item.id} value={item.id}>{item.value}</option>
+              );
+          })}
+        </SelectIconShorter>  
+      </>  
+    );
+  } else if (result === 'search') {
+    return (
+      
+      <div className='cm-c-dropdown-select'>
+        <LabelElement
+          htmlFor='id_condicion_valor'
+          type='text'
+          className='cm-c-form-simple'
+          autoComplete='off'
+          placeholder='Escribe para buscar'
+          required={true}
+          value={editPlayerContext.searchCondSelected}
+          handleOnChange={(e)=>{
+            //console.log(e.target.value);
+            editPlayerContext.setSearchCondSelected(e.target.value);
+            if (e.target.value.length >= 2 ) {
+              searchCondition(idCondicion, e.target.value)
+            } else if ((e.target.value.length < 2 )) {
+              editPlayerContext.setSearchCondResults(null);
+              editPlayerContext.setShowSearchCondResults(false);
+              
+            }
+          }}
+
+          />
+          <SearchCondResults
+            indexExpr={indexExpr}
+            indexCond={indexCond}
+            
+          />
+        {/* {renderSearchCondResults(indexExpr, indexCond)} */}
+      </div>
+    );
+  }
+}
+
 const SearchExpResults = ({ index }) => {
   const editPlayerContext = useEditPlayerDataContext();
 
@@ -462,6 +564,42 @@ const SearchExpResults = ({ index }) => {
                   editPlayerContext.setVariableExpressions(onChangeValue);
                   editPlayerContext.setSearchExpResults(item.value);
                   editPlayerContext.setShowSearchExpResults(false);
+                }}  >
+                  {item.value}
+              </span>
+            );
+          })
+        }
+      </div>
+    );
+  }
+}
+
+//render caja de resultados busqueda jugador
+const SearchCondResults = (indexExpr, indexCond, ) => {
+  const editPlayerContext = useEditPlayerDataContext();
+
+  if (editPlayerContext.showSearchCondResults && editPlayerContext.searchCondResults?.length == 0) {
+    return (
+      <div className='cm-c-dropdown-select__results-box'><span>No hay resultados</span></div>
+    );
+  } else if (editPlayerContext.showSearchCondResults && editPlayerContext.searchCondResults?.length > 0) {
+    return (
+      <div className='cm-c-dropdown-select__results-box'>
+        {
+          editPlayerContext.searchCondResults.map(item => {
+            //console.log(item);
+            return (
+              <span
+                className='result'
+                key={item.id}
+                onClick={e => {
+                  e.preventDefault();
+                  let onChangeValue = [...editPlayerContext.variableExpressions];
+                  onChangeValue[indexExpr]["condiciones"][indexCond]["id_condicion_valor"] = item.id.toString();
+                  editPlayerContext.setVariableExpressions(onChangeValue);
+                  editPlayerContext.setSearchCondSelected(item.value);
+                  editPlayerContext.setShowSearchCondResults(false);
                 }}  >
                   {item.value}
               </span>

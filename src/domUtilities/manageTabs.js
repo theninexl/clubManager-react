@@ -15,6 +15,7 @@ export const manageTabs = () => {
           hideAllTabs();
           tabContentLink.classList.add('active');
           targetTab.setAttribute('style','opacity:1; height:auto; overflow:hidden;');
+          window.scrollTo(0,0);
       });
   })
   hideAllTabs();
