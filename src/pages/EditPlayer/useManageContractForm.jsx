@@ -391,8 +391,8 @@ export const useManageContractForm = (form, idJugador) => {
 
   useEffect(()=>{
     if (getDetalleClausula.responseUpload) {
-      console.log(getDetalleClausula.responseUpload);
-      // editPlayerContext.setSavedVariables(getDetalleClausula.responseUpload?.variables)
+      console.log('savedVariables list', getDetalleClausula.responseUpload);
+      editPlayerContext.setSavedVariables(getDetalleClausula.responseUpload?.variables)
     }
   },[getDetalleClausula.responseUpload])
 

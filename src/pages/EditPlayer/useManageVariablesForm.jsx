@@ -22,13 +22,6 @@ export const useManageVariablesForm = (form, idJugador) => {
       editPlayerContext.setVariableCombos(getVariableCombos.responseUpload?.data);
      }
    },[getVariableCombos.responseUpload])
-
-   //pedir detalle de clausula cuando seleccionamos un contrato
-  const getDetalleClausula = useSaveData();  
-
-  // const getClausulas = () => {
-
-  // }
   
 
   //añadir una nueva expresion completa a la variable
@@ -113,10 +106,22 @@ export const useManageVariablesForm = (form, idJugador) => {
   useEffect(()=>{
     if (deleteClausula.responseUpload){
       //vuelve a pedir el detalle de clausula con el listado de arriba
-      getDetalleClausula.uploadData('players/getDetail_clausula',{id_contrato: editPlayerContext.activeContractId.toString()}); 
-      getPlayerDetail(idJugador)
+      getClausulasList(globalContext.activeContractId); 
     }
   },[deleteClausula.responseUpload])
+
+  //pedir clausulas guardadas para un contrato
+  const getDetalleClausulasList = useSaveData();
+  const getClausulasList = (id) => {
+    getDetalleClausulasList.uploadData('players/getDetail_clausula',{id_contrato:id}); 
+  }
+
+  useEffect(()=>{
+    if (getDetalleClausulasList.responseUpload) {
+      // console.log('savedVariables list', getDetalleClausulasList.responseUpload);
+      editPlayerContext.setSavedVariables(getDetalleClausulasList.responseUpload?.variables)
+    }
+  },[getDetalleClausulasList.responseUpload])
 
   //guardar una nueva variable
   const saveClausula = useSaveData();
@@ -149,7 +154,7 @@ export const useManageVariablesForm = (form, idJugador) => {
     }
 
     // console.log('variable que guardo', data);
-    // console.log('variable que mando', dataSent);
+    console.log('variable que mando', dataSent);
 
     saveClausula.uploadData('players/createClausula', dataSent);
     // setSavedVariables([...savedVariables, dataSent]);    
@@ -162,7 +167,7 @@ export const useManageVariablesForm = (form, idJugador) => {
         editPlayerContext.setShowNewVariableLayer(false);
         editPlayerContext.setVariableExpressions([{id_ExprComb:1,bonus_prima:'',id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
         //vuelve a pedir el detalle de clausula con el listado de arriba
-        getDetalleClausula.uploadData('players/getDetail_clausula',{id_contrato:globalContext.activeContractId.toString()}); 
+        getClausulasList(globalContext.activeContractId); 
         //getPlayersAgain();
       } else {
         editPlayerContext.setError('Existe un error en el formulario, inténtelo de nuevo')

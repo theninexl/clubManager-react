@@ -87,43 +87,7 @@ export default function EditPlayerPage () {
   
   
 
-  // estados variables
-  // mostrar/ocultar modal copiar variables
-  // const [modalImportVar, setModalImportVar] = useState(false);
-  // //donde guardo la info de los posibles combos de cada combinacion Exprexion+Condiciones
-  // const [variableCombos, setVariableCombos] = useState([]);
-  // //variable activa cuando estoy inspeccionado una ya creada
-  // const [activeVariable, setActiveVariable] = useState(null);
-  // //array con las variables creades
-  // const [savedVariables, setSavedVariables] = useState([]);
-  // //mostrar/ocultar capa de variable ya creada
-  // const [showVariable, setShowVariable] = useState(false);
-  // //mostrar/ocultar capa de nueva variable
-  // const [showNewVariableLayer, setShowNewVariableLayer ] = useState(false);
-  // //array para guardar las nuevas expresiones añadidas a cada variable
-  // const [variableExpressions, setVariableExpressions] = useState([
-  //   { id_ExprComb:1,
-  //     bonus_prima:'',
-  //     id_expresion_concatenacion:'',
-  //     id_expresion:'',
-  //     id_expresion_operador:'',
-  //     id_expresion_valor:'', 
-  //     operador:'',
-  //     condiciones:[{
-  //       id_condicion:'',
-  //       id_condicion_operador:'',
-  //       id_condicion_tipo:'',
-  //       id_condicion_valor:''
-  //     }]
-  //   }]);
-  // //guardar resultados search expressions
-  // const [searchExpSelected, setSearchExpSelected] = useState(null);
-  // const [searchExpResults, setSearchExpResults] = useState(null);
-  // const [showSearchExpResults, setShowSearchExpResults] = useState(false);  
-  // //guardar resultados search conditions
-  // const [searchCondSelected, setSearchCondSelected] = useState(null);
-  // const [searchCondResults, setSearchCondResults] = useState(null);
-  // const [showSearchCondResults, setShowSearchCondResults] = useState(false);  
+  
 
   useEffect(()=>{
     manageTabs();
@@ -165,65 +129,21 @@ export default function EditPlayerPage () {
     }
   },[getTeams.responseGetData])
 
-  //pedir combos creación de variables
-  // const getNewVariableCombos = useGetData('players/getCombosValues');
-  // useEffect (() => {
-  //   if (getNewVariableCombos.responseGetData) {
-  //     setVariableCombos(getNewVariableCombos.responseGetData.data.data);
-  //   }
-  // },[getNewVariableCombos.responseGetData])
+  // const [plList, setPlList] = useState()
+
+  const getPlList = useGetData('players/copyClausulaListajugador',{id_jugador:1});
+  useEffect (() => {
+    if (getPlList.responseGetData) {
+      console.log('plList', getPlList.responseGetData)
+    }
+  },[getPlList.responseGetData])
 
 
 
   //----------------------------------------------------------//
   //variables
 
-  // useEffect(()=> {
-  //   if (variableExpressions) console.log('variableExpressions', variableExpressions);
-  // },[variableExpressions])
-
-  //añadir una nueva expresion completa a la variable
-  const handleAddNewVariableExpression = (number) => {
-    setVariableExpressions([...variableExpressions, {id_ExprComb:number,bonus_prima:'',id_expresion_concatenacion:'', id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]) 
-   }
- 
-   //manejar cambios en los campos de la expresion
-   const handleChangesOnNewVariableExpression = (event, index) => {
-     let {name, value} = event.target;
-     let onChangeValue = [...variableExpressions];
-     onChangeValue[index][name] = value;
-     setVariableExpressions(onChangeValue);
-   }
-
-   const handleChangesOnNewVariableExpressionToggle = (event, index) => {
-    let {name, checked} = event.target;
-    let onChangeValue = [...variableExpressions];
-    onChangeValue[index][name] = checked ? 1 : 0;
-    setVariableExpressions(onChangeValue);
-  }
- 
-   const handleDeleteNewVariableExpression = (index) => {
-     const newExpressionsArray = [...variableExpressions];
-     newExpressionsArray.splice(index,1);
-     setVariableExpressions(newExpressionsArray);
-   }
-
-   //añadir nueva condicion al crear variable
-  const handleAddNewCond = (indexExpr,indexNewCond) => {
-    let onChangeValue = [...variableExpressions];
-    onChangeValue[indexExpr]["condiciones"][indexNewCond] = {id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''};
-    setVariableExpressions(onChangeValue);
-  }
-
-  //borrar una nueva condicion al crear variable
-  const handleDeleteNewCond = (indexExpr, indexCond) => {
-    let newExpressionsArray = [...variableExpressions];
-    let newConditionsArray = [...newExpressionsArray[indexExpr].condiciones]
-    newExpressionsArray[indexExpr].condiciones = [];
-    newConditionsArray.splice(indexCond, 1);
-    newExpressionsArray[indexExpr]["condiciones"] = newConditionsArray;    
-    setVariableExpressions(newExpressionsArray);
-  }
+  
   
   //pedir datos para buscar en una expresion tipo search
   const getExprSearch = useSaveData();
@@ -474,315 +394,12 @@ export default function EditPlayerPage () {
     }
   }
 
-  //render acordeon nueva variable
-  const renderNewVariableLayer = () => {
-    if (showNewVariableLayer === true) {
-      return (
-        <>
-        <SimpleAccordionContent>
-          <header className="cm-l-body-static-header--inTab" style={{marginTop:'0'}}>
-            <p className="cm-u-text-black-cat">Añadir nueva variable</p>
-          </header>
-          <FormSimplePanelRow>
-            <LabelElement
-              htmlFor='descripcion'
-              placeholder='Descripción'
-              type='text'
-              className='panel-field-long'
-              >Descripción
-            </LabelElement> 
-          </FormSimplePanelRow>
-          {variableExpressions.map((item,index) => {
-            const ExprComb = item.id_ExprComb;  
-            return (
-              <div key={ExprComb} className='cm-u-spacer-mb-bigger'>
-                <FormSimplePanelRow>
-                  {(item.id_ExprComb !== 1) ?
-                    <LabelSelectShorterElement
-                      htmlFor='id_expresion_concatenacion'
-                      labelText='Nueva expresión'
-                      value={item.id_expresion_concatenacion}
-                      handleOnChange={(event) => {
-                        handleChangesOnNewVariableExpression(event,index)
-                      }} >
-                        <option value=''>Selecciona</option>
-                        <option value='y'>Y</option>
-                        <option value='o'>O</option>
-                    </LabelSelectShorterElement>
-                  : ''}
-                  <LabelElementToggle2SidesPanel
-                    textLeft='Bonus'
-                    textRight='Prima'
-                    htmlFor='bonus_prima'
-                    checked={item.bonus_prima === 1 ? true : ''}
-                    handleOnChange={(event) => {
-                      handleChangesOnNewVariableExpressionToggle(event, index);
-                    }}>
-                    {(item.id_ExprComb !== 1) ?  '' : 'Expresión'}
-                  </LabelElementToggle2SidesPanel>
-                </FormSimplePanelRow>
-                <FormSimplePanelRow>
-                  <LabelSelectShorterElement
-                    htmlFor='id_expresion'                    
-                    value={item.id_expresion}
-                    handleOnChange={(event) => {
-                      handleChangesOnNewVariableExpression(event,index)
-                    }}                  
-                    >
-                      <option value=''>Expresion</option>
-                      { variableCombos.expresion?.map((item) => {
-                          return (
-                            <option key={item.id} value={item.id}>{item.value}</option>
-                          );
-                      })}
-                  </LabelSelectShorterElement>
-                  <SelectIconShorter
-                    name='id_expresion_operador'
-                    value={item.id_expresion_operador}
-                    handleOnChange={(event) => {
-                      handleChangesOnNewVariableExpression(event,index)
-                    }} >
-                      <option value=''>Operador</option>
-                    <option value='<='>=</option>
-                    <option value='>='>&gt;=</option>
-                  </SelectIconShorter>
-                  {renderExprCondValueField(variableExpressions[index].id_expresion, index)}
+  
 
-                  {(item.id_ExprComb !== 1) ?                   
-                    <IconButtonSmallSecondary
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleDeleteNewVariableExpression(index);
-                      }} >
-                        <SymbolDelete />
-                    </IconButtonSmallSecondary>
-                    : ''}
-                  {index+1 == variableExpressions.length ?                   
-                    <IconButtonSmallSecondary
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleAddNewVariableExpression(ExprComb+1);
-                      }} >
-                        <SymbolAdd />
-                    </IconButtonSmallSecondary>
-                    : ''}
-                </FormSimplePanelRow>
-                { item.bonus_prima === 1 ?
-                  <>
-                    {
-                      variableExpressions[index].condiciones.map((item, index2) => {
-                        return(
-                          <>
-                            <FormSimplePanelRow key={index2}>
-                              <LabelSelectShorterElement
-                                htmlFor='id_condicion'
-                                labelText='Condición'
-                                value={variableExpressions[index].condiciones[index2].id_condicion || ''}
-                                handleOnChange={(e) => {
-                                  let onChangeValue = [...variableExpressions];
-                                  onChangeValue[index]["condiciones"][index2]["id_condicion"] = e.target.value;
-                                  setVariableExpressions(onChangeValue);                            
-                                }}
-                                >
-                                  <option value=''>Condicion</option>
-                                  { variableCombos.condition?.map((item) => {
-                                      return (
-                                        <option key={item.id} value={item.id}>{item.value}</option>
-                                      );
-                                  })}
-                              </LabelSelectShorterElement>
-                              <SelectIconShorter
-                                name='id_condicion_operador'
-                                value={variableExpressions[index].condiciones[index2].id_condicion_operador || ''}
-                                handleOnChange={(e) => {
-                                  let onChangeValue = [...variableExpressions];
-                                  onChangeValue[index]["condiciones"][index2]["id_condicion_operador"] = e.target.value;
-                                  setVariableExpressions(onChangeValue);                            
-                                }}
-                                >
-                                  <option value=''>Operador</option>
-                                  <option value='<='>=</option>
-                                  <option value='>='>&gt;=</option>
-                              </SelectIconShorter>
-                              {renderConditionValueField(variableExpressions[index].condiciones[index2].id_condicion, index, index2)}
-      
-                              {(index2 !== 0) ?                   
-                                <IconButtonSmallSecondary
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    handleDeleteNewCond(index, index2);
-                                  }} >
-                                    <SymbolDelete />
-                                </IconButtonSmallSecondary>
-                              : ''}
-                              {index2+1 == variableExpressions[index].condiciones.length ?                   
-                                <IconButtonSmallSecondary
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    handleAddNewCond(index, index2+1);
-                                  }} >
-                                    <SymbolAdd />
-                                </IconButtonSmallSecondary>
-                              : ''}
-                            </FormSimplePanelRow>
-                          </>
-                        )
-                      })
-                    }
-                  </>
-                  : ''
-                }
-              </div>
-            );
-          })}
-          <FormSimplePanelRow>
-            <LabelElement
-              htmlFor='bloque'
-              placeholder='introduce bloque'
-              type='text'
-              className='panel-field-long'
-              >Bloque 
-            </LabelElement> 
-            <LabelSelectElement
-              htmlFor='tipo_importe'
-              labelText='Tipo importe'>
-              <option value=''>Selecciona</option>
-              <option value='A'>A</option>
-              <option value='B'>B</option>
-            </LabelSelectElement>
-          </FormSimplePanelRow>
-          <FormSimplePanelRow>
-            <LabelElementAssist
-              htmlFor='variableAmount'
-              placeholder='Importe en €'
-              type='text'
-              className='panel-field-long'>
-                Importe
-              </LabelElementAssist> 
-          </FormSimplePanelRow>
-          <FormSimplePanelRow>
-            <LabelSelectElement
-              htmlFor='variableBeneficiary'
-              labelText='Beneficiario'>
-              <option value=''>Selecciona</option>
-              { variableCombos.beneficiarios?.map((item) => {
-                    return (
-                      <option key={item.id_beneficiario} value={item.id_beneficiario}>{item.nombre}</option>
-                    );
-                })}
-            </LabelSelectElement>
-          </FormSimplePanelRow>
-          <FormSimplePanelRow>
-            <LabelElement
-              htmlFor='dateSince'
-              type='date'
-              className='panel-field-short'>
-              Vigencia desde
-            </LabelElement>
-            <LabelElement
-              htmlFor='dateTo'
-              type='date'
-              className='panel-field-short panel-field-short--inline'>
-              hasta
-            </LabelElement>
-          </FormSimplePanelRow>
-          <FormSimplePanelRow>
-            <LabelElementToggle
-                htmlFor='amortizable' >
-                Amortizable
-              </LabelElementToggle>
-            </FormSimplePanelRow>
-          <FormSimplePanelRow
-            className='cm-u-centerText'>
-            <ButtonMousePrimary
-              onClick={handleSaveNewVariable}
-              >Guardar</ButtonMousePrimary>
-            <ButtonMouseGhost
-              onClick={() => {
-                setShowNewVariableLayer(false);
-                setVariableExpressions([{id_ExprComb:1,bonus_prima:'',id_expresion_concatenacion:'', id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]) 
-              }}
-              >Cancelar</ButtonMouseGhost>
-          </FormSimplePanelRow>
-        </SimpleAccordionContent>
-        </>
-      );     
-    }
-  }
-
-  //guardar una nueva variable
-  const saveClausula = useSaveData();
-
-  const handleSaveNewVariable = (e) => {
-    e.preventDefault();
-    const formData = new FormData(form.current);
-    const amortizableVal = document.getElementById('amortizable').checked;
-    //const bonusPrimaVal = document.getElementById('bonus_prima').checked;
-    const expresiones = variableExpressions;
-    //console.log(typeof(expresiones));
-
-    const data = {
-      expresiones,
-      desc_alias: formData.get('descripcion'),
-      bloque: formData.get('bloque'),
-      tipo_importe: formData.get('tipo_importe'),
-      fecha_desde: formData.get('dateSince'),
-      fecha_hasta: formData.get('dateTo'),
-      amortizable: amortizableVal ? 1 : 0,
-      num_importe: formData.get('variableAmount'),
-      id_beneficiario: formData.get('variableBeneficiary'),
-    }
-
-    const dataSent = {
-      'id_contrato': activeContractId,
-      'variable': data,
-    }
-
-    // console.log('variable que guardo', data);
-    // console.log('variable que mando', dataSent);
-
-    saveClausula.uploadData('players/createClausula', dataSent);
-    // setSavedVariables([...savedVariables, dataSent]);    
-  }
-
-  useEffect(()=>{
-    if (saveClausula.responseUpload) {
-      //console.log (saveClausula.responseUpload);
-      if (saveClausula.responseUpload.status === 'ok') {
-        setShowNewVariableLayer(false);
-        setVariableExpressions([{id_ExprComb:1,bonus_prima:'',id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
-        //vuelve a pedir el detalle de clausula con el listado de arriba
-        getDetalleClausula.uploadData('players/getDetail_clausula',{id_contrato:activeContractId.toString()}); 
-        //getPlayersAgain();
-      } else {
-        setError('Existe un error en el formulario, inténtelo de nuevo')
-      }
-    }
-  },[saveClausula.responseUpload])
+ 
 
 
-  //borrar una variable
-  // const deleteClausula = useSaveData();
-
-  // const handleDeleteClausula = (id) => {
-  //   deleteClausula.uploadData('players/removeClausula', {'id_clausula':id.toString()})
-  // }
-
-  // useEffect(()=>{
-  //   if (deleteClausula.responseUpload){
-  //     //vuelve a pedir el detalle de clausula con el listado de arriba
-  //     getDetalleClausula.uploadData('players/getDetail_clausula',{id_contrato:activeContractId.toString()}); 
-  //     //getPlayersAgain();
-  //   }
-  // },[deleteClausula.responseUpload])
-
-  // //volver a pedir variables al cerror modal copiar variables
-  // useEffect(()=>{
-  //   if(activeContractId) {
-  //     //vuelve a pedir el detalle de clausula con el listado de arriba
-  //     getDetalleClausula.uploadData('players/getDetail_clausula',{id_contrato:activeContractId.toString()}); 
-  //   }
-  // },[modalImportVar])
+  
 
 
   //------------------------------------------------------------//
@@ -890,7 +507,6 @@ export default function EditPlayerPage () {
       );
     }
   }
-
 
   return (
     <>

@@ -6,6 +6,7 @@ import { SimpleAccordion, SimpleAccordionContent, SimpleAccordionTrigger } from 
 import { HeadContentTitleBar, TitleBar__Title, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
 import { FormSimplePanelRow, LabelElement, LabelElementAssist, LabelElementToggle, LabelElementToggle2SidesPanel, LabelSelectElement, LabelSelectShorterElement, SelectIconShorter } from "../../components/UI/components/form simple/formSimple";
 import { useGlobalContext } from "../../providers/globalContextProvider";
+import { useEffect, useState } from "react";
 
 export const ListSelectedContract = () => {
   const editPlayerContext = useEditPlayerDataContext();
@@ -52,7 +53,7 @@ export const ListVariablesForSelectedContract = ({ handleDeleteClausula }) => {
       </TableDataHeader>
       
       
-      { editPlayerContext.playerDataVariables?.map((item, index) => {   
+      { editPlayerContext.savedVariables?.map((item, index) => {   
         return (
           <TableDataRow key={index}>
             <TableCellLong>{`${item?.desc_alias}`}</TableCellLong>
@@ -132,6 +133,7 @@ export const VariableDataLayer = ({ handleChangesOnNewVariableExpression,handleC
 
 const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOnNewVariableExpressionToggle, handleDeleteNewVariableExpression, handleAddNewVariableExpression, handleDeleteNewCond, handleAddNewCond, searchExpression, searchCondition, handleSaveNewVariable }) => {
   const editPlayerContext = useEditPlayerDataContext();
+
   return (
     <>
        <SimpleAccordionContent>
@@ -148,7 +150,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
             </LabelElement> 
           </FormSimplePanelRow>
           {editPlayerContext.variableExpressions.map((item,index) => {
-            const ExprComb = item.id_ExprComb;
+            const ExprComb = item.id_ExprComb;            
             return (
               <div key={ExprComb} className='cm-u-spacer-mb-bigger'>
                 <FormSimplePanelRow>
@@ -185,10 +187,22 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
                     }}                  
                     >
                       <option value=''>Expresion</option>
-                      { editPlayerContext.variableCombos.expresion?.map((item) => {
-                          return (
-                            <option key={item.id} value={item.id}>{item.value}</option>
-                          );
+                      {
+                        editPlayerContext.variableCombos.expresion?.map((item) => {                          
+                          if (editPlayerContext.variableExpressions[ExprComb-1].bonus_prima == 0) {
+                            if (item.bonus_prima === false) {
+                              return (
+                                <option key={item.id} value={item.id}>{item.value}</option>
+                              )
+                            }
+                          } else {
+                            if (item.bonus_prima === true) {
+                              return (
+                                <option key={item.id} value={item.id}>{item.value}</option>
+                              )
+                            }
+                          }
+                          
                       })}
                   </LabelSelectShorterElement>
                   <SelectIconShorter
