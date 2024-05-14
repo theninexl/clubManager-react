@@ -1,6 +1,6 @@
 import { useGlobalContext } from "../../providers/globalContextProvider";
 import { useEditPlayerDataContext } from "../../providers/EditPlayeProvider";
-import { FormSimplePanel, FormSimplePanelRow, LabelElement, LabelElementAssist, LabelElementToggle2Sides, LabelSelectElement, LabelSelectElementAssist, LabelSelectShorterElement } from "../../components/UI/components/form simple/formSimple";
+import { FormSimplePanel, FormSimplePanelRow, LabelElement, LabelElementAssist, LabelElementNumber, LabelElementNumberAssist, LabelElementToggle2Sides, LabelSelectElement, LabelSelectElementAssist, LabelSelectShorterElement } from "../../components/UI/components/form simple/formSimple";
 import { SimpleAccordion, SimpleAccordionContent, SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
 import { ButtonMouseGhost, ButtonMousePrimary, IconButtonSmallPrimary, IconButtonSmallSecondary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
 import { SymbolAdd, SymbolDelete, SymbolEdit } from "../../components/UI/objects/symbols";
@@ -396,7 +396,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
           </LabelSelectElement>
         </FormSimplePanelRow>
         <FormSimplePanelRow>
-          <LabelElementAssist
+          <LabelElementNumberAssist
             htmlFor='amountTotalSalary'
             type='text'
             className='panel-field-long'
@@ -404,9 +404,9 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
             placeholder='Introduce euros'
             required={true}
             assistanceText=''
-            >
+          >
             Importe Salario Total*
-          </LabelElementAssist>
+          </LabelElementNumberAssist>
         </FormSimplePanelRow>
         <FormSimplePanelRow>
           <p><strong>
@@ -731,7 +731,7 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
           </LabelSelectElement>
         </FormSimplePanelRow>
         <FormSimplePanelRow>
-          <LabelElementAssist
+          {/* <LabelElementAssist
             htmlFor='amountTotalSalary'
             type='text'
             className='panel-field-long'
@@ -746,7 +746,24 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
               editPlayerContext.setDetailContractData(onChangeValue); }}
             >
             Importe Salario Total*
-          </LabelElementAssist>
+          </LabelElementAssist> */}
+          <LabelElementNumberAssist
+            htmlFor='amountTotalSalary'
+            type='text'
+            className='panel-field-long'
+            autoComplete='off'
+            placeholder='Introduce euros'
+            required={true}
+            assistanceText=''
+            value={editPlayerContext.detailContractData[0].val_imp_salario_total || ''}
+            handleOnChange={(values) => {
+              console.log(values.value)
+              let onChangeValue = [...editPlayerContext.detailContractData];
+              onChangeValue[0]["val_imp_salario_total"] = values.value;
+              editPlayerContext.setDetailContractData(onChangeValue); }}
+          >
+            Importe Salario Total*
+          </LabelElementNumberAssist>
         </FormSimplePanelRow>
         <FormSimplePanelRow>
           <p><strong>
@@ -812,7 +829,7 @@ const NewSalaryLine = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb, h
               { editPlayerContext.newContractDataForSalaryComb.descType === 5 &&
                 <>
                   <FormSimplePanelRow>
-                    <LabelElementAssist
+                    {/* <LabelElementAssist
                       htmlFor='importe_fijo'
                       type='number'
                       className='panel-field-long'
@@ -827,7 +844,17 @@ const NewSalaryLine = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb, h
                       // }
                       >
                       Importe en euros*
-                    </LabelElementAssist>
+                    </LabelElementAssist> */}
+                    <LabelElementNumberAssist
+                      htmlFor='importe_fijo'
+                      className='panel-field-long'
+                      autoComplete='off'
+                      placeholder='introduce importe'
+                      required={true}
+                      assistanceText=''
+                    >
+                      Importe en euros*
+                    </LabelElementNumberAssist>
                   </FormSimplePanelRow>
                 </>
               }
@@ -867,7 +894,7 @@ const EditSalaryLine = ({ teams, intermediaries, idJugador, handleAddNewSalaryCo
             { editPlayerContext.detailContractData[0].desc_tipo_contrato ==  'Liquidación' &&
               <>
                 <FormSimplePanelRow>
-                  <LabelElementAssist
+                  {/* <LabelElementAssist
                     htmlFor='importe_fijo'
                     type='number'
                     className='panel-field-long'
@@ -883,7 +910,23 @@ const EditSalaryLine = ({ teams, intermediaries, idJugador, handleAddNewSalaryCo
                       }}
                     >
                     Importe en euros*
-                  </LabelElementAssist>
+                  </LabelElementAssist> */}
+                  <LabelElementNumberAssist
+                      htmlFor='importe_fijo'
+                      className='panel-field-long'
+                      autoComplete='off'
+                      placeholder='introduce importe'
+                      required={true}
+                      assistanceText=''
+                      value={item.importe_fijo}
+                      handleOnChange={(values) => {
+                        let onChangeValue = [...editPlayerContext.detailSalaryData];
+                        onChangeValue[index]["importe_fijo"] = values.value;
+                        editPlayerContext.setDetailSalaryData(onChangeValue);           
+                        }}
+                    >
+                      Importe en euros*
+                    </LabelElementNumberAssist>
                 </FormSimplePanelRow>
               </>
             }
@@ -1295,7 +1338,7 @@ const SalaryLineItem = ({ index, handleAddNewFixedSalaryLine, handleDeleteNewFix
             return (
               <>
                 <FormSimplePanelRow key={index}>
-                  <LabelElement
+                  {/* <LabelElement
                     htmlFor='val_salario_fijo'
                     type='number'
                     className='panel-field-short'
@@ -1310,7 +1353,22 @@ const SalaryLineItem = ({ index, handleAddNewFixedSalaryLine, handleDeleteNewFix
                     }}
                     >
                     
-                  </LabelElement>
+                  </LabelElement> */}
+                  <LabelElementNumber
+                      htmlFor='val_salario_fijo'
+                      className='panel-field-short'
+                      autoComplete='off'
+                      placeholder='Importe en €'
+                      required={true}
+                      value={editPlayerContext.contractSalary[index].salaryComb[index2].val_salario_fijo || ''}
+                      handleOnChange={(values) => {
+                        let onChangeValue = [...editPlayerContext.contractSalary];
+                        onChangeValue[index]["salaryComb"][index2]["val_salario_fijo"] = values.value;
+                        editPlayerContext.setContractSalary(onChangeValue);                            
+                      }}
+                    >
+                      
+                    </LabelElementNumber>
                   <LabelElementToggle2Sides
                     htmlFor='flag_bruto_neto'
                     titleClassNameLeft='cm-u-textRight'
@@ -1399,7 +1457,7 @@ const SalaryLineItemEdit = ({ index, handleAddNewFixedSalaryLineEdit, handleDele
             return (
               <>
                 <FormSimplePanelRow key={index}>
-                  <LabelElement
+                  {/* <LabelElement
                     htmlFor='val_salario_fijo'
                     type='number'
                     className='panel-field-short'
@@ -1414,13 +1472,28 @@ const SalaryLineItemEdit = ({ index, handleAddNewFixedSalaryLineEdit, handleDele
                     }}
                     >
                     
-                  </LabelElement>
+                  </LabelElement> */}
+                  <LabelElementNumber
+                      htmlFor='val_salario_fijo'
+                      className='panel-field-short'
+                      autoComplete='off'
+                      placeholder='Importe en €'
+                      required={true}
+                      assistanceText=''
+                      value={editPlayerContext.detailSalaryData[index].salaryComb[index2].val_salario_fijo || ''}
+                      handleOnChange={(values) => {
+                        let onChangeValue = [...editPlayerContext.detailSalaryData];
+                        onChangeValue[index]["salaryComb"][index2]["val_salario_fijo"] = values.value;
+                        editPlayerContext.setDetailSalaryData(onChangeValue);                          
+                      }}
+                    >
+                    </LabelElementNumber>
                   <LabelElementToggle2Sides
                     htmlFor='flag_bruto_neto'
                     titleClassNameLeft='cm-u-textRight'
                     textLeft='Bruto'
                     titleClassNameRight='cm-u-spacer-mr-medium'
-                    textRight='Netor'
+                    textRight='Neto'
                     required={true}
                     checked={editPlayerContext.detailSalaryData[index].salaryComb[index2].flag_bruto_neto == '1' ? true : ''}
                     handleOnChange={(event) => {
@@ -1503,7 +1576,7 @@ const NewTerminationClauseLine = ({ handleAddNewTerminationClause, handleDeleteN
           return (
             <div key={item.id_clau_rescision} data-id={item.id_clau_rescision}  className='cm-u-spacer-mb-bigger'>
               <FormSimplePanelRow >
-                <LabelElement
+                {/* <LabelElement
                   htmlFor='val_clau_rescision'
                   type='number'
                   className='panel-field-short'
@@ -1516,7 +1589,23 @@ const NewTerminationClauseLine = ({ handleAddNewTerminationClause, handleDeleteN
                   }}
                   >
                   
-                </LabelElement>
+                </LabelElement> */}
+                <LabelElementNumber
+                  htmlFor='val_clau_rescision'
+                  className='panel-field-short'
+                  autoComplete='off'
+                  placeholder='Importe en €'
+                  required={true}
+                  assistanceText=''
+                  value={item.val_clau_rescision}
+                  handleOnChange={(values) => {
+                    let onChangeValue = [...editPlayerContext.contractTermination];
+                    onChangeValue[index]['val_clau_rescision'] = values.value;
+                    editPlayerContext.setContractTermination(onChangeValue);                          
+                  }}
+                >
+                  Importe en euros*
+                </LabelElementNumber>
                 <LabelElementToggle2Sides
                   htmlFor='flag_bruto_neto'
                   titleClassNameLeft='cm-u-textRight'
@@ -1593,7 +1682,7 @@ const EditTerminationClauseLine = ({ handleAddNewTerminationClause, handleDelete
           return (
             <div key={index} data-id={index}  className='cm-u-spacer-mb-bigger'>
               <FormSimplePanelRow >
-                <LabelElement
+                {/* <LabelElement
                   htmlFor='val_clau_rescision'
                   type='number'
                   className='panel-field-short'
@@ -1606,7 +1695,23 @@ const EditTerminationClauseLine = ({ handleAddNewTerminationClause, handleDelete
                   }}
                   >
                   
-                </LabelElement>
+                </LabelElement> */}
+                <LabelElementNumber
+                  htmlFor='val_clau_rescision'
+                  className='panel-field-short'
+                  autoComplete='off'
+                  placeholder='Importe en €'
+                  required={true}
+                  assistanceText=''
+                  value={editPlayerContext.detailTerminationData[index].val_clau_rescision || ''}
+                  handleOnChange={(values) => {
+                    let onChangeValue = [...editPlayerContext.detailTerminationData];
+                    onChangeValue[index]['val_clau_rescision'] = values.value;
+                    editPlayerContext.setDetailTerminationData(onChangeValue);                          
+                  }}
+                >
+                  Importe en euros*
+                </LabelElementNumber>
                 <LabelElementToggle2Sides
                   htmlFor='flag_bruto_neto'
                   titleClassNameLeft='cm-u-textRight'

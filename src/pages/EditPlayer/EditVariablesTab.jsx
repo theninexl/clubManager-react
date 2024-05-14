@@ -30,7 +30,7 @@ export const EditVariablesTab = ({ form, idJugador }) => {
 
   useEffect(() => {
     if (globalContext.activeContractId) {
-      console.log('actualizo variables');
+      // console.log('actualizo variables');
       getClausulasList(globalContext.activeContractId);
     }
   },[editPlayerContext.playerDataDetails])

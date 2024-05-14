@@ -240,7 +240,7 @@ export const useManageContractForm = (form, idJugador) => {
         //resetear contenidos clausula rescisión
         editPlayerContext.setContractTermination(editPlayerContext.defaultContractTerminationArray);
         //reset errores form
-        editPlayerContext.setCreatingContractError(null);
+        editPlayerContext.setCreatingContractError();
         window.scrollTo(0,0);
       } else {
         editPlayerContext.setCreatingContractError('Existe un error en el formulario, inténtelo de nuevo')
@@ -352,7 +352,7 @@ export const useManageContractForm = (form, idJugador) => {
     if (saveEditedContract.responseUpload) {
       console.log(saveEditedContract.responseUpload);
       if (saveEditedContract.responseUpload.status === 'ok') { 
-        editPlayerContext.setCreatingContractError(null)
+        editPlayerContext.setCreatingContractError()
         getPlayerDetail(idJugador);
       } else {
         editPlayerContext.setCreatingContractError('Existe un error en el formulario, inténtelo de nuevo')
@@ -378,10 +378,10 @@ export const useManageContractForm = (form, idJugador) => {
     }
   },[globalContext.activeContractId])
 
-  useEffect(()=>{
-    console.log('activeContractData',editPlayerContext.activeContractData)
-    console.log('activeContractId', globalContext.activeContractId)
-  },[editPlayerContext.activeContractData])
+  // useEffect(()=>{
+  //   console.log('activeContractData',editPlayerContext.activeContractData)
+  //   console.log('activeContractId', globalContext.activeContractId)
+  // },[editPlayerContext.activeContractData])
 
   //pedir detalle de clausula cuando seleccionamos un contrato
   const getDetalleClausula = useSaveData();

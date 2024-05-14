@@ -1,4 +1,4 @@
-import { useNumberFormatter } from "../../../../hooks/useNumberFormatter";
+import { NumericFormat } from "react-number-format";
 
 export const FormSimple = ({ children, className, id, innerRef, autoComplete }) => {
   return (
@@ -75,6 +75,34 @@ export const LabelElement = ({ children, style, className, htmlFor, type, placeh
         readOnly={readOnly} />
     </label>
   );
+}
+
+export const LabelElementNumber = ({ children, style, className, htmlFor, type, placeholder, value, handleOnChange, required, disabled, readOnly, autoComplete, role }) => {
+  return (
+    <label
+      htmlFor={htmlFor}
+      className={className}
+      style={style} >
+      <span>{ children }</span>
+      <NumericFormat 
+        suffix={'€'}
+        thousandSeparator="."
+        decimalSeparator=","
+        value={value}
+        onValueChange={handleOnChange}
+        className={className}
+        name={htmlFor}
+        id={htmlFor}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        role={role}
+        value={value}
+        required={required}
+        disabled={disabled}
+        readOnly={readOnly}
+      />
+    </label>
+  );
 } 
 
 export const LabelElementAssist = ({ children, style, className, htmlFor , type, placeholder, value, handleOnChange, required, disabled, readOnly, assistanceText,autoComplete, role, format, defaultValue, handleOnBlur }) => {
@@ -103,6 +131,37 @@ export const LabelElementAssist = ({ children, style, className, htmlFor , type,
       <span className='assistance' aria-live='polite'>
         { assistanceText }
       </span>
+    </label>
+  );
+}
+
+
+export const LabelElementNumberAssist = ({ children, style, className, htmlFor , type, placeholder, value, handleOnChange, required, disabled, readOnly, assistanceText,autoComplete, defaultValue, }) => {
+  return (
+    <label
+      htmlFor={htmlFor}
+      className={className}
+      style={style} >
+      <span>{ children }</span>
+      <NumericFormat
+        suffix={'€'}
+        thousandSeparator="."
+        decimalSeparator=","
+        value={value}
+        className={className}
+        name={htmlFor}
+        id={htmlFor}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        defaultValue={defaultValue}
+        required={required}
+        disabled={disabled}
+        readOnly={readOnly}
+        onValueChange={handleOnChange}
+      />
+      <span className='assistance' aria-live='polite'>
+        { assistanceText }
+      </span>      
     </label>
   );
 }

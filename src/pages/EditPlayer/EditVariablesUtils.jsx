@@ -1,12 +1,11 @@
+import { useGlobalContext } from "../../providers/globalContextProvider";
 import { useEditPlayerDataContext } from "../../providers/EditPlayeProvider";
 import { TableCellLong, TableCellMedium, TableCellShort, TableDataHeader, TableDataRow } from "../../components/UI/layout/tableData"
 import { ButtonMouseGhost, ButtonMousePrimary, ButtonMouseTransparent, IconButtonSmallSecondary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
 import { SymbolAdd, SymbolDelete } from "../../components/UI/objects/symbols";
 import { SimpleAccordion, SimpleAccordionContent, SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
 import { HeadContentTitleBar, TitleBar__Title, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
-import { FormSimplePanelRow, LabelElement, LabelElementAssist, LabelElementToggle, LabelElementToggle2SidesPanel, LabelSelectElement, LabelSelectShorterElement, SelectIconShorter } from "../../components/UI/components/form simple/formSimple";
-import { useGlobalContext } from "../../providers/globalContextProvider";
-import { useEffect, useState } from "react";
+import { FormSimplePanelRow, LabelElement, LabelElementNumberAssist, LabelElementToggle, LabelElementToggle2SidesPanel, LabelSelectElement, LabelSelectShorterElement, SelectIconShorter } from "../../components/UI/components/form simple/formSimple";
 
 export const ListSelectedContract = () => {
   const editPlayerContext = useEditPlayerDataContext();
@@ -190,13 +189,13 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
                       {
                         editPlayerContext.variableCombos.expresion?.map((item) => {                          
                           if (editPlayerContext.variableExpressions[ExprComb-1].bonus_prima == 0) {
-                            if (item.bonus_prima === false) {
+                            if (item.bonus_prima === true) {
                               return (
                                 <option key={item.id} value={item.id}>{item.value}</option>
                               )
                             }
                           } else {
-                            if (item.bonus_prima === true) {
+                            if (item.bonus_prima === false) {
                               return (
                                 <option key={item.id} value={item.id}>{item.value}</option>
                               )
@@ -212,7 +211,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
                       handleChangesOnNewVariableExpression(event,index)
                     }} >
                       <option value=''>Operador</option>
-                    <option value='<='>=</option>
+                    <option value='<='>&lt;=</option>
                     <option value='>='>&gt;=</option>
                   </SelectIconShorter>
                   <ExprCondValueField
@@ -275,7 +274,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
                                 }}
                                 >
                                   <option value=''>Operador</option>
-                                  <option value='<='>=</option>
+                                  <option value='<='>&lt;=</option>
                                   <option value='>='>&gt;=</option>
                               </SelectIconShorter>
 
@@ -333,13 +332,21 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
             </LabelSelectElement>
           </FormSimplePanelRow>
           <FormSimplePanelRow>
-            <LabelElementAssist
+            {/* <LabelElementAssist
               htmlFor='variableAmount'
               placeholder='Importe en €'
               type='text'
               className='panel-field-long'>
                 Importe
-              </LabelElementAssist> 
+              </LabelElementAssist>  */}
+            <LabelElementNumberAssist
+              htmlFor='variableAmount'
+              placeholder='Importe en €'
+              type='text'
+              className='panel-field-long'
+            >
+            Importe
+            </LabelElementNumberAssist>
           </FormSimplePanelRow>
           <FormSimplePanelRow>
             <LabelSelectElement

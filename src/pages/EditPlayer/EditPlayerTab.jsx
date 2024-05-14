@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useEditPlayerDataContext } from "../../providers/EditPlayeProvider";
 import { useGetPlayerData } from "./useGetPlayerData";
 import { useSaveData } from "../../hooks/useSaveData";
-import { FormSimplePanelRow, FormSimpleRow, LabelElementAssist, LabelElementToggle, LabelSelectElement } from "../../components/UI/components/form simple/formSimple"
+import { FormSimplePanelRow, FormSimpleRow, LabelElementAssist, LabelElementNumber, LabelElementNumberAssist, LabelElementToggle, LabelSelectElement } from "../../components/UI/components/form simple/formSimple"
 import { ButtonMousePrimary } from "../../components/UI/objects/buttons"
 import { useGlobalContext } from "../../providers/globalContextProvider";
 
@@ -213,11 +213,11 @@ export const EditPlayerTab = ({ idJugador, playerTypes, countries, positions }) 
           type='text'
           className='panel-field-long'
           autoComplete='off'
-          placeholder='Alias'
+          placeholder='Nombre deportivo'
           value={editPlayerContext.playerDataDetails.desc_alias || ''}
           handleOnChange={e => {editPlayerContext.setPlayerDataDetails({...editPlayerContext.playerDataDetails, desc_alias: e.target.value})}}
           >
-          Alias
+          Nombre deportivo
         </LabelElementAssist>
       </FormSimplePanelRow>
       <FormSimplePanelRow>
@@ -394,7 +394,7 @@ export const EditPlayerTab = ({ idJugador, playerTypes, countries, positions }) 
         </LabelSelectElement>
       </FormSimplePanelRow>
       <FormSimplePanelRow>
-        <LabelElementAssist
+        <LabelElementNumberAssist
           htmlFor='playerMarketValue'
           type='text'
           className='panel-field-long'
@@ -402,11 +402,12 @@ export const EditPlayerTab = ({ idJugador, playerTypes, countries, positions }) 
           placeholder='Introduce euros'
           assistanceText='valor en euros €'
           value={editPlayerContext.playerDataDetails.val_valor_mercado || ''}
-          // handleOnChange={e => {editPlayerContext.setPlayerDataDetails({...editPlayerContext.playerDataDetails, val_valor_mercado: e.target.value})}}
-          handleOnChange={handleNumberChange}
-          >
-          Valoración económica mercado
-        </LabelElementAssist>
+          handleOnChange={(values) => {
+            editPlayerContext.setPlayerDataDetails({...editPlayerContext.playerDataDetails, val_valor_mercado: values.value})
+          }}
+        >
+        Valoración económica mercado
+        </LabelElementNumberAssist>
       </FormSimplePanelRow>
       <FormSimplePanelRow>
         <LabelElementToggle
@@ -438,7 +439,7 @@ export const EditPlayerTab = ({ idJugador, playerTypes, countries, positions }) 
             const checked = e.target.checked === true ? '1' : '0';  
             editPlayerContext.setPlayerDataDetails({...editPlayerContext.playerDataDetails, flag_cotonu: checked})}}
           >
-          Cotonú
+          Acuerdo Samoa
         </LabelElementToggle>
       </FormSimplePanelRow>
       {createPlayerError &&

@@ -3,21 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../../providers/globalContextProvider";
 import { useGetData } from "../../hooks/useGetData";
 import { useSaveData } from "../../hooks/useSaveData";
-import { useNumberFormatter } from "../../hooks/useNumberFormatter";
 import { AsideMenu } from "../../components/AsideMenu";
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
 import { CentralBody, HeadContent, HeadContentTitleBar, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
 import { ButtonMouseGhost, ButtonMousePrimary, IconButtonSmallPrimary } from "../../components/UI/objects/buttons";
 import { SymbolBack } from "../../components/UI/objects/symbols";
-import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElementAssist, LabelElementToggle, LabelSelectElement, } from "../../components/UI/components/form simple/formSimple";
+import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElementAssist, LabelElementNumber, LabelElementNumberAssist, LabelElementToggle, LabelSelectElement, LabelSelectElementAssist, } from "../../components/UI/components/form simple/formSimple";
 import { FormTabs, FormTabs__ContentWrapper, FormTabs__LinksWrapper, FormTabs__ToolBarWrapper, TabContent, TabLink } from "../../components/UI/components/formTabs/formTabs";
 
 
 export default function NewPlayerPage () {
 
   const context = useGlobalContext();
-
-  const formatNumber = useNumberFormatter ();
 
   //hook guardar datos
   const { uploadData, responseUpload } = useSaveData();
@@ -180,9 +177,8 @@ export default function NewPlayerPage () {
         setCreatePlayerError('Debe completar la información de los campos obligatorios');
       } else {       
         dataSent['desc_apellido1'] = data.desc_apellido1;    
-        // console.log('jugador que creooooo', dataSent);    
-        // saveUpdatePlayer(dataSent);
-        createNewPlayer.uploadData('players/create',dataSent);
+        console.log('jugador que creooooo', dataSent);    
+        // createNewPlayer.uploadData('players/create',dataSent);
       }
     }    
   }
@@ -445,18 +441,14 @@ export default function NewPlayerPage () {
                       </LabelSelectElement>
                     </FormSimplePanelRow>
                     <FormSimplePanelRow>
-                      <LabelElementAssist
+                       <LabelElementNumberAssist
                         htmlFor='playerMarketValue'
-                        type='text'
                         className='panel-field-long'
-                        autoComplete='off'
                         placeholder='Introduce euros'
                         assistanceText='Introduce euros €'
-                        value={formatNumber.value}
-                        handleOnChange={formatNumber.formatnr}
-                        >
+                       >
                         Valoración económica mercado
-                      </LabelElementAssist>
+                       </LabelElementNumberAssist>
                     </FormSimplePanelRow>
                     <FormSimplePanelRow>
                       <LabelElementToggle
