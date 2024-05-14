@@ -28,7 +28,7 @@ export default function ManagePlayersPage () {
 
   useEffect(()=>{
     if (responseGetData){
-      console.log(responseGetData);
+      // console.log(responseGetData);
       if (responseGetData.status === 200) { 
         setAllPlayers(responseGetData.data.data);
       } else if (responseGetData.status === 409) { setErrorMsg('El usuario que estás intentnado crear ya existe')

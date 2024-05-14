@@ -4,10 +4,10 @@ import { useGetPlayerData } from "./useGetPlayerData";
 import { useSaveData } from "../../hooks/useSaveData";
 import { FormSimplePanelRow, FormSimpleRow, LabelElementAssist, LabelElementToggle, LabelSelectElement } from "../../components/UI/components/form simple/formSimple"
 import { ButtonMousePrimary } from "../../components/UI/objects/buttons"
-import { useNumberFormatter } from "../../hooks/useNumberFormatter";
+import { useGlobalContext } from "../../providers/globalContextProvider";
 
 export const EditPlayerTab = ({ idJugador, playerTypes, countries, positions }) => {
-  
+  const globalContext = useGlobalContext();
   const editPlayerContext = useEditPlayerDataContext();
 
   //error update player
@@ -17,10 +17,6 @@ export const EditPlayerTab = ({ idJugador, playerTypes, countries, positions }) 
   const {
     getPlayerDetail,
     } = useGetPlayerData(idJugador);
-
-  useEffect(() => {
-    getPlayerDetail(idJugador);
-  },[])
 
   // Función para formatear el número
   const formatNumber = (inputValue) => {

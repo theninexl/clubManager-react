@@ -25,10 +25,10 @@ export const ListSelectedContract = () => {
             <TableCellMedium><strong>Fecha inicio / fin</strong></TableCellMedium>
           </TableDataRow>
           <TableDataRow className='cm-u-spacer-mb-bigger'>
-           <TableCellMedium>{editPlayerContext.activeContractData[0].desc_descripcion}</TableCellMedium>
-            <TableCellMedium>{editPlayerContext.activeContractData[0].desc_tipo_contrato}</TableCellMedium>
-            <TableCellMedium>{editPlayerContext.activeContractData[0].desc_tipo_procedimiento}</TableCellMedium>
-            <TableCellMedium>{editPlayerContext.activeContractData[0].fecha_ini_fin}</TableCellMedium>
+           <TableCellMedium>{editPlayerContext.activeContractData[0]?.desc_descripcion}</TableCellMedium>
+            <TableCellMedium>{editPlayerContext.activeContractData[0]?.desc_tipo_contrato}</TableCellMedium>
+            <TableCellMedium>{editPlayerContext.activeContractData[0]?.desc_tipo_procedimiento}</TableCellMedium>
+            <TableCellMedium>{editPlayerContext.activeContractData[0]?.fecha_ini_fin}</TableCellMedium>
           </TableDataRow>
         </>
         : 

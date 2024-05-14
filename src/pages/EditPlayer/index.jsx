@@ -2,33 +2,31 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSaveData } from "../../hooks/useSaveData";
 import { useGetData } from "../../hooks/useGetData";
+import { useGlobalContext } from "../../providers/globalContextProvider";
 import { EditPlayerContextProvider, useEditPlayerDataContext } from "../../providers/EditPlayeProvider";
 import { EditPlayerTab } from "./EditPlayerTab";
 import { EditContractsTab } from "./EditContractsTab";
+import { EditVariablesTab } from "./EditVariablesTab";
 import { AsideMenu } from "../../components/AsideMenu";
 
 import { ModalPlayerCopyVariables } from "../../components/Modals/ModalPlayerCopyVariables"
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
-import { CentralBody, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
-import { ButtonCatPrimary, ButtonCatTransparent, ButtonMouseGhost, ButtonMousePrimary, ButtonMouseTransparent, IconButtonSmallPrimary, IconButtonSmallSecondary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
-import { SymbolAdd, SymbolBack, SymbolDelete, SymbolEdit } from "../../components/UI/objects/symbols";
-import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElement, LabelElementAssist, LabelElementToggle, LabelElementToggle2Sides, LabelElementToggle2SidesPanel, LabelSelectElement, LabelSelectElementAssist, LabelSelectShorterElement, SelectIconShorter, } from "../../components/UI/components/form simple/formSimple";
+import { CentralBody, HeadContent, HeadContentTitleBar, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
+import { ButtonCatPrimary, ButtonCatTransparent, IconButtonSmallPrimary, } from "../../components/UI/objects/buttons";
+import { SymbolBack, SymbolDelete, } from "../../components/UI/objects/symbols";
+import { FormSimplePanel, FormSimpleRow, LabelElement, SelectIconShorter, } from "../../components/UI/components/form simple/formSimple";
 import { FormTabs, FormTabs__ContentWrapper, FormTabs__LinksWrapper, FormTabs__ToolBarWrapper, TabContent, TabLink } from "../../components/UI/components/formTabs/formTabs";
-import { SimpleAccordion, SimpleAccordionContent,  SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
 import { manageTabs } from "../../domUtilities/manageTabs";
-import { FileDrop } from "../../components/UI/components/form simple/fileDrop";
-import { TableCellLong, TableCellMedium, TableCellShort, TableDataHeader, TableDataRow, TableDataWrapper } from "../../components/UI/layout/tableData";
-import { useGlobalContext } from "../../providers/globalContextProvider";
+
 import { ModalBody, ModalContainer, ModalContent__Small, ModalFooter } from "../../components/UI/components/modal/modal";
-import { EditVariablesTab } from "./EditVariablesTab";
+import { EditPlayerHeader } from "./EditPlayerHeader";
+import { ModalDeletePlayer } from "../../components/Modals/ModalDeletePlayer";
 
 
 
 export default function EditPlayerPage () {  
   const context = useGlobalContext();
   const editPlayerContext = useEditPlayerDataContext();
-  
-
   //navegar
   const navigate = useNavigate();
 
@@ -45,53 +43,29 @@ export default function EditPlayerPage () {
 
   // variables y estados locales
   const [error, setError] = useState(null);
-  const [modal, setModal] = useState(false);
+  
   const [countries, setCountries] = useState(null);
   const [positions, setPositions] = useState(null);
-  const [contracts, setContracts] = useState(null);
+  // const [contracts, setContracts] = useState(null);
+  const [playerTypes, setPlayerTypes] = useState(null); 
   const [intermediaries, setIntermediaries] = useState(null);
   const [teams, setTeams] = useState(null);
   const [showUploadDoc, setShowUploadDoc ] = useState(false);
   const [uploadedFiles, setUploadedFiles ] = useState([]);
-  const [playerData, setPlayerData] = useState({
-    'desc_alias': '',
-    'desc_apellido1': '',
-    'desc_apellido2': '',
-    'desc_dni_nie': '',
-    'desc_nombre': '',
-    'desc_nss': '',
-    'desc_pasaporte1': '',
-    'desc_pasaporte2': '',
-    'dt_caducidad_dni': '',
-    'dt_caducidad_pasaporte1': '',
-    'dt_caducidad_pasaporte2': '',
-    'dt_nacimiento': '',
-    'flag_comunitario': '',
-    'flag_cotonu': '', 
-    'flag_residencia': '',
-    'id_jugador': '',
-    'id_nacionalidad1': '',
-    'id_nacionalidad2': '',
-    'id_posicion': '',
-    'id_tipo_jugador': '',
-    'val_valor_mercado': '',
-  });
-  const [playerContracts, setplayerContracts] = useState([]);
-
   //estados playerDetails
   //estados recuperar y seleccionar nombre jugador
   const [optaPlayersList, setOptaPlayersList] = useState(null);
   const [optaSelectedPlayer, setOptaSelectedPlayer] = useState('');
   const [optaResultsBox, setOptaResultsBox] = useState(false);
-  const [playerTypes, setPlayerTypes] = useState(null);
-  
-  
-
   
 
   useEffect(()=>{
     manageTabs();
   },[])
+
+  useEffect(()=>{
+    console.log('tengo datos', editPlayerContext);
+  },[editPlayerContext])
   
   //------------- PETICIONES DE DATOS MAESTROS ------------------------
 
@@ -112,10 +86,13 @@ export default function EditPlayerPage () {
     if (getPositions.responseGetData) setPositions(getPositions.responseGetData.data.data);
   },[getPositions.responseGetData])
 
-  const getContracts = useGetData('masters/getAllContract');
-  useEffect (() => {
-    if (getContracts.responseGetData) setContracts(getContracts.responseGetData.data.data);
-  },[getContracts.responseGetData])
+  // const getContracts = useGetData('masters/getAllContract');
+  // useEffect (() => {
+  //   if (getContracts.responseGetData) {
+  //     console.log('getAllContract', getContracts.responseGetData)
+  //     setContracts(getContracts.responseGetData.data.data);
+  //   }
+  // },[getContracts.responseGetData])
 
   const getIntermediaries = useGetData('masters/getAllIntermediary');
   useEffect (() => {
@@ -129,21 +106,9 @@ export default function EditPlayerPage () {
     }
   },[getTeams.responseGetData])
 
-  // const [plList, setPlList] = useState()
-
-  const getPlList = useGetData('players/copyClausulaListajugador',{id_jugador:1});
-  useEffect (() => {
-    if (getPlList.responseGetData) {
-      console.log('plList', getPlList.responseGetData)
-    }
-  },[getPlList.responseGetData])
-
-
 
   //----------------------------------------------------------//
-  //variables
-
-  
+  //variables  
   
   //pedir datos para buscar en una expresion tipo search
   const getExprSearch = useSaveData();
@@ -394,14 +359,6 @@ export default function EditPlayerPage () {
     }
   }
 
-  
-
- 
-
-
-  
-
-
   //------------------------------------------------------------//
   //documentos
 
@@ -483,35 +440,16 @@ export default function EditPlayerPage () {
     }
   },[deletePlayer.responseUpload])
 
-  const renderModal = () => {
-    if (modal) {
-      return (
-        <ModalContainer>
-          <ModalContent__Small>
-            <ModalBody
-              className='cm-u-spacer-mb-bigger'>
-                <h3 className="cm-u-text-black-cat">{`¿Estas seguro de borrar a ${playerData.desc_nombre} ${playerData.desc_apellido1}?`}</h3>
-              </ModalBody>
-            <ModalFooter>
-              <ButtonCatTransparent
-                onClick={() => setModal(false)}>
-                  Cancelar
-              </ButtonCatTransparent>
-              <ButtonCatPrimary
-                onClick={handlePlayerDelete}>
-                Borrar usuario
-              </ButtonCatPrimary>
-            </ModalFooter>
-          </ModalContent__Small>
-        </ModalContainer>
-      );
-    }
-  }
+  
 
   return (
     <>
       <EditPlayerContextProvider>
-        {renderModal()}
+        <ModalDeletePlayer 
+          state={context.editPlayerModalDelete}
+          setState={context.setEditPlayerModalDelete}
+          playerDelete={handlePlayerDelete}
+        />
         <ModalPlayerCopyVariables
           state={context.modalImportVar}
           setState={context.setModalImportVar}
@@ -524,23 +462,9 @@ export default function EditPlayerPage () {
           </HalfContainerAside>
           <HalfContainerBody >
             <HeadContent>
-              <HeadContentTitleBar>
-                <TitleBar__TitleAvatar
-                  avatarText='Editar\nJugador'>
-                  {`${playerData.desc_nombre} ${playerData.desc_apellido1}`}
-                </TitleBar__TitleAvatar>
-                <TitleBar__Tools>
-                  <IconButtonSmallPrimary
-                    onClick={() => setModal(true)}>
-                    <SymbolDelete/>
-                  </IconButtonSmallPrimary>
-                  <IconButtonSmallPrimary
-                    onClick={() => {
-                      navigate('/manage-players')}}>
-                    <SymbolBack />
-                  </IconButtonSmallPrimary>
-                </TitleBar__Tools>
-              </HeadContentTitleBar>
+              <EditPlayerHeader
+                idJugador={userParamString}
+              />
               <FormTabs__ToolBarWrapper>
                 <FormTabs>
                   <FormTabs__LinksWrapper>

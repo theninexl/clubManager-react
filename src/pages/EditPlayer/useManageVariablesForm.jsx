@@ -16,9 +16,9 @@ export const useManageVariablesForm = (form, idJugador) => {
     getVariableCombos.uploadData('players/getCombosValues',{});
    }
    useEffect(()=>{
-    console.log('combos values', getVariableCombos.responseUpload);
+    // console.log('combos values', getVariableCombos.responseUpload);
      if (getVariableCombos.responseUpload) {     
-      console.log('variables combos', getVariableCombos.responseUpload.data);
+      // console.log('variables combos', getVariableCombos.responseUpload.data);
       editPlayerContext.setVariableCombos(getVariableCombos.responseUpload?.data);
      }
    },[getVariableCombos.responseUpload])
@@ -118,7 +118,6 @@ export const useManageVariablesForm = (form, idJugador) => {
 
   useEffect(()=>{
     if (getDetalleClausulasList.responseUpload) {
-      // console.log('savedVariables list', getDetalleClausulasList.responseUpload);
       editPlayerContext.setSavedVariables(getDetalleClausulasList.responseUpload?.variables)
     }
   },[getDetalleClausulasList.responseUpload])
@@ -187,5 +186,6 @@ export const useManageVariablesForm = (form, idJugador) => {
     searchCondition,
     handleDeleteClausula,
     handleSaveNewVariable,
+    getClausulasList,
   }
 }

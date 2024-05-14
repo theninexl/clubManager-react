@@ -45,6 +45,9 @@ export const GlobalContextProvider = ({ children }) => {
   //uploadedDocs new Player
   const [fileNewPlayerUploaded, setFileNewPlayerUploaded] = useState([]);
 
+  //edit players
+  //modal borrar jugador
+  const [editPlayerModalDelete, setEditPlayerModalDelete] = useState(false);
   //contrato activo en edicion de jugadores
   const [activeContractId, setActiveContractId] = useState(null);
   //mostrar/ocultar modal copiar variables en edicion de jugadores
@@ -71,6 +74,8 @@ export const GlobalContextProvider = ({ children }) => {
         setActiveContractId,
         modalImportVar,
         setModalImportVar,
+        editPlayerModalDelete,
+        setEditPlayerModalDelete,
       }}
     >
       {children}

@@ -30,7 +30,7 @@ export const ModalPlayerCopyVariables = ({ state, setState, playerId, activeCont
     const getPlayers = useSaveData();
     const searchPlayers = (search) => getPlayers.uploadData('players/copyClausulaListajugador',{'search':search});
     useEffect(()=>{
-      // console.log('resul busqueda jugadores', getPlayers.responseUpload)
+      console.log('resul busqueda jugadores', getPlayers.responseUpload)
       setPlayersList(getPlayers.responseUpload?.data);
     },[getPlayers.responseUpload])
 
