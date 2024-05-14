@@ -77,7 +77,7 @@ export const LabelElement = ({ children, style, className, htmlFor, type, placeh
   );
 }
 
-export const LabelElementNumber = ({ children, style, className, htmlFor, type, placeholder, value, handleOnChange, required, disabled, readOnly, autoComplete, role }) => {
+export const LabelElementNumber = ({ children, style, className, htmlFor, placeholder, value, handleOnChange, required, disabled, readOnly, autoComplete, role }) => {
   return (
     <label
       htmlFor={htmlFor}
@@ -96,7 +96,6 @@ export const LabelElementNumber = ({ children, style, className, htmlFor, type, 
         placeholder={placeholder}
         autoComplete={autoComplete}
         role={role}
-        value={value}
         required={required}
         disabled={disabled}
         readOnly={readOnly}
