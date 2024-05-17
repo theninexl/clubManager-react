@@ -6,6 +6,7 @@ import { SymbolAdd, SymbolDelete } from "../../components/UI/objects/symbols";
 import { SimpleAccordion, SimpleAccordionContent, SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
 import { HeadContentTitleBar, TitleBar__Title, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
 import { FormSimplePanelRow, LabelElement, LabelElementNumberAssist, LabelElementToggle, LabelElementToggle2SidesPanel, LabelSelectElement, LabelSelectShorterElement, SelectIconShorter } from "../../components/UI/components/form simple/formSimple";
+import { useState } from "react";
 
 export const ListSelectedContract = () => {
   const editPlayerContext = useEditPlayerDataContext();
@@ -471,7 +472,10 @@ const ExprCondValueField = ({ idExpresion, index,  handleChangesOnNewVariableExp
 
 //render campo valor condicion dependiendo del escogido en condicion
 const ConditionValueField = ({ idCondicion, indexExpr, indexCond, searchCondition, }) => {
-  const editPlayerContext = useEditPlayerDataContext();
+  const editPlayerContext = useEditPlayerDataContext();  
+
+  const [condSelected, setCondSelected] = useState();
+  const [showSearchCondResults, setShowSearchCondResults] = useState(false);
 
   let filter = null;
   let result = null;
@@ -481,7 +485,6 @@ const ConditionValueField = ({ idCondicion, indexExpr, indexCond, searchConditio
     result = filter[0]?.type;
     comboVal = filter[0]?.comboVal;
   }
-
 
   if (result === 'texto') { 
     return (
@@ -535,14 +538,14 @@ const ConditionValueField = ({ idCondicion, indexExpr, indexCond, searchConditio
           type='text'
           className='cm-c-form-simple'
           autoComplete='off'
-          placeholder='Escribe para buscar'
+          placeholder='Buscar'
           required={true}
-          value={editPlayerContext.searchCondSelected}
-          handleOnChange={(e)=>{
-            //console.log(e.target.value);
-            editPlayerContext.setSearchCondSelected(e.target.value);
+          value={condSelected}
+          handleOnChange={(e)=>{            
+            setCondSelected(e.target.value);
             if (e.target.value.length >= 2 ) {
-              searchCondition(idCondicion, e.target.value)
+              searchCondition(idCondicion, e.target.value);
+              setShowSearchCondResults(true);
             } else if ((e.target.value.length < 2 )) {
               editPlayerContext.setSearchCondResults(null);
               editPlayerContext.setShowSearchCondResults(false);
@@ -554,6 +557,9 @@ const ConditionValueField = ({ idCondicion, indexExpr, indexCond, searchConditio
           <SearchCondResults
             indexExpr={indexExpr}
             indexCond={indexCond}
+            setCondSelected={setCondSelected}
+            showSearchCondResults={showSearchCondResults}
+            setShowSearchCondResults={setShowSearchCondResults}
             
           />
         {/* {renderSearchCondResults(indexExpr, indexCond)} */}
@@ -597,14 +603,14 @@ const SearchExpResults = ({ index }) => {
 }
 
 //render caja de resultados busqueda jugador
-const SearchCondResults = (indexExpr, indexCond, ) => {
+const SearchCondResults = ({ indexExpr, indexCond, setCondSelected, showSearchCondResults, setShowSearchCondResults }) => {
   const editPlayerContext = useEditPlayerDataContext();
 
-  if (editPlayerContext.showSearchCondResults && editPlayerContext.searchCondResults?.length == 0) {
+  if (showSearchCondResults && editPlayerContext.searchCondResults?.length == 0) {
     return (
       <div className='cm-c-dropdown-select__results-box'><span>No hay resultados</span></div>
     );
-  } else if (editPlayerContext.showSearchCondResults && editPlayerContext.searchCondResults?.length > 0) {
+  } else if (showSearchCondResults && editPlayerContext.searchCondResults?.length > 0) {
     return (
       <div className='cm-c-dropdown-select__results-box'>
         {
@@ -621,6 +627,8 @@ const SearchCondResults = (indexExpr, indexCond, ) => {
                   editPlayerContext.setVariableExpressions(onChangeValue);
                   editPlayerContext.setSearchCondSelected(item.value);
                   editPlayerContext.setShowSearchCondResults(false);
+                  setCondSelected(item.value)
+                  setShowSearchCondResults(false);
                 }}  >
                   {item.value}
               </span>

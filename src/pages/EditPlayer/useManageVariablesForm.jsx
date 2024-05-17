@@ -84,15 +84,14 @@ export const useManageVariablesForm = (form, idJugador) => {
   //pedir datos para buscar en una condicion tipo search
   const getCondSearch = useSaveData();
   const searchCondition = (id, search) => {
-    console.log('llamo a search Condition');
+    // console.log('llamo a search Condition');
     getCondSearch.uploadData('players/searchComboValues',{'id':id, 'search':search})
   }
   //guardar datos busqueda jugador
   useEffect(()=> {
     if (getCondSearch.responseUpload) {
-      console.log(getCondSearch.responseUpload)
+      //console.log(getCondSearch.responseUpload)
       editPlayerContext.setSearchCondResults(getCondSearch.responseUpload.data);
-      editPlayerContext.setShowSearchCondResults(true);
     }
   },[getCondSearch.responseUpload])
 

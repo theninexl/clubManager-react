@@ -324,7 +324,7 @@ export const useManageContractForm = (form, idJugador) => {
       id_intermediario_3: formData.get('contractIntermediary3'),
     }
 
-    console.log('data que guado', data);
+    // console.log('data que guado', data);
 
     if (data) {
       for (const [key, value] of Object.entries(data)) {        
@@ -337,7 +337,7 @@ export const useManageContractForm = (form, idJugador) => {
       }
 
       if (Object.keys(data).length === (Object.keys(editedContract).length - 3)) {
-        console.log('contrato que guardo', editedContract);
+        // console.log('contrato que guardo', editedContract);
         saveEditedContract.uploadData('players/editContract',editedContract)        
         editPlayerContext.setEditContract(false);
         editPlayerContext.setDetailContractData(null);
@@ -350,7 +350,7 @@ export const useManageContractForm = (form, idJugador) => {
   //mirar la respuesta de subir datos al terminar de guardar el contrato editado
   useEffect(()=> {
     if (saveEditedContract.responseUpload) {
-      console.log(saveEditedContract.responseUpload);
+      // console.log(saveEditedContract.responseUpload);
       if (saveEditedContract.responseUpload.status === 'ok') { 
         editPlayerContext.setCreatingContractError()
         getPlayerDetail(idJugador);
@@ -391,7 +391,7 @@ export const useManageContractForm = (form, idJugador) => {
 
   useEffect(()=>{
     if (getDetalleClausula.responseUpload) {
-      console.log('savedVariables list', getDetalleClausula.responseUpload);
+      // console.log('savedVariables list', getDetalleClausula.responseUpload);
       editPlayerContext.setSavedVariables(getDetalleClausula.responseUpload?.variables)
     }
   },[getDetalleClausula.responseUpload])

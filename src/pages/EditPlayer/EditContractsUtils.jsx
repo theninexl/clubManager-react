@@ -33,7 +33,7 @@ export const ListPlayerContracts = ({ handleDeleteContract,handleEditContract })
       { (editPlayerContext.playerDataContracts != null && editPlayerContext.playerDataContracts.length > 0 ) ? 
           <>
             {
-              editPlayerContext.playerDataContracts?.map(item => {                   
+              editPlayerContext.playerDataContracts?.map(item => {            
                 return (
                   <TableDataRow key={item.id_contrato}>
                     <TableCellShort className='cm-u-centerText'>
