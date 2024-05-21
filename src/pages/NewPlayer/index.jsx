@@ -167,7 +167,7 @@ export default function NewPlayerPage () {
       'flag_cotonu': data.flag_cotonu,   
     }
     
-    console.log('dataSent',dataSent)
+    //console.log('dataSent',dataSent)
 
     if (data.desc_nombre === '') {
       setCreatePlayerError('Debe completar la información de los campos obligatorios');
@@ -177,8 +177,8 @@ export default function NewPlayerPage () {
         setCreatePlayerError('Debe completar la información de los campos obligatorios');
       } else {       
         dataSent['desc_apellido1'] = data.desc_apellido1;    
-        console.log('jugador que creooooo', dataSent);    
-        // createNewPlayer.uploadData('players/create',dataSent);
+        //console.log('jugador que creooooo', dataSent);    
+        createNewPlayer.uploadData('players/create',dataSent);
       }
     }    
   }
@@ -325,7 +325,6 @@ export default function NewPlayerPage () {
                         className='panel-field-long'
                         autoComplete='off'
                         placeholder='dd/mm/yyyy'
-                        value={optaSelectedPlayer.fch_nacimiento || ''}
                         >
                         Fecha nacimiento
                       </LabelElementAssist>
