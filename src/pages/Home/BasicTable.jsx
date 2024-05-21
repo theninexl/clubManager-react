@@ -1,153 +1,286 @@
-import { flexRender, useReactTable } from "@tanstack/react-table"
+import { useEffect, useMemo, useState } from "react"
+import { 
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable, } from "@tanstack/react-table"
 import dataJson from './MOCK_DATA.json'
-import { TableCellMedium, TableDataHeader, TableDataWrapper } from "../../components/UI/layout/tableData"
+import { TableDataCls, TableDataClsBody, TableDataClsBody__cell, TableDataClsBody__row, TableDataClsHead, TableDataClsHead__cell } from "../../components/UI/layout/tableDataClassic"
+import { EditableCell } from "./EditableCell"
+import { IndeterminateCheckbox } from "./IndeterminateCheckbox"
+
+
 export const BasicTable = () => {
 
-   const columnDef = [
+  const [data, setData] = useState(dataJson);
+  const [sumaRows, setSumaRows] = useState([]);
+  const [columnVisibility, setColumnVisibility] = useState({
+    'Select': false,
+    'Clausulas': true,
+    'Importe': false,
+    'january/2022': true,
+    'february/2022': true,
+    'march/2022': true,
+    'april/2022': true,
+    'may/2022': true,
+    'june/2022': true,
+    'july/2022': true,
+  })
+  const [editState, setEditState] = useState(false);
+  const [rowSelection, setRowSelection] = useState({});
+
+  const columnHelper = createColumnHelper();
+  const columnDef = [
     {
-      accesorKey: 'clausulas',
-      header: 'Tipo de clausula'
+      id: 'Select',
+      header: 'Seleccionar',
+      cell: ({ row }) => <IndeterminateCheckbox {...{
+        index: row.index,
+        checked: row.getIsSelected(),
+        disabled: !row.getCanSelect(),
+        indeterminate: row.getIsSomeSelected(),
+        onChange: row.getToggleSelectedHandler(),
+      }}
+      />,
+      footer: 'total',
     },
     {
-      accesorKey: 'january/2022',
-      header: 'Ene-22'
+      accessorKey: 'Clausulas',
+      header: 'Clausula',
+      cell: EditableCell,
+      footer: 'total',
     },
     {
-      accesorKey: 'february/2022',
-      header: 'Feb-22'
+      accessorKey: 'Importe',
+      header: 'Importe total',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => total + row.getValue('Importe'), 0),
+      meta: {
+        editState,
+        setEditState,
+        columnVisibility,
+        setColumnVisibility,
+      }
     },
     {
-      accesorKey: 'march/2022',
-      header: 'Mar-22'
+      accessorKey: 'january/2022',
+      header: 'ene-22',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => total + row.getValue('january/2022'), 0),
     },
-    {
-      accesorKey: 'april/2022',
-      header: 'Abr-22'
-    },
-    {
-      accesorKey: 'may/2022',
-      header: 'May-22'
-    },
-    {
-      accesorKey: 'june/2022',
-      header: 'Jun-22'
-    },
-    {
-      accesorKey: 'july/2022',
-      header: 'Jul-22'
-    },
-    {
-      accesorKey: 'august/2022',
-      header: 'Ago-22'
-    },
-    {
-      accesorKey: 'september/2022',
-      header: 'Sep-22'
-    },
-    {
-      accesorKey: 'november/2022',
-      header: 'Nov-22'
-    },
-    {
-      accesorKey: 'december/2022',
-      header: 'Dic-22'
-    },
-    {
-      accesorKey: 'january/2023',
-      header: 'Ene-23'
-    },
-    {
-      accesorKey: 'february/2023',
-      header: 'Feb-23'
-    },
-    {
-      accesorKey: 'march/2023',
-      header: 'Mar-23'
-    },
-    {
-      accesorKey: 'april/2023',
-      header: 'Abr-23'
-    },
-    {
-      accesorKey: 'may/2023',
-      header: 'May-23'
-    },
-    {
-      accesorKey: 'june/2023',
-      header: 'Jun-23'
-    },
-    {
-      accesorKey: 'july/2023',
-      header: 'Jul-23'
-    },
-    {
-      accesorKey: 'august/2023',
-      header: 'Ago-23'
-    },
-    {
-      accesorKey: 'september/2023',
-      header: 'Sep-23'
-    },
-    {
-      accesorKey: 'november/2023',
-      header: 'Nov-23'
-    },
-    {
-      accesorKey: 'december/2023',
-      header: 'Dic-23'
-    },
-    {
-      accesorKey: 'january/2024',
-      header: 'Ene-24'
-    },
-    {
-      accesorKey: 'february/2024',
-      header: 'Feb-24'
-    },
-    {
-      accesorKey: 'march/2024',
-      header: 'Mar-24'
-    },
-    {
-      accesorKey: 'april/2024',
-      header: 'Abr-24'
-    },
-    {
-      accesorKey: 'may/2024',
-      header: 'May-24'
-    },
+    columnHelper.accessor('february/2022',{
+      cell: EditableCell,
+    }),
+    columnHelper.accessor('march/2022',{
+      cell: EditableCell,
+    }),
+    columnHelper.accessor('april/2022',{
+      cell: EditableCell,
+    }),
+    columnHelper.accessor('may/2022',{
+      cell: EditableCell,
+    }),
+    columnHelper.accessor('june/2022',{
+      cell: EditableCell,
+    }),
+    columnHelper.accessor('july/2022',{
+      cell: EditableCell,
+    }),
   ]
+
+  //utiliza el hook useMemo para "chachear" la info de la tabla porque si no se volverá a solicitar en cada render 
+  const finalData = useMemo(()=> data,[])
+  const finalColumnDef = useMemo(()=> columnDef,[])  
 
   const tableInstance = useReactTable({
     columns: columnDef,
-    data: dataJson,
+    data: data,
+    getCoreRowModel: getCoreRowModel(),
+    meta: {
+      updateData: (rowIndex, columnId, value) => 
+        {
+          // console.log('rowIndex', rowIndex)
+          // console.log('columnId', columnId)
+          // console.log('value', value)
+          const valueNumber = isNaN(value) ? value : Number(value);
+          setData(prev => 
+            prev.map((row,index) =>
+              index === rowIndex ? {
+                ...prev[rowIndex], [columnId]: valueNumber
+              } : row
+            ))
+        }
+    },
+    state: {
+      columnVisibility: columnVisibility,
+      rowSelection: rowSelection,
+    },
+    onColumnVisibilityChange: setColumnVisibility,
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
   })
 
-  // console.log('test', tableInstance.getHeaderGroups());
+  const sumaFilas = () => {
+    let rowsSum = []
+    tableInstance.getRowModel().rows.map(row => {
+      const originalCopy = {...row.original};
+      const { Clausulas, Importe, ...rest } = originalCopy;
+      let sumaFila = Object.values(rest).reduce((total, numero) => {
+            const isNumber = Number.isInteger(numero) ? numero : 0;
+            return total + isNumber
+          }, 0)      
+      rowsSum = [...rowsSum, sumaFila]          
+    })
+
+    return rowsSum
+  }
+
+  useEffect (() => {   
+    const suma = sumaFilas() 
+    // console.log('suma', suma)
+    setSumaRows(suma)  
+    // console.log('data', data)
+  },[data])
+
+  // useEffect(()=>{
+  //   console.log('rowSum', sumaRows)
+  // },[sumaRows])
+
+  // useEffect(()=>{
+  //   console.log('columnVisibility', columnVisibility)
+  // },[columnVisibility])
+
+  // console.log('leaf Columns', tableInstance.getAllLeafColumns())
+  console.log('SelectedRowModel', tableInstance.getState().rowSelection)
+
+  useEffect(()=>{
+    console.log('cambio estado edicion FUERA', editState);
+  },[editState])
 
   return (
-    <TableDataWrapper className='cm-u-spacer-mt-big'>
-      
+    <>
+      <p>&nbsp;</p>
+      <p><button
+        onClick={(e)=> {
+          e.preventDefault();
+          setEditState(true);
+          setColumnVisibility({...columnVisibility, 'Select': true, 'Importe': true})
+        }}
+      >Editar Pagos</button>
+      { editState && 
+      <button
+      onClick={(e)=> {
+        e.preventDefault();
+        setEditState(false)
+        setColumnVisibility({...columnVisibility, 'Select': false, 'Importe': false})
+      }}
+      >
+        Guardar
+      </button>
+      }
+      </p>
+      <TableDataCls  className='cm-u-spacer-mt-big'>
         { tableInstance.getHeaderGroups().map(headerElement => {
-          return (
-            <TableDataHeader className='cm-l-tabledata__header--nospace' key={headerElement.id}>
-              { headerElement.headers.map(columnElement => {
-                return (
-                  <TableCellMedium 
-                    key={columnElement.id}
-                    conlSpan={columnElement.colSpan}
-                    className='table-bg tablecell-bg-old'
-                  >
-                    { flexRender ( 
-                      columnElement.column.columnDef.header,
-                      columnElement.getContext()
-                    )}
-                  </TableCellMedium>
-                )
-              })}
-            </TableDataHeader>
-          )
-        }) }
-    </TableDataWrapper>
-  )
+            return (
+              <TableDataClsHead key={headerElement.id}>
+                <tr>
+                  { headerElement.headers.map(columnElement => {
+                    return (
+                      <TableDataClsHead__cell
+                      key={columnElement.id}
+                      colSpan={columnElement.colSpan}
+                      className='tablecell-medium'
+                      >
+                        { flexRender ( 
+                          columnElement.column.columnDef.header,
+                          columnElement.getContext()
+                        )}
+                      
+                      </TableDataClsHead__cell>
+                    )
+                  })}
+                  <TableDataClsHead__cell
+                      className='tablecell-medium'
+                  >Total</TableDataClsHead__cell>
+                </tr>
+              </TableDataClsHead>
+            )
+          })
+        }
+        <TableDataClsBody>
+          { tableInstance.getRowModel().rows.map(rowElement => {
+            return (
+              <>
+                <TableDataClsBody__row key={rowElement.id}>
+                  { rowElement.getVisibleCells().map(cellElement => {
+                    return (
+                      <>
+                        <TableDataClsBody__cell key={cellElement.id} colSpan='1'>
+                        {flexRender(cellElement.column.columnDef.cell, cellElement.getContext())}
+                        </TableDataClsBody__cell>
+                      </>
+                    )
+                  })}
+                  <TableDataClsBody__cell key={`suma${rowElement.id}`} colSpan='1'>
+                    {sumaRows[rowElement.id]}
+                  </TableDataClsBody__cell>
+                </TableDataClsBody__row>
+              </>
+            )
+            })
+          }
+        </TableDataClsBody>
+        {
+          tableInstance.getFooterGroups().map(footerElement => {
+            return (
+              <TableDataClsHead key={footerElement.id}>
+                <tr>
+                  { footerElement.headers.map(footerCol => {
+                    return (
+                      <>
+                      <TableDataClsHead__cell
+                        key={footerCol.id}
+                        className='tablecell-medium'
+                      >
+                      {
+                        footerCol.isPlaceHolder ? null :
+                        flexRender(
+                          footerCol.column.columnDef.footer,
+                          footerCol.getContext()
+                        )
+                      }
+                      </TableDataClsHead__cell>                      
+                      </>
+                    )
+                  })}
+                </tr>
+              </TableDataClsHead>
+            )
+          })
+        }
+        
+
+
+        
+      </TableDataCls>
+
+      <p><button
+        onClick={(e)=> {
+          e.preventDefault();
+          console.log('add row');
+          setData([...data, {
+            "Clausulas": 'lorem',
+            "january/2022": 0,
+            "february/2022": 0,
+            "march/2022": 0,
+            "april/2022": 0,
+            "may/2022": 0,
+            "june/2022": 0,
+            "july/2022": 0,
+            "august/2022": 0
+          }])
+        }}
+      >Añadir fila vacía</button></p>
+    </>
+  );
 }

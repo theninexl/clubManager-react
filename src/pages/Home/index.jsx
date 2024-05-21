@@ -17,7 +17,6 @@ export default function Home () {
         </HalfContainerAside>
         <HalfContainerBody>
           <>
-            <TanStack />
             <BasicTable />
           </>
         </HalfContainerBody>
