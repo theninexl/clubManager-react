@@ -1,10 +1,35 @@
 import { useEffect, useState } from "react";
+import { DropDownMenu, DropdownItem } from "./DropDownMenu";
+import { STATUSES } from "./MOCK_DATA";
+import { IconButtonSmallPrimary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
+import { SymbolContentCopy, SymbolSave } from "../../components/UI/objects/symbols";
+import { NumericFormat } from "react-number-format";
+
+const ColorIcon = ({ Color }) => {
+  return (
+    <div style={{
+      border: '1px solid lightgray',
+      display: 'inline-block',
+      width: '12px',
+      height: '12px',
+      borderRadius: '2px',
+      backgroundColor: Color,
+    }}></div>
+  )
+}
+
 
 export const EditableCell = ({ getValue, row, column, table, }) => {
   const initialValue = getValue();
   const [value, setValue] = useState(initialValue)
+  const [isCellSelected, setIsCellSelected] = useState(false)
+  // console.log('column', column.getIndex())
+  // console.log('row', row)
+  const { updateData, newSanctionLine } = table.options.meta;
+
 
   const onBlur = () => {
+    console.log('onBlur');
     table.options.meta?.updateData(
       row.index,
       column.id,
@@ -16,23 +41,163 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
     setValue(initialValue)
   },[initialValue])
 
-  console.log('meta', column.columnDef.meta)
+  const handleChangeOnSubtrack = (e) => {
+    console.log('value antes', selectedAmount);
+    let onChangeValue = {...value}
+    onChangeValue.amount = e.target.value;
+    console.log('limit', selectedAmount)
+    setValue(onChangeValue)
+  }
+
+  const CellStyles = {
+    SelHovered: {
+      backgroundColor: 'yellow'
+    }
+  };
 
   return (
     <>
       {row.index < 8 ? 
         <>
-          {initialValue} <button onClick={()=> {
-            column.columnDef.meta?.setEditState(false);
-            column.columnDef.meta?.setColumnVisibility({...column.columnDef.meta?.columnVisibility, 'Select': false, 'Importe': false})
-            }}>ST</button>
+          { (table.getIsSomePageRowsSelected() == true && row.index === column.columnDef.meta.rowSelected2) ?
+            <>
+              <div style={{ 
+                backgroundColor: getValue().status?.color,
+                display: 'flex', 
+                flexDirection: 'row', 
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                gap: '8px', 
+                padding: '8px',
+                height: '100%',
+                }}>
+                <input
+                  value={value.amount}
+                  onChange={(e) => {
+                    // console.log('value antes', value);
+                    let onChangeValue = {...value}
+                    onChangeValue.amount = e.target.value;
+                    // console.log('change', onChangeValue)
+                    setValue(onChangeValue)
+                  }}
+                  onBlur={() => {
+                    updateData(row.index, column.id, value)
+                  }}
+                  style={{
+                    border: '1px solid lightgray',
+                    borderRadius: '4px',
+                    display: 'flex',
+                    flexGrow: 0,
+                    width: '50%',
+                    height: '28px',
+                  }}
+                />
+                { column.id !== 'Importe' &&
+                  <DropDownMenu>
+                    { STATUSES.map(item => { 
+                      // console.log(item);
+                      return (
+                        <>
+                          <DropdownItem 
+                            key={item.id}
+                            onClick={ () => updateData(
+                              row.index, column.id, { amount: getValue().amount, status: item}
+                            )}
+                          >
+                            <ColorIcon Color={item.color} />{item.name}
+                          </DropdownItem>
+                        </>
+                      )}
+                    )}
+                  </DropDownMenu>
+                }
+              </div>
+            </>
+            :
+            <>              
+              <div style={{ 
+                backgroundColor: getValue().status?.color,
+                display: 'flex', 
+                flexDirection: 'row', 
+                alignItems: 'center', 
+                justifyContent: 'flex-end',
+                padding: '8px',
+                }}
+                
+                >
+                  { initialValue.amount }
+                  { table.getState().subtractState && 
+                    <IconButtonSmallerPrimary
+                      style={{marginLeft: '8px'}}
+                      onClick={() => {newSanctionLine(row, column.id, value.amount)}}
+                    >
+                      <SymbolContentCopy />
+                    </IconButtonSmallerPrimary>
+                  }
+              </div>              
+            </>
+          }
         </> :
         <>
-          <input
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            onBlur={onBlur}
-          />
+          { (table.getState().subtractState && column.id == column.columnDef.meta.insertSelectedCol && row.id == table.getRowCount()-1) && 
+            <>
+              <div               
+              style={{ 
+                backgroundColor: table.getState().subtractState ? '#FF978E' : '#B7FFA3',
+                display: 'flex', 
+                flexDirection: 'row', 
+                alignItems: 'center', 
+                justifyContent: 'flex-end',
+                padding: '0 8px',
+                height: '100%',
+                }}
+              >
+                <NumericFormat 
+                  allowNegative={false}
+                  prefix="-"
+                  onValueChange={(values) => {                    
+                    const limit = -Math.abs(column.columnDef.meta.insertSelectedAmount);                    
+                    if (values.formattedValue !== '' && values.formattedValue >= limit && values.formattedValue <= 0) {
+                      console.log('puede guardar')
+                      let onChangeValue = {...value};
+                      onChangeValue.amount = values.formattedValue;
+                      // setValue(onChangeValue);
+                      column.columnDef.meta.setInsertCanSave(true)
+                      updateData(row.index, column.id, onChangeValue);
+                    } else {
+                      console.log('no puede guardar')
+                      column.columnDef.meta.setInsertCanSave(false)
+                    }
+                  }}
+
+                  style={{
+                    backgroundColor: table.getState().subtractState ? '#FF978E' : '#B7FFA3',
+                    border: '1px solid black',
+                    borderRadius: '4px',
+                    display: 'flex',
+                    flexGrow: 0,
+                    width: '50%',
+                  }}
+                />
+              </div>
+            </>         
+          }
+          { (!table.getState().subtractState || ( table.getState().subtractState && row.id != table.getRowCount()-1 ) ) &&
+            <>
+              <div style={{ 
+                backgroundColor: getValue().status?.color,
+                display: 'flex', 
+                flexDirection: 'row', 
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                gap: '8px', 
+                padding: '8px',
+                }}
+              >
+              {value.amount}
+              </div>
+            </>
+          }
         </> 
       }
     </>

@@ -4,283 +4,1059 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable, } from "@tanstack/react-table"
-import dataJson from './MOCK_DATA.json'
+import { DATA } from './MOCK_DATA'
 import { TableDataCls, TableDataClsBody, TableDataClsBody__cell, TableDataClsBody__row, TableDataClsHead, TableDataClsHead__cell } from "../../components/UI/layout/tableDataClassic"
 import { EditableCell } from "./EditableCell"
 import { IndeterminateCheckbox } from "./IndeterminateCheckbox"
+import { STATUSES } from "./MOCK_DATA"
+import { IconButtonSmallerPrimary } from "../../components/UI/objects/buttons"
+import { SymbolDelete } from "../../components/UI/objects/symbols"
+import { NumericFormat } from "react-number-format"
+import { EditableClauseCell } from "./EditableClauseCell"
 
 
 export const BasicTable = () => {
 
-  const [data, setData] = useState(dataJson);
+  const [data, setData] = useState(DATA);
   const [sumaRows, setSumaRows] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({
     'Select': false,
-    'Clausulas': true,
     'Importe': false,
-    'january/2022': true,
-    'february/2022': true,
-    'march/2022': true,
-    'april/2022': true,
-    'may/2022': true,
-    'june/2022': true,
-    'july/2022': true,
+  })
+  const [columnPinning, setColumnPinning] = useState({
+    'left': [
+      'Select',
+      'Clausulas',
+      'Importe',
+
+    ],
+    'right': ['total'],
   })
   const [editState, setEditState] = useState(false);
-  const [rowSelection, setRowSelection] = useState({});
+  const [canSave, setCanSave] = useState(false);
+  const [rowSelected, setRowSelected] = useState({});
+  const [rowSelected2, setRowSelected2] = useState(null);
+  //estados insertables
+  const [insertState, setInsertState] = useState(false);
+  const [subtractState, setSubtractState] = useState(false);
+  const [advancePayState, setAdvancedPayState] = useState(false);
+  const [insertSelectedCol,setInsertSelectedCol] = useState();
+  const [insertSelectedRow, setInsertSelectedRow] = useState();
+  const [insertSelectedAmount, setInsertSelectedAmount] = useState();
+  const [insertAmountError, setInsertAmountError] = useState();
+  const [insertCanSave, setInsertCanSave] = useState(false);
+
+
+  const { status_initial } = STATUSES;
+
+  const emptyLine = [{
+    "Clausulas": 'lorem',
+    "Importe": { amount: '', status: STATUSES[0]},
+    "january/2022": { amount: '', status: STATUSES[0]},
+    "february/2022": { amount: '', status: STATUSES[0]},
+    "march/2022": { amount: '', status: STATUSES[0]},
+    "april/2022": { amount: '', status: STATUSES[0]},
+    "may/2022": { amount: '', status: STATUSES[0]},
+    "june/2022": { amount: '', status: STATUSES[0]},
+    "july/2022": { amount: '', status: STATUSES[0]},
+    "august/2022": { amount: '', status: STATUSES[0]},
+    "september/2022": { amount: '', status: STATUSES[0]},
+    "october/2022": { amount: '', status: STATUSES[0]},
+    "november/2022": { amount: '', status: STATUSES[0]},
+    "december/2022":{ amount: '', status: STATUSES[0]},
+    "january/2023": { amount: '', status: STATUSES[0]},
+    "february/2023": { amount: '', status: STATUSES[0]},
+    "march/2023": { amount: '', status: STATUSES[0]},
+    "april/2023": { amount: '', status: STATUSES[0]},
+    "may/2023": { amount: '', status: STATUSES[0]},
+    "june/2023": { amount: '', status: STATUSES[0]},
+    "july/2023": { amount: '', status: STATUSES[0]},
+    "august/2023": { amount: '', status: STATUSES[0]},
+    "september/2023": { amount: '', status: STATUSES[0]},
+    "october/2023": { amount: '', status: STATUSES[0]},
+    "november/2023": { amount: '', status: STATUSES[0]},
+    "december/2023":{ amount: '', status: STATUSES[0]},
+    "total":""
+  }]
+
+  const sumHelper = (total, row, key) => {
+    let number = row.getValue(key).amount
+    number >= 0 ? total = total + number : total = total - Math.abs(number);    
+    return total;
+  }
 
   const columnHelper = createColumnHelper();
+  //columDefs
   const columnDef = [
     {
       id: 'Select',
-      header: 'Seleccionar',
-      cell: ({ row }) => <IndeterminateCheckbox {...{
-        index: row.index,
-        checked: row.getIsSelected(),
-        disabled: !row.getCanSelect(),
-        indeterminate: row.getIsSomeSelected(),
-        onChange: row.getToggleSelectedHandler(),
-      }}
-      />,
+      header: 'Sel.',
+      cell: ({ row, column, table }) => {
+        return (
+          <>
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'row', 
+              alignItems: 'center', 
+              justifyContent: 'flex-end',
+              padding: '8px',}}              
+            >
+              { row.index < 8 ? 
+                <>
+                  <IndeterminateCheckbox {...{
+                    row,
+                    column,
+                    table,
+                    checked: row.getIsSelected(),
+                    disabled: !row.getCanSelect(),
+                    indeterminate: row.getIsSomeSelected(),
+                    onChange: row.getToggleSelectedHandler(),
+                  }}
+                  />
+                </>
+                :
+                <>
+                  <IconButtonSmallerPrimary
+                    onClick={()=>{ table.options.meta.deleteRow(row.id)}}
+                  >
+                    <SymbolDelete/>
+                  </IconButtonSmallerPrimary>
+                </>
+              }
+            </div>
+          </>
+        )
+        
+      },
       footer: 'total',
+      meta: {
+        setRowSelected,
+        rowSelected2,
+        setRowSelected2,
+      },
+      size: 50,
     },
     {
       accessorKey: 'Clausulas',
       header: 'Clausula',
-      cell: EditableCell,
-      footer: 'total',
+      cell: EditableClauseCell ,
+      footer: '',
+      size: 180, 
     },
     {
       accessorKey: 'Importe',
       header: 'Importe total',
       cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => total + row.getValue('Importe'), 0),
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => total + row.getValue('Importe').amount, 0)
+      ,
       meta: {
         editState,
         setEditState,
-        columnVisibility,
-        setColumnVisibility,
-      }
+        subtractState,
+        rowSelected,
+        setRowSelected,
+        rowSelected2,
+      },
+      size: 125,      
     },
     {
       accessorKey: 'january/2022',
-      header: 'ene-22',
+      header: 'ene/22',
       cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => total + row.getValue('january/2022'), 0),
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'january/2022'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        setInsertSelectedAmount,
+        insertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
     },
     columnHelper.accessor('february/2022',{
+      header: 'feb/22',
       cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'february/2022'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
     }),
     columnHelper.accessor('march/2022',{
+      header: 'mar/22',
       cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'march/2022'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
     }),
     columnHelper.accessor('april/2022',{
+      header: 'abr/22',
       cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'april/2022'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
     }),
     columnHelper.accessor('may/2022',{
+      header: 'may/22',
       cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'may/2022'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
     }),
     columnHelper.accessor('june/2022',{
+      header: 'jun/22',
       cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'june/2022'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
     }),
     columnHelper.accessor('july/2022',{
+      header: 'jul/22',
       cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'july/2022'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    columnHelper.accessor('august/2022',{
+      header: 'ago/22',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'august/2022'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    columnHelper.accessor('september/2022',{
+      header: 'sep/22',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'september/2022'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    columnHelper.accessor('october/2022',{
+      header: 'oct/22',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'october/2022'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    columnHelper.accessor('november/2022',{
+      header: 'nov/22',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'november/2022'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    columnHelper.accessor('december/2022',{
+      header: 'dic/22',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'december/2022'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    {
+      accessorKey: 'january/2023',
+      header: 'ene/23',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'january/2023'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    },
+    columnHelper.accessor('february/2023',{
+      header: 'feb/23',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'february/2023'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    columnHelper.accessor('march/2023',{
+      header: 'mar/23',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'march/2023'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    columnHelper.accessor('april/2023',{
+      header: 'abr/23',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'april/2023'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    columnHelper.accessor('may/2023',{
+      header: 'may/23',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'may/2023'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    columnHelper.accessor('june/2023',{
+      header: 'jun/23',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'april/2022'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    columnHelper.accessor('july/2023',{
+      header: 'jul/23',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'july/2023'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    columnHelper.accessor('august/2023',{
+      header: 'ago/23',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'august/2023'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    columnHelper.accessor('september/2023',{
+      header: 'sep/23',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'september/2023'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    columnHelper.accessor('october/2023',{
+      header: 'oct/23',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'october/2023'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    columnHelper.accessor('november/2023',{
+      header: 'nov/23',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'november/2023'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    columnHelper.accessor('december/2023',{
+      header: 'dic/23',
+      cell: EditableCell,
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'december/2023'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    columnHelper.accessor('total',{
+      header: 'Total',
+      cell: EditableCell,
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
     }),
   ]
 
   //utiliza el hook useMemo para "chachear" la info de la tabla porque si no se volverá a solicitar en cada render 
-  const finalData = useMemo(()=> data,[])
-  const finalColumnDef = useMemo(()=> columnDef,[])  
+  // const finalData = useMemo(()=> data,[])
+  // const finalColumnDef = useMemo(()=> columnDef,[])  
 
   const tableInstance = useReactTable({
     columns: columnDef,
     data: data,
     getCoreRowModel: getCoreRowModel(),
     meta: {
-      updateData: (rowIndex, columnId, value) => 
-        {
-          // console.log('rowIndex', rowIndex)
-          // console.log('columnId', columnId)
-          // console.log('value', value)
-          const valueNumber = isNaN(value) ? value : Number(value);
-          setData(prev => 
-            prev.map((row,index) =>
-              index === rowIndex ? {
-                ...prev[rowIndex], [columnId]: valueNumber
-              } : row
-            ))
-        }
+      updateData: (rowIndex, columnId, value) => {
+        const valueNumber = isNaN(value.amount) ? value.amount : Number(value.amount);
+        let newAmountData = [...data]
+        newAmountData[rowIndex][columnId] = { amount: valueNumber, status: value.status };
+        setData(newAmountData);
+        // setData(prev => 
+        //   prev.map((row,index) =>
+        //     index === rowIndex ? {
+        //       ...prev[rowIndex], [columnId]: valueNumber
+        //     } : row
+        //   ))
+      },
+      updateClause: (rowIndex, columnId, value) => {
+        let newData = [...data]
+        newData[rowIndex][columnId] = value;
+        setData(newData);
+      },
+      deleteRow: (row) => {
+        // console.log('delete registro', row)
+        const newData = [...data];
+        newData.splice(row,1);
+        setData(newData);
+        setEditState(false);
+        tableInstance.resetRowSelection();
+      },
+      newSanctionLine: (row, columnId, value) => {
+        setInsertState(true);
+        setInsertSelectedAmount(value);
+        setInsertSelectedCol(columnId);
+        const valueNumber = isNaN(value) ? -Math.abs(value) : -Math.abs(Number(value));
+        const newEmptyLine = [...emptyLine]
+        newEmptyLine[0]["Clausulas"] = '';
+        newEmptyLine[0][columnId] = {amount: valueNumber, status: STATUSES[0]};
+        const newData = [...data, newEmptyLine[0]]
+        setData(newData);
+      },      
     },
     state: {
       columnVisibility: columnVisibility,
-      rowSelection: rowSelection,
+      rowSelection: rowSelected,
+      columnPinning: columnPinning,
+      advancePayState,
+      subtractState,
+      insertState,
     },
     onColumnVisibilityChange: setColumnVisibility,
     enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
+    enableMultiRowSelection: false,
+    onRowSelectionChange: setRowSelected,
+    onColumnPinningChange: setColumnPinning,
   })
 
+  const getCommonPinningStyles = (column) => {
+    const isPinned = column.getIsPinned()
+    const isLastLeftPinnedColumn =
+      isPinned === 'left' && column.getIsLastColumn('left')
+    const isFirstRightPinnedColumn =
+      isPinned === 'right' && column.getIsFirstColumn('right')
+  
+    return {
+      boxShadow: isLastLeftPinnedColumn
+        ? '-4px 0 4px -4px gray inset'
+        : isFirstRightPinnedColumn
+          ? '4px 0 4px -4px gray inset'
+          : undefined,
+      left: isPinned === 'left' ? `${column.getStart('left')}px` : undefined,
+      right: isPinned === 'right' ? `${column.getAfter('right')}px` : undefined,
+      opacity: isPinned ? 0.98 : 1,
+      position: isPinned ? 'sticky' : '',
+      width: column.getSize(),
+      zIndex: isPinned ? 1 : 0,
+    }
+  }
+
   const sumaFilas = () => {
+    console.log(tableInstance.getSelectedRowModel().rows[0].original);
+    const originalCopy = {...tableInstance.getSelectedRowModel().rows[0].original}
+    const { Clausulas, Importe, ...rest } = originalCopy;
+    let sumaFila = Object.values(rest).reduce((total, numero) => {
+    const isNumber = Number.isInteger(numero.amount) ? numero.amount : 0;
+      return total + isNumber
+    }, 0)
+    const onSumaChange = [...sumaRows];
+    onSumaChange[tableInstance.getSelectedRowModel().rows[0].id] = sumaFila;
+    setSumaRows(onSumaChange)
+  }
+
+  const sumaTodasFilas = () => {
+    // console.log('entro en sumaTodasfilas')
     let rowsSum = []
     tableInstance.getRowModel().rows.map(row => {
       const originalCopy = {...row.original};
       const { Clausulas, Importe, ...rest } = originalCopy;
       let sumaFila = Object.values(rest).reduce((total, numero) => {
-            const isNumber = Number.isInteger(numero) ? numero : 0;
+            const isNumber = Number.isInteger(numero.amount) ? numero.amount : 0;
             return total + isNumber
-          }, 0)      
-      rowsSum = [...rowsSum, sumaFila]          
+          }, 0)
+      // console.log('sumaFila', sumaFila)
+      rowsSum = [...rowsSum, sumaFila] 
+      // console.log('rowsSum', rowsSum)         
     })
-
-    return rowsSum
+    // return rowsSum
+    setSumaRows(rowsSum)
   }
 
-  useEffect (() => {   
-    const suma = sumaFilas() 
-    // console.log('suma', suma)
-    setSumaRows(suma)  
-    // console.log('data', data)
+  useEffect (() => {
+    console.log('data changes', data);
+    if (tableInstance.getIsSomePageRowsSelected()) {
+      // console.log('fila seleccionada', tableInstance.getIsSomePageRowsSelected())
+      // console.log('row a evaluar:', tableInstance.getSelectedRowModel().rows[0]?.id)
+      sumaFilas()
+    } else {
+      sumaTodasFilas();
+    }
   },[data])
 
-  // useEffect(()=>{
-  //   console.log('rowSum', sumaRows)
-  // },[sumaRows])
-
-  // useEffect(()=>{
-  //   console.log('columnVisibility', columnVisibility)
-  // },[columnVisibility])
-
-  // console.log('leaf Columns', tableInstance.getAllLeafColumns())
-  console.log('SelectedRowModel', tableInstance.getState().rowSelection)
+  useEffect(()=>{
+    if (sumaRows.length === 0) {
+      sumaTodasFilas();
+    } else {
+      checkSum()
+    }
+  },[sumaRows])
 
   useEffect(()=>{
-    console.log('cambio estado edicion FUERA', editState);
+    if (editState) {
+      setColumnVisibility({...columnVisibility, 'Select': true, 'Importe': true})
+    } else {
+      setColumnVisibility({...columnVisibility, 'Select': false, 'Importe': false})
+    }
   },[editState])
+
+  useEffect(()=>{
+    console.log('se ha seleccionado algo', tableInstance.getIsSomePageRowsSelected())
+    console.log('rowSelected', rowSelected);
+    checkSum()
+  },[rowSelected])
+
+  // useEffect(()=>{
+  //   console.log('rowSelected2', rowSelected2);
+  // },[rowSelected2])
+
+  const checkSum = () => {
+    // console.log('row a evaluar:', tableInstance.getSelectedRowModel().rows[0]?.id)
+    // console.log('sumas', sumaRows)
+    const importeSuma = sumaRows[tableInstance.getSelectedRowModel().rows[0]?.id];
+    const importeClausula = tableInstance.getSelectedRowModel().rows[0]?.getValue('Importe').amount;
+    // console.log('Importe Clausula:', importeClausula);
+    // console.log('importe Suma', importeSuma);
+
+    if (importeClausula > 0 && importeSuma > 0 && importeClausula == importeSuma) {
+      // console.log('puede guardar')
+      setCanSave(true)
+    } else {
+      // console.log('no puede guardar')
+      setCanSave(false)
+    }
+  }
 
   return (
     <>
-      <p>&nbsp;</p>
-      <p><button
-        onClick={(e)=> {
-          e.preventDefault();
-          setEditState(true);
-          setColumnVisibility({...columnVisibility, 'Select': true, 'Importe': true})
-        }}
-      >Editar Pagos</button>
-      { editState && 
-      <button
-      onClick={(e)=> {
-        e.preventDefault();
-        setEditState(false)
-        setColumnVisibility({...columnVisibility, 'Select': false, 'Importe': false})
-      }}
-      >
-        Guardar
-      </button>
-      }
-      </p>
-      <TableDataCls  className='cm-u-spacer-mt-big'>
-        { tableInstance.getHeaderGroups().map(headerElement => {
-            return (
-              <TableDataClsHead key={headerElement.id}>
-                <tr>
-                  { headerElement.headers.map(columnElement => {
-                    return (
-                      <TableDataClsHead__cell
-                      key={columnElement.id}
-                      colSpan={columnElement.colSpan}
-                      className='tablecell-medium'
-                      >
-                        { flexRender ( 
-                          columnElement.column.columnDef.header,
-                          columnElement.getContext()
-                        )}
-                      
-                      </TableDataClsHead__cell>
-                    )
-                  })}
-                  <TableDataClsHead__cell
-                      className='tablecell-medium'
-                  >Total</TableDataClsHead__cell>
-                </tr>
-              </TableDataClsHead>
-            )
-          })
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
+        <p>&nbsp;</p>
+        <p><button
+          onClick={(e)=> {
+            e.preventDefault();
+            setEditState(true);
+          }}
+        >Editar Pagos</button>
+        { editState && 
+          <>
+            <span>&nbsp;</span>
+            <button
+            disabled={ canSave ? false : true }
+            onClick={(e)=> {
+              e.preventDefault();
+              setEditState(false);
+              tableInstance.resetRowSelection();
+            }}
+            >
+              Guardar
+            </button>
+            <span>&nbsp;</span>
+            <button
+              onClick={(e)=> {
+                e.preventDefault();
+                setEditState(false);
+                tableInstance.resetRowSelection();
+              }}
+              >
+                Cancelar
+            </button>
+          </>
         }
-        <TableDataClsBody>
-          { tableInstance.getRowModel().rows.map(rowElement => {
-            return (
-              <>
-                <TableDataClsBody__row key={rowElement.id}>
-                  { rowElement.getVisibleCells().map(cellElement => {
-                    return (
-                      <>
-                        <TableDataClsBody__cell key={cellElement.id} colSpan='1'>
-                        {flexRender(cellElement.column.columnDef.cell, cellElement.getContext())}
-                        </TableDataClsBody__cell>
-                      </>
-                    )
-                  })}
-                  <TableDataClsBody__cell key={`suma${rowElement.id}`} colSpan='1'>
-                    {sumaRows[rowElement.id]}
-                  </TableDataClsBody__cell>
-                </TableDataClsBody__row>
-              </>
-            )
-            })
-          }
-        </TableDataClsBody>
-        {
-          tableInstance.getFooterGroups().map(footerElement => {
-            return (
-              <TableDataClsHead key={footerElement.id}>
-                <tr>
-                  { footerElement.headers.map(footerCol => {
-                    return (
-                      <>
-                      <TableDataClsHead__cell
-                        key={footerCol.id}
-                        className='tablecell-medium'
-                      >
-                      {
-                        footerCol.isPlaceHolder ? null :
-                        flexRender(
-                          footerCol.column.columnDef.footer,
-                          footerCol.getContext()
+        </p>
+        <div 
+          className='tableData-Container'
+          style={{
+            overflowX: 'scroll',
+            width: '100%',
+          }}
+        >
+          <TableDataCls 
+            className='cm-u-spacer-mt-big'
+            style={{ 
+              border: '1px solid lightgray',
+              borderCollapse: 'collapse',
+              borderSpacing: 0,
+              width: tableInstance.getTotalSize(), 
+            }}
+          >
+            { tableInstance.getHeaderGroups().map(headerElement => {
+                return (
+                  <TableDataClsHead key={headerElement.id}>
+                    <tr>
+                      { headerElement.headers.map(columnElement => {
+                        const { column } = columnElement;
+                        return (
+                          <TableDataClsHead__cell
+                          key={columnElement.id}
+                          colSpan={columnElement.colSpan}
+                          className='tablecell-medium'
+                          style={{ ...getCommonPinningStyles(column) }}
+                          >
+                            { flexRender ( 
+                              columnElement.column.columnDef.header,
+                              columnElement.getContext()
+                            )}
+                          
+                          </TableDataClsHead__cell>
                         )
-                      }
-                      </TableDataClsHead__cell>                      
-                      </>
-                    )
-                  })}
-                </tr>
-              </TableDataClsHead>
-            )
-          })
+                      })}
+                    </tr>
+                  </TableDataClsHead>
+                )
+              })
+            }
+            <TableDataClsBody>
+              { tableInstance.getRowModel().rows.map(rowElement => {
+                return (
+                  <>
+                    <TableDataClsBody__row key={rowElement.id}>
+                      { rowElement.getVisibleCells().map((cellElement, index) => {
+                        const { column } = cellElement;
+                        // console.log('visibleCells', rowElement.getVisibleCells().length)
+                        return (
+                          <>
+                            {index === rowElement.getVisibleCells().length - 1 ?
+                              <>
+                                <TableDataClsBody__cell 
+                                  key={`suma${rowElement.id}`} 
+                                  colSpan='1'
+                                  style={{ ...getCommonPinningStyles(column) }}
+                                >
+                                  <div style={{
+                                    borderRight: '1px solid lightgray',
+                                    display: 'flex', 
+                                    flexDirection: 'row', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'flex-end',
+                                    padding: '8px',
+                                    height: '100%',}}>
+                                    {sumaRows[rowElement.id]}</div>
+                                </TableDataClsBody__cell>
+                              </>
+                              :
+                              <>
+                                <TableDataClsBody__cell 
+                                  key={cellElement.id} 
+                                  colSpan='1'
+                                  style={{ ...getCommonPinningStyles(column) }}
+                                  >
+                                    {flexRender(cellElement.column.columnDef.cell, cellElement.getContext())}
+                                </TableDataClsBody__cell>
+                              </>
+                            }
+                          </>
+                        )
+                      })}
+                    </TableDataClsBody__row>
+                  </>
+                )
+                })
+              }
+            </TableDataClsBody>
+            {
+              tableInstance.getFooterGroups().map(footerElement => {
+                return (
+                  <TableDataClsHead key={footerElement.id}>
+                    <tr>
+                      { footerElement.headers.map(footerCol => {
+                        const { column } = footerCol;
+                        return (                        
+                          <>
+                            <TableDataClsHead__cell
+                              key={footerCol.id}
+                              className='tablecell-medium'
+                              style={{ ...getCommonPinningStyles(column) }}
+                            >
+                            {
+                              footerCol.isPlaceHolder ? null :
+                              flexRender(
+                                footerCol.column.columnDef.footer,
+                                footerCol.getContext()
+                              )
+                            }
+                            </TableDataClsHead__cell>                      
+                          </>
+                        )
+                      })}
+                    </tr>
+                  </TableDataClsHead>
+                )
+              })
+            }
+            
+
+
+            
+          </TableDataCls>
+        </div>
+
+        <p>
+        { !insertState &&
+          <>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setAdvancedPayState(true);
+              }}
+            >
+              Anticipar pago
+            </button>
+            <span>&nbsp;</span>
+            <button
+              onClick={(e)=>{
+                e.preventDefault();
+                console.log('insertSelectedAmount', insertSelectedAmount)
+                console.log('insertSelectedCol', insertSelectedCol)
+                setSubtractState(true);
+              }}
+            >Sanción</button>
+            <span>&nbsp;</span>
+            <span>&nbsp;</span>
+          </>
         }
-        
+        { subtractState && 
+          <>
+            <button
+              disabled={ insertCanSave ? false : true }
+              onClick={(e) => {
+                e.preventDefault();
+                setInsertState(false);
+                setSubtractState(false);
+                setInsertCanSave(false);
+                setInsertSelectedAmount();
+                setInsertSelectedCol();
+              }}
+            >
+              Guardar
+            </button>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                if (insertSelectedAmount !== undefined) {
+                  const newData = [...data];
+                  newData.pop()
+                  console.log(newData);
+                  setData(newData);
+                }
+                setInsertState(false);
+                setSubtractState(false);
+                setInsertCanSave(false);
+                setInsertSelectedAmount();
+                setInsertSelectedCol();
+              }}
+            >
+              Cancelar
+            </button>
+          </>
+        }
 
+          
 
-        
-      </TableDataCls>
-
-      <p><button
-        onClick={(e)=> {
-          e.preventDefault();
-          console.log('add row');
-          setData([...data, {
-            "Clausulas": 'lorem',
-            "january/2022": 0,
-            "february/2022": 0,
-            "march/2022": 0,
-            "april/2022": 0,
-            "may/2022": 0,
-            "june/2022": 0,
-            "july/2022": 0,
-            "august/2022": 0
-          }])
-        }}
-      >Añadir fila vacía</button></p>
+        </p>
+      </div>
     </>
   );
 }

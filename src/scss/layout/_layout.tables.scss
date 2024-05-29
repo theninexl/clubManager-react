@@ -149,39 +149,22 @@
 
 .cm-l-tabledata-cls {
     $block:&;
-    border-collapse: separate;
-    border-spacing:1px;
-
-    &__row, &__header, &__footer {   
-        
-    }
-
-    &__row, &__footer {
-        @extend .cm-u-text-mouse;
-        align-items: center;
-        min-height: getSize($large);
-        height: auto;
-        padding: getSize($small) 0;
-    }
+    height: 1px;
+    // border-collapse: separate;
+    // border-spacing:1px;
 
     &__header {
         @extend .cm-u-text-black-mouse;
 
-        tr {
-            // display: flex;
-            // gap: 1px;
-        }
-
         th {
-            align-items: center;
-            background-color: getColor(scarpaFlowLight);
-            // display: flex;
+            // align-items: center;
+            background-color: white;
+            border-bottom: 1px solid lightgray;
+            border-top: 1px solid lightgray;
             color: getColor(black);
+            text-align: center;
+            height: getSize($large);
             
-
-            &.table-bg {
-                padding: 0 getSize($small);
-            }
         }
     }
 
@@ -190,38 +173,44 @@
         }
 
         td {
-            align-items: center;
-            background-color: getColor(scarpaFlowLightFade);
+            background-color: white;
+            border: 1px solid getColor(scarpaFlowLight);
             // display: flex;
             color: getColor(black);
-            padding: 0 getSize($small);
+            // padding: 0 getSize($small);
+            text-align: right;
+            // min-height: getSize($large);
+            // height: getSize($large);
+            padding: 0;
+            vertical-align: middle;
         }
     }
 
     .tablecell {
         $block:&;
         &-long, &-medium, &-short {
-            align-items: center;
+            // align-items: center;
         }
         &-long {
-            flex:2;
+            // flex:2;
             //overflow: hidden;
             //white-space: nowrap;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-            hyphens: auto;
+            // overflow-wrap: break-word;
+            // word-wrap: break-word;
+            // hyphens: auto;
         }
 
         &-medium {
             // flex:1;
+            min-height: getSize($large);
             overflow-wrap: break-word;
             word-wrap: break-word;
             hyphens: auto;
         }
         &-short {
             // flex:0;
-            max-width: 60px;
-            min-width: 60px;
+            // max-width: 60px;
+            // min-width: 60px;
         }
     }
 }

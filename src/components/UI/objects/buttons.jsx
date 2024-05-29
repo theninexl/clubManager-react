@@ -105,10 +105,11 @@ export const ButtonMouseDisabled = ({ children, className, id, onClick }) => {
 
 // ICON BUTTONS
 
-export const IconButtonSmallPrimary = ({ children, className, onClick }) => {
+export const IconButtonSmallPrimary = ({ children, className, onClick, style }) => {
   return (
     <button 
       className={`cm-o-icon-button-small--primary ${className}`}
+      style={style}
       onClick={onClick} >
       { children }
     </button>
@@ -125,12 +126,14 @@ export const IconButtonSmallSecondary = ({ children, className, onClick }) => {
   );
 }
 
-export const IconButtonSmallerPrimary = ({ children, className, onClick, dataValue }) => {
+export const IconButtonSmallerPrimary = ({ children, className, style, onClick, dataValue }) => {
   return (
     <button
       data-value={dataValue}
       className={`cm-o-icon-button-smaller--primary ${className}`}
-      onClick={onClick} >
+      onClick={onClick}
+      style={style}
+    >
       { children }
     </button>
   );

@@ -1,7 +1,7 @@
 import { AsideMenu } from "../../components/AsideMenu";
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
 import { BasicTable } from "./BasicTable";
-import { TanStack } from "./tanStack";
+import { TableExample } from "./TableExample";
 
 export default function Home () {
   //esta página está vacía
