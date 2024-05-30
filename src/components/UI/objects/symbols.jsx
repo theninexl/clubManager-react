@@ -16,6 +16,12 @@ export const SymbolBartchart = () => {
   );
 }
 
+export const SymbolContentCopy = () => {
+  return (
+    <span className="material-symbols-outlined">content_copy</span>
+  );
+}
+
 export const SymbolCheck = () => {
   return (
     <span className='material-symbols-outlined'>check</span>
@@ -74,6 +80,20 @@ export const SymbolNotifications = () => {
 export const SymbolMarkEmailRead = () => {
   return (
     <span className='material-symbols-outlined'>mark_email_read</span>
+  );
+}
+
+export const MenuMoreVert = () => {
+  return <span className='material-symbols-outlined'>more_vert</span>
+}
+
+export const SymbolPaste = () => {
+  return <span className='material-symbols-outlined'>content_paste</span>
+}
+
+export const SymbolSave = () => {
+  return (
+    <span className='material-symbols-outlined'>save</span>
   );
 }
 
