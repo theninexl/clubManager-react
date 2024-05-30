@@ -20,21 +20,17 @@ export const EditVariablesTab = ({ form, idJugador }) => {
     searchCondition,
     handleDeleteClausula,
     getNewVariableCombos,
-    getNewVariableCombos2,
     handleSaveNewVariable,
     getClausulasList,
   } = useManageVariablesForm( form, idJugador )
 
-  useEffect(() => {
-    getNewVariableCombos();
-  },[])
 
   useEffect(() => {
     if (globalContext.activeContractId) {
       // console.log('activeContractId', globalContext.activeContractId);
       editPlayerContext.setVariableCombos2([]);
       getClausulasList(globalContext.activeContractId);
-      getNewVariableCombos2(globalContext.activeContractId)
+      getNewVariableCombos(globalContext.activeContractId)
     }
   },[globalContext.activeContractId])
 

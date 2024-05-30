@@ -188,7 +188,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
                     >
                       <option value=''>Expresion</option>
                       {
-                        editPlayerContext.variableCombos.expresion?.map((item) => {                          
+                        editPlayerContext.variableCombos.data.expresion?.map((item) => {                          
                           if (editPlayerContext.variableExpressions[ExprComb-1].bonus_prima == 0) {
                             if (item.bonus_prima === true) {
                               return (
@@ -259,7 +259,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
                                 }}
                                 >
                                   <option value=''>Condicion</option>
-                                  { editPlayerContext.variableCombos.condition?.map((item) => {
+                                  { editPlayerContext.variableCombos.data.condition?.map((item) => {
                                       return (
                                         <option key={item.id} value={item.id}>{item.value}</option>
                                       );
@@ -328,7 +328,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
               htmlFor='tipo_importe'
               labelText='Tipo importe'>
               <option value=''>Selecciona</option>
-              { editPlayerContext.variableCombos2.tipo_importe?.map((item) => {
+              { editPlayerContext.variableCombos.tipo_importe?.map((item) => {
                 return (
                   <option key={item.id_tipo_importe} value={item.id_tipo_importe}>{item.desc_tipo_importe}</option>
                 );
@@ -357,7 +357,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
               htmlFor='variableBeneficiary'
               labelText='Beneficiario'>
               <option value=''>Selecciona</option>
-              { editPlayerContext.variableCombos2.beneficiario?.map((item) => {
+              { editPlayerContext.variableCombos.beneficiario?.map((item) => {
                     return (
                       <option key={item.id_beneficiario} value={item.id_beneficiario}>{item.nombre}</option>
                     );
@@ -413,7 +413,7 @@ const ExprCondValueField = ({ idExpresion, index,  handleChangesOnNewVariableExp
   let result= null;
   let comboVal = null;
   if (idExpresion !== '') {
-    type = editPlayerContext.variableCombos.expresion.filter(item => item.id.includes(idExpresion));
+    type = editPlayerContext.variableCombos.data.expresion.filter(item => item.id.includes(idExpresion));
     result = type[0]?.type;
     comboVal = type[0]?.comboVal;
   }
@@ -457,7 +457,6 @@ const ExprCondValueField = ({ idExpresion, index,  handleChangesOnNewVariableExp
           required={true}
           value={searchExprSelected}
           handleOnChange={(e)=>{
-            console.log(e.target.value);
             setSearchExprSelected(e.target.value);
             if (e.target.value.length >= 2 ) {
               searchExpression(idExpresion, e.target.value)
@@ -492,7 +491,7 @@ const ConditionValueField = ({ idCondicion, indexExpr, indexCond, searchConditio
   let result = null;
   let comboVal = null;
   if (idCondicion !== '') {
-    filter = editPlayerContext.variableCombos.condition.filter(item => item.id.includes(idCondicion));
+    filter = editPlayerContext.variableCombos.data.condition.filter(item => item.id.includes(idCondicion));
     result = filter[0]?.type;
     comboVal = filter[0]?.comboVal;
   }

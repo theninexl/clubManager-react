@@ -21,7 +21,6 @@ import { manageTabs } from "../../domUtilities/manageTabs";
 import { ModalBody, ModalContainer, ModalContent__Small, ModalFooter } from "../../components/UI/components/modal/modal";
 import { EditPlayerHeader } from "./EditPlayerHeader";
 import { ModalDeletePlayer } from "../../components/Modals/ModalDeletePlayer";
-import { Greet } from "./Test";
 
 
 

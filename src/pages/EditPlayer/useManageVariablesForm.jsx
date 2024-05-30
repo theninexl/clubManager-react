@@ -13,27 +13,15 @@ export const useManageVariablesForm = (form, idJugador) => {
 
   //obtener las opciones para los combos de creación de nueva variable
   const getVariableCombos = useSaveData();
-  const getNewVariableCombos = () => {
-  getVariableCombos.uploadData('players/getCombosValues',{});
+  const getNewVariableCombos = (contractId) => {
+  getVariableCombos.uploadData('players/getCombosValues',{'id_contrato': contractId});
   }
   useEffect(()=>{
     if (getVariableCombos.responseUpload) {     
-    // console.log('variables combos', getVariableCombos.responseUpload.data);
-    editPlayerContext.setVariableCombos(getVariableCombos.responseUpload?.data);
+    //console.log('variablescombos', getVariableCombos.responseUpload);
+    editPlayerContext.setVariableCombos(getVariableCombos.responseUpload);
     }
   },[getVariableCombos.responseUpload])
-
-
-  const getVariableCombos2 = useSaveData();
-  const getNewVariableCombos2 = (contractId) => {
-  getVariableCombos2.uploadData('players/getCombosValues2',{'id_contrato': contractId});
-  }
-  useEffect(()=>{
-    if (getVariableCombos2.responseUpload) {     
-    // console.log('variablescombos2', getVariableCombos2.responseUpload);
-    editPlayerContext.setVariableCombos2(getVariableCombos2.responseUpload);
-    }
-  },[getVariableCombos2.responseUpload])
   
 
   //añadir una nueva expresion completa a la variable
@@ -185,7 +173,6 @@ export const useManageVariablesForm = (form, idJugador) => {
 
   return {
     getNewVariableCombos,
-    getNewVariableCombos2,
     handleAddNewVariableExpression,
     handleChangesOnNewVariableExpression,
     handleChangesOnNewVariableExpressionToggle,
