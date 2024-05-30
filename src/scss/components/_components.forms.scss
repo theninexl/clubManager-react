@@ -240,7 +240,7 @@
     display: inline-flex;
     overflow: hidden;
     position:relative;
-    max-width: getCols(3);
+    max-width: getCols(4);
 
     &--shorter {
         width: getCols(2);
@@ -257,6 +257,7 @@
         color:getColor(scarpaFlow);
         outline: none;
         padding: 0 getSize($medium);
+        padding-right: getSize($larger);
         width: 100%;
         
         @include font-size($defFontSizeDT, $lineHeightDT);

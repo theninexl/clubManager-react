@@ -328,8 +328,11 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
               htmlFor='tipo_importe'
               labelText='Tipo importe'>
               <option value=''>Selecciona</option>
-              <option value='A'>A</option>
-              <option value='B'>B</option>
+              { editPlayerContext.variableCombos2.tipo_importe?.map((item) => {
+                return (
+                  <option key={item.id_tipo_importe} value={item.id_tipo_importe}>{item.desc_tipo_importe}</option>
+                );
+              })}
             </LabelSelectElement>
           </FormSimplePanelRow>
           <FormSimplePanelRow>
@@ -354,7 +357,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
               htmlFor='variableBeneficiary'
               labelText='Beneficiario'>
               <option value=''>Selecciona</option>
-              { editPlayerContext.variableCombos.beneficiarios?.map((item) => {
+              { editPlayerContext.variableCombos2.beneficiario?.map((item) => {
                     return (
                       <option key={item.id_beneficiario} value={item.id_beneficiario}>{item.nombre}</option>
                     );
@@ -389,7 +392,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
             <ButtonMouseGhost
               onClick={() => {
                 editPlayerContext.setShowNewVariableLayer(false);
-                editPlayerContext.setVariableExpressions([{id_ExprComb:1,bonus_prima:'',id_expresion_concatenacion:'', id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]) 
+                editPlayerContext.setVariableExpressions([{id_ExprComb:1,bonus_prima:'',id_expresion_concatenacion:'', id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}])
               }}
               >Cancelar</ButtonMouseGhost>
           </FormSimplePanelRow>
@@ -400,8 +403,12 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
 
 
 //render campo valor de expresion dependiendo de tipo de expresión
-const ExprCondValueField = ({ idExpresion, index,  handleChangesOnNewVariableExpression,  }) => {
+const ExprCondValueField = ({ idExpresion, index,  handleChangesOnNewVariableExpression, searchExpression }) => {
   const editPlayerContext = useEditPlayerDataContext();
+
+  const [searchExprSelected, setSearchExprSelected] = useState();
+  const [showSearchExprResults, setShowSearchExprResults] = useState(false);
+
   let type = null;
   let result= null;
   let comboVal = null;
@@ -448,15 +455,16 @@ const ExprCondValueField = ({ idExpresion, index,  handleChangesOnNewVariableExp
           autoComplete='off'
           placeholder='Escribe para buscar'
           required={true}
-          value={editPlayerContext.searchExpSelected}
+          value={searchExprSelected}
           handleOnChange={(e)=>{
-            //console.log(e.target.value);
-            editPlayerContext.setSearchExpSelected(e.target.value);
+            console.log(e.target.value);
+            setSearchExprSelected(e.target.value);
             if (e.target.value.length >= 2 ) {
-              editPlayerContext.searchExpression(idExpresion, e.target.value)
+              searchExpression(idExpresion, e.target.value)
+              setShowSearchExprResults(true)
             } else if ((e.target.value.length < 2 )) {
               editPlayerContext.setSearchExpResults(null);
-              editPlayerContext.setShowSearchExpResults(false);
+              setShowSearchExprResults(false);
               
             }
           }}
@@ -464,6 +472,9 @@ const ExprCondValueField = ({ idExpresion, index,  handleChangesOnNewVariableExp
           />
         <SearchExpResults
           index={index}
+          setSearchExprSelected={setSearchExprSelected}
+          showSearchExprResults={showSearchExprResults}
+          setShowSearchExprResults={setShowSearchExprResults}
         />
       </div>
     );
@@ -548,7 +559,7 @@ const ConditionValueField = ({ idCondicion, indexExpr, indexCond, searchConditio
               setShowSearchCondResults(true);
             } else if ((e.target.value.length < 2 )) {
               editPlayerContext.setSearchCondResults(null);
-              editPlayerContext.setShowSearchCondResults(false);
+              setShowSearchCondResults(false);
               
             }
           }}
@@ -568,18 +579,19 @@ const ConditionValueField = ({ idCondicion, indexExpr, indexCond, searchConditio
   }
 }
 
-const SearchExpResults = ({ index }) => {
+const SearchExpResults = ({ index, setSearchExprSelected, showSearchExprResults, setShowSearchExprResults }) => {
   const editPlayerContext = useEditPlayerDataContext();
 
-  if (editPlayerContext.showSearchExpResults && editPlayerContext.searchExpResults?.length == 0) {
+  if (showSearchExprResults && editPlayerContext.searchExpResults?.length == 0) {
     return (
       <div className='cm-c-dropdown-select__results-box'><span>No hay resultados</span></div>
     );
-  } else if (editPlayerContext.showSearchExpResults && editPlayerContext.searchExpResults?.length > 0) {
+  } else if (showSearchExprResults && editPlayerContext.searchExpResults?.length > 0) {
     return (
       <div className='cm-c-dropdown-select__results-box'>
         {
           editPlayerContext.searchExpResults.map(item => {   
+            // console.log('searExpr results', item)
             return (
               <span
                 className='result'
@@ -591,6 +603,8 @@ const SearchExpResults = ({ index }) => {
                   editPlayerContext.setVariableExpressions(onChangeValue);
                   editPlayerContext.setSearchExpResults(item.value);
                   editPlayerContext.setShowSearchExpResults(false);
+                  setSearchExprSelected(item.value);
+                  setShowSearchExprResults(false);
                 }}  >
                   {item.value}
               </span>

@@ -117,6 +117,7 @@ export const EditPlayerContextProvider = ({ children }) => {
   //estados variables
   //donde guardo la info de los posibles combos de cada combinacion Exprexion+Condiciones
   const [variableCombos, setVariableCombos] = useState([]);
+  const [variableCombos2, setVariableCombos2] = useState([]);
   //variable activa cuando estoy inspeccionado una ya creada
   const [activeVariable, setActiveVariable] = useState(null);
   //array con las variables creades
@@ -173,6 +174,7 @@ export const EditPlayerContextProvider = ({ children }) => {
         detailSalaryData,setDetailSalaryData,
         detailTerminationData,setDetailTerminationData,
         variableCombos,setVariableCombos,
+        variableCombos2, setVariableCombos2,
         activeVariable,setActiveVariable,
         savedVariables,setSavedVariables,
         showVariable,setShowVariable,

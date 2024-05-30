@@ -1974,7 +1974,7 @@ strong {
   display: inline-flex;
   overflow: hidden;
   position: relative;
-  max-width: 256px;
+  max-width: 352px;
 }
 .cm-c-select-icon--shorter {
   width: 160px;
@@ -1989,6 +1989,7 @@ strong {
   color: #454548;
   outline: none;
   padding: 0 12px;
+  padding-right: 40px;
   width: 100%;
   font-size: 14px;
   font-size: 1.4rem;

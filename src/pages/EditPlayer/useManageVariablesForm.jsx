@@ -11,17 +11,29 @@ export const useManageVariablesForm = (form, idJugador) => {
   //llamar al hook de getPlayerData para poder pedir datos de nuevo una vez guardadas/borradas variables
   const { getPlayerDetail } = useGetPlayerData();
 
-   const getVariableCombos = useSaveData();
-   const getNewVariableCombos = () => {
-    getVariableCombos.uploadData('players/getCombosValues',{});
-   }
-   useEffect(()=>{
-    // console.log('combos values', getVariableCombos.responseUpload);
-     if (getVariableCombos.responseUpload) {     
-      // console.log('variables combos', getVariableCombos.responseUpload.data);
-      editPlayerContext.setVariableCombos(getVariableCombos.responseUpload?.data);
-     }
-   },[getVariableCombos.responseUpload])
+  //obtener las opciones para los combos de creación de nueva variable
+  const getVariableCombos = useSaveData();
+  const getNewVariableCombos = () => {
+  getVariableCombos.uploadData('players/getCombosValues',{});
+  }
+  useEffect(()=>{
+    if (getVariableCombos.responseUpload) {     
+    // console.log('variables combos', getVariableCombos.responseUpload.data);
+    editPlayerContext.setVariableCombos(getVariableCombos.responseUpload?.data);
+    }
+  },[getVariableCombos.responseUpload])
+
+
+  const getVariableCombos2 = useSaveData();
+  const getNewVariableCombos2 = (contractId) => {
+  getVariableCombos2.uploadData('players/getCombosValues2',{'id_contrato': contractId});
+  }
+  useEffect(()=>{
+    if (getVariableCombos2.responseUpload) {     
+    // console.log('variablescombos2', getVariableCombos2.responseUpload);
+    editPlayerContext.setVariableCombos2(getVariableCombos2.responseUpload);
+    }
+  },[getVariableCombos2.responseUpload])
   
 
   //añadir una nueva expresion completa a la variable
@@ -126,14 +138,13 @@ export const useManageVariablesForm = (form, idJugador) => {
 
   const handleSaveNewVariable = (e) => {
     e.preventDefault();
-    console.log('form en hook variables', form);
+    //console.log('form en hook variables', form);
     
     const formData = new FormData(form.current);
     const amortizableVal = document.getElementById('amortizable').checked;
     //const bonusPrimaVal = document.getElementById('bonus_prima').checked;
     const expresiones = editPlayerContext.variableExpressions;
     //console.log(typeof(expresiones));
-
     const data = {
       expresiones,
       desc_alias: formData.get('descripcion'),
@@ -152,8 +163,7 @@ export const useManageVariablesForm = (form, idJugador) => {
     }
 
     // console.log('variable que guardo', data);
-    console.log('variable que mando', dataSent);
-
+    //console.log('variable que mando', dataSent);
     saveClausula.uploadData('players/createClausula', dataSent);
     // setSavedVariables([...savedVariables, dataSent]);    
   }
@@ -175,6 +185,7 @@ export const useManageVariablesForm = (form, idJugador) => {
 
   return {
     getNewVariableCombos,
+    getNewVariableCombos2,
     handleAddNewVariableExpression,
     handleChangesOnNewVariableExpression,
     handleChangesOnNewVariableExpressionToggle,
