@@ -7,7 +7,6 @@ export const EditableClauseCell = ({ getValue, row, column, table, }) => {
   const [value, setValue] = useState(initialValue)
   const { updateClause } = table.options.meta;
 
-
   useEffect(()=> {
     setValue(initialValue)
   },[initialValue])
@@ -25,6 +24,7 @@ export const EditableClauseCell = ({ getValue, row, column, table, }) => {
       }}>
         { (table.getState().subtractState && table.getState().insertState && row.id == table.getRowCount()-1) && 
         <>
+          { row.original.TipoClausula }
           <input
               value={value}
               placeholder="Introduce nombre sanción"
@@ -50,7 +50,7 @@ export const EditableClauseCell = ({ getValue, row, column, table, }) => {
       }
       { (!table.getState().subtractState || (table.getState().subtractState && table.getState().insertState === false) || ( table.getState().subtractState && table.getState().insertState && row.id != table.getRowCount()-1 ) ) && 
         <>
-          {value}
+          {`${row.original.TipoClausula != undefined ? row.original.TipoClausula : ''} ${value}`}
         </>
       }   
       

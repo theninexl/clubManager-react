@@ -50,7 +50,8 @@ export const BasicTable = () => {
   const { status_initial } = STATUSES;
 
   const emptyLine = [{
-    "Clausulas": 'lorem',
+    "TipoClausula": '',
+    "Clausulas": '',
     "Importe": { amount: '', status: STATUSES[0]},
     "january/2022": { amount: '', status: STATUSES[0]},
     "february/2022": { amount: '', status: STATUSES[0]},
@@ -702,11 +703,24 @@ export const BasicTable = () => {
         setInsertSelectedCol(columnId);
         const valueNumber = isNaN(value) ? -Math.abs(value) : -Math.abs(Number(value));
         const newEmptyLine = [...emptyLine]
+        newEmptyLine[0]["TipoClausula"] = 'Sanción';
         newEmptyLine[0]["Clausulas"] = '';
         newEmptyLine[0][columnId] = {amount: valueNumber, status: STATUSES[0]};
         const newData = [...data, newEmptyLine[0]]
         setData(newData);
-      },      
+      }, 
+      newAdvancePayLine: (row, columnId, value) => {
+        setInsertState(true);
+        setInsertSelectedAmount(value);
+        setInsertSelectedCol(columnId);
+
+        console.log('columnId', columnId);
+        const newEmptyLine = [...emptyLine]
+        newEmptyLine[0]["TipoClausula"] = 'Anticipo';
+        newEmptyLine[0]["Clausulas"] = columnId.id;
+        const newData = [...data, newEmptyLine[0]]
+        setData(newData);
+      },       
     },
     state: {
       columnVisibility: columnVisibility,
@@ -1008,8 +1022,8 @@ export const BasicTable = () => {
             <button
               onClick={(e)=>{
                 e.preventDefault();
-                console.log('insertSelectedAmount', insertSelectedAmount)
-                console.log('insertSelectedCol', insertSelectedCol)
+                // console.log('insertSelectedAmount', insertSelectedAmount)
+                // console.log('insertSelectedCol', insertSelectedCol)
                 setSubtractState(true);
               }}
             >Sanción</button>
@@ -1017,7 +1031,7 @@ export const BasicTable = () => {
             <span>&nbsp;</span>
           </>
         }
-        { subtractState && 
+        { (subtractState || advancePayState) && 
           <>
             <button
               disabled={ insertCanSave ? false : true }
@@ -1028,6 +1042,7 @@ export const BasicTable = () => {
                 setInsertCanSave(false);
                 setInsertSelectedAmount();
                 setInsertSelectedCol();
+                setAdvancedPayState(false);
               }}
             >
               Guardar
@@ -1046,6 +1061,7 @@ export const BasicTable = () => {
                 setInsertCanSave(false);
                 setInsertSelectedAmount();
                 setInsertSelectedCol();
+                setAdvancedPayState(false);
               }}
             >
               Cancelar

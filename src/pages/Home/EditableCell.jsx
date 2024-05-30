@@ -25,35 +25,11 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
   const [isCellSelected, setIsCellSelected] = useState(false)
   // console.log('column', column.getIndex())
   // console.log('row', row)
-  const { updateData, newSanctionLine } = table.options.meta;
-
-
-  const onBlur = () => {
-    console.log('onBlur');
-    table.options.meta?.updateData(
-      row.index,
-      column.id,
-      value 
-    )
-  }
+  const { updateData, newSanctionLine, newAdvancePayLine } = table.options.meta;
 
   useEffect(()=> {
     setValue(initialValue)
   },[initialValue])
-
-  const handleChangeOnSubtrack = (e) => {
-    console.log('value antes', selectedAmount);
-    let onChangeValue = {...value}
-    onChangeValue.amount = e.target.value;
-    console.log('limit', selectedAmount)
-    setValue(onChangeValue)
-  }
-
-  const CellStyles = {
-    SelHovered: {
-      backgroundColor: 'yellow'
-    }
-  };
 
   return (
     <>
@@ -126,10 +102,14 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                 
                 >
                   { initialValue.amount }
-                  { table.getState().subtractState && 
+                  { (table.getState().subtractState || table.getState().advancePayState) && 
                     <IconButtonSmallerPrimary
                       style={{marginLeft: '8px'}}
-                      onClick={() => {newSanctionLine(row, column.id, value.amount)}}
+                      onClick={() => {
+                        if (table.getState().subtractState) { newSanctionLine(row, column.id, value.amount) }
+                        else if (table.getState().advancePayState) { newAdvancePayLine(row, column, value.amount )}                       
+
+                      }}
                     >
                       <SymbolContentCopy />
                     </IconButtonSmallerPrimary>
@@ -139,7 +119,7 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
           }
         </> :
         <>
-          { (table.getState().subtractState && column.id == column.columnDef.meta.insertSelectedCol && row.id == table.getRowCount()-1) && 
+          { ((table.getState().subtractState || table.getState().advancedPayState )  && column.id == column.columnDef.meta.insertSelectedCol && row.id == table.getRowCount()-1) && 
             <>
               <div               
               style={{ 
