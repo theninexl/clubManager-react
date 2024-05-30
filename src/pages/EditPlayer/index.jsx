@@ -463,10 +463,6 @@ export default function EditPlayerPage () {
           </HalfContainerAside>
           <HalfContainerBody >
             <HeadContent>
-              
-              <Greet
-              name='John' />
-
               <EditPlayerHeader
                 idJugador={userParamString}
               />
