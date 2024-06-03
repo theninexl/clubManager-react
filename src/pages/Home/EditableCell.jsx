@@ -91,7 +91,7 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
             <>              
               <div style={{ 
                 backgroundColor: !table.options.state.pasteState ? '' : (table.options.state.cellCopy?.column?.id == column.id && table.options.state.cellCopy?.row == row.id) ? 'yellow' : getValue().status?.color,
-                border: !table.options.state.pastedCellState ? '' : (table.options.state.cellCopy?.column?.id == column.id && table.options.state.cellCopy?.row == row.id) ? table.options.state.insertCanSave ? '' : '2px solid red' : '',                
+                // border: !table.options.state.pastedCellState ? '' : (table.options.state.cellCopy?.column?.id == column.id && table.options.state.cellCopy?.row == row.id) ? table.options.state.insertCanSave ? '' : '2px solid red' : '',                
                 }}
                 
                 >
@@ -103,7 +103,9 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                     {/* {console.log('insertSelectedAmount', column.columnDef.meta.insertSelectedAmount)}
                     {console.log('value amount', value.amount)}
                     {console.log('cellCopy amount', table.options.state.cellCopy?.value.amount)} */}
-                    {value.amount}</>
+                    {value.amount}
+                    {/* {initialValue.amount} */}
+                    </>
                     :
                     <>{initialValue.amount}</>
                   }
@@ -131,7 +133,7 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
         <>
           { table.getState().subtractState
             && row.id == table.getRowCount()-1
-            ?
+            &&
             <>
              <div>
                 <NumericFormat 
@@ -155,27 +157,25 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                 />
               </div>
             </>
-            :
-            <>
-              { !table.getState().pastedCellState
-              && 
-                <>{value.amount}</>
-              }
-            </>
+            // :
+            // <>
+            //   { !table.getState().pastedCellState && !table.options.state.pasteState
+            //   &&
+            //     <></>
+            //   }
+            // </>
           }
           {     
             (!table.options.state.pasteState && !table.options.state.subtractState) 
             || (table.options.state.pasteState && row.id != table.getRowCount()-1)?
-            ''
-            // <>
-            //    <div style={{ 
-            //     backgroundColor: getValue().status?.color,
-            //     }}
-            //   >
-            //     {console.log('row', row.id, table.getState())}
-            //   B{value.amount}
-            //   </div>
-            // </>
+            <>
+               <div style={{ 
+                backgroundColor: getValue().status?.color,
+                }}
+              >
+              {value.amount}
+              </div>
+            </>
             :
             <>
               { table.getState().advancedPayState
@@ -242,13 +242,32 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                   </div>
                 </>
               }
-              
+              {/* siguiente celda a las de pegar con la cantidad en negativo */}
+              {
+                ( table.getState().pasteState 
+                && (column.getIndex() < table.options.state.cellCopy?.column?.index + 1 )
+                && (column.getIndex() == table.options.state.cellCopy?.column?.index ) 
+                && !table.getState().pastedCellState
+                && row.index === table.getRowCount()-1
+              ) 
+                &&
+                <>
+                   <div style={{ 
+                    backgroundColor: !table.options.state.pasteState ? '' : 'yellow',
+                    border: !table.options.state.pastedCellState ? '' : (table.options.state.cellCopy?.column?.id == column.id && table.options.state.cellCopy?.row == row.id) ? table.options.state.insertCanSave ? '' : '2px solid red' : '',                
+                    }}
+                    
+                    >
+                    {value.amount}
+                  </div>
+                </>
+              }
               {/* estado he pegado una celda de anticipo en una nueva linea */}
               {
                 ( table.getState().pastedCellState 
                   && row.id == table.options.state.cellPaste?.row
                   && column.id === table.options.state.cellPaste.column?.id
-                ) &&
+                ) ?
                 <>
                   {/* { console.log('cellpaste en editableCell', table.options.state.cellPaste.row) }
                   { console.log(row.id) }
@@ -261,37 +280,28 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                     >
                       <NumericFormat 
                         allowNegative={false}
-                        prefix="-"
                         value={isNaN(table.options.state.advancePayCal) ? table.options.state.insertSelectedAmount : table.options.state.advancePayCalc}
                         onValueChange={(values) => {                    
-                          const limit = -Math.abs(column.columnDef.meta.insertSelectedAmount); 
-                          column.columnDef.meta.setAdvancePayCalc(values.value)
+                          const limit = Math.abs(column.columnDef.meta.insertSelectedAmount);
+                          let newCalc = column.columnDef.meta.insertSelectedAmount - values.value;
+                          console.log('newCalc', newCalc)
+                          //column.columnDef.meta.setAdvancePayCalc(values.value)
                           // console.log('limit', limit) 
-                          if (values.formattedValue !== '' && values.formattedValue >= limit && values.formattedValue <= 0) {
-                            // console.log('puede guardar')
-                            column.columnDef.meta.setInsertCanSave(true)
+                          if (values.formattedValue !== '' && values.formattedValue <= limit) {
+                            console.log('puede guardar')
+                            column.columnDef.meta.setInsertCanSave(true);
+                            //setear celda bajo copiada con el nuevo calculo
                             let onChangeValue = {...value};
+                            onChangeValue.amount = -Math.abs(newCalc);
+                            console.log('cellCopied', table.options.state.cellCopy)
+                            updateData(row.index, table.options.state.cellCopy.column.id, onChangeValue);
+                            //setear la propia celda donde estoy cambiando 
                             onChangeValue.amount = values.formattedValue;
-                            //update de la propia celda en si
                             updateData(row.index, column.id, onChangeValue);
-                            //update de la celda copiada con el nuevo calculo
-                            // console.log('amount celda copiada', table.options.state.cellCopy.value.amount)
-                            let newCalc = column.columnDef.meta.insertSelectedAmount - values.value;                          
-                            let newCopiedCell = {...table.options.state.cellCopy}
-                            // console.log('newCopiedCell antes', newCopiedCell);
-                            let newValueCopiedCellValue = {...newCopiedCell["value"]}
-                            newValueCopiedCellValue.amount = newCalc;
-                            // console.log('newValueCopiedCellValue', newValueCopiedCellValue);
-                            newCopiedCell["value"] = newValueCopiedCellValue;
-                            // console.log('newCopiedCelldespues', newCopiedCell);                        
-                            //actualizo el value.amount de celda copiada por si pulsas en guardar
-                            updateData(table.options.state.cellCopy.row, table.options.state.cellCopy.column.id, newCopiedCell.value)
-                            //column.columnDef.meta.setCellCopy(newCopiedCell);                        
                           } else {
                             console.log('no puede guardar')
-                            column.columnDef.meta.setInsertCanSave(false)
+                            column.columnDef.meta.setInsertCanSave(false);
                           }
-
                         }}
                         style={{
                           border: '1px solid black',
@@ -302,6 +312,23 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                         }}
                       />
                     </div>
+                </>
+                :
+                <>
+                  { (table.getState().pastedCellState 
+                    && row.id == table.options.state.cellPaste?.row
+                    && column.id === table.options.state.cellCopy.column?.id )
+                    &&
+                    <>
+                      <div style={{ 
+                      backgroundColor: !table.options.state.pasteState ? '' : 'yellow',
+                      border: !table.options.state.pastedCellState ? '' : table.options.state.cellCopy?.column?.id == column.id ? table.options.state.insertCanSave ? '' : '2px solid red' :'',                
+                      }}                    
+                      >
+                        {value.amount}
+                      </div>
+                    </>
+                  }
                 </>
               }
             </>

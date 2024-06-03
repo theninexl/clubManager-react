@@ -765,7 +765,7 @@ export const BasicTable = () => {
       }, 
       newAdvancePayLine: (row, columnId, value) => {
         setInsertState(true);
-        console.log('value que copio', value.amount, row.getValue('Clausulas'))
+        console.log('value que copio', value, row.getValue('Clausulas'), columnId.id)
         setInsertSelectedAmount(value.amount);
         const copyCell = [];
         copyCell["column"] = {id: columnId.id, index: columnId.getIndex()};
@@ -776,22 +776,27 @@ export const BasicTable = () => {
         const newEmptyLine = [...emptyLine]
         newEmptyLine[0]["TipoClausula"] = 'Anticipo';
         newEmptyLine[0]["Clausulas"] = `${row.getValue('Clausulas')} ${columnId.id}`;
+        const newValue = {...value}
+        newValue.amount = 0 - value.amount;
+        newEmptyLine[0][columnId.id] = newValue;
         const newData = [...data, newEmptyLine[0]]
         setData(newData);
         setPasteState(true);
       },  
       pasteCell: (row, columnId) => {
-        // console.log('pego desde', cellCopy.column.id, cellCopy.row, cellCopy);
-        // console.log('pego', row, columnId)
+        console.log('pego desde', cellCopy.column.id, cellCopy.row, cellCopy);
+        console.log('pego. Row:', row, ' Colum:', columnId)
         const pegoCelda = [];
         pegoCelda["column"] = {"id":columnId.id, "index": columnId.getIndex()};
         pegoCelda["row"]= row.id;
         setCellPaste(pegoCelda);
         const newData = [...data]
-        const newCell = {...newData[newData.length-1][columnId.id]}
-        newCell.amount = -Math.abs(insertSelectedAmount);
-        newData[newData.length-1][columnId.id] = newCell;
-        newData[cellCopy.row][cellCopy.column.id] = { amount: 0, status: cellCopy.value.status };
+        console.log('newData', newData)
+        const newCell = {...newData[newData.length-1][cellCopy.column.id]}
+        console.log('newCell', newCell)
+        newCell.amount = 0;
+        newData[newData.length-1][cellCopy.column.id] = newCell;
+        // newData[cellCopy.row][cellCopy.column.id] = { amount: 0, status: cellCopy.value.status };
         // console.log('newData recien pegado', newData);
         setData(newData);
         setPastedCellState(true);
