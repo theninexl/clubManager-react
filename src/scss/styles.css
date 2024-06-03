@@ -502,25 +502,38 @@ strong {
 
 .cm-l-tabledata-cls {
   height: 1px;
+  box-sizing: border-box;
+  background-color: rgba(225, 225, 225, 0.3);
+  border-collapse: collapse;
+  border-spacing: 0px;
 }
 .cm-l-tabledata-cls__header th {
   background-color: white;
-  border-bottom: 1px solid lightgray;
-  border-top: 1px solid lightgray;
   color: #1C1C1C;
   text-align: center;
   height: 32px;
 }
+.cm-l-tabledata-cls__body tr {
+  background-color: rgba(225, 225, 225, 0.3);
+  height: 40px;
+  border-bottom: 1px solid #FFFFFF;
+}
 .cm-l-tabledata-cls__body td {
-  background-color: white;
-  border: 1px solid #E1E1E1;
   color: #1C1C1C;
   text-align: right;
   padding: 0;
   vertical-align: middle;
 }
+.cm-l-tabledata-cls__body td div {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  height: calc(100% - 4px);
+}
 .cm-l-tabledata-cls .tablecell-medium {
-  min-height: 32px;
   overflow-wrap: break-word;
   word-wrap: break-word;
   -webkit-hyphens: auto;

@@ -150,8 +150,10 @@
 .cm-l-tabledata-cls {
     $block:&;
     height: 1px;
-    // border-collapse: separate;
-    // border-spacing:1px;
+    box-sizing:border-box;
+    background-color: getColor(scarpaFlowLightFade);
+    border-collapse: collapse;
+    border-spacing:0px;
 
     &__header {
         @extend .cm-u-text-black-mouse;
@@ -159,8 +161,8 @@
         th {
             // align-items: center;
             background-color: white;
-            border-bottom: 1px solid lightgray;
-            border-top: 1px solid lightgray;
+            //border-bottom: 1px solid lightgray;
+            //border-top: 1px solid lightgray;
             color: getColor(black);
             text-align: center;
             height: getSize($large);
@@ -169,20 +171,34 @@
     }
 
     &__body {
+
         tr {
+            background-color: getColor(scarpaFlowLightFade);
+            height: getSize($larger);
+            border-bottom: 1px solid getColor(white);
         }
 
         td {
-            background-color: white;
-            border: 1px solid getColor(scarpaFlowLight);
+            //background-color:getColor(white);
+            //border: 1px solid getColor(white);
             // display: flex;
             color: getColor(black);
             // padding: 0 getSize($small);
             text-align: right;
-            // min-height: getSize($large);
-            // height: getSize($large);
+            //height: 48px;
+            // height: getSize($larger);
             padding: 0;
             vertical-align: middle;
+
+            div {
+                display: flex;
+                flex-direction: row; 
+                justify-content: flex-end;
+                align-items: center;
+                gap: 8px; 
+                padding: 0 8px;
+                height: calc(100% - 4px);
+            }
         }
     }
 
@@ -202,7 +218,7 @@
 
         &-medium {
             // flex:1;
-            min-height: getSize($large);
+            //min-height: getSize($huger);
             overflow-wrap: break-word;
             word-wrap: break-word;
             hyphens: auto;

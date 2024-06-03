@@ -39,10 +39,15 @@ export const BasicTable = () => {
   //estados insertables
   const [insertState, setInsertState] = useState(false);
   const [subtractState, setSubtractState] = useState(false);
-  const [advancePayState, setAdvancedPayState] = useState(false);
+  const [advancePayState, setAdvancePayState] = useState(false);
   const [insertSelectedCol,setInsertSelectedCol] = useState();
   const [insertSelectedRow, setInsertSelectedRow] = useState();
+  const [cellCopy, setCellCopy] = useState([]);
+  const [pasteState, setPasteState] = useState(false);
+  const [cellPaste, setCellPaste] = useState([]);
+  const [pastedCellState, setPastedCellState] = useState(false);
   const [insertSelectedAmount, setInsertSelectedAmount] = useState();
+  const [advancePayCalc, setAdvancePayCalc] = useState();
   const [insertAmountError, setInsertAmountError] = useState();
   const [insertCanSave, setInsertCanSave] = useState(false);
 
@@ -170,6 +175,8 @@ export const BasicTable = () => {
         insertSelectedCol,
         insertSelectedRow,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertSelectedAmount,
         insertAmountError,
         setInsertAmountError,
@@ -191,6 +198,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -211,6 +220,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -231,6 +242,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -251,6 +264,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -271,6 +286,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -291,6 +308,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -311,6 +330,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -331,6 +352,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -351,6 +374,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -371,6 +396,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -391,6 +418,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -412,6 +441,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -432,6 +463,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -452,6 +485,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -472,6 +507,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -492,6 +529,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -512,6 +551,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -532,6 +573,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -552,6 +595,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -572,6 +617,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -592,6 +639,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -612,6 +661,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -632,6 +683,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -651,6 +704,8 @@ export const BasicTable = () => {
         insertSelectedRow,
         insertSelectedAmount,
         setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -690,7 +745,6 @@ export const BasicTable = () => {
         setData(newData);
       },
       deleteRow: (row) => {
-        // console.log('delete registro', row)
         const newData = [...data];
         newData.splice(row,1);
         setData(newData);
@@ -699,28 +753,50 @@ export const BasicTable = () => {
       },
       newSanctionLine: (row, columnId, value) => {
         setInsertState(true);
-        setInsertSelectedAmount(value);
-        setInsertSelectedCol(columnId);
-        const valueNumber = isNaN(value) ? -Math.abs(value) : -Math.abs(Number(value));
+        // setInsertSelectedAmount(value);
+        // setInsertSelectedCol(columnId);
+        // const valueNumber = isNaN(value) ? -Math.abs(value) : -Math.abs(Number(value));
         const newEmptyLine = [...emptyLine]
         newEmptyLine[0]["TipoClausula"] = 'Sanción';
         newEmptyLine[0]["Clausulas"] = '';
-        newEmptyLine[0][columnId] = {amount: valueNumber, status: STATUSES[0]};
+        // newEmptyLine[0][columnId] = {amount: valueNumber, status: STATUSES[0]};
         const newData = [...data, newEmptyLine[0]]
         setData(newData);
       }, 
       newAdvancePayLine: (row, columnId, value) => {
         setInsertState(true);
-        setInsertSelectedAmount(value);
-        setInsertSelectedCol(columnId);
-
-        console.log('columnId', columnId);
+        console.log('value que copio', value.amount, row.getValue('Clausulas'))
+        setInsertSelectedAmount(value.amount);
+        const copyCell = [];
+        copyCell["column"] = {id: columnId.id, index: columnId.getIndex()};
+        copyCell["row"]= row.id;
+        copyCell["value"] = value;
+        // console.log('copyCell', copyCell)
+        setCellCopy(copyCell);
         const newEmptyLine = [...emptyLine]
         newEmptyLine[0]["TipoClausula"] = 'Anticipo';
-        newEmptyLine[0]["Clausulas"] = columnId.id;
+        newEmptyLine[0]["Clausulas"] = `${row.getValue('Clausulas')} ${columnId.id}`;
         const newData = [...data, newEmptyLine[0]]
         setData(newData);
-      },       
+        setPasteState(true);
+      },  
+      pasteCell: (row, columnId) => {
+        // console.log('pego desde', cellCopy.column.id, cellCopy.row, cellCopy);
+        // console.log('pego', row, columnId)
+        const pegoCelda = [];
+        pegoCelda["column"] = {"id":columnId.id, "index": columnId.getIndex()};
+        pegoCelda["row"]= row.id;
+        setCellPaste(pegoCelda);
+        const newData = [...data]
+        const newCell = {...newData[newData.length-1][columnId.id]}
+        newCell.amount = -Math.abs(insertSelectedAmount);
+        newData[newData.length-1][columnId.id] = newCell;
+        newData[cellCopy.row][cellCopy.column.id] = { amount: 0, status: cellCopy.value.status };
+        // console.log('newData recien pegado', newData);
+        setData(newData);
+        setPastedCellState(true);
+        setInsertCanSave(true);
+      },    
     },
     state: {
       columnVisibility: columnVisibility,
@@ -729,6 +805,13 @@ export const BasicTable = () => {
       advancePayState,
       subtractState,
       insertState,
+      insertSelectedAmount,
+      insertCanSave,
+      advancePayCalc,
+      cellCopy,
+      pasteState,
+      cellPaste,
+      pastedCellState,
     },
     onColumnVisibilityChange: setColumnVisibility,
     enableRowSelection: true,
@@ -745,11 +828,13 @@ export const BasicTable = () => {
       isPinned === 'right' && column.getIsFirstColumn('right')
   
     return {
-      boxShadow: isLastLeftPinnedColumn
-        ? '-4px 0 4px -4px gray inset'
-        : isFirstRightPinnedColumn
-          ? '4px 0 4px -4px gray inset'
-          : undefined,
+      backgroundColor: isPinned ? 'white' : undefined,
+      // backgroundColor: isLastLeftPinnedColumn ? 'white' : isFirstRightPinnedColumn ? 'white' : undefined,
+      // boxShadow: isLastLeftPinnedColumn
+      //   ? '-4px 0 10px -10px gray inset'
+      //   : isFirstRightPinnedColumn
+      //     ? '4px 0 10px -10px gray inset'
+      //     : undefined,
       left: isPinned === 'left' ? `${column.getStart('left')}px` : undefined,
       right: isPinned === 'right' ? `${column.getAfter('right')}px` : undefined,
       opacity: isPinned ? 0.98 : 1,
@@ -791,7 +876,7 @@ export const BasicTable = () => {
   }
 
   useEffect (() => {
-    console.log('data changes', data);
+    // console.log('data changes', data);
     if (tableInstance.getIsSomePageRowsSelected()) {
       // console.log('fila seleccionada', tableInstance.getIsSomePageRowsSelected())
       // console.log('row a evaluar:', tableInstance.getSelectedRowModel().rows[0]?.id)
@@ -818,14 +903,19 @@ export const BasicTable = () => {
   },[editState])
 
   useEffect(()=>{
-    console.log('se ha seleccionado algo', tableInstance.getIsSomePageRowsSelected())
-    console.log('rowSelected', rowSelected);
+    // console.log('se ha seleccionado algo', tableInstance.getIsSomePageRowsSelected())
+    // console.log('rowSelected', rowSelected);
     checkSum()
   },[rowSelected])
 
   // useEffect(()=>{
-  //   console.log('rowSelected2', rowSelected2);
-  // },[rowSelected2])
+  //   console.log('insertState', insertState);
+  //   console.log('advancePayState', advancePayState);
+  //   console.log('insertSelectedAmount', insertSelectedAmount)
+  //   console.log('pasteState', pasteState);
+  //   console.log('advancePayCalc', advancePayCalc)
+
+  // },[insertState, advancePayState, pasteState, insertSelectedAmount, advancePayCalc])
 
   const checkSum = () => {
     // console.log('row a evaluar:', tableInstance.getSelectedRowModel().rows[0]?.id)
@@ -880,17 +970,18 @@ export const BasicTable = () => {
           </>
         }
         </p>
+      
         <div 
-          className='tableData-Container'
+          className='tableData-Container cm-u-spacer-mt-big cm-u-spacer-mb-big'
           style={{
+            border: '1px solid lightgray',
             overflowX: 'scroll',
             width: '100%',
           }}
         >
           <TableDataCls 
-            className='cm-u-spacer-mt-big'
             style={{ 
-              border: '1px solid lightgray',
+              // border: '1px solid lightgray',
               borderCollapse: 'collapse',
               borderSpacing: 0,
               width: tableInstance.getTotalSize(), 
@@ -1008,12 +1099,13 @@ export const BasicTable = () => {
         </div>
 
         <p>
-        { !insertState &&
+        { !insertState  &&
           <>
             <button
               onClick={(e) => {
                 e.preventDefault();
-                setAdvancedPayState(true);
+                setInsertState(true);
+                setAdvancePayState(true);
               }}
             >
               Anticipar pago
@@ -1022,8 +1114,10 @@ export const BasicTable = () => {
             <button
               onClick={(e)=>{
                 e.preventDefault();
+                tableInstance.options.meta.newSanctionLine();
                 // console.log('insertSelectedAmount', insertSelectedAmount)
                 // console.log('insertSelectedCol', insertSelectedCol)
+                setInsertState(true);
                 setSubtractState(true);
               }}
             >Sanción</button>
@@ -1037,12 +1131,22 @@ export const BasicTable = () => {
               disabled={ insertCanSave ? false : true }
               onClick={(e) => {
                 e.preventDefault();
+                // if (pastedCellState) {
+                //   console.log('aquí actualizo el contenido de la celda copiada');
+                //   console.log('celda copiada actualizada', cellCopy);
+                //   tableInstance.options.meta.updateData(cellCopy.row, cellCopy.column.id, cellCopy.value)
+                // }
+
                 setInsertState(false);
                 setSubtractState(false);
                 setInsertCanSave(false);
                 setInsertSelectedAmount();
                 setInsertSelectedCol();
-                setAdvancedPayState(false);
+                setAdvancePayState(false);
+                setAdvancePayCalc();
+                setCellCopy([]);
+                setPasteState(false);
+                setPastedCellState(false);
               }}
             >
               Guardar
@@ -1050,18 +1154,27 @@ export const BasicTable = () => {
             <button
               onClick={(e) => {
                 e.preventDefault();
-                if (insertSelectedAmount !== undefined) {
-                  const newData = [...data];
-                  newData.pop()
-                  console.log(newData);
-                  setData(newData);
-                }
+                console.log(insertSelectedAmount);
+                // if (insertSelectedAmount !== undefined) {
+                //   const newData = [...data];
+                //   newData.pop()
+                //   console.log(newData);
+                //   setData(newData);
+                // }
+                const newData = [...data];
+                newData.pop()
+                console.log(newData);
+                setData(newData);
                 setInsertState(false);
                 setSubtractState(false);
                 setInsertCanSave(false);
                 setInsertSelectedAmount();
                 setInsertSelectedCol();
-                setAdvancedPayState(false);
+                setAdvancePayState(false);
+                setAdvancePayCalc();
+                setCellCopy([]);
+                setPasteState(false);
+                setPastedCellState(false);
               }}
             >
               Cancelar

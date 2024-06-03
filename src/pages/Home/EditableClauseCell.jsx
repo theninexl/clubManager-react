@@ -14,12 +14,13 @@ export const EditableClauseCell = ({ getValue, row, column, table, }) => {
   return (
     <>
       <div style={{ 
+        backgroundColor: 'rgba(225, 225, 225, 0.3)',
         display: 'flex', 
         flexDirection: 'row', 
         justifyContent: 'flex-end',
         alignItems: 'center',
         gap: '8px', 
-        padding: '8px',
+        padding: '0 8px',
         height: '100%',
       }}>
         { (table.getState().subtractState && table.getState().insertState && row.id == table.getRowCount()-1) && 
