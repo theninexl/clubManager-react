@@ -35,7 +35,9 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
         <>
           { (table.getIsSomePageRowsSelected() == true && row.index === column.columnDef.meta.rowSelected2) ?
             <>
-              <div style={{ 
+              <div 
+              className='cell-data'
+              style={{ 
                 backgroundColor: getValue().status?.color,
                 display: 'flex', 
                 flexDirection: 'row', 
@@ -89,7 +91,9 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
             </>
             :
             <>              
-              <div style={{ 
+              <div 
+              className='cell-data'
+              style={{ 
                 backgroundColor: !table.options.state.pasteState ? getValue().status?.color : (table.options.state.cellCopy?.column?.id == column.id && table.options.state.cellCopy?.row == row.id) ? 'yellow' : '',
                 // border: !table.options.state.pastedCellState ? '' : (table.options.state.cellCopy?.column?.id == column.id && table.options.state.cellCopy?.row == row.id) ? table.options.state.insertCanSave ? '' : '2px solid red' : '',                
                 }}
@@ -135,7 +139,9 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
             && row.id == table.getRowCount()-1
             &&
             <>
-             <div>
+             <div
+              className='cell-data'
+             >
                 <NumericFormat 
                   allowNegative={false}
                   prefix="-"
@@ -169,7 +175,9 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
             (!table.options.state.pasteState && !table.options.state.subtractState) 
             || (table.options.state.pasteState && row.id != table.getRowCount()-1)?
             <>
-               <div style={{ 
+               <div 
+               className='cell-data'
+               style={{ 
                 backgroundColor: getValue().status?.color,
                 }}
               >
@@ -183,7 +191,8 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                 && row.id == table.getRowCount()-1
                 && 
                 <>
-                  <div               
+                  <div
+                  className='cell-data'              
                   style={{ 
                     backgroundColor: table.getState().subtractState ? '#FF978E' : '#B7FFA3',
                     }}
@@ -228,7 +237,9 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                 ) 
                   &&
                 <>
-                  <div style={{ 
+                  <div 
+                  className='cell-data'
+                  style={{ 
                     backgroundColor: getValue().status?.color,
                     }}
                   >
@@ -252,7 +263,9 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
               ) 
                 &&
                 <>
-                   <div style={{ 
+                   <div 
+                   className='cell-data'
+                   style={{ 
                     backgroundColor: !table.options.state.pasteState ? '' : 'yellow',
                     border: !table.options.state.pastedCellState ? '' : (table.options.state.cellCopy?.column?.id == column.id && table.options.state.cellCopy?.row == row.id) ? table.options.state.insertCanSave ? '' : '2px solid red' : '',                
                     }}
@@ -272,11 +285,12 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                   {/* { console.log('cellpaste en editableCell', table.options.state.cellPaste.row) }
                   { console.log(row.id) }
                   { console.log(column.id)} */}
-                  <div               
-                    style={{ 
-                      backgroundColor: 'Lime',
-                      border: table.options.state.insertCanSave ? '' : '2px solid red',
-                      }}
+                  <div 
+                  className='cell-data'              
+                  style={{ 
+                    backgroundColor: 'Lime',
+                    border: table.options.state.insertCanSave ? '' : '2px solid red',
+                    }}
                     >
                       <NumericFormat 
                         allowNegative={false}
@@ -320,7 +334,9 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                     && column.id === table.options.state.cellCopy.column?.id )
                     &&
                     <>
-                      <div style={{ 
+                      <div 
+                      className='cell-data'
+                      style={{ 
                       backgroundColor: !table.options.state.pasteState ? '' : 'yellow',
                       border: !table.options.state.pastedCellState ? '' : table.options.state.cellCopy?.column?.id == column.id ? table.options.state.insertCanSave ? '' : '2px solid red' :'',                
                       }}                    

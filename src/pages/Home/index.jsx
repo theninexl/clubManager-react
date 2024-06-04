@@ -17,7 +17,7 @@ export default function Home () {
         </HalfContainerAside>
         <HalfContainerBody>
           <>
-            <BasicTable />
+            {/* <BasicTable /> */}
           </>
         </HalfContainerBody>
       </HalfContainer>

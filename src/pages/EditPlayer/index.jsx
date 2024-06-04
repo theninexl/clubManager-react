@@ -86,14 +86,6 @@ export default function EditPlayerPage () {
     if (getPositions.responseGetData) setPositions(getPositions.responseGetData.data.data);
   },[getPositions.responseGetData])
 
-  // const getContracts = useGetData('masters/getAllContract');
-  // useEffect (() => {
-  //   if (getContracts.responseGetData) {
-  //     console.log('getAllContract', getContracts.responseGetData)
-  //     setContracts(getContracts.responseGetData.data.data);
-  //   }
-  // },[getContracts.responseGetData])
-
   const getIntermediaries = useGetData('masters/getAllIntermediary');
   useEffect (() => {
     if (getIntermediaries.responseGetData) setIntermediaries(getIntermediaries.responseGetData.data.data);

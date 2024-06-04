@@ -1,165 +1,161 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { AsideMenu } from "../../components/AsideMenu";
+import { useGetData } from "../../hooks/useGetData";
+import { useSaveData } from "../../hooks/useSaveData";
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
-import { CentralBody, CentralBody__Header, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
-import { TableCellMedium, TableCellShort, TableDataHeader, TableDataRow, TableDataWrapper } from "../../components/UI/layout/tableData";
-import { IconButtonSmallPrimary, IconButtonSmallerError, IconButtonSmallerPrimary, IconButtonSmallerSuccess } from "../../components/UI/objects/buttons";
-import { SymbolAdd, SymbolBartchart, SymbolCheck, SymbolError } from "../../components/UI/objects/symbols";
+import { CentralBody, CentralBody__Header, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
+import { FormSimpleHrz, SelectIcon } from "../../components/UI/components/form simple/formSimple";
+import { ActivePlayerTable } from "./ActivePlayerTable";
+
 
 
 export default function ManagePaymentsPage () {
 
-  //navegar
-  const navigate = useNavigate();
-  //guardar token peticiones
-  const account = localStorage.getItem('CMAccount');
-  const parsedAccount = JSON.parse(account);
-  const token = parsedAccount.token;
-  // variables y estados locales
   const rowsByPage = 10;
-  const [searchValue, setSearchValue] = useState('');
-  const [listOrder, setListOrder] = useState(1);
+  //estados locales
   const [page, setPage] = useState(1);
+  const [allPlayers, setAllPlayers] = useState([]);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [warningMsg, setWarningMsg] = useState('Selecciona un jugador del desplegable para comenzar');
+  const [activePlayerId, setActivePlayerId] = useState();
+  const [activeContractId, setActiveContractId] = useState();
+  const [activePlayerDetails, setActivePlayerDetails] = useState()
+  const [activePlayerContracts, setActivePlayerContracts] = useState()
 
-  const [allPlayers, setAllPlayers] = useState([
-    {
-      "id_jugador": 1,
-      "nombre": "LUCAS",
-      "apellidos": "TIRO",
-      "alias": "TIRO",
-      "comunitario": "SI",
-      "desc_posicion": "DEFENSA",
-      "imp_salario_total": "100,00€",
-      "imp_variable": "100,00€",
-      "activo": "NO"
-    },
-    {
-      "id_jugador": 1,
-      "nombre": "ALVARO",
-      "apellidos": "MORATA MORATO",
-      "alias": "MORATA",
-      "comunitario": "SI",
-      "desc_posicion": "DELANTERO",
-      "imp_salario_total": "100,00€",
-      "imp_variable": "100,00€",
-      "activo": "SI"
-    },
-    {
-      "id_jugador": 1,
-      "nombre": "STEFAN",
-      "apellidos": "SAVIC",
-      "alias": "SAVIC",
-      "comunitario": "SI",
-      "desc_posicion": "DELANTERO",
-      "imp_salario_total": "100,00€",
-      "imp_variable": "100,00€",
-      "activo": "SI"
-    },
-  ]);
+  //pedir todos los jugadores
+  const { responseGetData } = useGetData('players/getAll',{search:'',pagenumber:page,rowspage:rowsByPage})
+
+  useEffect(()=>{
+    if (responseGetData){
+      // console.log(responseGetData);
+      if (responseGetData.status === 200) { 
+        setAllPlayers(responseGetData.data.data);
+      } else if (responseGetData.code === 'ERR_NETWORK') {
+        setWarningMsg(null);   
+        setErrorMsg('Error de conexión, inténtelo más tarde');
+      } else if (responseGetData.code === 'ERR_BAD_RESPONSE') {
+        setWarningMsg(null);    
+        setErrorMsg('Error de conexión, inténtelo más tarde');
+      } else {
+        setWarningMsg(null);   
+        setErrorMsg('No hay datos disponibles. Vuelve a intentarlo');
+      }
+    }
+  },[responseGetData])
 
 
-  //pedir 10 usuarios
-  // const getUsers = async (token = token, search,pagenumber, rowspage = rowsByPage, orderby = listOrder ) => {
-  //   const results = await getData(token,'players/getAll',search,pagenumber,rowspage,orderby)
-  //   .then (res=> {
-  //     setAllPlayers(res.data);
-  //   }).catch(err=> {
-  //     console.log(err);
-  //   })
-  // }
+  //pedir datos jugador activo
+  const getPlayerData = useSaveData();
 
-  // //resetear pagina a 1 cuando cargas la primera vez
-  // useEffect(()=> { setPage(1)},[setPage]);
+  const getPlayerDetail = (idJugador) => {
+    getPlayerData.uploadData('players/getDetail',{'id_jugador':idJugador})
+  }
 
-  // //volver a pedir users cuando cambia pagina, orden
-  // useEffect(()=> {
-  //   getUsers(token,searchValue,page);
-  // },[page, listOrder]);
+  useEffect (() => {
+    if (getPlayerData.responseUpload) {
+      // console.log(getPlayerData.responseUpload)
+      setActivePlayerDetails(getPlayerData.responseUpload?.jugador[0])
+      setActivePlayerContracts(getPlayerData.responseUpload?.contratos)
+    }
+  },[getPlayerData.responseUpload])
+
+  useEffect(()=>{
+    if (activePlayerId === undefined || activePlayerId === '' || activePlayerId == 0) {
+      
+      setActivePlayerDetails();
+      setActivePlayerContracts();
+      setWarningMsg('Selecciona un jugador para comenzar');
+      setErrorMsg(null);        
+    } else {
+      console.log(activePlayerId);
+      getPlayerDetail(activePlayerId)
+    }
+  },[activePlayerId])
+
+  useEffect(()=>{
+    if (activeContractId) {
+      console.log(activeContractId);
+    }
+  },[activeContractId])
 
 
   return (
     <>    
-      <HalfContainer  id='usersList'>
+      <HalfContainer  id='playerPaymentDetails'>
         <HalfContainerAside>
           <AsideMenu />
         </HalfContainerAside>
         <HalfContainerBody className='cm-u-spacer-mt-medium'>
           <HeadContent>
             <HeadContentTitleBar>
-              <TitleBar__Title>Calendario de pagos</TitleBar__Title>
+              <TitleBar__Title>
+                <TitleBar__TitleAvatar
+                  avatarText='Calendario\nPagos'>
+                  { (!activePlayerDetails) ?
+                    <>Calendario de pagos</> 
+                    : <> {`${activePlayerDetails?.desc_nombre} ${activePlayerDetails?.desc_apellido1}`}</>
+                  }
+                </TitleBar__TitleAvatar>
+              </TitleBar__Title>
               <TitleBar__Tools>
-                {/* <FormSimpleHrz>
-                  <FieldWithIcon>
-                    <FieldWithIcon__input
-                      name='searchUser'
-                      placeholder='Buscar usuarios'/>
-                    <IconButtonSmallSecondary
-                      className='cm-c-field-icon__button'  >
-                      <SymbolSearch />
-                    </IconButtonSmallSecondary>
-                  </FieldWithIcon>
-                </FormSimpleHrz> */}
-                <IconButtonSmallPrimary
-                  onClick={() => {
-                    navigate('/new-player')
-                  }} >
-                  <SymbolAdd />
-                </IconButtonSmallPrimary>
+                <FormSimpleHrz>
+                  <SelectIcon
+                    style={{width:'250px'}}
+                    onChange={(e) => {
+                      if (e.target.value != '') {
+                        setActivePlayerId(e.target.value); 
+                        setWarningMsg(null);   
+                      } else {
+                        setActivePlayerId(null);
+                        setWarningMsg('Selecciona un jugador del desplegable para comenzar');   
+                      }                
+                    }}>
+                      <option value='0'>Selecciona jugador</option>
+                    { allPlayers?.map(item => {
+                      return (
+                        <option key={item.id_jugador} value={item.id_jugador}>{item.nombre}</option>
+                      );
+                    })}
+                    </SelectIcon>
+                    { (activePlayerId === undefined || activePlayerId == 0) ?
+                      ''
+                      :
+                      <SelectIcon
+                        style={{marginLeft: '16px', width:'250px'}}
+                        onChange={(e) => {
+                          setActiveContractId(e.target.value)         
+                        }}>
+                          <option value=''>Selecciona contrato</option>
+                        { activePlayerContracts?.map(item => {
+                          return (
+                            <option key={item.id_contrato} value={item.id_contrato}>{item.desc_descripcion}</option>
+                          );
+                        })}
+                      </SelectIcon>
+                    }
+                </FormSimpleHrz>
               </TitleBar__Tools>
             </HeadContentTitleBar>
           </HeadContent>
 
           <CentralBody>
-            <CentralBody__Header>Jugadores</CentralBody__Header>
-            <TableDataWrapper className='cm-u-spacer-mb-huge'>
-              <TableDataHeader>
-                <TableCellMedium>Nombre</TableCellMedium>
-                <TableCellMedium>Alias</TableCellMedium>
-                <TableCellMedium>Jugador UE</TableCellMedium>
-                <TableCellMedium>Posicion</TableCellMedium>
-                <TableCellMedium>Salario total</TableCellMedium>
-                <TableCellMedium>Variable</TableCellMedium>
-                <TableCellShort className='cm-u-centerText'>Activo</TableCellShort>
-                <TableCellShort>&nbsp;</TableCellShort>
-              </TableDataHeader>
-              <div>
-                {
-                  allPlayers?.map(player => {
-                    
-                    return (
-                      <TableDataRow key={player.id_jugador} >
-                        <TableCellMedium>{player.nombre}</TableCellMedium>
-                        <TableCellMedium>{player.alias}</TableCellMedium>
-                        <TableCellMedium>{player.comunitario}</TableCellMedium>
-                        <TableCellMedium>{player.desc_posicion}</TableCellMedium>
-                        <TableCellMedium>{player.imp_salario_total}</TableCellMedium>
-                        <TableCellMedium>{player.imp_variable}</TableCellMedium>
-                        <TableCellShort className='cm-u-centerText'>
-                          { player.activo === 'SI' ?
-                            <IconButtonSmallerSuccess>
-                              <SymbolCheck />
-                            </IconButtonSmallerSuccess>
-                            :
-                            <IconButtonSmallerError>
-                              <SymbolError />
-                            </IconButtonSmallerError>
-                          }
-                        </TableCellShort>
-                        <TableCellShort className='cm-u-centerText' >
-                          <IconButtonSmallerPrimary
-                            onClick={() => {
-                              navigate(`/manage-player-payments?player=${player.id_jugador}`)
-                            }}>
-                            <SymbolBartchart/>
-                          </IconButtonSmallerPrimary>
-                        </TableCellShort>
-                      </TableDataRow>
-                    );
-                  })
-                }
-                </div>
-            </TableDataWrapper>
+            <CentralBody__Header>Tabla de pagos</CentralBody__Header>
+            {(activePlayerId && activePlayerId != 0)  &&
+              <ActivePlayerTable
+                activePlayerId={activePlayerId}
+                activeContractId={activeContractId}
+              />
+            }
+            {warningMsg &&
+              <div  className='cm-u-centerText'>
+                <span className='warning'>{warningMsg}</span>
+              </div>
+            }
+            {errorMsg &&
+              <div  className='cm-u-centerText'>
+                <span className='error'>{errorMsg}</span>
+              </div>
+            }
           </CentralBody>
         </HalfContainerBody>
       </HalfContainer>

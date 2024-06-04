@@ -4,54 +4,16 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable, } from "@tanstack/react-table"
-import { DATA } from './MOCK_DATA'
-import { TableDataCls, TableDataClsBody, TableDataClsBody__cell, TableDataClsBody__row, TableDataClsHead, TableDataClsHead__cell } from "../../components/UI/layout/tableDataClassic"
-import { EditableCell } from "./EditableCell"
-import { IndeterminateCheckbox } from "./IndeterminateCheckbox"
-import { STATUSES } from "./MOCK_DATA"
-import { IconButtonSmallerPrimary } from "../../components/UI/objects/buttons"
-import { SymbolDelete } from "../../components/UI/objects/symbols"
-import { NumericFormat } from "react-number-format"
-import { EditableClauseCell } from "./EditableClauseCell"
+import { DATA, STATUSES } from './MOCK_DATA'
+import { IndeterminateCheckbox } from "./IndeterminateCheckbox";
+import { EditableClauseCell } from "./EditableClauseCell";
+import { EditableCell } from "./EditableCell";
+import { IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
+import { TableDataCls, TableDataClsBody, TableDataClsBody__cell, TableDataClsBody__row, TableDataClsHead, TableDataClsHead__cell } from "../../components/UI/layout/tableDataClassic";
 
 
-export const BasicTable = () => {
 
-  const [data, setData] = useState(DATA);
-  const [sumaRows, setSumaRows] = useState([]);
-  const [columnVisibility, setColumnVisibility] = useState({
-    'Select': false,
-    'Importe': false,
-  })
-  const [columnPinning, setColumnPinning] = useState({
-    'left': [
-      'Select',
-      'Clausulas',
-      'Importe',
-
-    ],
-    'right': ['total'],
-  })
-  const [editState, setEditState] = useState(false);
-  const [canSave, setCanSave] = useState(false);
-  const [rowSelected, setRowSelected] = useState({});
-  const [rowSelected2, setRowSelected2] = useState(null);
-  //estados insertables
-  const [insertState, setInsertState] = useState(false);
-  const [subtractState, setSubtractState] = useState(false);
-  const [advancePayState, setAdvancePayState] = useState(false);
-  const [insertSelectedCol,setInsertSelectedCol] = useState();
-  const [insertSelectedRow, setInsertSelectedRow] = useState();
-  const [cellCopy, setCellCopy] = useState([]);
-  const [pasteState, setPasteState] = useState(false);
-  const [cellPaste, setCellPaste] = useState([]);
-  const [pastedCellState, setPastedCellState] = useState(false);
-  const [insertSelectedAmount, setInsertSelectedAmount] = useState();
-  const [advancePayCalc, setAdvancePayCalc] = useState();
-  const [insertAmountError, setInsertAmountError] = useState();
-  const [insertCanSave, setInsertCanSave] = useState(false);
-
-
+export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const { status_initial } = STATUSES;
 
   const emptyLine = [{
@@ -85,6 +47,52 @@ export const BasicTable = () => {
     "total":""
   }]
 
+  const [data, setData] = useState(emptyLine);
+  const [sumaRows, setSumaRows] = useState([]);
+  const [columnVisibility, setColumnVisibility] = useState({
+    'Select': false,
+    'Importe': false,
+  })
+  const [columnPinning, setColumnPinning] = useState({
+    'left': [
+      'Select',
+      'Clausulas',
+      'Importe',
+
+    ],
+    'right': ['total'],
+  })
+  const [editState, setEditState] = useState(false);
+  const [canSave, setCanSave] = useState(false);
+  const [rowSelected, setRowSelected] = useState({});
+  const [rowSelected2, setRowSelected2] = useState(null);
+  //estados insertables
+  const [insertState, setInsertState] = useState(false);
+  const [subtractState, setSubtractState] = useState(false);
+  const [advancePayState, setAdvancePayState] = useState(false);
+  const [insertSelectedCol,setInsertSelectedCol] = useState();
+  const [insertSelectedRow, setInsertSelectedRow] = useState();
+  const [cellCopy, setCellCopy] = useState([]);
+  const [pasteState, setPasteState] = useState(false);
+  const [cellPaste, setCellPaste] = useState([]);
+  const [pastedCellState, setPastedCellState] = useState(false);
+  const [insertSelectedAmount, setInsertSelectedAmount] = useState();
+  const [advancePayCalc, setAdvancePayCalc] = useState();
+  const [insertAmountError, setInsertAmountError] = useState();
+  const [insertCanSave, setInsertCanSave] = useState(false);
+
+  
+
+  useEffect(()=>{
+    console.log('entro aquí')
+    if (activePlayerId != 0 && activeContractId) {
+      // console.log('playerID', activePlayerId);
+      // console.log('contractID', activeContractId);
+      setData(DATA);
+    }
+
+  },[activeContractId, activeContractId])
+
   const sumHelper = (total, row, key) => {
     let number = row.getValue(key).amount
     number >= 0 ? total = total + number : total = total - Math.abs(number);    
@@ -92,7 +100,7 @@ export const BasicTable = () => {
   }
 
   const columnHelper = createColumnHelper();
-  //columDefs
+
   const columnDef = [
     {
       id: 'Select',
@@ -718,10 +726,6 @@ export const BasicTable = () => {
     }),
   ]
 
-  //utiliza el hook useMemo para "chachear" la info de la tabla porque si no se volverá a solicitar en cada render 
-  // const finalData = useMemo(()=> data,[])
-  // const finalColumnDef = useMemo(()=> columnDef,[])  
-
   const tableInstance = useReactTable({
     columns: columnDef,
     data: data,
@@ -838,7 +842,7 @@ export const BasicTable = () => {
       isPinned === 'right' && column.getIsFirstColumn('right')
   
     return {
-      backgroundColor: isPinned ? 'white' : undefined,
+      // backgroundColor: isPinned ? 'white' : undefined,
       // backgroundColor: isLastLeftPinnedColumn ? 'white' : isFirstRightPinnedColumn ? 'white' : undefined,
       // boxShadow: isLastLeftPinnedColumn
       //   ? '-4px 0 10px -10px gray inset'
@@ -847,7 +851,7 @@ export const BasicTable = () => {
       //     : undefined,
       left: isPinned === 'left' ? `${column.getStart('left')}px` : undefined,
       right: isPinned === 'right' ? `${column.getAfter('right')}px` : undefined,
-      opacity: isPinned ? 0.98 : 1,
+      // opacity: isPinned ? 0.98 : 1,
       position: isPinned ? 'sticky' : '',
       width: column.getSize(),
       zIndex: isPinned ? 1 : 0,
@@ -885,6 +889,17 @@ export const BasicTable = () => {
     setSumaRows(rowsSum)
   }
 
+  const checkSum = () => {
+    const importeSuma = sumaRows[tableInstance.getSelectedRowModel().rows[0]?.id];
+    const importeClausula = tableInstance.getSelectedRowModel().rows[0]?.getValue('Importe').amount;
+
+    if (importeClausula > 0 && importeSuma > 0 && importeClausula == importeSuma) {
+      setCanSave(true)
+    } else {
+      setCanSave(false)
+    }
+  }
+
   useEffect (() => {
     // console.log('data changes', data);
     if (tableInstance.getIsSomePageRowsSelected()) {
@@ -917,285 +932,249 @@ export const BasicTable = () => {
     // console.log('rowSelected', rowSelected);
     checkSum()
   },[rowSelected])
-
-  // useEffect(()=>{
-  //   console.log('insertState', insertState);
-  //   console.log('advancePayState', advancePayState);
-  //   console.log('insertSelectedAmount', insertSelectedAmount)
-  //   console.log('pasteState', pasteState);
-  //   console.log('advancePayCalc', advancePayCalc)
-
-  // },[insertState, advancePayState, pasteState, insertSelectedAmount, advancePayCalc])
-
-  const checkSum = () => {
-    // console.log('row a evaluar:', tableInstance.getSelectedRowModel().rows[0]?.id)
-    // console.log('sumas', sumaRows)
-    const importeSuma = sumaRows[tableInstance.getSelectedRowModel().rows[0]?.id];
-    const importeClausula = tableInstance.getSelectedRowModel().rows[0]?.getValue('Importe').amount;
-    // console.log('Importe Clausula:', importeClausula);
-    // console.log('importe Suma', importeSuma);
-
-    if (importeClausula > 0 && importeSuma > 0 && importeClausula == importeSuma) {
-      // console.log('puede guardar')
-      setCanSave(true)
-    } else {
-      // console.log('no puede guardar')
-      setCanSave(false)
-    }
-  }
-
+  
   return (
     <>
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
-        <p>&nbsp;</p>
-        <p><button
-          onClick={(e)=> {
-            e.preventDefault();
-            setEditState(true);
-          }}
-        >Editar Pagos</button>
-        { editState && 
-          <>
-            <span>&nbsp;</span>
-            <button
-            disabled={ canSave ? false : true }
-            onClick={(e)=> {
-              e.preventDefault();
-              setEditState(false);
-              tableInstance.resetRowSelection();
-            }}
-            >
-              Guardar
-            </button>
-            <span>&nbsp;</span>
-            <button
+      { data ? 
+        <>
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
+            <p>&nbsp;</p>
+            <p><button
               onClick={(e)=> {
                 e.preventDefault();
-                setEditState(false);
-                tableInstance.resetRowSelection();
+                setEditState(true);
               }}
-              >
-                Cancelar
-            </button>
-          </>
-        }
-        </p>
-      
-        <div 
-          className='tableData-Container cm-u-spacer-mt-big cm-u-spacer-mb-big'
-          style={{
-            border: '1px solid lightgray',
-            overflowX: 'scroll',
-            width: '100%',
-          }}
-        >
-          <TableDataCls 
-            style={{ 
-              // border: '1px solid lightgray',
-              borderCollapse: 'collapse',
-              borderSpacing: 0,
-              width: tableInstance.getTotalSize(), 
-            }}
-          >
-            { tableInstance.getHeaderGroups().map(headerElement => {
-                return (
-                  <TableDataClsHead key={headerElement.id}>
-                    <tr>
-                      { headerElement.headers.map(columnElement => {
-                        const { column } = columnElement;
-                        return (
-                          <TableDataClsHead__cell
-                          key={columnElement.id}
-                          colSpan={columnElement.colSpan}
-                          className='tablecell-medium'
-                          style={{ ...getCommonPinningStyles(column) }}
-                          >
-                            { flexRender ( 
-                              columnElement.column.columnDef.header,
-                              columnElement.getContext()
-                            )}
-                          
-                          </TableDataClsHead__cell>
-                        )
-                      })}
-                    </tr>
-                  </TableDataClsHead>
-                )
-              })
+            >Editar Pagos</button>
+            { editState && 
+              <>
+                <span>&nbsp;</span>
+                <button
+                disabled={ canSave ? false : true }
+                onClick={(e)=> {
+                  e.preventDefault();
+                  setEditState(false);
+                  tableInstance.resetRowSelection();
+                }}
+                >
+                  Guardar
+                </button>
+                <span>&nbsp;</span>
+                <button
+                  onClick={(e)=> {
+                    e.preventDefault();
+                    setEditState(false);
+                    tableInstance.resetRowSelection();
+                  }}
+                  >
+                    Cancelar
+                </button>
+              </>
             }
-            <TableDataClsBody>
-              { tableInstance.getRowModel().rows.map(rowElement => {
-                return (
-                  <>
-                    <TableDataClsBody__row key={rowElement.id}>
-                      { rowElement.getVisibleCells().map((cellElement, index) => {
-                        const { column } = cellElement;
-                        // console.log('visibleCells', rowElement.getVisibleCells().length)
-                        return (
-                          <>
-                            {index === rowElement.getVisibleCells().length - 1 ?
-                              <>
-                                <TableDataClsBody__cell 
-                                  key={`suma${rowElement.id}`} 
-                                  colSpan='1'
-                                  style={{ ...getCommonPinningStyles(column) }}
-                                >
-                                  <div style={{
-                                    borderRight: '1px solid lightgray',
-                                    display: 'flex', 
-                                    flexDirection: 'row', 
-                                    alignItems: 'center', 
-                                    justifyContent: 'flex-end',
-                                    padding: '8px',
-                                    height: '100%',}}>
-                                    {sumaRows[rowElement.id]}</div>
-                                </TableDataClsBody__cell>
-                              </>
-                              :
-                              <>
-                                <TableDataClsBody__cell 
-                                  key={cellElement.id} 
-                                  colSpan='1'
-                                  style={{ ...getCommonPinningStyles(column) }}
-                                  >
-                                    {flexRender(cellElement.column.columnDef.cell, cellElement.getContext())}
-                                </TableDataClsBody__cell>
-                              </>
-                            }
-                          </>
-                        )
-                      })}
-                    </TableDataClsBody__row>
-                  </>
-                )
-                })
-              }
-            </TableDataClsBody>
-            {
-              tableInstance.getFooterGroups().map(footerElement => {
-                return (
-                  <TableDataClsHead key={footerElement.id}>
-                    <tr>
-                      { footerElement.headers.map(footerCol => {
-                        const { column } = footerCol;
-                        return (                        
-                          <>
-                            <TableDataClsHead__cell
-                              key={footerCol.id}
+            </p>
+          
+            <div className='cm-l-tabledata-cls-container cm-u-spacer-mt-big cm-u-spacer-mb-big'
+            >
+              <TableDataCls 
+                style={{ 
+                  width: tableInstance.getTotalSize(), 
+                }}
+              >
+                { tableInstance.getHeaderGroups().map(headerElement => {
+                    return (
+                      <TableDataClsHead key={headerElement.id}>
+                        <tr>
+                          { headerElement.headers.map(columnElement => {
+                            const { column } = columnElement;
+                            return (
+                              <TableDataClsHead__cell
+                              key={columnElement.id}
+                              colSpan={columnElement.colSpan}
                               className='tablecell-medium'
                               style={{ ...getCommonPinningStyles(column) }}
-                            >
-                            {
-                              footerCol.isPlaceHolder ? null :
-                              flexRender(
-                                footerCol.column.columnDef.footer,
-                                footerCol.getContext()
-                              )
-                            }
-                            </TableDataClsHead__cell>                      
-                          </>
-                        )
-                      })}
-                    </tr>
-                  </TableDataClsHead>
-                )
-              })
+                              >
+                                { flexRender ( 
+                                  columnElement.column.columnDef.header,
+                                  columnElement.getContext()
+                                )}
+                              
+                              </TableDataClsHead__cell>
+                            )
+                          })}
+                        </tr>
+                      </TableDataClsHead>
+                    )
+                  })
+                }
+                <TableDataClsBody>
+                  { tableInstance.getRowModel().rows.map(rowElement => {
+                    return (
+                      <>
+                        <TableDataClsBody__row key={rowElement.id}>
+                          { rowElement.getVisibleCells().map((cellElement, index) => {
+                            const { column } = cellElement;
+                            // console.log('visibleCells', rowElement.getVisibleCells().length)
+                            return (
+                              <>
+                                {index === rowElement.getVisibleCells().length - 1 ?
+                                  <>
+                                    <TableDataClsBody__cell 
+                                      key={`suma${rowElement.id}`} 
+                                      colSpan='1'
+                                      style={{ ...getCommonPinningStyles(column) }}
+                                    >
+                                      <div>
+                                        {sumaRows[rowElement.id]}</div>
+                                    </TableDataClsBody__cell>
+                                  </>
+                                  :
+                                  <>
+                                    <TableDataClsBody__cell 
+                                      key={cellElement.id} 
+                                      colSpan='1'
+                                      style={{ ...getCommonPinningStyles(column) }}
+                                      >
+                                        {flexRender(cellElement.column.columnDef.cell, cellElement.getContext())}
+                                    </TableDataClsBody__cell>
+                                  </>
+                                }
+                              </>
+                            )
+                          })}
+                        </TableDataClsBody__row>
+                      </>
+                    )
+                    })
+                  }
+                </TableDataClsBody>
+                {
+                  tableInstance.getFooterGroups().map(footerElement => {
+                    return (
+                      <TableDataClsHead key={footerElement.id}>
+                        <tr>
+                          { footerElement.headers.map(footerCol => {
+                            const { column } = footerCol;
+                            return (                        
+                              <>
+                                <TableDataClsHead__cell
+                                  key={footerCol.id}
+                                  className='tablecell-medium'
+                                  style={{ ...getCommonPinningStyles(column) }}
+                                >
+                                {
+                                  footerCol.isPlaceHolder ? null :
+                                  flexRender(
+                                    footerCol.column.columnDef.footer,
+                                    footerCol.getContext()
+                                  )
+                                }
+                                </TableDataClsHead__cell>                      
+                              </>
+                            )
+                          })}
+                        </tr>
+                      </TableDataClsHead>
+                    )
+                  })
+                }
+                
+
+
+                
+              </TableDataCls>
+            </div>
+
+            <p>
+            { !insertState  &&
+              <>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setInsertState(true);
+                    setAdvancePayState(true);
+                  }}
+                >
+                  Anticipar pago
+                </button>
+                <span>&nbsp;</span>
+                <button
+                  onClick={(e)=>{
+                    e.preventDefault();
+                    tableInstance.options.meta.newSanctionLine();
+                    // console.log('insertSelectedAmount', insertSelectedAmount)
+                    // console.log('insertSelectedCol', insertSelectedCol)
+                    setInsertState(true);
+                    setSubtractState(true);
+                  }}
+                >Sanción</button>
+                <span>&nbsp;</span>
+                <span>&nbsp;</span>
+              </>
             }
-            
+            { (subtractState || advancePayState) && 
+              <>
+                <button
+                  disabled={ insertCanSave ? false : true }
+                  onClick={(e) => {
+                    e.preventDefault();
+                    // if (pastedCellState) {
+                    //   console.log('aquí actualizo el contenido de la celda copiada');
+                    //   console.log('celda copiada actualizada', cellCopy);
+                    //   tableInstance.options.meta.updateData(cellCopy.row, cellCopy.column.id, cellCopy.value)
+                    // }
 
+                    setInsertState(false);
+                    setSubtractState(false);
+                    setInsertCanSave(false);
+                    setInsertSelectedAmount();
+                    setInsertSelectedCol();
+                    setAdvancePayState(false);
+                    setAdvancePayCalc();
+                    setCellCopy([]);
+                    setPasteState(false);
+                    setPastedCellState(false);
+                  }}
+                >
+                  Guardar
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    console.log(insertSelectedAmount);
+                    // if (insertSelectedAmount !== undefined) {
+                    //   const newData = [...data];
+                    //   newData.pop()
+                    //   console.log(newData);
+                    //   setData(newData);
+                    // }
+                    const newData = [...data];
+                    newData.pop()
+                    console.log(newData);
+                    setData(newData);
+                    setInsertState(false);
+                    setSubtractState(false);
+                    setInsertCanSave(false);
+                    setInsertSelectedAmount();
+                    setInsertSelectedCol();
+                    setAdvancePayState(false);
+                    setAdvancePayCalc();
+                    setCellCopy([]);
+                    setPasteState(false);
+                    setPastedCellState(false);
+                  }}
+                >
+                  Cancelar
+                </button>
+              </>
+            }
 
-            
-          </TableDataCls>
-        </div>
+              
 
-        <p>
-        { !insertState  &&
-          <>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                setInsertState(true);
-                setAdvancePayState(true);
-              }}
-            >
-              Anticipar pago
-            </button>
-            <span>&nbsp;</span>
-            <button
-              onClick={(e)=>{
-                e.preventDefault();
-                tableInstance.options.meta.newSanctionLine();
-                // console.log('insertSelectedAmount', insertSelectedAmount)
-                // console.log('insertSelectedCol', insertSelectedCol)
-                setInsertState(true);
-                setSubtractState(true);
-              }}
-            >Sanción</button>
-            <span>&nbsp;</span>
-            <span>&nbsp;</span>
-          </>
-        }
-        { (subtractState || advancePayState) && 
-          <>
-            <button
-              disabled={ insertCanSave ? false : true }
-              onClick={(e) => {
-                e.preventDefault();
-                // if (pastedCellState) {
-                //   console.log('aquí actualizo el contenido de la celda copiada');
-                //   console.log('celda copiada actualizada', cellCopy);
-                //   tableInstance.options.meta.updateData(cellCopy.row, cellCopy.column.id, cellCopy.value)
-                // }
-
-                setInsertState(false);
-                setSubtractState(false);
-                setInsertCanSave(false);
-                setInsertSelectedAmount();
-                setInsertSelectedCol();
-                setAdvancePayState(false);
-                setAdvancePayCalc();
-                setCellCopy([]);
-                setPasteState(false);
-                setPastedCellState(false);
-              }}
-            >
-              Guardar
-            </button>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                console.log(insertSelectedAmount);
-                // if (insertSelectedAmount !== undefined) {
-                //   const newData = [...data];
-                //   newData.pop()
-                //   console.log(newData);
-                //   setData(newData);
-                // }
-                const newData = [...data];
-                newData.pop()
-                console.log(newData);
-                setData(newData);
-                setInsertState(false);
-                setSubtractState(false);
-                setInsertCanSave(false);
-                setInsertSelectedAmount();
-                setInsertSelectedCol();
-                setAdvancePayState(false);
-                setAdvancePayCalc();
-                setCellCopy([]);
-                setPasteState(false);
-                setPastedCellState(false);
-              }}
-            >
-              Cancelar
-            </button>
-          </>
-        }
-
-          
-
-        </p>
-      </div>
+            </p>
+          </div>
+        </>
+        :
+        'No hay datos para mostrar'
+      }
     </>
-  );
+  )
 }

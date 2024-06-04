@@ -23,9 +23,9 @@ export const HeadContent = ({ children }) => {
   );
 }
 
-export const HeadContentTitleBar = ({ children }) => {
+export const HeadContentTitleBar = ({ children, className }) => {
   return (
-    <div className='cm-l-contentHeader__titleBar'>{ children }</div>
+    <div className={`cm-l-contentHeader__titleBar ${className}`}>{ children }</div>
   );
 }
 
