@@ -22,7 +22,7 @@ const ColorIcon = ({ Color }) => {
 export const EditableCell = ({ getValue, row, column, table, }) => {
   const initialValue = getValue();
   const [value, setValue] = useState(initialValue)
-  const { updateData, newSanctionLine, newAdvancePayLine, pasteCell } = table.options.meta;
+  const { updateData, newSanctionLine, newAdvancePayLine, newDeferedPayLine, pasteCell } = table.options.meta;
 
   useEffect(()=> {
     setValue(initialValue)
@@ -39,21 +39,13 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
               className='cell-data'
               style={{ 
                 backgroundColor: getValue().status?.color,
-                display: 'flex', 
-                flexDirection: 'row', 
-                justifyContent: 'flex-end',
-                alignItems: 'center',
-                gap: '8px', 
-                padding: '8px',
-                height: '100%',
+           
                 }}>
                 <input
                   value={value.amount}
                   onChange={(e) => {
-                    // console.log('value antes', value);
                     let onChangeValue = {...value}
                     onChangeValue.amount = e.target.value;
-                    // console.log('change', onChangeValue)
                     setValue(onChangeValue)
                   }}
                   onBlur={() => {
@@ -90,12 +82,12 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
               </div>
             </>
             :
-            <>              
+            <>   
               <div 
               className='cell-data'
               style={{ 
-                backgroundColor: !table.options.state.pasteState ? getValue().status?.color : (table.options.state.cellCopy?.column?.id == column.id && table.options.state.cellCopy?.row == row.id) ? 'yellow' : '',
-                // border: !table.options.state.pastedCellState ? '' : (table.options.state.cellCopy?.column?.id == column.id && table.options.state.cellCopy?.row == row.id) ? table.options.state.insertCanSave ? '' : '2px solid red' : '',                
+                backgroundColor: !table.options.state.pasteState ? getValue().status?.color : (table.options.state.cellCopy?.column?.id == column.id && table.options.state.cellCopy?.row == row.id) ? '' : '',
+        
                 }}
                 
                 >
@@ -103,25 +95,25 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                       && table.options.state.cellCopy?.column?.id == column.id 
                       && table.options.state.cellCopy?.row == row.id
                     ) ? 
-                    <>
-                    {/* {console.log('insertSelectedAmount', column.columnDef.meta.insertSelectedAmount)}
-                    {console.log('value amount', value.amount)}
-                    {console.log('cellCopy amount', table.options.state.cellCopy?.value.amount)} */}
-                    {value.amount}
-                    {/* {initialValue.amount} */}
-                    </>
+                    <>{value.amount}</>
                     :
                     <>{initialValue.amount}</>
                   }
-                  { table.getState().advancePayState && initialValue.amount != 0 && 
+                  { (table.getState().advancePayState || table.getState().deferredPayState || table.getState().subtractState) && initialValue.amount != 0 && 
                     <>
                       { !table.getState().pasteState &&
                         <IconButtonSmallerPrimary
                           style={{marginLeft: '8px'}}
                           onClick={() => {
-                            newAdvancePayLine(row, column, value);
-                            // if (table.getState().subtractState) { newSanctionLine(row, column.id, value.amount) }
-                            // else if (table.getState().advancePayState) { newAdvancePayLine(row, column, value)}                      
+                            if(table.getState().advancePayState) {
+                              // console.log('estoy anticipando un pago')
+                              newAdvancePayLine(row, column, value);
+                            } else if (table.getState().deferredPayState){
+                              // console.log('estoy retrasando un pago')
+                              newDeferedPayLine(row, column, value);
+                            } else if (table.getState().subtractState) {
+                              newSanctionLine(row, column, value);
+                            }             
                           }}
                         >
                           <SymbolContentCopy />
@@ -135,7 +127,7 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
         </> 
         :
         <>
-          { table.getState().subtractState
+          {/* { table.getState().subtractState
             && row.id == table.getRowCount()-1
             &&
             <>
@@ -163,14 +155,7 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                 />
               </div>
             </>
-            // :
-            // <>
-            //   { !table.getState().pastedCellState && !table.options.state.pasteState
-            //   &&
-            //     <></>
-            //   }
-            // </>
-          }
+          } */}
           {     
             (!table.options.state.pasteState && !table.options.state.subtractState) 
             || (table.options.state.pasteState && row.id != table.getRowCount()-1)?
@@ -186,7 +171,7 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
             </>
             :
             <>
-              { table.getState().advancedPayState
+              { (table.getState().advancedPayState || table.getState().subtractState)
                 && column.id == column.columnDef.meta.insertSelectedCol 
                 && row.id == table.getRowCount()-1
                 && 
@@ -230,8 +215,12 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
               }
               {/* estado acabo de copiar una celda fija para hacer anticipo y pinto el botón de pegar */}
               {
-                ( table.getState().pasteState 
-                  && (column.getIndex() < table.options.state.cellCopy?.column?.index) 
+                ( table.getState().pasteState
+                  && ((table.getState().advancePayState && column.getIndex() < table.options.state.cellCopy?.column?.index)
+                      || (table.getState().deferredPayState && column.getIndex() > table.options.state.cellCopy?.column?.index)
+                      || (table.getState().subtractState && 
+                          (column.getIndex() < table.options.state.cellCopy?.column?.index || column.getIndex() > table.options.state.cellCopy?.column?.index))
+                    )
                   && !table.getState().pastedCellState
                   && row.index === table.getRowCount()-1
                 ) 
@@ -245,7 +234,7 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                   >
                   <IconButtonSmallerPrimary
                     onClick={() => {
-                      pasteCell(row, column)                      
+                      pasteCell(row, column)                     
                     }}
                   >
                     <SymbolPaste />

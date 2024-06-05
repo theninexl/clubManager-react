@@ -8,12 +8,15 @@ import { DATA, STATUSES } from './MOCK_DATA'
 import { IndeterminateCheckbox } from "./IndeterminateCheckbox";
 import { EditableClauseCell } from "./EditableClauseCell";
 import { EditableCell } from "./EditableCell";
-import { IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
+import { ButtonCatPrimary, ButtonMouse, ButtonMouseGhost, ButtonMousePrimary, ButtonMouseTransparent, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
 import { TableDataCls, TableDataClsBody, TableDataClsBody__cell, TableDataClsBody__row, TableDataClsHead, TableDataClsHead__cell } from "../../components/UI/layout/tableDataClassic";
+import { SymbolDelete } from "../../components/UI/objects/symbols";
 
 
 
 export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
+  
+
   const { status_initial } = STATUSES;
 
   const emptyLine = [{
@@ -70,6 +73,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const [insertState, setInsertState] = useState(false);
   const [subtractState, setSubtractState] = useState(false);
   const [advancePayState, setAdvancePayState] = useState(false);
+  const [deferredPayState, setDeferredPayState] = useState(false);
   const [insertSelectedCol,setInsertSelectedCol] = useState();
   const [insertSelectedRow, setInsertSelectedRow] = useState();
   const [cellCopy, setCellCopy] = useState([]);
@@ -80,21 +84,25 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const [advancePayCalc, setAdvancePayCalc] = useState();
   const [insertAmountError, setInsertAmountError] = useState();
   const [insertCanSave, setInsertCanSave] = useState(false);
+  const [clauseTxt, setClauseTxt] = useState()
 
   
 
   useEffect(()=>{
-    console.log('entro aquí')
-    if (activePlayerId != 0 && activeContractId) {
-      // console.log('playerID', activePlayerId);
-      // console.log('contractID', activeContractId);
-      setData(DATA);
+    if (activePlayerId != 0) {
+      if (activeContractId != '' && activeContractId != undefined) {
+        setData(DATA);
+      } else {
+        setData([])
+      }      
+    } else {
+      setData([])
     }
 
   },[activeContractId, activeContractId])
 
   const sumHelper = (total, row, key) => {
-    let number = row.getValue(key).amount
+    let number = Number(row.getValue(key).amount)
     number >= 0 ? total = total + number : total = total - Math.abs(number);    
     return total;
   }
@@ -155,7 +163,10 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       header: 'Clausula',
       cell: EditableClauseCell ,
       footer: '',
-      size: 180, 
+      size: 180,
+      meta: {
+        setClauseTxt,
+      } 
     },
     {
       accessorKey: 'Importe',
@@ -745,8 +756,8 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       },
       updateClause: (rowIndex, columnId, value) => {
         let newData = [...data]
-        newData[rowIndex][columnId] = value;
-        setData(newData);
+        console.log('newData', newData)
+        // setData(newData);
       },
       deleteRow: (row) => {
         const newData = [...data];
@@ -757,19 +768,24 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       },
       newSanctionLine: (row, columnId, value) => {
         setInsertState(true);
-        // setInsertSelectedAmount(value);
-        // setInsertSelectedCol(columnId);
-        // const valueNumber = isNaN(value) ? -Math.abs(value) : -Math.abs(Number(value));
+        setInsertSelectedAmount(value.amount);
+        const copyCell = [];
+        copyCell["column"] = {id: columnId.id, index: columnId.getIndex()};
+        copyCell["row"]= row.id;
+        copyCell["value"] = value;
+        setCellCopy(copyCell);        
         const newEmptyLine = [...emptyLine]
         newEmptyLine[0]["TipoClausula"] = 'Sanción';
         newEmptyLine[0]["Clausulas"] = '';
-        // newEmptyLine[0][columnId] = {amount: valueNumber, status: STATUSES[0]};
+        const newValue = {...value}
+        newValue.amount = -Math.abs(value.amount);
+        newEmptyLine[0][columnId.id] = newValue;
         const newData = [...data, newEmptyLine[0]]
         setData(newData);
+        setPasteState(true);
       }, 
       newAdvancePayLine: (row, columnId, value) => {
         setInsertState(true);
-        console.log('value que copio', value, row.getValue('Clausulas'), columnId.id)
         setInsertSelectedAmount(value.amount);
         const copyCell = [];
         copyCell["column"] = {id: columnId.id, index: columnId.getIndex()};
@@ -779,7 +795,27 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         setCellCopy(copyCell);
         const newEmptyLine = [...emptyLine]
         newEmptyLine[0]["TipoClausula"] = 'Anticipo';
-        newEmptyLine[0]["Clausulas"] = `${row.getValue('Clausulas')} ${columnId.id}`;
+        newEmptyLine[0]["Clausulas"] = '';
+        const newValue = {...value}
+        newValue.amount = -Math.abs(value.amount);
+        newEmptyLine[0][columnId.id] = newValue;
+        const newData = [...data, newEmptyLine[0]]
+        setData(newData);
+        setPasteState(true);
+      },
+      newDeferedPayLine: (row, columnId, value) => {
+        setInsertState(true);
+        // console.log('value que copio', value, row.getValue('Clausulas'), columnId.id)
+        setInsertSelectedAmount(value.amount);
+        const copyCell = [];
+        copyCell["column"] = {id: columnId.id, index: columnId.getIndex()};
+        copyCell["row"]= row.id;
+        copyCell["value"] = value;
+        // console.log('copyCell', copyCell)
+        setCellCopy(copyCell);
+        const newEmptyLine = [...emptyLine]
+        newEmptyLine[0]["TipoClausula"] = 'Retraso';
+        newEmptyLine[0]["Clausulas"] = '';
         const newValue = {...value}
         newValue.amount = -Math.abs(value.amount);
         newEmptyLine[0][columnId.id] = newValue;
@@ -788,17 +824,17 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         setPasteState(true);
       },  
       pasteCell: (row, columnId) => {
-        console.log('pego desde', cellCopy.column.id, cellCopy.row, cellCopy);
-        console.log('pego. Row:', row, ' Colum:', columnId)
+        // console.log('pego desde', cellCopy.column.id, cellCopy.row, cellCopy);
+        // console.log('pego. Row:', row, ' Colum:', columnId)
         const pegoCelda = [];
         pegoCelda["column"] = {"id":columnId.id, "index": columnId.getIndex()};
         pegoCelda["row"]= row.id;
         setCellPaste(pegoCelda);
         //pegar en la col bajo celda copiada
         const newData = [...data]
-        console.log('newData', newData)
+        // console.log('newData', newData)
         const newCell = {...newData[row.id][cellCopy.column.id]}
-        console.log('newCell', newCell)
+        // console.log('newCell', newCell)
         newCell.amount = -Math.abs(insertSelectedAmount);
         newData[row.id][cellCopy.column.id] = newCell;
         //pegar en la propia celda
@@ -806,11 +842,25 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         newCell2.amount = insertSelectedAmount;
         newData[row.id][columnId.id] = newCell2;
         // newData[cellCopy.row][cellCopy.column.id] = { amount: 0, status: cellCopy.value.status };
-        console.log('newData recien pegado', newData);
+        // console.log('newData recien pegado', newData);
         setData(newData);
         setPastedCellState(true);
         setInsertCanSave(true);
-      },    
+      },
+      clearStates: () => {
+        setInsertState(false);
+        setSubtractState(false);
+        setInsertCanSave(false);
+        setInsertSelectedAmount();
+        setInsertSelectedCol();
+        setAdvancePayState(false);
+        setDeferredPayState(false);
+        setAdvancePayCalc();
+        setCellCopy([]);
+        setPasteState(false);
+        setPastedCellState(false);
+        setClauseTxt();
+      },   
     },
     state: {
       columnVisibility: columnVisibility,
@@ -822,10 +872,12 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       insertSelectedAmount,
       insertCanSave,
       advancePayCalc,
+      deferredPayState,
       cellCopy,
       pasteState,
       cellPaste,
       pastedCellState,
+      clauseTxt,
     },
     onColumnVisibilityChange: setColumnVisibility,
     enableRowSelection: true,
@@ -858,48 +910,6 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     }
   }
 
-  const sumaFilas = () => {
-    console.log(tableInstance.getSelectedRowModel().rows[0].original);
-    const originalCopy = {...tableInstance.getSelectedRowModel().rows[0].original}
-    const { Clausulas, Importe, ...rest } = originalCopy;
-    let sumaFila = Object.values(rest).reduce((total, numero) => {
-    const isNumber = Number.isInteger(numero.amount) ? numero.amount : 0;
-      return total + isNumber
-    }, 0)
-    const onSumaChange = [...sumaRows];
-    onSumaChange[tableInstance.getSelectedRowModel().rows[0].id] = sumaFila;
-    setSumaRows(onSumaChange)
-  }
-
-  const sumaTodasFilas = () => {
-    // console.log('entro en sumaTodasfilas')
-    let rowsSum = []
-    tableInstance.getRowModel().rows.map(row => {
-      const originalCopy = {...row.original};
-      const { Clausulas, Importe, ...rest } = originalCopy;
-      let sumaFila = Object.values(rest).reduce((total, numero) => {
-            const isNumber = Number.isInteger(numero.amount) ? numero.amount : 0;
-            return total + isNumber
-          }, 0)
-      // console.log('sumaFila', sumaFila)
-      rowsSum = [...rowsSum, sumaFila] 
-      // console.log('rowsSum', rowsSum)         
-    })
-    // return rowsSum
-    setSumaRows(rowsSum)
-  }
-
-  const checkSum = () => {
-    const importeSuma = sumaRows[tableInstance.getSelectedRowModel().rows[0]?.id];
-    const importeClausula = tableInstance.getSelectedRowModel().rows[0]?.getValue('Importe').amount;
-
-    if (importeClausula > 0 && importeSuma > 0 && importeClausula == importeSuma) {
-      setCanSave(true)
-    } else {
-      setCanSave(false)
-    }
-  }
-
   useEffect (() => {
     // console.log('data changes', data);
     if (tableInstance.getIsSomePageRowsSelected()) {
@@ -928,46 +938,97 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   },[editState])
 
   useEffect(()=>{
-    // console.log('se ha seleccionado algo', tableInstance.getIsSomePageRowsSelected())
-    // console.log('rowSelected', rowSelected);
     checkSum()
   },[rowSelected])
+
+  const sumaFilas = () => {
+    const originalCopy = {...tableInstance.getSelectedRowModel().rows[0].original}
+    const { Clausulas, Importe, ...rest } = originalCopy;
+    let sumaFila = Object.values(rest).reduce((total, numero) => {
+    const isNumber = Number.isInteger(numero.amount) ? numero.amount : 0;
+      return total + isNumber
+    }, 0)
+    const onSumaChange = [...sumaRows];
+    onSumaChange[tableInstance.getSelectedRowModel().rows[0].id] = sumaFila;
+    setSumaRows(onSumaChange)
+  }
+
+  const sumaTodasFilas = () => {
+    if (data.length > 0) {
+      let rowsSum = []
+      tableInstance.getRowModel().rows.map(row => {
+        const originalCopy = {...row.original};
+        const { Clausulas, Importe, ...rest } = originalCopy;
+        let sumaFila = Object.values(rest).reduce((total, numero) => {
+              const isNumber = Number.isInteger(numero.amount) ? numero.amount : 0;
+              return total + isNumber
+            }, 0)
+        // console.log('sumaFila', sumaFila)
+        rowsSum = [...rowsSum, sumaFila] 
+        // console.log('rowsSum', rowsSum)         
+      })
+      // return rowsSum
+      setSumaRows(rowsSum)
+    } 
+  }
+
+  const checkSum = () => {
+    const importeSuma = sumaRows[tableInstance.getSelectedRowModel().rows[0]?.id];
+    const importeClausula = tableInstance.getSelectedRowModel().rows[0]?.getValue('Importe').amount;
+
+    if (importeClausula > 0 && importeSuma > 0 && importeClausula == importeSuma) {
+      setCanSave(true)
+    } else {
+      setCanSave(false)
+    }
+  }
+
+  
+
   
   return (
     <>
-      { data ? 
+      { data.length <= 0 ?
+        <div  className='cm-u-centerText'>
+          <span className='warning'>Has de seleccionar un contrato</span>
+        </div>
+        :
         <>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
             <p>&nbsp;</p>
-            <p><button
+            <p><ButtonMouseTransparent
               onClick={(e)=> {
                 e.preventDefault();
                 setEditState(true);
               }}
-            >Editar Pagos</button>
+            >
+              Editar pagos
+            </ButtonMouseTransparent>
+            
             { editState && 
               <>
-                <span>&nbsp;</span>
-                <button
-                disabled={ canSave ? false : true }
-                onClick={(e)=> {
-                  e.preventDefault();
-                  setEditState(false);
-                  tableInstance.resetRowSelection();
-                }}
-                >
-                  Guardar
-                </button>
-                <span>&nbsp;</span>
-                <button
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <ButtonMouse
+                  disabled={ canSave ? false : true }
+                  className={ canSave ? 'cm-o-button-mouse--primary' : 'cm-o-button-mouse--inactive'}
                   onClick={(e)=> {
                     e.preventDefault();
                     setEditState(false);
                     tableInstance.resetRowSelection();
                   }}
-                  >
-                    Cancelar
-                </button>
+                >
+                  Guardar
+                </ButtonMouse>                
+                <span>&nbsp;</span>
+                <ButtonMouseGhost
+                  onClick={(e)=> {
+                    e.preventDefault();
+                    setEditState(false);
+                    tableInstance.resetRowSelection();
+                  }}
+                >
+                Cancelar
+                </ButtonMouseGhost>
               </>
             }
             </p>
@@ -1022,8 +1083,9 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                                       colSpan='1'
                                       style={{ ...getCommonPinningStyles(column) }}
                                     >
-                                      <div>
-                                        {sumaRows[rowElement.id]}</div>
+                                      <div className='cell-total'>
+                                      {sumaRows[rowElement.id]}
+                                      </div>
                                     </TableDataClsBody__cell>
                                   </>
                                   :
@@ -1086,7 +1148,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
             <p>
             { !insertState  &&
               <>
-                <button
+                <ButtonMouseTransparent
                   onClick={(e) => {
                     e.preventDefault();
                     setInsertState(true);
@@ -1094,76 +1156,60 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                   }}
                 >
                   Anticipar pago
-                </button>
-                <span>&nbsp;</span>
-                <button
+                </ButtonMouseTransparent>
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <ButtonMouseTransparent
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setInsertState(true);
+                    setDeferredPayState(true);
+                  }}
+                >
+                  Retrasar pago
+                </ButtonMouseTransparent>
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <ButtonMouseTransparent
                   onClick={(e)=>{
                     e.preventDefault();
-                    tableInstance.options.meta.newSanctionLine();
+                    // tableInstance.options.meta.newSanctionLine();
                     // console.log('insertSelectedAmount', insertSelectedAmount)
                     // console.log('insertSelectedCol', insertSelectedCol)
                     setInsertState(true);
                     setSubtractState(true);
                   }}
-                >Sanción</button>
+                >Sanción</ButtonMouseTransparent>
                 <span>&nbsp;</span>
                 <span>&nbsp;</span>
               </>
             }
-            { (subtractState || advancePayState) && 
+            { (subtractState || advancePayState || deferredPayState) && 
               <>
-                <button
+                <ButtonMouse
                   disabled={ insertCanSave ? false : true }
+                  className={ insertCanSave ? 'cm-o-button-mouse--primary' : 'cm-o-button-mouse--inactive'}
                   onClick={(e) => {
                     e.preventDefault();
-                    // if (pastedCellState) {
-                    //   console.log('aquí actualizo el contenido de la celda copiada');
-                    //   console.log('celda copiada actualizada', cellCopy);
-                    //   tableInstance.options.meta.updateData(cellCopy.row, cellCopy.column.id, cellCopy.value)
-                    // }
-
-                    setInsertState(false);
-                    setSubtractState(false);
-                    setInsertCanSave(false);
-                    setInsertSelectedAmount();
-                    setInsertSelectedCol();
-                    setAdvancePayState(false);
-                    setAdvancePayCalc();
-                    setCellCopy([]);
-                    setPasteState(false);
-                    setPastedCellState(false);
+                    const newData = [...data]
+                    newData[newData.length-1]['Clausulas'] = clauseTxt + ' ' +newData[cellCopy.row]['Clausulas']+ ' ' +cellCopy.column.id;
+                    setData(newData)                    
+                    tableInstance.options.meta.clearStates();
                   }}
                 >
                   Guardar
-                </button>
-                <button
+                </ButtonMouse>
+                <ButtonMouseGhost
                   onClick={(e) => {
                     e.preventDefault();
-                    console.log(insertSelectedAmount);
-                    // if (insertSelectedAmount !== undefined) {
-                    //   const newData = [...data];
-                    //   newData.pop()
-                    //   console.log(newData);
-                    //   setData(newData);
-                    // }
-                    const newData = [...data];
-                    newData.pop()
-                    console.log(newData);
-                    setData(newData);
-                    setInsertState(false);
-                    setSubtractState(false);
-                    setInsertCanSave(false);
-                    setInsertSelectedAmount();
-                    setInsertSelectedCol();
-                    setAdvancePayState(false);
-                    setAdvancePayCalc();
-                    setCellCopy([]);
-                    setPasteState(false);
-                    setPastedCellState(false);
+                    if (data.length > 8 ) {
+                      const newData = [...data];
+                      newData.pop()
+                      setData(newData);
+                    }
+                    tableInstance.options.meta.clearStates();
                   }}
                 >
                   Cancelar
-                </button>
+                </ButtonMouseGhost>
               </>
             }
 
@@ -1171,9 +1217,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
 
             </p>
           </div>
-        </>
-        :
-        'No hay datos para mostrar'
+        </>        
       }
     </>
   )

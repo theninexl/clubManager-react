@@ -60,23 +60,20 @@ export default function ManagePaymentsPage () {
   },[getPlayerData.responseUpload])
 
   useEffect(()=>{
-    if (activePlayerId === undefined || activePlayerId === '' || activePlayerId == 0) {
-      
+    if (activePlayerId === undefined || activePlayerId === '' || activePlayerId == 0) {      
       setActivePlayerDetails();
       setActivePlayerContracts();
       setWarningMsg('Selecciona un jugador para comenzar');
       setErrorMsg(null);        
     } else {
-      console.log(activePlayerId);
       getPlayerDetail(activePlayerId)
     }
   },[activePlayerId])
 
   useEffect(()=>{
-    if (activeContractId) {
-      console.log(activeContractId);
-    }
-  },[activeContractId])
+    setActivePlayerId();
+    setActiveContractId();
+  },[])
 
 
   return (

@@ -166,47 +166,48 @@
     &__header {
         @extend .cm-u-text-black-mouse;
         tr {
-            display: flex;
-            flex-direction: row;
+            // display: flex;
+            // flex-direction: row;
+            vertical-align: middle;
         }
 
         th {
             background-color: getColor(primary);
             color: getColor(white);
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            height: getSize($larger);            
+            // display: flex;
+            // flex-direction: row;
+            // justify-content: center;
+            // align-items: center;
+            height: getSize($larger);
+            vertical-align: middle;
+            // position:relative;            
         }
     }
 
     &__body {
 
         tr {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: stretch;
+            border-bottom: 1px solid getColor(scarpaFlowLight);
             height: getSize($larger);
-            border-bottom: 1px solid getColor(white);
+            vertical-align: middle;
         }
 
         td {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
             background-color: getColor(white);
             color: getColor(primary);
+            vertical-align: middle;
+            overflow: hidden;
+            
 
-            .cell-clause, .cell-data {
+            .cell-clause, .cell-data, .cell-total {
                 display: flex;
                 flex-direction: row;                 
-                align-items: center;  
+                align-items: center;
+                justify-content: center;  
                 height: calc(100% - 16px);
-                width: calc(100% - 16px);
+                // width: calc(100% - 16px);
                 padding: 8px;
+                gap: 8px;  
             }
 
             .cell-clause { 
@@ -214,8 +215,9 @@
             }            
 
             .cell-data { 
-                justify-content: center;           
-                gap: 8px;                 
+                // justify-content: center;           
+                
+                // position: relative;               
             }
         }
     }

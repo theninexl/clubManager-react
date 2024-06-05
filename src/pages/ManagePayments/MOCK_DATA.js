@@ -1,5 +1,5 @@
 
-const status_initial = {id: 1, name: "Inactivo", color: "##FFFFFF"}
+const status_initial = {id: 1, name: "Inicial", color: "##FFFFFF"}
 const status_inactive = {id: 2, name: "Inactivo", color: "#ECECEB"}
 const status_notFullfilled = {id: 3, name: "No Cumplido", color: "#FF978E"}
 const status_notEstimated = {id: 4, name: "No Estimado", color: "#FFCCA3"}

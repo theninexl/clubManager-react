@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { LabelElement } from "../../components/UI/components/form simple/formSimple";
 
 
 
@@ -14,38 +15,38 @@ export const EditableClauseCell = ({ getValue, row, column, table, }) => {
   return (
     <>
       <div className='cell-clause'>
-        { (table.getState().subtractState && table.getState().insertState && row.id == table.getRowCount()-1) && 
-        <>
-          { row.original.TipoClausula }
-          <input
-              value={value}
-              placeholder="Introduce nombre sanción"
-              onChange={(e) => {
-                // console.log('value antes', value);
-                let onChangeValue = {...value}
-                onChangeValue = e.target.value;
-                setValue(onChangeValue)
-              }}
-              onBlur={() => {
-                updateClause(row.index, column.id, value)
-              }}
-              style={{
-                border: '1px solid lightgray',
-                borderRadius: '4px',
-                display: 'flex',
-                flexGrow: 0,
-                width: '100%',
-                height: '28px',
-              }}
-            />
-        </>         
-      }
-      { (!table.getState().subtractState || (table.getState().subtractState && table.getState().insertState === false) || ( table.getState().subtractState && table.getState().insertState && row.id != table.getRowCount()-1 ) ) && 
-        <>
-          {`${row.original.TipoClausula != undefined ? row.original.TipoClausula : ''} ${value}`}
-        </>
-      }   
-      
+        { !table.getState().insertState
+          || (table.getState().insertState && !table.getState().pasteState)
+          || (table.getState().insertState && table.getState().pasteState && row.id != table.getRowCount()-1)? 
+          <>{`${row.original.TipoClausula != undefined ? row.original.TipoClausula : ''} ${value}`}</>
+          :
+          <>
+            { ((table.getState().subtractState || table.getState().advancePayState || table.getState().deferredPayState) && table.getState().insertState && row.id == table.getRowCount()-1) && 
+              <>
+                { row.original.TipoClausula }
+                <LabelElement
+                  style={{
+                    borderRadius: '4px',
+                    display: 'flex',
+                    flexGrow: 0,
+                    width: '100%',
+                    height: '28px',
+                  }}
+                  value={table.options.state.clauseTxt}
+                  placeholder='Concepto'
+                  handleOnChange={(e) => {
+                    column.columnDef.meta.setClauseTxt(e.target.value)
+                    
+                  }}
+                  onBlur={() => {
+                    console.log('value', value);
+                    updateClause(row.index, column.id, value)
+                  }}
+                ></LabelElement>
+              </>         
+            }
+          </>
+        }      
       </div>
       
     </> 

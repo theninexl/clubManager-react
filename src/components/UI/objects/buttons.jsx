@@ -57,6 +57,18 @@ export const ButtonCatGhostDisabled = ({ children, className, id, onClick }) => 
   );
 }
 
+export const ButtonMouse = ({ children, className, id, onClick, disabled }) => {
+  return (
+    <button
+      className={`${className}`}
+      id={id}
+      onClick={onClick}
+      disabled={disabled} >
+      { children }
+    </button>
+  );
+}
+
 export const ButtonMousePrimary = ({ children, className, id, onClick }) => {
   return (
     <button

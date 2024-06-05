@@ -78,7 +78,7 @@ const styles = {
     background: 'white',
     boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
     borderRadius: '4px',
-    zIndex: 1000,
+    zIndex: 9999,
   },
   menuList: {
     margin: 0,
