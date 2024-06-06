@@ -442,6 +442,7 @@ export default function NewPlayerPage () {
                     <FormSimplePanelRow>
                        <LabelElementNumberAssist
                         htmlFor='playerMarketValue'
+                        suffix={'€'}
                         className='panel-field-long'
                         placeholder='Introduce euros'
                         assistanceText='Introduce euros €'

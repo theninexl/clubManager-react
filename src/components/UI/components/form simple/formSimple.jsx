@@ -135,7 +135,7 @@ export const LabelElementAssist = ({ children, style, className, htmlFor , type,
 }
 
 
-export const LabelElementNumberAssist = ({ children, style, className, htmlFor , type, placeholder, value, handleOnChange, required, disabled, readOnly, assistanceText,autoComplete, defaultValue, suffix }) => {
+export const LabelElementNumberAssist = ({ children, style, className, htmlFor , placeholder, value, handleOnChange, required, disabled, readOnly, assistanceText,autoComplete, defaultValue, suffix }) => {
   return (
     <label
       htmlFor={htmlFor}
@@ -143,7 +143,7 @@ export const LabelElementNumberAssist = ({ children, style, className, htmlFor ,
       style={style} >
       <span>{ children }</span>
       <NumericFormat
-        suffix={'€' || suffix}
+        suffix={suffix || ''}
         thousandSeparator="."
         decimalSeparator=","
         value={value}

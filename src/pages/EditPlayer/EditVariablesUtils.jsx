@@ -6,7 +6,7 @@ import { SymbolAdd, SymbolDelete } from "../../components/UI/objects/symbols";
 import { SimpleAccordion, SimpleAccordionContent, SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
 import { HeadContentTitleBar, TitleBar__Title, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
 import { FormSimplePanelRow, LabelElement, LabelElementNumberAssist, LabelElementToggle, LabelElementToggle2SidesPanel, LabelSelectElement, LabelSelectShorterElement, SelectIconShorter } from "../../components/UI/components/form simple/formSimple";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const ListSelectedContract = () => {
   const editPlayerContext = useEditPlayerDataContext();
@@ -362,9 +362,9 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
           <FormSimplePanelRow>
             <LabelElementNumberAssist
               htmlFor='variableAmount'
-              placeholder='Importe en €'
+              placeholder='Introduce cifra'
               type='text'
-              suffix={tipoImporte !== 3 ? 'W' : '€'}
+              suffix={(tipoImporte != 3) ? '' : '€'}
               className='panel-field-long'
             >
             Importe

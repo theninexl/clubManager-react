@@ -396,6 +396,7 @@ export const EditPlayerTab = ({ idJugador, playerTypes, countries, positions }) 
       <FormSimplePanelRow>
         <LabelElementNumberAssist
           htmlFor='playerMarketValue'
+          suffix={'€'}
           type='text'
           className='panel-field-long'
           autoComplete='off'

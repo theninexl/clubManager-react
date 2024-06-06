@@ -398,6 +398,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
         <FormSimplePanelRow>
           <LabelElementNumberAssist
             htmlFor='amountTotalSalary'
+            suffix={'€'}
             type='text'
             className='panel-field-long'
             autoComplete='off'
@@ -749,6 +750,7 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
           </LabelElementAssist> */}
           <LabelElementNumberAssist
             htmlFor='amountTotalSalary'
+            suffix={'€'}
             type='text'
             className='panel-field-long'
             autoComplete='off'
@@ -847,6 +849,7 @@ const NewSalaryLine = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb, h
                     </LabelElementAssist> */}
                     <LabelElementNumberAssist
                       htmlFor='importe_fijo'
+                      suffix={'€'}
                       className='panel-field-long'
                       autoComplete='off'
                       placeholder='introduce importe'
@@ -894,25 +897,9 @@ const EditSalaryLine = ({ teams, intermediaries, idJugador, handleAddNewSalaryCo
             { editPlayerContext.detailContractData[0].desc_tipo_contrato ==  'Liquidación' &&
               <>
                 <FormSimplePanelRow>
-                  {/* <LabelElementAssist
-                    htmlFor='importe_fijo'
-                    type='number'
-                    className='panel-field-long'
-                    autoComplete='off'
-                    placeholder='introduce importe'
-                    required={true}
-                    assistanceText=''
-                    defaultValue={item.importe_fijo}
-                    handleOnChange={(e) => {
-                      let onChangeValue = [...editPlayerContext.detailSalaryData];
-                      onChangeValue[index]["importe_fijo"] = e.target.value;
-                      editPlayerContext.setDetailSalaryData(onChangeValue);           
-                      }}
-                    >
-                    Importe en euros*
-                  </LabelElementAssist> */}
                   <LabelElementNumberAssist
                       htmlFor='importe_fijo'
+                      suffix={'€'}
                       className='panel-field-long'
                       autoComplete='off'
                       placeholder='introduce importe'

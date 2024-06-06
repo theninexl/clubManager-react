@@ -133,9 +133,17 @@ export const useManageVariablesForm = (form, idJugador) => {
     const amortizableVal = document.getElementById('amortizable').checked;
     //const bonusPrimaVal = document.getElementById('bonus_prima').checked;
     const expresiones = editPlayerContext.variableExpressions;
-    //console.log(typeof(expresiones));
+    //procesar expresiones para quitar las condiciones a aquellas que no tengan por ser tipo prima
+    const findNoComb = expresiones.filter(item => item.bonus_prima !== 1);
+    console.log('findNoComb', findNoComb);
+    console.log('expresiones', expresiones)
+    const newExpresiones = [...expresiones]
+    findNoComb.map(item => {
+      newExpresiones[item.id_ExprComb -1]['condiciones'] = []
+    })
+
     const data = {
-      expresiones,
+      expresiones: newExpresiones,
       flag_bloque_recursivo: recursiveBlocksVal ? 1 : 0,
       desc_alias: formData.get('descripcion'),
       bloque: formData.get('bloque') === null ? '' : formData.get('bloque'),
@@ -154,13 +162,13 @@ export const useManageVariablesForm = (form, idJugador) => {
 
     // console.log('variable que guardo', data);
     console.log('variable que mando', dataSent);
-    //saveClausula.uploadData('players/createClausula', dataSent);
+    saveClausula.uploadData('players/createClausula', dataSent);
     // setSavedVariables([...savedVariables, dataSent]);    
   }
 
   useEffect(()=>{
     if (saveClausula.responseUpload) {
-      //console.log (saveClausula.responseUpload);
+      console.log (saveClausula.responseUpload);
       if (saveClausula.responseUpload.status === 'ok') {
         editPlayerContext.setShowNewVariableLayer(false);
         editPlayerContext.setVariableExpressions([{id_ExprComb:1,bonus_prima:'',id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
