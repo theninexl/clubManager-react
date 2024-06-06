@@ -133,6 +133,9 @@ export const VariableDataLayer = ({ handleChangesOnNewVariableExpression,handleC
 
 const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOnNewVariableExpressionToggle, handleDeleteNewVariableExpression, handleAddNewVariableExpression, handleDeleteNewCond, handleAddNewCond, searchExpression, searchCondition, handleSaveNewVariable }) => {
   const editPlayerContext = useEditPlayerDataContext();
+  const [recursiveBlocks, setRecursiveBlocks] = useState(0);
+  const [blockText, setBlockText] = useState(null);
+  const [tipoImporte, setTipoImporte] = useState();
 
   return (
     <>
@@ -140,6 +143,18 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
           <header className="cm-l-body-static-header--inTab" style={{marginTop:'0'}}>
             <p className="cm-u-text-black-cat">Añadir nueva variable</p>
           </header>
+          <FormSimplePanelRow>
+            <LabelElementToggle
+              htmlFor='recursiveBlocks'
+              checked={(recursiveBlocks === 1 || recursiveBlocks === '1' || recursiveBlocks === true) ? 'checked':''}
+              handleOnChange={(e)=>{
+                const checked = e.target.checked === true ? '1' : '0';  
+                setRecursiveBlocks(checked)               
+                if (e.target.checked === true) setBlockText(null);
+              }}>
+              Bloques Recursivos
+            </LabelElementToggle>
+          </FormSimplePanelRow>
           <FormSimplePanelRow>
             <LabelElement
               htmlFor='descripcion'
@@ -322,11 +337,20 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
               placeholder='introduce bloque'
               type='text'
               className='panel-field-long'
+              disabled={(recursiveBlocks === 1 || recursiveBlocks === '1' || recursiveBlocks === true)? true : ''}
+              value={blockText === null ? '' : blockText}
+              handleOnChange={(e)=>{
+                if (recursiveBlocks !== 1) setBlockText(e.target.value);           
+              }}
               >Bloque 
             </LabelElement> 
             <LabelSelectElement
               htmlFor='tipo_importe'
-              labelText='Tipo importe'>
+              labelText='Tipo importe'
+              value={tipoImporte}
+              handleOnChange={(e) => {
+                setTipoImporte(e.target.value)
+              }}>
               <option value=''>Selecciona</option>
               { editPlayerContext.variableCombos.tipo_importe?.map((item) => {
                 return (
@@ -336,17 +360,11 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
             </LabelSelectElement>
           </FormSimplePanelRow>
           <FormSimplePanelRow>
-            {/* <LabelElementAssist
-              htmlFor='variableAmount'
-              placeholder='Importe en €'
-              type='text'
-              className='panel-field-long'>
-                Importe
-              </LabelElementAssist>  */}
             <LabelElementNumberAssist
               htmlFor='variableAmount'
               placeholder='Importe en €'
               type='text'
+              suffix={tipoImporte !== 3 ? 'W' : '€'}
               className='panel-field-long'
             >
             Importe
@@ -391,6 +409,8 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
               >Guardar</ButtonMousePrimary>
             <ButtonMouseGhost
               onClick={() => {
+                setRecursiveBlocks(0);
+                setBlockText(null);
                 editPlayerContext.setShowNewVariableLayer(false);
                 editPlayerContext.setVariableExpressions([{id_ExprComb:1,bonus_prima:'',id_expresion_concatenacion:'', id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}])
               }}

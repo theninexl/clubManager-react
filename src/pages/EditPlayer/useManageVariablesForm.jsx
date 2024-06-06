@@ -127,6 +127,7 @@ export const useManageVariablesForm = (form, idJugador) => {
   const handleSaveNewVariable = (e) => {
     e.preventDefault();
     //console.log('form en hook variables', form);
+    const recursiveBlocksVal = document.getElementById('recursiveBlocks').checked;
     
     const formData = new FormData(form.current);
     const amortizableVal = document.getElementById('amortizable').checked;
@@ -135,8 +136,9 @@ export const useManageVariablesForm = (form, idJugador) => {
     //console.log(typeof(expresiones));
     const data = {
       expresiones,
+      flag_bloque_recursivo: recursiveBlocksVal ? 1 : 0,
       desc_alias: formData.get('descripcion'),
-      bloque: formData.get('bloque'),
+      bloque: formData.get('bloque') === null ? '' : formData.get('bloque'),
       tipo_importe: formData.get('tipo_importe'),
       fecha_desde: formData.get('dateSince'),
       fecha_hasta: formData.get('dateTo'),
@@ -151,8 +153,8 @@ export const useManageVariablesForm = (form, idJugador) => {
     }
 
     // console.log('variable que guardo', data);
-    //console.log('variable que mando', dataSent);
-    saveClausula.uploadData('players/createClausula', dataSent);
+    console.log('variable que mando', dataSent);
+    //saveClausula.uploadData('players/createClausula', dataSent);
     // setSavedVariables([...savedVariables, dataSent]);    
   }
 
