@@ -1,14 +1,8 @@
 import { AsideMenu } from "../../components/AsideMenu";
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
-import { BasicTable } from "./BasicTable";
-import { TableExample } from "./TableExample";
 
 export default function Home () {
   //esta página está vacía
-
-
-  
-
   return (
     <>    
       <HalfContainer>
@@ -17,7 +11,6 @@ export default function Home () {
         </HalfContainerAside>
         <HalfContainerBody>
           <>
-            {/* <BasicTable /> */}
           </>
         </HalfContainerBody>
       </HalfContainer>
