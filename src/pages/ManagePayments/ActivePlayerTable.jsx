@@ -22,31 +22,31 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const emptyLine = [{
     "TipoClausula": '',
     "Clausulas": '',
-    "Importe": { amount: '', status: STATUSES[0]},
-    "january/2022": { amount: '', status: STATUSES[0]},
-    "february/2022": { amount: '', status: STATUSES[0]},
-    "march/2022": { amount: '', status: STATUSES[0]},
-    "april/2022": { amount: '', status: STATUSES[0]},
-    "may/2022": { amount: '', status: STATUSES[0]},
-    "june/2022": { amount: '', status: STATUSES[0]},
-    "july/2022": { amount: '', status: STATUSES[0]},
-    "august/2022": { amount: '', status: STATUSES[0]},
-    "september/2022": { amount: '', status: STATUSES[0]},
-    "october/2022": { amount: '', status: STATUSES[0]},
-    "november/2022": { amount: '', status: STATUSES[0]},
-    "december/2022":{ amount: '', status: STATUSES[0]},
-    "january/2023": { amount: '', status: STATUSES[0]},
-    "february/2023": { amount: '', status: STATUSES[0]},
-    "march/2023": { amount: '', status: STATUSES[0]},
-    "april/2023": { amount: '', status: STATUSES[0]},
-    "may/2023": { amount: '', status: STATUSES[0]},
-    "june/2023": { amount: '', status: STATUSES[0]},
-    "july/2023": { amount: '', status: STATUSES[0]},
-    "august/2023": { amount: '', status: STATUSES[0]},
-    "september/2023": { amount: '', status: STATUSES[0]},
-    "october/2023": { amount: '', status: STATUSES[0]},
-    "november/2023": { amount: '', status: STATUSES[0]},
-    "december/2023":{ amount: '', status: STATUSES[0]},
+    "Importe": { amount: '', status: STATUSES[0], flag_suma:1},
+    "january/2022": { amount: '', status: STATUSES[0], flag_suma:1},
+    "february/2022": { amount: '', status: STATUSES[0], flag_suma:1},
+    "march/2022": { amount: '', status: STATUSES[0], flag_suma:1},
+    "april/2022": { amount: '', status: STATUSES[0], flag_suma:1},
+    "may/2022": { amount: '', status: STATUSES[0], flag_suma:1},
+    "june/2022": { amount: '', status: STATUSES[0], flag_suma:1},
+    "july/2022": { amount: '', status: STATUSES[0], flag_suma:1},
+    "august/2022": { amount: '', status: STATUSES[0], flag_suma:1},
+    "september/2022": { amount: '', status: STATUSES[0], flag_suma:1},
+    "october/2022": { amount: '', status: STATUSES[0], flag_suma:1},
+    "november/2022": { amount: '', status: STATUSES[0], flag_suma:1},
+    "december/2022":{ amount: '', status: STATUSES[0], flag_suma:1},
+    "january/2023": { amount: '', status: STATUSES[0], flag_suma:1},
+    "february/2023": { amount: '', status: STATUSES[0], flag_suma:1},
+    "march/2023": { amount: '', status: STATUSES[0], flag_suma:1},
+    "april/2023": { amount: '', status: STATUSES[0], flag_suma:1},
+    "may/2023": { amount: '', status: STATUSES[0], flag_suma:1},
+    "june/2023": { amount: '', status: STATUSES[0], flag_suma:1},
+    "july/2023": { amount: '', status: STATUSES[0], flag_suma:1},
+    "august/2023": { amount: '', status: STATUSES[0], flag_suma:1},
+    "september/2023": { amount: '', status: STATUSES[0], flag_suma:1},
+    "october/2023": { amount: '', status: STATUSES[0], flag_suma:1},
+    "november/2023": { amount: '', status: STATUSES[0], flag_suma:1},
+    "december/2023":{ amount: '', status: STATUSES[0], flag_suma:1},
     "total":""
   }]
 
@@ -70,10 +70,12 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const [rowSelected, setRowSelected] = useState({});
   const [rowSelected2, setRowSelected2] = useState(null);
   //estados insertables
+  const [regularState, setRegularState] = useState(true);
   const [insertState, setInsertState] = useState(false);
   const [subtractState, setSubtractState] = useState(false);
   const [advancePayState, setAdvancePayState] = useState(false);
   const [deferredPayState, setDeferredPayState] = useState(false);
+  const [seizureState, setSeizureState] = useState(false);
   const [insertSelectedCol,setInsertSelectedCol] = useState();
   const [insertSelectedRow, setInsertSelectedRow] = useState();
   const [cellCopy, setCellCopy] = useState([]);
@@ -102,8 +104,9 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   },[activeContractId, activeContractId])
 
   const sumHelper = (total, row, key) => {
-    let number = Number(row.getValue(key).amount)
-    number >= 0 ? total = total + number : total = total - Math.abs(number);    
+    let number = row.getValue(key)
+    let amount = number.flag_suma == 1 ? Number(number.amount) : 0;
+    amount >= 0 ? total = total + amount : total = total - Math.abs(amount);    
     return total;
   }
 
@@ -769,20 +772,28 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       newSanctionLine: (row, columnId, value) => {
         setInsertState(true);
         setInsertSelectedAmount(value.amount);
+        console.log('celda que copio: row ',row.id,', col ',columnId.id,' value ',value)
         const copyCell = [];
         copyCell["column"] = {id: columnId.id, index: columnId.getIndex()};
         copyCell["row"]= row.id;
         copyCell["value"] = value;
-        setCellCopy(copyCell);        
+        setCellCopy(copyCell);
+        const pegoCelda = [];
+        pegoCelda["column"] = {"id":columnId.id, "index": columnId.getIndex()};
+        pegoCelda["row"]= tableInstance.getRowCount();
+        setCellPaste(pegoCelda);        
         const newEmptyLine = [...emptyLine]
-        newEmptyLine[0]["TipoClausula"] = 'Sanción';
+        newEmptyLine[0]["TipoClausula"] = subtractState ? 'Sanción' : 'Embargo';
         newEmptyLine[0]["Clausulas"] = '';
         const newValue = {...value}
         newValue.amount = -Math.abs(value.amount);
+        newValue.flag_suma = subtractState ? 1 : 0;
         newEmptyLine[0][columnId.id] = newValue;
         const newData = [...data, newEmptyLine[0]]
+        console.log('newData', newData);
         setData(newData);
-        setPasteState(true);
+        setPastedCellState(true);
+        setInsertCanSave(true);
       }, 
       newAdvancePayLine: (row, columnId, value) => {
         setInsertState(true);
@@ -791,7 +802,6 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         copyCell["column"] = {id: columnId.id, index: columnId.getIndex()};
         copyCell["row"]= row.id;
         copyCell["value"] = value;
-        // console.log('copyCell', copyCell)
         setCellCopy(copyCell);
         const newEmptyLine = [...emptyLine]
         newEmptyLine[0]["TipoClausula"] = 'Anticipo';
@@ -848,8 +858,10 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         setInsertCanSave(true);
       },
       clearStates: () => {
+        setRegularState(true);
         setInsertState(false);
         setSubtractState(false);
+        setSeizureState(false);
         setInsertCanSave(false);
         setInsertSelectedAmount();
         setInsertSelectedCol();
@@ -866,8 +878,10 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       columnVisibility: columnVisibility,
       rowSelection: rowSelected,
       columnPinning: columnPinning,
+      regularState,
       advancePayState,
       subtractState,
+      seizureState,
       insertState,
       insertSelectedAmount,
       insertCanSave,
@@ -958,16 +972,13 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       let rowsSum = []
       tableInstance.getRowModel().rows.map(row => {
         const originalCopy = {...row.original};
-        const { Clausulas, Importe, ...rest } = originalCopy;
+        const { Clausulas, Importe, TipoClausula, total, ...rest } = originalCopy;
         let sumaFila = Object.values(rest).reduce((total, numero) => {
-              const isNumber = Number.isInteger(numero.amount) ? numero.amount : 0;
-              return total + isNumber
-            }, 0)
-        // console.log('sumaFila', sumaFila)
-        rowsSum = [...rowsSum, sumaFila] 
-        // console.log('rowsSum', rowsSum)         
+          const isNumber = (Number.isInteger(numero.amount) && numero.flag_suma === 1) ? numero.amount : 0;
+          return total + isNumber
+        }, 0)
+        rowsSum = [...rowsSum, sumaFila]       
       })
-      // return rowsSum
       setSumaRows(rowsSum)
     } 
   }
@@ -1146,12 +1157,12 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
             </div>
 
             <p>
-            { !insertState  &&
+            { regularState  &&
               <>
                 <ButtonMouseTransparent
                   onClick={(e) => {
                     e.preventDefault();
-                    setInsertState(true);
+                    setRegularState(false);
                     setAdvancePayState(true);
                   }}
                 >
@@ -1161,7 +1172,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                 <ButtonMouseTransparent
                   onClick={(e) => {
                     e.preventDefault();
-                    setInsertState(true);
+                    setRegularState(false);
                     setDeferredPayState(true);
                   }}
                 >
@@ -1174,15 +1185,26 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                     // tableInstance.options.meta.newSanctionLine();
                     // console.log('insertSelectedAmount', insertSelectedAmount)
                     // console.log('insertSelectedCol', insertSelectedCol)
-                    setInsertState(true);
+                    setRegularState(false);
                     setSubtractState(true);
                   }}
                 >Sanción</ButtonMouseTransparent>
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <ButtonMouseTransparent
+                  onClick={(e)=>{
+                    e.preventDefault();
+                    // tableInstance.options.meta.newSanctionLine();
+                    // console.log('insertSelectedAmount', insertSelectedAmount)
+                    // console.log('insertSelectedCol', insertSelectedCol)
+                    setRegularState(false);
+                    setSeizureState(true);
+                  }}
+                >Embargo</ButtonMouseTransparent>
                 <span>&nbsp;</span>
                 <span>&nbsp;</span>
               </>
             }
-            { (subtractState || advancePayState || deferredPayState) && 
+            {  !regularState && 
               <>
                 <ButtonMouse
                   disabled={ insertCanSave ? false : true }

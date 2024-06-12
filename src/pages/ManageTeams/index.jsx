@@ -20,13 +20,21 @@ export default function ManageTeamsPage () {
   const [listOrder, setListOrder] = useState(1);
   const [allTeams, setAllTeams] = useState([]);
   const [page, setPage] = useState(1);
+  const [errorMsg, setErrorMsg] = useState(null);
 
 
   const { responseGetData } = useGetData('teams/getAll')
 
   useEffect(()=>{
-    if (responseGetData){
-      setAllTeams(responseGetData.data.data);
+    if (responseGetData) {
+      if (responseGetData.status === 200){
+        setAllTeams(responseGetData.data.data);
+      }  else if (responseGetData.status === 409) { setErrorMsg('El usuario que estás intentnado crear ya existe')
+      } else if (responseGetData.code === 'ERR_NETWORK') { setErrorMsg('Error de conexión, inténtelo más tarde')
+      } else if (responseGetData.code === 'ERR_BAD_RESPONSE') { setErrorMsg('Error de conexión, inténtelo más tarde')
+      } else {
+        setErrorMsg('No hay datos disponibles. Vuelve a intentarlo');
+      }
     }
   },[responseGetData])
 
@@ -83,6 +91,11 @@ export default function ManageTeamsPage () {
                 <TableCellShort>&nbsp;</TableCellShort>
               </TableDataHeader>
               <div>
+                {errorMsg &&
+                  <TableDataRow  className='cm-u-centerText'>
+                    <span className='error'>{errorMsg}</span>
+                  </TableDataRow>
+                }
                 {
                   allTeams?.map(team => {
                     return (

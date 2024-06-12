@@ -15,14 +15,20 @@ export const EditableClauseCell = ({ getValue, row, column, table, }) => {
   return (
     <>
       <div className='cell-clause'>
+      {console.log(table.getState())}
         { !table.getState().insertState
-          || (table.getState().insertState && !table.getState().pasteState)
-          || (table.getState().insertState && table.getState().pasteState && row.id != table.getRowCount()-1)? 
-          <>{`${row.original.TipoClausula != undefined ? row.original.TipoClausula : ''} ${value}`}</>
+          || table.getState().insertState && !table.getState().regularState && row.id != table.getRowCount()-1
+          ? 
+          <>
+            {`${row.original.TipoClausula != undefined ? row.original.TipoClausula : ''} ${value}`}
+          </>
           :
           <>
-            { ((table.getState().subtractState || table.getState().advancePayState || table.getState().deferredPayState) && table.getState().insertState && row.id == table.getRowCount()-1) && 
+            { table.getState().insertState &&
+              (table.getState().advancePayState || table.getState().deferredPayState || table.getState().subtractState || table.getState().seizureState) && row.id == table.getRowCount()-1
+               && 
               <>
+                
                 { row.original.TipoClausula }
                 <LabelElement
                   style={{

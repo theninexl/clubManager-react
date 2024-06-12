@@ -144,18 +144,6 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
             <p className="cm-u-text-black-cat">Añadir nueva variable</p>
           </header>
           <FormSimplePanelRow>
-            <LabelElementToggle
-              htmlFor='recursiveBlocks'
-              checked={(recursiveBlocks === 1 || recursiveBlocks === '1' || recursiveBlocks === true) ? 'checked':''}
-              handleOnChange={(e)=>{
-                const checked = e.target.checked === true ? '1' : '0';  
-                setRecursiveBlocks(checked)               
-                if (e.target.checked === true) setBlockText(null);
-              }}>
-              Bloques Recursivos
-            </LabelElementToggle>
-          </FormSimplePanelRow>
-          <FormSimplePanelRow>
             <LabelElement
               htmlFor='descripcion'
               placeholder='Descripción'
@@ -331,6 +319,18 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
               </div>
             );
           })}
+          <FormSimplePanelRow>
+            <LabelElementToggle
+              htmlFor='recursiveBlocks'
+              checked={(recursiveBlocks === 1 || recursiveBlocks === '1' || recursiveBlocks === true) ? 'checked':''}
+              handleOnChange={(e)=>{
+                const checked = e.target.checked === true ? '1' : '0';  
+                setRecursiveBlocks(checked)               
+                if (e.target.checked === true) setBlockText(null);
+              }}>
+              Bloques Acumulados
+            </LabelElementToggle>
+          </FormSimplePanelRow>
           <FormSimplePanelRow>
             <LabelElement
               htmlFor='bloque'

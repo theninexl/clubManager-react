@@ -99,7 +99,7 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                     :
                     <>{initialValue.amount}</>
                   }
-                  { (table.getState().advancePayState || table.getState().deferredPayState || table.getState().subtractState) && initialValue.amount != 0 && 
+                  { (table.getState().advancePayState || table.getState().deferredPayState || table.getState().subtractState || table.getState().seizureState) && initialValue.amount != 0 && 
                     <>
                       { !table.getState().pasteState &&
                         <IconButtonSmallerPrimary
@@ -111,7 +111,7 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                             } else if (table.getState().deferredPayState){
                               // console.log('estoy retrasando un pago')
                               newDeferedPayLine(row, column, value);
-                            } else if (table.getState().subtractState) {
+                            } else if (table.getState().subtractState || table.getState().seizureState) {
                               newSanctionLine(row, column, value);
                             }             
                           }}
@@ -127,37 +127,8 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
         </> 
         :
         <>
-          {/* { table.getState().subtractState
-            && row.id == table.getRowCount()-1
-            &&
-            <>
-             <div
-              className='cell-data'
-             >
-                <NumericFormat 
-                  allowNegative={false}
-                  prefix="-"
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  onValueChange={(values) => {                    
-                    let onChangeValue = {...value};
-                    onChangeValue.amount = values.formattedValue;
-                    column.columnDef.meta.setInsertCanSave(true)
-                    updateData(row.index, column.id, onChangeValue);
-                  }}
-                  style={{
-                    border: '1px solid black',
-                    borderRadius: '4px',
-                    display: 'flex',
-                    flexGrow: 0,
-                    width: '90%',
-                  }}
-                />
-              </div>
-            </>
-          } */}
           {     
-            (!table.options.state.pasteState && !table.options.state.subtractState) 
+            (!table.options.state.pasteState && !table.options.state.subtractState && !table.options.state.seizureState) 
             || (table.options.state.pasteState && row.id != table.getRowCount()-1)?
             <>
                <div 
@@ -218,8 +189,8 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                 ( table.getState().pasteState
                   && ((table.getState().advancePayState && column.getIndex() < table.options.state.cellCopy?.column?.index)
                       || (table.getState().deferredPayState && column.getIndex() > table.options.state.cellCopy?.column?.index)
-                      || (table.getState().subtractState && 
-                          (column.getIndex() < table.options.state.cellCopy?.column?.index || column.getIndex() > table.options.state.cellCopy?.column?.index))
+                      // || (table.getState().subtractState && 
+                      //     (column.getIndex() < table.options.state.cellCopy?.column?.index || column.getIndex() > table.options.state.cellCopy?.column?.index))
                     )
                   && !table.getState().pastedCellState
                   && row.index === table.getRowCount()-1
@@ -266,72 +237,126 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
               }
               {/* estado he pegado una celda de anticipo en una nueva linea */}
               {
+                
                 ( table.getState().pastedCellState 
                   && row.id == table.options.state.cellPaste?.row
                   && column.id === table.options.state.cellPaste.column?.id
                 ) ?
                 <>
-                  {/* { console.log('cellpaste en editableCell', table.options.state.cellPaste.row) }
-                  { console.log(row.id) }
-                  { console.log(column.id)} */}
-                  <div 
-                  className='cell-data'              
-                  style={{ 
-                    backgroundColor: 'Lime',
-                    border: table.options.state.insertCanSave ? '' : '2px solid red',
-                    }}
-                    >
-                      <NumericFormat 
-                        allowNegative={false}
-                        value={isNaN(table.options.state.advancePayCal) ? table.options.state.insertSelectedAmount : table.options.state.advancePayCalc}
-                        onValueChange={(values) => {                    
-                          const limit = Math.abs(column.columnDef.meta.insertSelectedAmount);
-                          //let newCalc = column.columnDef.meta.insertSelectedAmount - values.value;
-                          //console.log('newCalc', newCalc)
-                          //column.columnDef.meta.setAdvancePayCalc(values.value)
-                          // console.log('limit', limit) 
-                          if (values.formattedValue !== '' && values.formattedValue <= limit) {
-                            console.log('puede guardar')
-                            column.columnDef.meta.setInsertCanSave(true);
-                            //setear celda bajo copiada con el nuevo calculo
-                            let onChangeValue = {...value};
-                            onChangeValue.amount = -Math.abs(values.formattedValue);
-                            console.log('cellCopied', table.options.state.cellCopy)
-                            updateData(row.index, table.options.state.cellCopy.column.id, onChangeValue);
-                            //setear la propia celda donde estoy cambiando 
-                            onChangeValue.amount = values.formattedValue;
-                            updateData(row.index, column.id, onChangeValue);
-                          } else {
-                            console.log('no puede guardar')
-                            column.columnDef.meta.setInsertCanSave(false);
-                          }
-                        }}
-                        style={{
-                          border: '1px solid black',
-                          borderRadius: '4px',
-                          display: 'flex',
-                          flexGrow: 0,
-                          width: '50%',
-                        }}
-                      />
-                    </div>
+                  { table.getState().seizureState || table.getState().subtractState ?
+                    <>
+                      <div 
+                        className='cell-data'              
+                        style={{ 
+                          backgroundColor: table.options.state.insertCanSave ? 'Yellow' : 'Red',
+                          }}
+                      >
+                        <NumericFormat
+                          prefix='-'
+                          allowNegative={false}
+                          value={isNaN(table.options.state.advancePayCal) ? table.options.state.insertSelectedAmount : table.options.state.advancePayCalc}
+                          onValueChange={(values) => {                    
+                            const limit = -Math.abs(column.columnDef.meta.insertSelectedAmount);
+                            //let newCalc = column.columnDef.meta.insertSelectedAmount - values.value;
+                            //console.log('newCalc', newCalc)
+                            //column.columnDef.meta.setAdvancePayCalc(values.value)
+                            // console.log('limit', limit) 
+                            if (values.formattedValue !== '' && values.formattedValue >= limit) {
+                              console.log('puede guardar')
+                              column.columnDef.meta.setInsertCanSave(true);
+                              //setear celda bajo copiada con el nuevo calculo
+                              let onChangeValue = {...value};
+                              onChangeValue.amount = -Math.abs(values.formattedValue);
+                              console.log('cellCopied', table.options.state.cellCopy)
+                              updateData(row.index, table.options.state.cellCopy.column.id, onChangeValue);
+                              //setear la propia celda donde estoy cambiando 
+                              onChangeValue.amount = values.formattedValue;
+                              updateData(row.index, column.id, onChangeValue);
+                            } else {
+                              console.log('no puede guardar')
+                              column.columnDef.meta.setInsertCanSave(false);
+                            }
+                          }}
+                          style={{
+                            border: '1px solid black',
+                            borderRadius: '4px',
+                            display: 'flex',
+                            flexGrow: 0,
+                            width: '50%',
+                          }}
+                        />
+                      </div>
+                    </>
+                    :
+                    <>
+                      <div 
+                        className='cell-data'              
+                        style={{ 
+                          backgroundColor: 'Lime',
+                          border: table.options.state.insertCanSave ? '' : '2px solid red',
+                          }}
+                      >
+                        <NumericFormat 
+                          allowNegative={false}
+                          value={isNaN(table.options.state.advancePayCal) ? table.options.state.insertSelectedAmount : table.options.state.advancePayCalc}
+                          onValueChange={(values) => {                    
+                            const limit = Math.abs(column.columnDef.meta.insertSelectedAmount);
+                            //let newCalc = column.columnDef.meta.insertSelectedAmount - values.value;
+                            //console.log('newCalc', newCalc)
+                            //column.columnDef.meta.setAdvancePayCalc(values.value)
+                            // console.log('limit', limit) 
+                            if (values.formattedValue !== '' && values.formattedValue <= limit) {
+                              console.log('puede guardar')
+                              column.columnDef.meta.setInsertCanSave(true);
+                              //setear celda bajo copiada con el nuevo calculo
+                              let onChangeValue = {...value};
+                              onChangeValue.amount = -Math.abs(values.formattedValue);
+                              console.log('cellCopied', table.options.state.cellCopy)
+                              updateData(row.index, table.options.state.cellCopy.column.id, onChangeValue);
+                              //setear la propia celda donde estoy cambiando 
+                              onChangeValue.amount = values.formattedValue;
+                              updateData(row.index, column.id, onChangeValue);
+                            } else {
+                              console.log('no puede guardar')
+                              column.columnDef.meta.setInsertCanSave(false);
+                            }
+                          }}
+                          style={{
+                            border: '1px solid black',
+                            borderRadius: '4px',
+                            display: 'flex',
+                            flexGrow: 0,
+                            width: '50%',
+                          }}
+                        />
+                      </div>
+                    </>
+                  }
                 </>
                 :
                 <>
-                  { (table.getState().pastedCellState 
-                    && row.id == table.options.state.cellPaste?.row
-                    && column.id === table.options.state.cellCopy.column?.id )
-                    &&
+                  { table.getState().subtractState || table.getState().seizureState ?
                     <>
-                      <div 
-                      className='cell-data'
-                      style={{ 
-                      backgroundColor: !table.options.state.pasteState ? '' : 'yellow',
-                      border: !table.options.state.pastedCellState ? '' : table.options.state.cellCopy?.column?.id == column.id ? table.options.state.insertCanSave ? '' : '2px solid red' :'',                
-                      }}                    
-                      >
-                        {value.amount}
-                      </div>
+                      {value.amount}
+                    </>
+                    :
+                    <>
+                      { (table.getState().pastedCellState 
+                        && row.id == table.options.state.cellPaste?.row
+                        && column.id === table.options.state.cellCopy.column?.id )
+                        &&
+                        <>
+                          <div 
+                          className='cell-data'
+                          style={{ 
+                          backgroundColor: !table.options.state.pasteState ? '' : 'yellow',
+                          border: !table.options.state.pastedCellState ? '' : table.options.state.cellCopy?.column?.id == column.id ? table.options.state.insertCanSave ? '' : '2px solid red' :'',                
+                          }}                    
+                          >
+                           {value.amount}
+                          </div>
+                        </>
+                      }
                     </>
                   }
                 </>
