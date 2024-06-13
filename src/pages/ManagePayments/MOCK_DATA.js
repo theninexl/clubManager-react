@@ -26,6 +26,8 @@ export const STATUSES = [
 
 export const DATA = [
   {
+    "flag_fixed_clausula": 1,
+    "TipoClausula": '',
     "Clausulas": "Salario fijo (mensual)",
     "Importe": { amount: 100, status: status_initial, flag_suma:0},
     "january/2022": { amount: 1, status: status_initial, flag_suma:1},
@@ -55,6 +57,8 @@ export const DATA = [
     "total":""
   },
   {
+    "flag_fixed_clausula": 1,
+    "TipoClausula": '',
     "Clausulas": "Salario fijo (restante)",
     "Importe": { amount: 100, status: status_initial, flag_suma:1},
     "january/2022": { amount: 1, status: status_initial, flag_suma:1},
@@ -84,6 +88,8 @@ export const DATA = [
     "total":""
   },
   {
+    "flag_fixed_clausula": 1,
+    "TipoClausula": '',
     "Clausulas": "Bonus 1",
     "Importe": { amount: 100, status: status_initial, flag_suma:1},
     "january/2022": { amount: 1, status: status_initial, flag_suma:1},
@@ -113,6 +119,8 @@ export const DATA = [
     "total":""
   },
   {
+    "flag_fixed_clausula": 1,
+    "TipoClausula": '',
     "Clausulas": "Bonus 2",
     "Importe": { amount: 100, status: status_initial, flag_suma:1},
     "january/2022": { amount: 1, status: status_initial, flag_suma:1},
@@ -142,6 +150,8 @@ export const DATA = [
     "total":""
   },
   {
+    "flag_fixed_clausula": 1,
+    "TipoClausula": '',
     "Clausulas": "Bonus 3",
     "Importe": { amount: 100, status: status_initial, flag_suma:1},
     "january/2022": { amount: 1, status: status_initial, flag_suma:1},
@@ -172,6 +182,8 @@ export const DATA = [
 
   },
   {
+    "flag_fixed_clausula": 1,
+    "TipoClausula": '',
     "Clausulas": "Bonus 4",
     "Importe": { amount: 100, status: status_initial, flag_suma:1},
     "january/2022": { amount: 1, status: status_initial, flag_suma:1},
@@ -201,6 +213,8 @@ export const DATA = [
     "total":""
   },
   {
+    "flag_fixed_clausula": 1,
+    "TipoClausula": '',
     "Clausulas": "Bonus 5",
     "Importe": { amount: 100, status: status_initial, flag_suma:1},
     "january/2022": { amount: 1, status: status_initial, flag_suma:1},
@@ -230,6 +244,8 @@ export const DATA = [
     "total":""
    },
   {
+    "flag_fixed_clausula": 1,
+    "TipoClausula": '',
     "Clausulas": "Bonus 6",
     "Importe": { amount: 100, status: status_initial, flag_suma:1},
     "january/2022": { amount: 1, status: status_initial, flag_suma:1},

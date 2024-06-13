@@ -57,13 +57,14 @@ export const ButtonCatGhostDisabled = ({ children, className, id, onClick }) => 
   );
 }
 
-export const ButtonMouse = ({ children, className, id, onClick, disabled }) => {
+export const ButtonMouse = ({ children, className, id, onClick, disabled,...rest }) => {
   return (
     <button
       className={`${className}`}
       id={id}
       onClick={onClick}
-      disabled={disabled} >
+      disabled={disabled}
+      {...rest} >
       { children }
     </button>
   );
@@ -80,12 +81,13 @@ export const ButtonMousePrimary = ({ children, className, id, onClick }) => {
   );
 }
 
-export const ButtonMouseTransparent = ({ children, className, id, onClick }) => {
+export const ButtonMouseTransparent = ({ children, className, id, onClick,...rest }) => {
   return (
     <button
       className={`cm-o-button-mouse--transparent ${className}`}
       id={id}
-      onClick={onClick} >
+      onClick={onClick}
+      {...rest} >
       { children }
     </button>
   );

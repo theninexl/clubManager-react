@@ -15,7 +15,7 @@ export const EditableClauseCell = ({ getValue, row, column, table, }) => {
   return (
     <>
       <div className='cell-clause'>
-      {console.log(table.getState())}
+      {/* {console.log(table.getState())} */}
         { !table.getState().insertState
           || table.getState().insertState && !table.getState().regularState && row.id != table.getRowCount()-1
           ? 

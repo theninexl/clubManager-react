@@ -20,6 +20,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const { status_initial } = STATUSES;
 
   const emptyLine = [{
+    "flag_fixed_clausula": 0,
     "TipoClausula": '',
     "Clausulas": '',
     "Importe": { amount: '', status: STATUSES[0], flag_suma:1},
@@ -925,10 +926,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   }
 
   useEffect (() => {
-    // console.log('data changes', data);
     if (tableInstance.getIsSomePageRowsSelected()) {
-      // console.log('fila seleccionada', tableInstance.getIsSomePageRowsSelected())
-      // console.log('row a evaluar:', tableInstance.getSelectedRowModel().rows[0]?.id)
       sumaFilas()
     } else {
       sumaTodasFilas();
@@ -993,9 +991,6 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       setCanSave(false)
     }
   }
-
-  
-
   
   return (
     <>
@@ -1006,10 +1001,10 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         :
         <>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
-            <p>&nbsp;</p>
-            <p><ButtonMouseTransparent
-              onClick={(e)=> {
-                e.preventDefault();
+            <p>
+              <ButtonMouseTransparent
+              style={{ marginRight: '24px'}}
+              onClick={()=> {
                 setEditState(true);
               }}
             >
@@ -1018,22 +1013,19 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
             
             { editState && 
               <>
-                <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <ButtonMouse
+                  style={{ marginRight: '8px'}}
                   disabled={ canSave ? false : true }
                   className={ canSave ? 'cm-o-button-mouse--primary' : 'cm-o-button-mouse--inactive'}
-                  onClick={(e)=> {
-                    e.preventDefault();
+                  onClick={()=> {
                     setEditState(false);
                     tableInstance.resetRowSelection();
                   }}
                 >
                   Guardar
                 </ButtonMouse>                
-                <span>&nbsp;</span>
                 <ButtonMouseGhost
-                  onClick={(e)=> {
-                    e.preventDefault();
+                  onClick={()=> {
                     setEditState(false);
                     tableInstance.resetRowSelection();
                   }}
@@ -1160,57 +1152,46 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
             { regularState  &&
               <>
                 <ButtonMouseTransparent
-                  onClick={(e) => {
-                    e.preventDefault();
+                  style={{ marginRight: '24px'}}
+                  onClick={() => {
                     setRegularState(false);
                     setAdvancePayState(true);
                   }}
                 >
                   Anticipar pago
                 </ButtonMouseTransparent>
-                <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <ButtonMouseTransparent
-                  onClick={(e) => {
-                    e.preventDefault();
+                  style={{ marginRight: '24px'}}
+                  onClick={() => {
                     setRegularState(false);
                     setDeferredPayState(true);
                   }}
                 >
                   Retrasar pago
                 </ButtonMouseTransparent>
-                <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <ButtonMouseTransparent
-                  onClick={(e)=>{
-                    e.preventDefault();
-                    // tableInstance.options.meta.newSanctionLine();
-                    // console.log('insertSelectedAmount', insertSelectedAmount)
-                    // console.log('insertSelectedCol', insertSelectedCol)
+                  style={{ marginRight: '24px'}}
+                  onClick={()=>{
                     setRegularState(false);
                     setSubtractState(true);
                   }}
                 >Sanción</ButtonMouseTransparent>
-                <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <ButtonMouseTransparent
-                  onClick={(e)=>{
-                    e.preventDefault();
-                    // tableInstance.options.meta.newSanctionLine();
-                    // console.log('insertSelectedAmount', insertSelectedAmount)
-                    // console.log('insertSelectedCol', insertSelectedCol)
+                  style={{ marginRight: '24px'}}
+                  onClick={()=>{
                     setRegularState(false);
                     setSeizureState(true);
                   }}
                 >Embargo</ButtonMouseTransparent>
-                <span>&nbsp;</span>
-                <span>&nbsp;</span>
               </>
             }
             {  !regularState && 
               <>
                 <ButtonMouse
+                  style={{ marginRight: '8px'}}
                   disabled={ insertCanSave ? false : true }
                   className={ insertCanSave ? 'cm-o-button-mouse--primary' : 'cm-o-button-mouse--inactive'}
-                  onClick={(e) => {
-                    e.preventDefault();
+                  onClick={() => {
                     const newData = [...data]
                     newData[newData.length-1]['Clausulas'] = clauseTxt + ' ' +newData[cellCopy.row]['Clausulas']+ ' ' +cellCopy.column.id;
                     setData(newData)                    
@@ -1220,8 +1201,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                   Guardar
                 </ButtonMouse>
                 <ButtonMouseGhost
-                  onClick={(e) => {
-                    e.preventDefault();
+                  onClick={() => {
                     if (data.length > 8 ) {
                       const newData = [...data];
                       newData.pop()
@@ -1234,9 +1214,6 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                 </ButtonMouseGhost>
               </>
             }
-
-              
-
             </p>
           </div>
         </>        
