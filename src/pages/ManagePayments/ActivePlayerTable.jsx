@@ -11,6 +11,7 @@ import { EditableCell } from "./EditableCell";
 import { ButtonCatPrimary, ButtonMouse, ButtonMouseGhost, ButtonMousePrimary, ButtonMouseTransparent, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
 import { TableDataCls, TableDataClsBody, TableDataClsBody__cell, TableDataClsBody__row, TableDataClsHead, TableDataClsHead__cell } from "../../components/UI/layout/tableDataClassic";
 import { SymbolDelete } from "../../components/UI/objects/symbols";
+import { SumCell } from "./sumCell";
 
 
 
@@ -53,6 +54,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
 
   const [data, setData] = useState(emptyLine);
   const [sumaRows, setSumaRows] = useState([]);
+  const [sumaCols, setSumaCols] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({
     'Select': false,
     'Importe': false,
@@ -749,7 +751,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       updateData: (rowIndex, columnId, value) => {
         const valueNumber = isNaN(value.amount) ? value.amount : Number(value.amount);
         let newAmountData = [...data]
-        newAmountData[rowIndex][columnId] = { amount: valueNumber, status: value.status };
+        newAmountData[rowIndex][columnId] = { amount: valueNumber, status: value.status, flag_suma: value.flag_suma };
         setData(newAmountData);
         // setData(prev => 
         //   prev.map((row,index) =>
@@ -790,6 +792,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         newValue.amount = -Math.abs(value.amount);
         newValue.flag_suma = subtractState ? 1 : 0;
         newEmptyLine[0][columnId.id] = newValue;
+        console.log('emptyLine que copio', newEmptyLine);
         const newData = [...data, newEmptyLine[0]]
         console.log('newData', newData);
         setData(newData);
@@ -879,6 +882,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       columnVisibility: columnVisibility,
       rowSelection: rowSelected,
       columnPinning: columnPinning,
+      data,
       regularState,
       advancePayState,
       subtractState,
@@ -926,6 +930,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   }
 
   useEffect (() => {
+    console.log("data ha cambiado", data);
     if (tableInstance.getIsSomePageRowsSelected()) {
       sumaFilas()
     } else {
@@ -978,6 +983,24 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         rowsSum = [...rowsSum, sumaFila]       
       })
       setSumaRows(rowsSum)
+    } 
+  }
+
+  const sumaColumns = () => {
+    if (data.length > 0) {
+      let rowsSum = []
+      tableInstance.getRowModel().rows.map(row => {
+        console.log('row en Sumacolum', row)
+        // const originalCopy = {...row.original};
+        // const { Clausulas, Importe, TipoClausula, total, ...rest } = originalCopy;
+        // let sumaFila = Object.values(rest).reduce((total, numero) => {
+        //   const isNumber = (Number.isInteger(numero.amount) && numero.flag_suma === 1) ? numero.amount : 0;
+        //   return total + isNumber
+        // }, 0)
+        // rowsSum = [...rowsSum, sumaFila]       
+      })
+      
+      // setSumaRows(rowsSum)
     } 
   }
 
@@ -1125,6 +1148,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                                   className='tablecell-medium'
                                   style={{ ...getCommonPinningStyles(column) }}
                                 >
+                                  {sumaCols[footerCol.id]}
                                 {
                                   footerCol.isPlaceHolder ? null :
                                   flexRender(

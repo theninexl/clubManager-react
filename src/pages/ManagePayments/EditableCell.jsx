@@ -257,23 +257,20 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                           value={isNaN(table.options.state.advancePayCal) ? table.options.state.insertSelectedAmount : table.options.state.advancePayCalc}
                           onValueChange={(values) => {                    
                             const limit = -Math.abs(column.columnDef.meta.insertSelectedAmount);
-                            //let newCalc = column.columnDef.meta.insertSelectedAmount - values.value;
-                            //console.log('newCalc', newCalc)
-                            //column.columnDef.meta.setAdvancePayCalc(values.value)
-                            // console.log('limit', limit) 
+
                             if (values.formattedValue !== '' && values.formattedValue >= limit) {
-                              console.log('puede guardar')
+                              // console.log('puede guardar')
                               column.columnDef.meta.setInsertCanSave(true);
                               //setear celda bajo copiada con el nuevo calculo
                               let onChangeValue = {...value};
                               onChangeValue.amount = -Math.abs(values.formattedValue);
-                              console.log('cellCopied', table.options.state.cellCopy)
                               updateData(row.index, table.options.state.cellCopy.column.id, onChangeValue);
                               //setear la propia celda donde estoy cambiando 
                               onChangeValue.amount = values.formattedValue;
                               updateData(row.index, column.id, onChangeValue);
                             } else {
-                              console.log('no puede guardar')
+                              // console.log('no puede guardar')
+                              // console.log('data no se puede guardar:', table.options.state.data)
                               column.columnDef.meta.setInsertCanSave(false);
                             }
                           }}
