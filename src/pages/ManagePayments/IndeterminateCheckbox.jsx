@@ -22,6 +22,7 @@ export function IndeterminateCheckbox({ indeterminate, row, table, column, ...re
   <>
     {row.original.flag_fixed_clausula == 1 ?  
       <>
+        { console.log(table.getIsSomePageRowsSelected()) }
         { table.getIsSomePageRowsSelected() == true ?
           <>
             {console.log('que seleccionado', column.columnDef.meta.rowSelected2)}
@@ -41,7 +42,7 @@ export function IndeterminateCheckbox({ indeterminate, row, table, column, ...re
                 type="checkbox"
                 name="selecCheckbox"
                 ref={ref}
-                style={{display: 'none'}}
+                style={{display: ''}}
                 {...rest}
               />
             }

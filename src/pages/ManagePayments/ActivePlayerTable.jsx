@@ -11,6 +11,10 @@ import { SymbolDelete } from "../../components/UI/objects/symbols";
 
 export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {  
 
+  const monthNames = [
+    "enero", "febrero", "marzo", "abril", "mayo", "junio",
+    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+  ];
   const { status_initial } = STATUSES;
 
   const emptyLine = [{
@@ -44,7 +48,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     "december/2023":{ amount: '', status: STATUSES[0], flag_suma:1},
     "total":""
   }]  
-
+  const [errorMsg, setErrorMsg] = useState(null);
   const [data, setData] = useState([]);
   const [dynamicData,setDynamicData] = useState([]);
   const [infoForColumnDefs, setInfoForColumnDefs] = useState([]);
@@ -92,26 +96,41 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const getPayments = useSaveData();
 
   const getPaymentsDetail = (activeContractId) => {
+    console.log('solicito el contrato', activeContractId);
     getPayments.uploadData('players/calendarioRegistros',{'id_contrato':activeContractId})
   }
   
   useEffect (() => {
     if (getPayments.responseUpload) {
-      console.log(getPayments.responseUpload);
-    }
+      if (getPayments.responseUpload.status == 'ok') {
+        console.log("tengo resultados buenos");
+        console.log(getPayments.responseUpload);
+        setData(getPayments.responseUpload.registros);
+        setDynamicData(getPayments.responseUpload.registros);
+        setErrorMsg(null)
+      } else {
+        console.log('no tengo resultados')
+        setErrorMsg('No hay datos para el contrato seleccionado, por favor selecciona otro contrato u otro jugador')
+      }
+    }    
   },[getPayments.responseUpload])
 
 
   // Función para obtener todas las claves del objeto, incluso las anidadas
   const getKeys = (obj, prefix = '') => {
     let keys = [];
-    for (let key in obj) {
-      
+    for (let key in obj) {      
       if (key === 'months') {
         const objeto = obj[key]
         for ( const [key, value] of Object.entries(objeto)){
-          console.log("keyValue:", key, value);
-          keys.push({clave:key, valor:value })
+          console.log('objeto:', value.alignItems)
+          //esto lo dejo aquí de cuando Javi me pasaba el value con formato Date por si acaso pero ya no es necesario
+          // const ObjectValue = JSON.parse(JSON.stringify(value));
+          // const valueToDate = new Date(ObjectValue.mes)
+          // const monthNr = valueToDate.getMonth();
+          // const yearNr = !isNaN(valueToDate.getFullYear()) ? valueToDate.getFullYear() : '';
+          // const monthName = !isNaN(monthNr) ? monthNames[monthNr] : '';
+          keys.push({clave:key, valor:`${value.mes}`})
         }
       }
     }
@@ -122,7 +141,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const generateColumns = (keys) => {
     return keys.map(key => ({
       accessorKey: `months.${key.clave}`,
-      header: key.valor.mes,
+      header: key.valor,
       cell: EditableCell,
       // cell: info => console.log(info),
       meta: {
@@ -148,9 +167,9 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   useEffect(()=>{
     if (activePlayerId != 0) {
       if (activeContractId != '' && activeContractId != undefined) {
+        setData([]);
+        setColumnDefs([]);
         getPaymentsDetail(activeContractId);
-        setData(DATA);
-        setDynamicData(DATA);
       } else {
         console.log('activeContractId', activeContractId)
         setData([])
@@ -931,9 +950,10 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   
   //este rellena columnDefs con las 3 primeras columnas mínimas y explora los datos en busqueda del objeto months que albergará todos los datos de meses, y generará toda la información de meses que se guardará en el estado infoForColumnDefs
   useEffect(()=>{
-    setColumnDefs([]);
+    
     if (data.length > 0) {
       const columnDefsCopy = [...columnDefs]
+      console.log('columnDefsCopy', columnDefsCopy);
       columnDef2.map(item => columnDefsCopy.push(item))
       setColumnDefs(columnDefsCopy);    
       const keys = getKeys(data[0]);
@@ -953,7 +973,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   },[infoForColumnDefs])
   //este añadirá la última columna de totales en última posición si no existe aún dentro
   useEffect(()=>{
-    // console.log('columnDefs han cambiado',columnDefs);
+    console.log('columnDefs han cambiado',columnDefs);
     const hasTotal = columnDefs.some(item => item.accessorKey == 'total');
     if (columnDefs.length > 3 && hasTotal == false) {
       const columnDefsCopy = [...columnDefs]
@@ -964,6 +984,18 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
 
   useEffect (() => {
     console.log("data ha cambiado", data);
+
+    // data.map(item => {
+    //   for (let key in item) {
+    //     if(key === 'Importe') {
+    //       // const stringified = JSON.stringify(item[key]);
+    //       console.log('objeto antes:', item[key]);
+    //       // const objeto = JSON.parse(stringified);
+    //       // console.log('objeto: ', objeto, typeof(objeto));
+    //     }
+    //   }
+
+    // });
     if (tableInstance.getIsSomePageRowsSelected()) {
       sumaFilas()
     } else {
@@ -1170,7 +1202,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       let rowsSum = []
       tableInstance.getRowModel().rows.map(row => {
         const originalCopy = {...row.original};
-        console.log('originalCopy', originalCopy)
+        // console.log('originalCopy', originalCopy)
         const { months, ...rest } = originalCopy;
         let sumaFila = Object.values(months).reduce((total, numero) => {
           const isNumber = (Number.isInteger(numero.amount) && numero.flag_suma === 1) ? numero.amount : 0;
@@ -1213,6 +1245,11 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   
   return (
     <>
+      {errorMsg &&
+        <div  className='cm-u-centerText'>
+          <span className='error'>{errorMsg}</span>
+        </div>
+      }
       { (data != null && data.length > 0) &&
         <>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
@@ -1259,7 +1296,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                 }}
               >
                 { tableInstance.getHeaderGroups().map(headerElement => {
-                    return (
+                    return (                      
                       <TableDataClsHead key={headerElement.id}>
                         <tr>
                           { headerElement.headers.map(columnElement => {
