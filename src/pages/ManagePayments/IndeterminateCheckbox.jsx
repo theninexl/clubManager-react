@@ -3,14 +3,15 @@ import { useEffect, useRef } from "react"
 export function IndeterminateCheckbox({ indeterminate, row, table, column, ...rest}) {
   const ref = useRef(null);
 
-  useEffect(() => {   
-    // console.log(ref.current);
+  useEffect(() => {
+    console.log('useEffect checkbox')   
+    console.log(ref.current);
     if (typeof indeterminate === 'boolean') {
       ref.current.indeterminate = !rest.checked && indeterminate
     }
 
     if (row.getIsSelected() === true) {
-      // console.log(row);
+      console.log('row seleccionada', row.getIsSelected(),' ,cual:',row);
       column.columnDef.meta.setRowSelected2(row.index)
     }
   }, [ref, indeterminate])
@@ -18,11 +19,13 @@ export function IndeterminateCheckbox({ indeterminate, row, table, column, ...re
 
  return (
   <>
-    {row.index < 8 ? 
+    {row.original.flag_fixed_clausula == 1 ?  
       <>
         { table.getIsSomePageRowsSelected() == true ?
           <>
+            {console.log('que seleccionado', column.columnDef.meta.rowSelected2)}
             { row.index === column.columnDef.meta.rowSelected2 ? 
+              
               <>
                 <input
                   type="checkbox"
@@ -48,7 +51,7 @@ export function IndeterminateCheckbox({ indeterminate, row, table, column, ...re
               type="checkbox"
               name="selecCheckbox"
               ref={ref}
-              style={ row.index < 8  ?  {} : {display: 'none'}}
+              style={ row.original.flag_fixed_clausula == 1  ?  {} : {display: 'none'}}
               {...rest}
             />
           </>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { DropDownMenu, DropdownItem } from "./DropDownMenu";
-import { STATUSES } from "./MOCK_DATA";
+import { STATUSES } from "./MOCK_DATA2";
 import { IconButtonSmallPrimary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
 import { SymbolContentCopy, SymbolPaste, SymbolSave } from "../../components/UI/objects/symbols";
 import { NumericFormat } from "react-number-format";
@@ -24,13 +24,16 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
   const [value, setValue] = useState(initialValue)
   const { updateData, newSanctionLine, newAdvancePayLine, newDeferedPayLine, pasteCell } = table.options.meta;
 
+  // console.log('get value', getValue())
+  // console.log('initial value', initialValue);
+
   useEffect(()=> {
     setValue(initialValue)
   },[initialValue])
 
   return (
     <>
-      {/* {console.log('fila:',row.index,', state:', table.getState())} */}
+      {/* {console.log('value', initialValue, 'fila:',row.index,', state:', table.getState())} */}
       {row.original.flag_fixed_clausula == 1 ? 
         <>
           { (table.getIsSomePageRowsSelected() == true && row.index === column.columnDef.meta.rowSelected2) ?

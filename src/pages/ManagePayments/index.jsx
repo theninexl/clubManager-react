@@ -60,15 +60,31 @@ export default function ManagePaymentsPage () {
   },[getPlayerData.responseUpload])
 
   useEffect(()=>{
+    setActiveContractId(undefined);
     if (activePlayerId === undefined || activePlayerId === '' || activePlayerId == 0) {      
       setActivePlayerDetails();
       setActivePlayerContracts();
       setWarningMsg('Selecciona un jugador para comenzar');
       setErrorMsg(null);        
     } else {
-      getPlayerDetail(activePlayerId)
+      if (activeContractId === undefined || activeContractId === '') {
+        setWarningMsg('Selecciona un contrato para mostrar la tabla de pagos');
+      }
+      getPlayerDetail(activePlayerId)      
     }
   },[activePlayerId])
+
+  useEffect(()=>{
+    if (activeContractId === undefined || activeContractId === '') {
+      if (activePlayerId === undefined || activePlayerId === '' || activePlayerId == 0) {
+        setWarningMsg('Selecciona un jugador para comenzar');
+      } else {
+        setWarningMsg('Selecciona un contrato para mostrar la tabla de pagos');
+      }
+    } else {
+      setWarningMsg(null);
+    }
+  },[activeContractId])
 
   useEffect(()=>{
     setActivePlayerId();
@@ -137,7 +153,7 @@ export default function ManagePaymentsPage () {
 
           <CentralBody>
             <CentralBody__Header>Tabla de pagos</CentralBody__Header>
-            {(activePlayerId && activePlayerId != 0)  &&
+            {(activePlayerId && activePlayerId != 0 && activeContractId != undefined)  &&
               <ActivePlayerTable
                 activePlayerId={activePlayerId}
                 activeContractId={activeContractId}

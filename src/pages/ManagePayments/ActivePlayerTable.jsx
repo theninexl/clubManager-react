@@ -1,22 +1,15 @@
 import { useEffect, useState } from "react"
-import { 
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable, } from "@tanstack/react-table"
-import { DATA, STATUSES } from './MOCK_DATA'
+import { createColumnHelper, flexRender, getCoreRowModel, useReactTable, } from "@tanstack/react-table"
+import { useSaveData } from "../../hooks/useSaveData";
+import { DATA, STATUSES } from './MOCK_DATA2'
 import { IndeterminateCheckbox } from "./IndeterminateCheckbox";
 import { EditableClauseCell } from "./EditableClauseCell";
 import { EditableCell } from "./EditableCell";
-import { ButtonCatPrimary, ButtonMouse, ButtonMouseGhost, ButtonMousePrimary, ButtonMouseTransparent, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
+import { ButtonMouse, ButtonMouseGhost, ButtonMouseTransparent, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
 import { TableDataCls, TableDataClsBody, TableDataClsBody__cell, TableDataClsBody__row, TableDataClsHead, TableDataClsHead__cell } from "../../components/UI/layout/tableDataClassic";
 import { SymbolDelete } from "../../components/UI/objects/symbols";
-import { SumCell } from "./sumCell";
 
-
-
-export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
-  
+export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {  
 
   const { status_initial } = STATUSES;
 
@@ -50,9 +43,12 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     "november/2023": { amount: '', status: STATUSES[0], flag_suma:1},
     "december/2023":{ amount: '', status: STATUSES[0], flag_suma:1},
     "total":""
-  }]
+  }]  
 
-  const [data, setData] = useState(emptyLine);
+  const [data, setData] = useState([]);
+  const [dynamicData,setDynamicData] = useState([]);
+  const [infoForColumnDefs, setInfoForColumnDefs] = useState([]);
+  const [columnDefs, setColumnDefs] = useState([]);
   const [sumaRows, setSumaRows] = useState([]);
   const [sumaCols, setSumaCols] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({
@@ -91,22 +87,85 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const [insertCanSave, setInsertCanSave] = useState(false);
   const [clauseTxt, setClauseTxt] = useState()
 
+
+  //pedir datos del contrato
+  const getPayments = useSaveData();
+
+  const getPaymentsDetail = (activeContractId) => {
+    getPayments.uploadData('players/calendarioRegistros',{'id_contrato':activeContractId})
+  }
   
+  useEffect (() => {
+    if (getPayments.responseUpload) {
+      console.log(getPayments.responseUpload);
+    }
+  },[getPayments.responseUpload])
+
+
+  // Función para obtener todas las claves del objeto, incluso las anidadas
+  const getKeys = (obj, prefix = '') => {
+    let keys = [];
+    for (let key in obj) {
+      
+      if (key === 'months') {
+        const objeto = obj[key]
+        for ( const [key, value] of Object.entries(objeto)){
+          console.log("keyValue:", key, value);
+          keys.push({clave:key, valor:value })
+        }
+      }
+    }
+    return keys;
+  };
+
+  // Función para generar columnDefs basados en las claves
+  const generateColumns = (keys) => {
+    return keys.map(key => ({
+      accessorKey: `months.${key.clave}`,
+      header: key.valor.mes,
+      cell: EditableCell,
+      // cell: info => console.log(info),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
+        insertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }));
+  };  
 
   useEffect(()=>{
     if (activePlayerId != 0) {
       if (activeContractId != '' && activeContractId != undefined) {
+        getPaymentsDetail(activeContractId);
         setData(DATA);
+        setDynamicData(DATA);
       } else {
+        console.log('activeContractId', activeContractId)
         setData([])
       }      
     } else {
       setData([])
+      setDynamicData([]);
+      setInfoForColumnDefs(null);
     }
 
-  },[activeContractId, activeContractId])
+  },[activePlayerId, activeContractId])
+
 
   const sumHelper = (total, row, key) => {
+    console.log('sumHelper row', row);
     let number = row.getValue(key)
     let amount = number.flag_suma == 1 ? Number(number.amount) : 0;
     amount >= 0 ? total = total + amount : total = total - Math.abs(amount);    
@@ -116,6 +175,635 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const columnHelper = createColumnHelper();
 
   const columnDef = [
+    {
+      id: 'Select',
+      header: 'Sel.',
+      cell: ({ row, column, table }) => {
+        return (
+          <>
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'row', 
+              alignItems: 'center', 
+              justifyContent: 'flex-end',
+              padding: '8px',}}              
+            >
+              {row.original.flag_fixed_clausula == 1 ? 
+                <>
+                  <IndeterminateCheckbox {...{
+                    row,
+                    column,
+                    table,
+                    checked: row.getIsSelected(),
+                    disabled: !row.getCanSelect(),
+                    indeterminate: row.getIsSomeSelected(),
+                    onChange: row.getToggleSelectedHandler(),
+                  }}
+                  />
+                </>
+                :
+                <>
+                  <IconButtonSmallerPrimary
+                    onClick={()=>{ table.options.meta.deleteRow(row.id)}}
+                  >
+                    <SymbolDelete/>
+                  </IconButtonSmallerPrimary>
+                </>
+              }
+            </div>
+          </>
+        )
+        
+      },
+      footer: 'total',
+      meta: {
+        setRowSelected,
+        rowSelected2,
+        setRowSelected2,
+      },
+      size: 50,
+    },
+    {
+      accessorKey: 'Clausulas',
+      header: 'Clausula',
+      cell: 'lala' ,
+      footer: '',
+      size: 180,
+      meta: {
+        setClauseTxt,
+      } 
+    },
+    {
+      accessorKey: 'Importe',
+      header: 'Importe total',
+      cell: 'lala',
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => total + row.getValue('Importe').amount, 0)
+      ,
+      meta: {
+        editState,
+        setEditState,
+        subtractState,
+        rowSelected,
+        setRowSelected,
+        rowSelected2,
+      },
+      size: 125,      
+    },
+    {
+      accessorKey: 'months.jan22',
+      header: 'ene/22',
+      cell: 'lala',
+      // cell: info => info.getValue().amount,
+      // footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'january/2022'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
+        insertSelectedAmount,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    },
+    columnHelper.accessor('months.feb2022',{
+      header: 'feb/22',
+      cell: 'lala',
+      // footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'february/2022'), 0),
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+    // columnHelper.accessor('months.march/2022',{
+    //   header: 'mar/22',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'march/2022'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.april/2022',{
+    //   header: 'abr/22',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'april/2022'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.may/2022',{
+    //   header: 'may/22',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'may/2022'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.june/2022',{
+    //   header: 'jun/22',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'june/2022'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.july/2022',{
+    //   header: 'jul/22',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'july/2022'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.august/2022',{
+    //   header: 'ago/22',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'august/2022'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.september/2022',{
+    //   header: 'sep/22',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'september/2022'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.october/2022',{
+    //   header: 'oct/22',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'october/2022'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.november/2022',{
+    //   header: 'nov/22',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'november/2022'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.december/2022',{
+    //   header: 'dic/22',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'december/2022'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // {
+    //   accessorKey: 'months.january/2023',
+    //   header: 'ene/23',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'january/2023'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // },
+    // columnHelper.accessor('months.february/2023',{
+    //   header: 'feb/23',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'february/2023'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.march/2023',{
+    //   header: 'mar/23',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'march/2023'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.april/2023',{
+    //   header: 'abr/23',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'april/2023'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.may/2023',{
+    //   header: 'may/23',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'may/2023'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.june/2023',{
+    //   header: 'jun/23',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'april/2022'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.july/2023',{
+    //   header: 'jul/23',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'july/2023'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.august/2023',{
+    //   header: 'ago/23',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'august/2023'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.september/2023',{
+    //   header: 'sep/23',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'september/2023'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.october/2023',{
+    //   header: 'oct/23',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'october/2023'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.november/2023',{
+    //   header: 'nov/23',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'november/2023'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    // columnHelper.accessor('months.december/2023',{
+    //   header: 'dic/23',
+    //   cell: EditableCell,
+    //   footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'december/2023'), 0),
+    //   meta: {
+    //     subtractState,
+    //     insertSelectedCol,
+    //     insertSelectedRow,
+    //     insertSelectedAmount,
+    //     setInsertSelectedAmount,
+    //     setCellCopy,
+    //     setAdvancePayCalc,
+    //     insertAmountError,
+    //     setInsertAmountError,
+    //     insertCanSave,
+    //     setInsertCanSave,
+    //     rowSelected2,
+    //     setInsertState,
+    //     setSubtractState,
+    //   },
+    //   size: 125,
+    // }),
+    columnHelper.accessor('total',{
+      header: 'Total',
+      cell: 'lala',
+      meta: {
+        subtractState,
+        insertSelectedCol,
+        insertSelectedRow,
+        insertSelectedAmount,
+        setInsertSelectedAmount,
+        setCellCopy,
+        setAdvancePayCalc,
+        insertAmountError,
+        setInsertAmountError,
+        insertCanSave,
+        setInsertCanSave,
+        rowSelected2,
+        setInsertState,
+        setSubtractState,
+      },
+      size: 125,
+    }),
+  ]
+
+  const columnDef2 = [
     {
       id: 'Select',
       header: 'Sel.',
@@ -166,8 +854,8 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     },
     {
       accessorKey: 'Clausulas',
-      header: 'Clausula',
-      cell: EditableClauseCell ,
+      header: 'Clausulas',
+      cell: EditableClauseCell,
       footer: '',
       size: 180,
       meta: {
@@ -178,8 +866,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       accessorKey: 'Importe',
       header: 'Importe total',
       cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => total + row.getValue('Importe').amount, 0)
-      ,
+      // footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => total + row.getValue('Importe').amount, 0),
       meta: {
         editState,
         setEditState,
@@ -190,539 +877,13 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       },
       size: 125,      
     },
-    {
-      accessorKey: 'january/2022',
-      header: 'ene/22',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'january/2022'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertSelectedAmount,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    },
-    columnHelper.accessor('february/2022',{
-      header: 'feb/22',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'february/2022'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('march/2022',{
-      header: 'mar/22',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'march/2022'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('april/2022',{
-      header: 'abr/22',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'april/2022'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('may/2022',{
-      header: 'may/22',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'may/2022'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('june/2022',{
-      header: 'jun/22',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'june/2022'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('july/2022',{
-      header: 'jul/22',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'july/2022'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('august/2022',{
-      header: 'ago/22',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'august/2022'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('september/2022',{
-      header: 'sep/22',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'september/2022'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('october/2022',{
-      header: 'oct/22',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'october/2022'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('november/2022',{
-      header: 'nov/22',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'november/2022'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('december/2022',{
-      header: 'dic/22',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'december/2022'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    {
-      accessorKey: 'january/2023',
-      header: 'ene/23',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'january/2023'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    },
-    columnHelper.accessor('february/2023',{
-      header: 'feb/23',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'february/2023'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('march/2023',{
-      header: 'mar/23',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'march/2023'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('april/2023',{
-      header: 'abr/23',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'april/2023'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('may/2023',{
-      header: 'may/23',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'may/2023'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('june/2023',{
-      header: 'jun/23',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'april/2022'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('july/2023',{
-      header: 'jul/23',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'july/2023'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('august/2023',{
-      header: 'ago/23',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'august/2023'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('september/2023',{
-      header: 'sep/23',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'september/2023'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('october/2023',{
-      header: 'oct/23',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'october/2023'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('november/2023',{
-      header: 'nov/23',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'november/2023'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('december/2023',{
-      header: 'dic/23',
-      cell: EditableCell,
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, 'december/2023'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        rowSelected2,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
-    }),
-    columnHelper.accessor('total',{
+  ]  
+
+  const lastTotalObject = {
+      accessorKey: 'total',
       header: 'Total',
       cell: EditableCell,
+      footer: '',
       meta: {
         subtractState,
         insertSelectedCol,
@@ -740,11 +901,98 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         setSubtractState,
       },
       size: 125,
-    }),
-  ]
+    }
+
+  const getCommonPinningStyles = (column) => {
+    const isPinned = column.getIsPinned()
+    const isLastLeftPinnedColumn =
+      isPinned === 'left' && column.getIsLastColumn('left')
+    const isFirstRightPinnedColumn =
+      isPinned === 'right' && column.getIsFirstColumn('right')
+  
+    return {
+      // backgroundColor: isPinned ? 'white' : undefined,
+      // backgroundColor: isLastLeftPinnedColumn ? 'white' : isFirstRightPinnedColumn ? 'white' : undefined,
+      // boxShadow: isLastLeftPinnedColumn
+      //   ? '-4px 0 10px -10px gray inset'
+      //   : isFirstRightPinnedColumn
+      //     ? '4px 0 10px -10px gray inset'
+      //     : undefined,
+      left: isPinned === 'left' ? `${column.getStart('left')}px` : undefined,
+      right: isPinned === 'right' ? `${column.getAfter('right')}px` : undefined,
+      // opacity: isPinned ? 0.98 : 1,
+      position: isPinned ? 'sticky' : '',
+      width: column.getSize(),
+      zIndex: isPinned ? 1 : 0,
+    }
+  }
+
+  //los siguientes 3 useEffect se encargan de llenar el estado columnDefs con los datos de la tabla que lleguen
+  
+  //este rellena columnDefs con las 3 primeras columnas mínimas y explora los datos en busqueda del objeto months que albergará todos los datos de meses, y generará toda la información de meses que se guardará en el estado infoForColumnDefs
+  useEffect(()=>{
+    setColumnDefs([]);
+    if (data.length > 0) {
+      const columnDefsCopy = [...columnDefs]
+      columnDef2.map(item => columnDefsCopy.push(item))
+      setColumnDefs(columnDefsCopy);    
+      const keys = getKeys(data[0]);
+      setInfoForColumnDefs(generateColumns(keys));
+    }
+  },[dynamicData])
+  //este añadirá a columDefs todos los datos de los meses
+  useEffect(()=>{
+    if (infoForColumnDefs.length > 0) {
+      const columnDefsCopy = [...columnDefs];
+      infoForColumnDefs.map(column => {
+        columnDef2.push(column)
+        columnDefsCopy.push(column)
+      });
+      setColumnDefs(columnDefsCopy);
+    }
+  },[infoForColumnDefs])
+  //este añadirá la última columna de totales en última posición si no existe aún dentro
+  useEffect(()=>{
+    // console.log('columnDefs han cambiado',columnDefs);
+    const hasTotal = columnDefs.some(item => item.accessorKey == 'total');
+    if (columnDefs.length > 3 && hasTotal == false) {
+      const columnDefsCopy = [...columnDefs]
+      columnDefsCopy.push(lastTotalObject)
+      setColumnDefs(columnDefsCopy);
+    }
+  },[columnDefs])
+
+  useEffect (() => {
+    console.log("data ha cambiado", data);
+    if (tableInstance.getIsSomePageRowsSelected()) {
+      sumaFilas()
+    } else {
+      sumaTodasFilas();
+    }
+  },[data])
+
+  useEffect(()=>{
+    if (sumaRows.length === 0) {
+      sumaTodasFilas();
+    } else {
+      checkSum()
+    }
+  },[sumaRows])
+
+  useEffect(()=>{
+    if (editState) {
+      setColumnVisibility({...columnVisibility, 'Select': true, 'Importe': true})
+    } else {
+      setColumnVisibility({...columnVisibility, 'Select': false, 'Importe': false})
+    }
+  },[editState])
+
+  useEffect(()=>{
+    checkSum()
+  },[rowSelected])
 
   const tableInstance = useReactTable({
-    columns: columnDef,
+    columns: columnDefs,
     data: data,
     getCoreRowModel: getCoreRowModel(),
     meta: {
@@ -905,59 +1153,6 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     onColumnPinningChange: setColumnPinning,
   })
 
-  const getCommonPinningStyles = (column) => {
-    const isPinned = column.getIsPinned()
-    const isLastLeftPinnedColumn =
-      isPinned === 'left' && column.getIsLastColumn('left')
-    const isFirstRightPinnedColumn =
-      isPinned === 'right' && column.getIsFirstColumn('right')
-  
-    return {
-      // backgroundColor: isPinned ? 'white' : undefined,
-      // backgroundColor: isLastLeftPinnedColumn ? 'white' : isFirstRightPinnedColumn ? 'white' : undefined,
-      // boxShadow: isLastLeftPinnedColumn
-      //   ? '-4px 0 10px -10px gray inset'
-      //   : isFirstRightPinnedColumn
-      //     ? '4px 0 10px -10px gray inset'
-      //     : undefined,
-      left: isPinned === 'left' ? `${column.getStart('left')}px` : undefined,
-      right: isPinned === 'right' ? `${column.getAfter('right')}px` : undefined,
-      // opacity: isPinned ? 0.98 : 1,
-      position: isPinned ? 'sticky' : '',
-      width: column.getSize(),
-      zIndex: isPinned ? 1 : 0,
-    }
-  }
-
-  useEffect (() => {
-    console.log("data ha cambiado", data);
-    if (tableInstance.getIsSomePageRowsSelected()) {
-      sumaFilas()
-    } else {
-      sumaTodasFilas();
-    }
-  },[data])
-
-  useEffect(()=>{
-    if (sumaRows.length === 0) {
-      sumaTodasFilas();
-    } else {
-      checkSum()
-    }
-  },[sumaRows])
-
-  useEffect(()=>{
-    if (editState) {
-      setColumnVisibility({...columnVisibility, 'Select': true, 'Importe': true})
-    } else {
-      setColumnVisibility({...columnVisibility, 'Select': false, 'Importe': false})
-    }
-  },[editState])
-
-  useEffect(()=>{
-    checkSum()
-  },[rowSelected])
-
   const sumaFilas = () => {
     const originalCopy = {...tableInstance.getSelectedRowModel().rows[0].original}
     const { Clausulas, Importe, ...rest } = originalCopy;
@@ -975,8 +1170,9 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       let rowsSum = []
       tableInstance.getRowModel().rows.map(row => {
         const originalCopy = {...row.original};
-        const { Clausulas, Importe, TipoClausula, total, ...rest } = originalCopy;
-        let sumaFila = Object.values(rest).reduce((total, numero) => {
+        console.log('originalCopy', originalCopy)
+        const { months, ...rest } = originalCopy;
+        let sumaFila = Object.values(months).reduce((total, numero) => {
           const isNumber = (Number.isInteger(numero.amount) && numero.flag_suma === 1) ? numero.amount : 0;
           return total + isNumber
         }, 0)
@@ -1017,11 +1213,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   
   return (
     <>
-      { data.length <= 0 ?
-        <div  className='cm-u-centerText'>
-          <span className='warning'>Has de seleccionar un contrato</span>
-        </div>
-        :
+      { (data != null && data.length > 0) &&
         <>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
             <p>
@@ -1110,7 +1302,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                                       style={{ ...getCommonPinningStyles(column) }}
                                     >
                                       <div className='cell-total'>
-                                      {sumaRows[rowElement.id]}
+                                        {sumaRows[rowElement.id]}
                                       </div>
                                     </TableDataClsBody__cell>
                                   </>
