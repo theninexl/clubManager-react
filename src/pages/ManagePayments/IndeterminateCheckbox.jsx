@@ -6,13 +6,14 @@ export function IndeterminateCheckbox({ indeterminate, row, table, column, ...re
   useEffect(() => {
     console.log('useEffect checkbox')   
     console.log(ref.current);
+    console.log('row seleccionada', row.getIsSelected(),' ,cual:',row);
     if (typeof indeterminate === 'boolean') {
       console.log('entro aqui', typeof(indeterminate));
       ref.current.indeterminate = !rest.checked && indeterminate
     }
 
     if (row.getIsSelected() === true) {
-      console.log('row seleccionada', row.getIsSelected(),' ,cual:',row);
+      
       column.columnDef.meta.setRowSelected2(row.index)
     }
   }, [ref, indeterminate])

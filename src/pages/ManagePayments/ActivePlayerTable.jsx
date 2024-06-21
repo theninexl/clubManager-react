@@ -11,10 +11,10 @@ import { SymbolDelete } from "../../components/UI/objects/symbols";
 
 export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {  
 
-  const monthNames = [
-    "enero", "febrero", "marzo", "abril", "mayo", "junio",
-    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
-  ];
+  // const monthNames = [
+  //   "enero", "febrero", "marzo", "abril", "mayo", "junio",
+  //   "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+  // ];
   const { status_initial } = STATUSES;
 
   const emptyLine = [{
@@ -103,14 +103,15 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   useEffect (() => {
     if (getPayments.responseUpload) {
       if (getPayments.responseUpload.status == 'ok') {
-        console.log("tengo resultados buenos");
-        console.log(getPayments.responseUpload);
+        // console.log("tengo resultados buenos");
+        // console.log(getPayments.responseUpload);
         setData(getPayments.responseUpload.registros);
         setDynamicData(getPayments.responseUpload.registros);
         setErrorMsg(null)
       } else {
-        console.log('no tengo resultados')
-        setErrorMsg('No hay datos para el contrato seleccionado, por favor selecciona otro contrato u otro jugador')
+        setErrorMsg('No hay datos para el contrato seleccionado, por favor selecciona otro contrato u otro jugador');
+        setData([])
+        setDynamicData([]);
       }
     }    
   },[getPayments.responseUpload])
@@ -949,11 +950,11 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   //los siguientes 3 useEffect se encargan de llenar el estado columnDefs con los datos de la tabla que lleguen
   
   //este rellena columnDefs con las 3 primeras columnas mínimas y explora los datos en busqueda del objeto months que albergará todos los datos de meses, y generará toda la información de meses que se guardará en el estado infoForColumnDefs
-  useEffect(()=>{
-    
-    if (data.length > 0) {
+  useEffect(()=>{    
+    if (dynamicData.length > 0 && columnDefs.length == 0) {
+      console.log('añado columnDefs nuevos');
       const columnDefsCopy = [...columnDefs]
-      console.log('columnDefsCopy', columnDefsCopy);
+      // console.log('columnDefsCopy', columnDefsCopy);
       columnDef2.map(item => columnDefsCopy.push(item))
       setColumnDefs(columnDefsCopy);    
       const keys = getKeys(data[0]);
