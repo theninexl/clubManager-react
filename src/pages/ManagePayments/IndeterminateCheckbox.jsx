@@ -7,6 +7,7 @@ export function IndeterminateCheckbox({ indeterminate, row, table, column, ...re
     console.log('useEffect checkbox')   
     console.log(ref.current);
     if (typeof indeterminate === 'boolean') {
+      console.log('entro aqui', typeof(indeterminate));
       ref.current.indeterminate = !rest.checked && indeterminate
     }
 
