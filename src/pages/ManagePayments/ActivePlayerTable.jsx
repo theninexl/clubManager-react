@@ -224,7 +224,6 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
             >
               { row.original.flag_fixed_clausula == 1 ? 
                 <>
-                  {row.getIsSelected()}
                   <IndeterminateCheckbox {...{
                     row,
                     column,
@@ -250,7 +249,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         )
         
       },
-      footer: 'total',
+      footer: '',
       meta: {
         rowSelectedIndex,
         setRowSelectedIndex
@@ -261,7 +260,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       accessorKey: 'Clausulas',
       header: 'Clausulas',
       cell: EditableClauseCell,
-      footer: '',
+      footer: 'Total',
       size: 180,
       meta: {
         setClauseTxt,
@@ -271,7 +270,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       accessorKey: 'Importe',
       header: 'Importe total',
       cell: EditableCell,
-      // footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => total + row.getValue('Importe').amount, 0),
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => total + row.getValue('Importe').amount, 0),
       meta: {
         editState,
         setEditState,
@@ -565,6 +564,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       cellPaste,
       pastedCellState,
       clauseTxt,
+      rowSelectedIndex,
     },
     onColumnVisibilityChange: setColumnVisibility,
     enableRowSelection: true,
