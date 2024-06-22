@@ -11,10 +11,6 @@ import { SymbolDelete } from "../../components/UI/objects/symbols";
 
 export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {  
 
-  // const monthNames = [
-  //   "enero", "febrero", "marzo", "abril", "mayo", "junio",
-  //   "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
-  // ];
   const { status_initial } = STATUSES;
 
   const emptyLine = [{
@@ -72,7 +68,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const [editState, setEditState] = useState(false);
   const [canSave, setCanSave] = useState(false);
   const [rowSelected, setRowSelected] = useState({});
-  const [rowSelected2, setRowSelected2] = useState(null);
+  const [rowSelectedIndex, setRowSelectedIndex] = useState(null);
   //estados insertables
   const [regularState, setRegularState] = useState(true);
   const [insertState, setInsertState] = useState(false);
@@ -119,8 +115,8 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   },[getPayments.responseUpload])
 
   useEffect(()=>{
-    console.log('he seleccionado la row:', rowSelected2);
-  },[rowSelected])
+    console.log('he seleccionado la row:', rowSelectedIndex);
+  },[rowSelectedIndex])
 
 
   // Función para obtener todas las claves del objeto, incluso las anidadas
@@ -256,8 +252,8 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       },
       footer: 'total',
       meta: {
-        setRowSelected,
-        rowSelected,
+        rowSelectedIndex,
+        setRowSelectedIndex
       },
       size: 50,
     },

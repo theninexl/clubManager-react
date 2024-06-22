@@ -11,8 +11,8 @@ export function IndeterminateCheckbox({ indeterminate, row, table, column, ...re
 
   useEffect(()=>{
     const selectedRows = table.getSelectedRowModel().flatRows.map((row) => row);
-    console.log(selectedRows);
-    column.columnDef.meta.setRowSelected(selectedRows[0])
+    console.log(selectedRows[0]);
+    // column.columnDef.meta.setRowSelectedIndex(selectedRows[0].index)
   },[table.getSelectedRowModel()])
 
 
