@@ -1,32 +1,30 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 export function IndeterminateCheckbox({ indeterminate, row, table, column, ...rest}) {
-  const ref = useRef(null);
+  const ref = useRef();
 
-  useEffect(() => {
-    console.log('useEffect checkbox')   
-    console.log(ref.current);
-    console.log('row seleccionada', row.getIsSelected(),' ,cual:',row);
-    if (typeof indeterminate === 'boolean') {
-      console.log('entro aqui', typeof(indeterminate));
-      ref.current.indeterminate = !rest.checked && indeterminate
-    }
+  // useEffect(() => {
+  //   if (typeof indeterminate === 'boolean') {
+  //     ref.current.indeterminate = !rest.checked && indeterminate
+  //   }
+  // }, [ref, indeterminate])
 
-    if (row.getIsSelected() === true) {
-      
-      column.columnDef.meta.setRowSelected2(row.index)
-    }
-  }, [ref, indeterminate])
+  useEffect(()=>{
+    const selectedRows = table.getSelectedRowModel().flatRows.map((row) => row);
+    console.log(selectedRows);
+    column.columnDef.meta.setRowSelected(selectedRows[0])
+  },[table.getSelectedRowModel()])
 
 
  return (
   <>
     {row.original.flag_fixed_clausula == 1 ?  
       <>
-        { console.log(table.getIsSomePageRowsSelected()) }
+
+        {/* { console.log(table.getIsSomePageRowsSelected()) } */}
         { table.getIsSomePageRowsSelected() == true ?
           <>
-            {console.log('que seleccionado', column.columnDef.meta.rowSelected2)}
+            {/* {console.log('que seleccionado', column.columnDef.meta.rowSelected2)} */}
             { row.index === column.columnDef.meta.rowSelected2 ? 
               
               <>
@@ -43,7 +41,7 @@ export function IndeterminateCheckbox({ indeterminate, row, table, column, ...re
                 type="checkbox"
                 name="selecCheckbox"
                 ref={ref}
-                style={{display: ''}}
+                style={{display: 'none'}}
                 {...rest}
               />
             }

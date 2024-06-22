@@ -33,10 +33,9 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
 
   return (
     <>
-      {/* {console.log('value', initialValue, 'fila:',row.index,', state:', table.getState())} */}
       {row.original.flag_fixed_clausula == 1 ? 
         <>
-          { (table.getIsSomePageRowsSelected() == true && row.index === column.columnDef.meta.rowSelected2) ?
+          { (table.getIsSomePageRowsSelected() == true && row.index === column.columnDef.meta.rowSelected) ?
             <>
               <div 
               className='cell-data'
