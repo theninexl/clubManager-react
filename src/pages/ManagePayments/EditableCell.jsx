@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { DropDownMenu, DropdownItem } from "./DropDownMenu";
 import { STATUSES } from "./MOCK_DATA2";
+import { v4 as uuidv4 } from 'uuid';
 import { IconButtonSmallPrimary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
 import { SymbolContentCopy, SymbolPaste, SymbolSave } from "../../components/UI/objects/symbols";
 import { NumericFormat } from "react-number-format";
@@ -24,8 +25,23 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
   const [value, setValue] = useState(initialValue)
   const { updateData, newSanctionLine, newAdvancePayLine, newDeferedPayLine, pasteCell } = table.options.meta;
 
-  // console.log('get value', getValue())
-  // console.log('initial value', initialValue);
+  const STATUSES = [
+    {id: 1, name: "Inicial", color: "##FFFFFF"},
+    {id: 2, name: "Inactivo", color: "#ECECEB"},
+    {id: 3, name: "No Cumplido", color: "#FF978E"},
+    {id: 4, name: "No Estimado", color: "#FFCCA3"},
+    {id: 5, name: "Estimado", color: "#FFE7A3"},
+    {id: 6, name: "Cumplido real no validado", color: "#A3A6FF"},
+    {id: 7, name: "Cumplido real validado", color: "#A3F5FF"},
+    {id: 8, name: "No se puede pagar", color: "#FFA3FB"},
+    {id: 9, name: "Se puede pagar", color: "#E9FFA3"},
+    {id: 10, name: "Pagado", color: "#B7FFA3"}
+  ]
+
+  const getStatusColor = (statusId) => {
+    const status = STATUSES.find(status => status.id === statusId);
+    return status ? status.color : '#FFFFFF'; // Color predeterminado si el statusId no es válido
+  };
 
   useEffect(()=> {
     setValue(initialValue)
@@ -35,12 +51,12 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
     <>
       {row.original.flag_fixed_clausula == 1 ? 
         <>
-          { (table.getIsSomePageRowsSelected() == true && row.index === table.getSelectedRowModel().rows[0].index) ?
+          { (row.getIsSelected() == true && (row.index === table.getSelectedRowModel().rows[0].index) ) ?
             <>
               <div 
               className='cell-data'
               style={{ 
-                backgroundColor: getValue().status?.color,
+                backgroundColor: getStatusColor(getValue().status),
            
                 }}>
                 <input
@@ -51,7 +67,7 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                     setValue(onChangeValue)
                   }}
                   onBlur={() => {
-                    updateData(row.index, column.id, value)
+                    updateData(row.index, column, value)
                   }}
                   style={{
                     border: '1px solid lightgray',
@@ -63,15 +79,14 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                   }}
                 />
                 { column.id !== 'Importe' &&
-                  <DropDownMenu>
+                  <DropDownMenu key={uuidv4()}>
                     { STATUSES.map(item => { 
-                      // console.log(item);
                       return (
                         <>
                           <DropdownItem 
-                            key={item.id}
+                            key={uuidv4()}
                             onClick={ () => updateData(
-                              row.index, column.id, { amount: getValue().amount, status: item}
+                              row.index, column, {mes:value.mes, amount:value.amount, status:item.id, flag_suma:value.flag_suma}
                             )}
                           >
                             <ColorIcon Color={item.color} />{item.name}
@@ -88,7 +103,7 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
               <div 
               className='cell-data'
               style={{ 
-                backgroundColor: !table.options.state.pasteState ? getValue().status?.color : (table.options.state.cellCopy?.column?.id == column.id && table.options.state.cellCopy?.row == row.id) ? '' : '',
+                backgroundColor: !table.options.state.pasteState ? getStatusColor(getValue().status) : (table.options.state.cellCopy?.column?.id == column.id && table.options.state.cellCopy?.row == row.id) ? '' : '',
         
                 }}
                 
@@ -136,7 +151,7 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                <div 
                className='cell-data'
                style={{ 
-                backgroundColor: getValue().status?.color,
+                backgroundColor: getStatusColor(getValue().status),
                 }}
               >
               {value.amount}
@@ -202,7 +217,7 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                   <div 
                   className='cell-data'
                   style={{ 
-                    backgroundColor: getValue().status?.color,
+                    backgroundColor: getStatusColor(getValue().status),
                     }}
                   >
                   <IconButtonSmallerPrimary

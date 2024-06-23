@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable, } from "@tanstack/react-table"
 import { useSaveData } from "../../hooks/useSaveData";
+import { v4 as uuidv4 } from 'uuid';
 import { DATA, STATUSES } from './MOCK_DATA2'
 import { IndeterminateCheckbox } from "./IndeterminateCheckbox";
-import { EditableClauseCell } from "./EditableClauseCell";
+import EditableClauseCell from "./EditableClauseCell";
 import { EditableCell } from "./EditableCell";
 import { ButtonMouse, ButtonMouseGhost, ButtonMouseTransparent, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
 import { TableDataCls, TableDataClsBody, TableDataClsBody__cell, TableDataClsBody__row, TableDataClsHead, TableDataClsHead__cell } from "../../components/UI/layout/tableDataClassic";
@@ -11,42 +12,10 @@ import { SymbolDelete } from "../../components/UI/objects/symbols";
 
 export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {  
 
-  const { status_initial } = STATUSES;
-
-  const emptyLine = [{
-    "flag_fixed_clausula": 0,
-    "TipoClausula": '',
-    "Clausulas": '',
-    "Importe": { amount: '', status: STATUSES[0], flag_suma:1},
-    "january/2022": { amount: '', status: STATUSES[0], flag_suma:1},
-    "february/2022": { amount: '', status: STATUSES[0], flag_suma:1},
-    "march/2022": { amount: '', status: STATUSES[0], flag_suma:1},
-    "april/2022": { amount: '', status: STATUSES[0], flag_suma:1},
-    "may/2022": { amount: '', status: STATUSES[0], flag_suma:1},
-    "june/2022": { amount: '', status: STATUSES[0], flag_suma:1},
-    "july/2022": { amount: '', status: STATUSES[0], flag_suma:1},
-    "august/2022": { amount: '', status: STATUSES[0], flag_suma:1},
-    "september/2022": { amount: '', status: STATUSES[0], flag_suma:1},
-    "october/2022": { amount: '', status: STATUSES[0], flag_suma:1},
-    "november/2022": { amount: '', status: STATUSES[0], flag_suma:1},
-    "december/2022":{ amount: '', status: STATUSES[0], flag_suma:1},
-    "january/2023": { amount: '', status: STATUSES[0], flag_suma:1},
-    "february/2023": { amount: '', status: STATUSES[0], flag_suma:1},
-    "march/2023": { amount: '', status: STATUSES[0], flag_suma:1},
-    "april/2023": { amount: '', status: STATUSES[0], flag_suma:1},
-    "may/2023": { amount: '', status: STATUSES[0], flag_suma:1},
-    "june/2023": { amount: '', status: STATUSES[0], flag_suma:1},
-    "july/2023": { amount: '', status: STATUSES[0], flag_suma:1},
-    "august/2023": { amount: '', status: STATUSES[0], flag_suma:1},
-    "september/2023": { amount: '', status: STATUSES[0], flag_suma:1},
-    "october/2023": { amount: '', status: STATUSES[0], flag_suma:1},
-    "november/2023": { amount: '', status: STATUSES[0], flag_suma:1},
-    "december/2023":{ amount: '', status: STATUSES[0], flag_suma:1},
-    "total":""
-  }]  
   const [errorMsg, setErrorMsg] = useState(null);
   const [data, setData] = useState([]);
   const [dynamicData,setDynamicData] = useState([]);
+  const [emptyLine, setEmptyLine] = useState([]);
   const [totalMonths, setTotalMonths] = useState();
   const [infoForColumnDefs, setInfoForColumnDefs] = useState([]);
   const [columnDefs, setColumnDefs] = useState([]);
@@ -88,12 +57,11 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const [insertCanSave, setInsertCanSave] = useState(false);
   const [clauseTxt, setClauseTxt] = useState()
 
-
   //pedir datos del contrato
   const getPayments = useSaveData();
 
   const getPaymentsDetail = (activeContractId) => {
-    console.log('solicito el contrato', activeContractId);
+    // console.log('solicito el contrato', activeContractId);
     getPayments.uploadData('players/calendarioRegistros',{'id_contrato':activeContractId})
   }
   
@@ -101,7 +69,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     if (getPayments.responseUpload) {
       if (getPayments.responseUpload.status == 'ok') {
         // console.log("tengo resultados buenos");
-        console.log(getPayments.responseUpload);
+        // console.log(getPayments.responseUpload);
         // setData(getPayments.responseUpload.registros);
         setDynamicData(getPayments.responseUpload.registros);
         setErrorMsg(null)
@@ -114,13 +82,13 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     }    
   },[getPayments.responseUpload])
 
-  useEffect(()=>{
-    console.log('he seleccionado la row:', rowSelectedIndex);
-  },[rowSelectedIndex])
-
+  //funcion simple que separa el numero de mes del string de id de mes que crea tanstack
+  const monthNumber = (column) => { 
+   return Number(column['id'].substring('months_'.length)); 
+  }
 
   // Función para obtener todas las claves del objeto, incluso las anidadas
-  const getKeys = (obj, prefix = '') => {
+  const getKeys = (obj) => {
     // console.log('entro en getKeys con obj', obj);
     let keys = [];
     for (let key in obj) {  
@@ -128,7 +96,6 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       if (key === 'months') {
         const objeto = obj[key]
         for ( const [key, value] of Object.entries(objeto)){
-          console.log('objeto:', value.alignItems)
           //esto lo dejo aquí de cuando Javi me pasaba el value con formato Date por si acaso pero ya no es necesario
           // const ObjectValue = JSON.parse(JSON.stringify(value));
           // const valueToDate = new Date(ObjectValue.mes)
@@ -151,6 +118,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       header: key.valor,
       cell: EditableCell,
       // cell: info => console.log(info),
+      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, `months_${key.clave}`), 0),
       meta: {
         subtractState,
         insertSelectedCol,
@@ -163,8 +131,6 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         setInsertAmountError,
         insertCanSave,
         setInsertCanSave,
-        // rowSelected,
-        // setRowSelected,
         setInsertState,
         setSubtractState,
       },
@@ -198,7 +164,6 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
 
 
   const sumHelper = (total, row, key) => {
-    console.log('sumHelper row', row);
     let number = row.getValue(key)
     let amount = number.flag_suma == 1 ? Number(number.amount) : 0;
     amount >= 0 ? total = total + amount : total = total - Math.abs(amount);    
@@ -206,7 +171,6 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   }
 
   // const columnHelper = createColumnHelper();
-
 
   const columnDef2 = [
     {
@@ -259,7 +223,18 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     {
       accessorKey: 'Clausulas',
       header: 'Clausulas',
-      cell: EditableClauseCell,
+      cell: ({ cell, row, column, table, getValue}) => (
+        <EditableClauseCell
+          cell={cell}
+          row={row}
+          column={column}
+          table={table}
+          getValue={getValue}
+          onValueChange={(newValue) => {
+            setClauseTxt(prev => ({...prev, newValue}))
+          }}
+        />
+      ),
       footer: 'Total',
       size: 180,
       meta: {
@@ -286,7 +261,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       accessorKey: 'total',
       header: 'Total',
       cell: EditableCell,
-      footer: '',
+      // footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row,'total'), 0),
       meta: {
         subtractState,
         insertSelectedCol,
@@ -365,7 +340,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   },[infoForColumnDefs])
   //este añadirá la última columna de totales en última posición si no existe aún dentro
   useEffect(()=>{
-    // console.log('columnDefs han cambiado',columnDefs);
+    console.log('columnDefs han cambiado');
     const hasTotal = columnDefs.some(item => item.accessorKey == 'total');
 
     if ((columnDefs.length === totalMonths+3) && hasTotal == false) {
@@ -380,8 +355,39 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     }
   },[columnDefs])
 
+  const memoizedColumns = useMemo(() => columnDefs, [columnDefs]);
+
   useEffect (() => {
     console.log("data ha cambiado", data);
+
+    if (data.length > 0) {
+      const firstDataElement = data[0];
+
+      const createEmptyLine = () => {
+        const newEmptyLine = JSON.parse(JSON.stringify(firstDataElement));
+
+        // Función para limpiar el objeto emptyLine dejando 'flag_suma' como 1
+        const clearObject = (obj) => {
+          for (let key in obj) {
+              if (typeof obj[key] === 'object' && obj[key] !== null) {
+                  clearObject(obj[key]);
+              } else if (key === 'flag_suma') {
+                obj[key] = 1;
+              } else if (key === 'flag_fixed_clausula') {
+                obj[key] = 0;
+              } else if (key !== 'mes') {
+                obj[key] = '';
+              }
+            }
+        }
+        clearObject(newEmptyLine);
+        return newEmptyLine;
+      }
+
+      // Crear emptyLine después de la actualización de estado
+      const updatedEmptyLine = createEmptyLine();
+      setEmptyLine([updatedEmptyLine]);
+    }
 
     if (tableInstance.getIsSomePageRowsSelected()) {
       sumaFilas()
@@ -411,26 +417,27 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   },[rowSelected])
 
   const tableInstance = useReactTable({
-    columns: columnDefs,
+    columns: memoizedColumns,
     data: data,
     getCoreRowModel: getCoreRowModel(),
     meta: {
-      updateData: (rowIndex, columnId, value) => {
+      updateData: (rowIndex, column, value) => {
         const valueNumber = isNaN(value.amount) ? value.amount : Number(value.amount);
         let newAmountData = [...data]
-        newAmountData[rowIndex][columnId] = { amount: valueNumber, status: value.status, flag_suma: value.flag_suma };
+        if (column['id'].startsWith('months_')) {
+          // const number = Number(column['id'].substring('months_'.length));
+          const number = monthNumber(column);
+          newAmountData[rowIndex].months[number] = { mes: column.columnDef.header, amount: valueNumber, status: value.status, flag_suma: value.flag_suma};
+        } else {
+          newAmountData[rowIndex][column.id] = { amount: valueNumber, status: value.status, flag_suma: value.flag_suma };
+        }
         setData(newAmountData);
-        // setData(prev => 
-        //   prev.map((row,index) =>
-        //     index === rowIndex ? {
-        //       ...prev[rowIndex], [columnId]: valueNumber
-        //     } : row
-        //   ))
       },
       updateClause: (rowIndex, columnId, value) => {
         let newData = [...data]
-        console.log('newData', newData)
-        // setData(newData);
+        newData[rowIndex][columnId] = value;
+        console.log(newData);
+        setData(newData);
       },
       deleteRow: (row) => {
         const newData = [...data];
@@ -479,7 +486,11 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         newEmptyLine[0]["Clausulas"] = '';
         const newValue = {...value}
         newValue.amount = -Math.abs(value.amount);
-        newEmptyLine[0][columnId.id] = newValue;
+        newValue.status = '';
+        //necesito el numero de mes para modificar el objeto months dentro de la nueva linea
+        const monthNr = monthNumber(columnId);
+        newEmptyLine[0].months[monthNr] = newValue;
+        // console.log('newEmptyLine',newEmptyLine);
         const newData = [...data, newEmptyLine[0]]
         setData(newData);
         setPasteState(true);
@@ -505,25 +516,28 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         setPasteState(true);
       },  
       pasteCell: (row, columnId) => {
-        // console.log('pego desde', cellCopy.column.id, cellCopy.row, cellCopy);
-        // console.log('pego. Row:', row, ' Colum:', columnId)
+        console.log('recibo en pasteCell row:',row,', columnId:',columnId);
         const pegoCelda = [];
         pegoCelda["column"] = {"id":columnId.id, "index": columnId.getIndex()};
         pegoCelda["row"]= row.id;
         setCellPaste(pegoCelda);
         //pegar en la col bajo celda copiada
         const newData = [...data]
-        // console.log('newData', newData)
-        const newCell = {...newData[row.id][cellCopy.column.id]}
-        // console.log('newCell', newCell)
-        newCell.amount = -Math.abs(insertSelectedAmount);
-        newData[row.id][cellCopy.column.id] = newCell;
-        //pegar en la propia celda
-        const newCell2 = {...newData[row.id][columnId.id]}
-        newCell2.amount = insertSelectedAmount;
-        newData[row.id][columnId.id] = newCell2;
-        // newData[cellCopy.row][cellCopy.column.id] = { amount: 0, status: cellCopy.value.status };
-        // console.log('newData recien pegado', newData);
+        console.log('cellCopy', cellCopy);
+        //necesito el numero de mes para modificar el objeto months dentro de la nueva linea
+        const monthNr = monthNumber(columnId);
+        const newCell = {...newData[row.id].months[monthNr]}
+        newCell.amount = insertSelectedAmount;
+        console.log('newCell', newCell);
+        console.log('newData antes', newData);
+        newData[row.id].months[monthNr] = newCell;
+        console.log('newData despues', newData);
+        // //pegar en la propia celda
+        // const newCell2 = {...newData[row.id][columnId.id]}
+        // newCell2.amount = insertSelectedAmount;
+        // newData[row.id][columnId.id] = newCell2;
+        // // newData[cellCopy.row][cellCopy.column.id] = { amount: 0, status: cellCopy.value.status };
+        // // console.log('newData recien pegado', newData);
         setData(newData);
         setPastedCellState(true);
         setInsertCanSave(true);
@@ -676,8 +690,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
             }
             </p>
           
-            <div className='cm-l-tabledata-cls-container cm-u-spacer-mt-big cm-u-spacer-mb-big'
-            >
+            <div className='cm-l-tabledata-cls-container cm-u-spacer-mt-big cm-u-spacer-mb-big'>
               <TableDataCls 
                 style={{ 
                   width: tableInstance.getTotalSize(), 
@@ -713,7 +726,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                   { tableInstance.getRowModel().rows.map(rowElement => {
                     return (
                       <>
-                        <TableDataClsBody__row key={rowElement.id}>
+                        <TableDataClsBody__row key={uuidv4()}>
                           { rowElement.getVisibleCells().map((cellElement, index) => {
                             const { column } = cellElement;
                             // console.log('visibleCells', rowElement.getVisibleCells().length)
@@ -833,9 +846,9 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                   disabled={ insertCanSave ? false : true }
                   className={ insertCanSave ? 'cm-o-button-mouse--primary' : 'cm-o-button-mouse--inactive'}
                   onClick={() => {
-                    const newData = [...data]
-                    newData[newData.length-1]['Clausulas'] = clauseTxt + ' ' +newData[cellCopy.row]['Clausulas']+ ' ' +cellCopy.column.id;
-                    setData(newData)                    
+                    // const newData = [...data]
+                    // newData[newData.length-1]['Clausulas'] = clauseTxt + ' ' +newData[cellCopy.row]['Clausulas']+ ' ' +cellCopy.column.id;
+                    // setData(newData)                    
                     tableInstance.options.meta.clearStates();
                   }}
                 >

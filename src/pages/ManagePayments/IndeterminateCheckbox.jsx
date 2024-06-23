@@ -1,34 +1,25 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 
-export function IndeterminateCheckbox({ indeterminate, checked, rowSelectedIndex, row, table, column, ...rest}) {
-  // const ref = useRef();
+export function IndeterminateCheckbox({indeterminate, checked, row, table, column, ...rest}) {
+  const ref = useRef();
 
-  // useEffect(() => {
-  //   if (typeof indeterminate === 'boolean') {
-  //     ref.current.indeterminate = !rest.checked && indeterminate
-  //   }
-  // }, [ref, indeterminate])
-
-  // useEffect(()=>{
-  //   if (row.getIsSelected() === true) {
-  //     console.log('he seleccionado');
-  //     column.columnDef.meta.setRowSelectedIndex(row.index)
-  //   } else {
-  //     column.columnDef.meta.setRowSelectedIndex(null)
-  //   }
-  // },[table.getSelectedRowModel()])
+  useEffect(() => {
+    if (typeof indeterminate === 'boolean') {
+      ref.current.indeterminate = !rest.checked && indeterminate
+    }
+  }, [ref, indeterminate])
 
 
  return (
   <>
-    { table.getIsSomePageRowsSelected() == true ?
+    { checked ?
       <>
         { row.index === table.getSelectedRowModel().rows[0].index ?               
           <>
             <input
               type="checkbox"
               name="selecCheckbox"
-              // ref={ref}
+              ref={ref}
               style={{display: ''}}
               {...rest}
             />
@@ -38,7 +29,7 @@ export function IndeterminateCheckbox({ indeterminate, checked, rowSelectedIndex
             <input
               type="checkbox"
               name="selecCheckbox"
-              // ref={ref}
+              ref={ref}
               style={{display: 'none'}}
               {...rest}
             />
@@ -50,7 +41,7 @@ export function IndeterminateCheckbox({ indeterminate, checked, rowSelectedIndex
         <input
           type="checkbox"
           name="selecCheckbox"
-          // ref={ref}
+          ref={ref}
           style={ row.original.flag_fixed_clausula == 1  ?  {} : {display: 'none'}}
           {...rest}
         />

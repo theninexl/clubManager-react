@@ -53,7 +53,7 @@ export const FormSimplePanelRow = ({ children, className }) => {
   );
 }
 
-export const LabelElement = ({ children, style, className, htmlFor, type, placeholder, value, handleOnChange, required, disabled, readOnly, autoComplete, role }) => {
+export const LabelElement = ({ children, style, className, htmlFor, type, placeholder, value, handleOnChange, required, disabled, readOnly, autoComplete, role,onBlur }) => {
   return (
     <label
       htmlFor={htmlFor}
@@ -72,7 +72,8 @@ export const LabelElement = ({ children, style, className, htmlFor, type, placeh
         value={value}
         required={required}
         disabled={disabled}
-        readOnly={readOnly} />
+        readOnly={readOnly}
+        onBlur={onBlur} />
     </label>
   );
 }

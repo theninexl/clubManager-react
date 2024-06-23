@@ -12,16 +12,16 @@ const status_paid = {id: 10, name: "Pagado", color: "#B7FFA3"}
 
 
 export const STATUSES = [
-  status_initial,
-  status_inactive,
-  status_notFullfilled,
-  status_notEstimated,
-  status_estimated,
-  status_metNotValidated,
-  status_metValidated,
-  status_unpayable,
-  status_payable,
-  status_paid
+  {id: 1, name: "Inicial", color: "##FFFFFF"},
+  {id: 2, name: "Inactivo", color: "#ECECEB"},
+  {id: 3, name: "No Cumplido", color: "#FF978E"},
+  {id: 4, name: "No Estimado", color: "#FFCCA3"},
+  {id: 5, name: "Estimado", color: "#FFE7A3"},
+  {id: 6, name: "Cumplido real no validado", color: "#A3A6FF"},
+  {id: 7, name: "Cumplido real validado", color: "#A3F5FF"},
+  {id: 8, name: "No se puede pagar", color: "#FFA3FB"},
+  {id: 9, name: "Se puede pagar", color: "#E9FFA3"},
+  {id: 10, name: "Pagado", color: "#B7FFA3"}
 ]
 
 export const DATA = [
