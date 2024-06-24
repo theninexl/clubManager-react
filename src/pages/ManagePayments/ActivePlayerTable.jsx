@@ -278,26 +278,9 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const lastTotalObject = {
       accessorKey: 'total',
       header: 'Total',
-      // cell: info => info.getValue(),
+      cell: info => info.getValue(),
       // //footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row,'total'), 0),
-      // meta: {
-      //   subtractState,
-      //   insertSelectedCol,
-      //   insertSelectedRow,
-      //   insertSelectedAmount,
-      //   setInsertSelectedAmount,
-      //   setCellCopy,
-      //   // setAdvancePayCalc,
-      //   insertAmountError,
-      //   setInsertAmountError,
-      //   insertCanSave,
-      //   setInsertCanSave,
-      //   // rowSelected,
-      //   // setRowSelected,
-      //   setInsertState,
-      //   setSubtractState,
-      // },
-      // size: 125,
+      size: 125,
     }
 
   const getCommonPinningStyles = (column) => {
@@ -352,26 +335,21 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       });
       setColumnDefs(columnDefsCopy);
     } 
-    // else {
-    //   console.log('no añado a columnDefs porque el tamaño de columnDefs, ',columnDefs.length,' es IGUAL que la suma de dynamicData y infoForColums', (infoForColumnDefs.length + dynamicData.length) )
     // }
   },[infoForColumnDefs])
   //este añadirá la última columna de totales en última posición si no existe aún dentro
   useEffect(()=>{
-    console.log('columnDefs han cambiado');
+    // console.log('columnDefs han cambiado');
     const hasTotal = columnDefs.some(item => item.accessorKey == 'total');
-    if ((columnDefs.length === totalMonths+3)) {
+
+    if ((columnDefs.length === totalMonths+3) && hasTotal == false) {
+      const columnDefsCopy = [...columnDefs]
+      columnDefsCopy.push(lastTotalObject)
+      setColumnDefs(columnDefsCopy);
+    } else if (hasTotal == true){
+      //console.log('columnDefs ya tiene añadido total y seteo los datos para la tabla', columnDefs)
       setData(dynamicData);
     }
-
-    // if ((columnDefs.length === totalMonths+3) && hasTotal == false) {
-    //   const columnDefsCopy = [...columnDefs]
-    //   columnDefsCopy.push(lastTotalObject)
-    //   setColumnDefs(columnDefsCopy);
-    // } else if (hasTotal == true){
-    //   console.log('columnDefs ya tiene añadido total y seteo los datos para la tabla', columnDefs)
-    //   setData(dynamicData);
-    // }
   },[columnDefs])
 
   const memoizedColumns = useMemo(() => columnDefs, [data]);
@@ -409,6 +387,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     }
 
     if (tableInstance.getIsSomePageRowsSelected()) {
+      console.log('algo se ha seleccionado');
       sumaFilas()
     } else {
       sumaTodasFilas();
@@ -616,8 +595,10 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   })
 
   const sumaFilas = () => {
+    // console.log('entro en SumaFilas');
     const originalCopy = {...tableInstance.getSelectedRowModel().rows[0].original}
     const { Clausulas, Importe, ...rest } = originalCopy;
+    console.log("rest:", rest);
     let sumaFila = Object.values(rest).reduce((total, numero) => {
     const isNumber = Number.isInteger(numero.amount) ? numero.amount : 0;
       return total + isNumber
@@ -628,6 +609,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   }
 
   const sumaTodasFilas = () => {
+    // console.log('entro en SumaTodasFilas');
     if (data.length > 0) {
       let rowsSum = []
       tableInstance.getRowModel().rows.map(row => {
