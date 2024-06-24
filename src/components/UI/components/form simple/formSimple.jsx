@@ -78,7 +78,7 @@ export const LabelElement = ({ children, style, className, htmlFor, type, placeh
   );
 }
 
-export const LabelElementNumber = ({ children, style, className, htmlFor, placeholder, value, handleOnChange, required, disabled, readOnly, autoComplete, role }) => {
+export const LabelElementNumber = ({ children, style, className, htmlFor, placeholder, value, handleOnChange, required, disabled, readOnly, autoComplete, role, onBlur }) => {
   return (
     <label
       htmlFor={htmlFor}
@@ -100,6 +100,7 @@ export const LabelElementNumber = ({ children, style, className, htmlFor, placeh
         required={required}
         disabled={disabled}
         readOnly={readOnly}
+        onBlur={onBlur}
       />
     </label>
   );
@@ -136,7 +137,7 @@ export const LabelElementAssist = ({ children, style, className, htmlFor , type,
 }
 
 
-export const LabelElementNumberAssist = ({ children, style, className, htmlFor , placeholder, value, handleOnChange, required, disabled, readOnly, assistanceText,autoComplete, defaultValue, suffix }) => {
+export const LabelElementNumberAssist = ({ children, style, className, htmlFor , placeholder, value, handleOnChange, required, disabled, readOnly, assistanceText,autoComplete, defaultValue, suffix, onBlur }) => {
   return (
     <label
       htmlFor={htmlFor}
@@ -158,6 +159,7 @@ export const LabelElementNumberAssist = ({ children, style, className, htmlFor ,
         disabled={disabled}
         readOnly={readOnly}
         onValueChange={handleOnChange}
+        onBlur={onBlur}
       />
       <span className='assistance' aria-live='polite'>
         { assistanceText }

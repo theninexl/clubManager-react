@@ -255,7 +255,14 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     {
       accessorKey: 'Importe',
       header: 'Importe total',
-      cell: EditableCell,
+      cell: ({ row, column, table, getValue }) => (
+        <EditableCell
+          row={row}
+          column={column}
+          table={table}
+          getValue={getValue}
+        />
+      ),
       footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => total + row.getValue('Importe').amount, 0),
       meta: {
         editState,
@@ -271,7 +278,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const lastTotalObject = {
       accessorKey: 'total',
       header: 'Total',
-      cell: EditableCell,
+      cell: 'lala',
       // footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row,'total'), 0),
       meta: {
         subtractState,
@@ -434,7 +441,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     meta: {
       updateData: (rowIndex, column, value) => {
         console.log('update data en row:',rowIndex,', column:',column,', value:',value);
-        console.log('is value a NOT a number:', isNaN(value.amount));
+        // console.log('is value a NOT a number:', isNaN(value.amount));
         const valueNumber = isNaN(value.amount) ? value.amount : Number(value.amount);
         let newAmountData = [...data]
         if (column['id'].startsWith('months_')) {
@@ -514,11 +521,12 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       },
       newDeferedPayLine: (row, columnId, value) => {
         setInsertState(true);
-        // console.log('value que copio', value, row.getValue('Clausulas'), columnId.id)
+        console.log('value que copio', value)
         setInsertSelectedAmount(value.amount);
         const copyCell = [];
         copyCell["column"] = {id: columnId.id, index: columnId.getIndex()};
         copyCell["row"]= row.id;
+        copyCell["value"] = value;
         setCellCopy(copyCell);
         const newEmptyLine = [...emptyLine]
         newEmptyLine[0]["TipoClausula"] = 'Retraso';
