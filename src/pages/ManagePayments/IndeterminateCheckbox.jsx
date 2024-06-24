@@ -4,7 +4,6 @@ export function IndeterminateCheckbox({indeterminate, row, table, ...rest}) {
   const ref = useRef();
 
   useEffect(() => {
-    console.log('rest', rest)
     if (typeof indeterminate === 'boolean') {
       ref.current.indeterminate = !rest.checked && indeterminate
     }
@@ -13,34 +12,11 @@ export function IndeterminateCheckbox({indeterminate, row, table, ...rest}) {
 
  return (
   <>
-    { rest.checked ?
+    { table.getIsSomePageRowsSelected() == true ?
       <>
-      a
-      <input
-        type="checkbox"
-        name="selecCheckbox"
-        ref={ref}
-        style={{display: ''}}
-        {...rest}
-      />
-      </>
-      :
-      <>
-        b
-        <input
-          type="checkbox"
-          name="selecCheckbox"
-          ref={ref}
-          style={ row.original.flag_fixed_clausula == 1  ?  {} : {display: 'none'}}
-          {...rest}
-        />
-      </>
-    }
-    {/* { row.original.flag_fixed_clausula == 1 ?
-      <>
-        { row.index === table.getSelectedRowModel().rows[0].index ?               
+        { row.index === table.getSelectedRowModel().rows[0].index ? 
           <>
-            b<input
+            <input
               type="checkbox"
               name="selecCheckbox"
               ref={ref}
@@ -49,28 +25,26 @@ export function IndeterminateCheckbox({indeterminate, row, table, ...rest}) {
             />
           </>
           :
-          <>
-            c<input
-              type="checkbox"
-              name="selecCheckbox"
-              ref={ref}
-              style={{display: 'none'}}
-              {...rest}
-            />
-          </>
+          <input
+            type="checkbox"
+            name="selecCheckbox"
+            ref={ref}
+            style={{display: 'none'}}
+            {...rest}
+          />
         }
       </>
       :
       <>
-        a<input
+        <input
           type="checkbox"
           name="selecCheckbox"
           ref={ref}
-          style={ row.original.flag_fixed_clausula == 1  ?  {} : {display: 'none'}}
+          style={ row.index < 8  ?  {} : {display: 'none'}}
           {...rest}
         />
       </>
-    }     */}
+    }
   </>
  )
 }
