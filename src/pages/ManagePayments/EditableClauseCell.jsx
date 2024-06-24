@@ -1,24 +1,30 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { LabelElement } from "../../components/UI/components/form simple/formSimple";
 
-
-
-const EditableClauseCell = ({ getValue, row, table, onValueChange }) => {
+const EditableClauseCell = ({ initialClauseText, getValue, row, table, onValueChange }) => {
   const initialValue = getValue();
   const [value, setValue] = useState(initialValue);
+
   const [fieldTxt, setFieldTxt] = useState();
   const { updateClause } = table.options.meta;
+
+  const handleFieldTxtChange = useCallback(
+    (e) => { 
+      const text = e.target.value;
+      console.log('escribo');
+      setFieldTxt(text);
+      onValueChange(text);
+    }, [onValueChange]
+  )
 
   useEffect(()=> {
     setValue(initialValue)
   },[initialValue])
 
-  const handleFieldTxtChange = (e) => { 
-    console.log('escribo');
-    onValueChange(e.target.value);
-  }
+  useEffect(() => {
+    setFieldTxt(initialClauseText)
+  },[initialClauseText])
 
-  console.log('pintoEditableClauseCell');
 
   return (
     <>
@@ -46,17 +52,9 @@ const EditableClauseCell = ({ getValue, row, table, onValueChange }) => {
                     width: '100%',
                     height: '28px',
                   }}
-                  // value={table.options.state.clauseTxt}
+                  value={fieldTxt}
                   placeholder='Concepto'
                   handleOnChange={handleFieldTxtChange}
-                  // handleOnChange={(e) => {
-                  //   column.columnDef.meta.setClauseTxt(e.target.value)
-                    
-                  // }}
-                  // onBlur={() => {
-                  //   console.log('value', value);
-                  //   updateClause(row.index, column.id, value)
-                  // }}
                 ></LabelElement>
               </>         
             }

@@ -20,9 +20,10 @@ const ColorIcon = ({ Color }) => {
 }
 
 
-export const EditableCell = ({ getValue, row, column, table, }) => {
+export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCalc, onAdvancePayCalcChange }) => {
   const initialValue = getValue();
   const [value, setValue] = useState(initialValue)
+  const [advancePayCalc, setAdvancePayCalc] = useState();
   const { updateData, newSanctionLine, newAdvancePayLine, newDeferedPayLine, pasteCell } = table.options.meta;
 
   const STATUSES = [
@@ -46,6 +47,10 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
   useEffect(()=> {
     setValue(initialValue)
   },[initialValue])
+
+  useEffect(()=>{
+    setAdvancePayCalc(initialAdvancePayCalc)
+  },[initialAdvancePayCalc])
 
   return (
     <>
@@ -281,10 +286,10 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                               //setear celda bajo copiada con el nuevo calculo
                               let onChangeValue = {...value};
                               onChangeValue.amount = -Math.abs(values.formattedValue);
-                              updateData(row.index, table.options.state.cellCopy.column.id, onChangeValue);
+                              updateData(row.index, table.options.state.cellCopy.column, onChangeValue);
                               //setear la propia celda donde estoy cambiando 
                               onChangeValue.amount = values.formattedValue;
-                              updateData(row.index, column.id, onChangeValue);
+                              updateData(row.index, column, onChangeValue);
                             } else {
                               // console.log('no puede guardar')
                               // console.log('data no se puede guardar:', table.options.state.data)
@@ -312,24 +317,27 @@ export const EditableCell = ({ getValue, row, column, table, }) => {
                       >
                         <NumericFormat 
                           allowNegative={false}
-                          value={isNaN(table.options.state.advancePayCal) ? table.options.state.insertSelectedAmount : table.options.state.advancePayCalc}
-                          onValueChange={(values) => {                    
-                            const limit = Math.abs(column.columnDef.meta.insertSelectedAmount);
-                            //let newCalc = column.columnDef.meta.insertSelectedAmount - values.value;
-                            //console.log('newCalc', newCalc)
+                          value={advancePayCalc}
+                          // value={isNaN(table.options.state.advancePayCalc) ? table.options.state.insertSelectedAmount : table.options.state.advancePayCalc}
+                          onValueChange={(values) => {   
+                            console.log('AQUI');                 
+                            const limit = Math.abs(table.options.state.insertSelectedAmount);
+                            //let newCalc = table.options.state.insertSelectedAmount - values.value;
+                            // console.log('newCalc', newCalc)                            
                             //column.columnDef.meta.setAdvancePayCalc(values.value)
-                            // console.log('limit', limit) 
+                            onAdvancePayCalcChange(values.value)
+                            // console.log('limit', limit)                             
                             if (values.formattedValue !== '' && values.formattedValue <= limit) {
                               console.log('puede guardar')
                               column.columnDef.meta.setInsertCanSave(true);
                               //setear celda bajo copiada con el nuevo calculo
                               let onChangeValue = {...value};
                               onChangeValue.amount = -Math.abs(values.formattedValue);
-                              console.log('cellCopied', table.options.state.cellCopy)
-                              updateData(row.index, table.options.state.cellCopy.column.id, onChangeValue);
+                              updateData(row.index, table.options.state.cellCopy.column, onChangeValue);
                               //setear la propia celda donde estoy cambiando 
                               onChangeValue.amount = values.formattedValue;
-                              updateData(row.index, column.id, onChangeValue);
+                              // console.log('onChangeValue2',onChangeValue)
+                              updateData(row.index, column, onChangeValue);
                             } else {
                               console.log('no puede guardar')
                               column.columnDef.meta.setInsertCanSave(false);

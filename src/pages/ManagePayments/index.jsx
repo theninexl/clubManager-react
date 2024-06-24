@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { AsideMenu } from "../../components/AsideMenu";
 import { useGetData } from "../../hooks/useGetData";
 import { useSaveData } from "../../hooks/useSaveData";
+import { v4 as uuidv4 } from 'uuid';
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
 import { CentralBody, CentralBody__Header, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
 import { FormSimpleHrz, SelectIcon } from "../../components/UI/components/form simple/formSimple";
@@ -113,6 +114,7 @@ export default function ManagePaymentsPage () {
               <TitleBar__Tools>
                 <FormSimpleHrz>
                   <SelectIcon
+                    name='playerSelect'
                     style={{width:'250px'}}
                     onChange={(e) => {
                       if (e.target.value != '') {
@@ -134,6 +136,7 @@ export default function ManagePaymentsPage () {
                       ''
                       :
                       <SelectIcon
+                        name='contractSelect'
                         style={{marginLeft: '16px', width:'250px'}}
                         onChange={(e) => {
                           setActiveContractId(e.target.value)         
@@ -157,6 +160,7 @@ export default function ManagePaymentsPage () {
               <ActivePlayerTable
                 activePlayerId={activePlayerId}
                 activeContractId={activeContractId}
+                key={uuidv4()}
               />
             }
             {warningMsg &&

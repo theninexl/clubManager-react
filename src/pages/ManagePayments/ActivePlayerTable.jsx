@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable, } from "@tanstack/react-table"
 import { useSaveData } from "../../hooks/useSaveData";
 import { v4 as uuidv4 } from 'uuid';
@@ -52,10 +52,12 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const [cellPaste, setCellPaste] = useState([]);
   const [pastedCellState, setPastedCellState] = useState(false);
   const [insertSelectedAmount, setInsertSelectedAmount] = useState();
-  const [advancePayCalc, setAdvancePayCalc] = useState();
+  // const [advancePayCalc, setAdvancePayCalc] = useState();
+  const advancePayCalcRef = useRef();
   const [insertAmountError, setInsertAmountError] = useState();
   const [insertCanSave, setInsertCanSave] = useState(false);
-  const [clauseTxt, setClauseTxt] = useState()
+  // const [clauseTxt, setClauseTxt] = useState();
+  const clauseTxtRef = useRef();
 
   //pedir datos del contrato
   const getPayments = useSaveData();
@@ -116,7 +118,18 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     return keys.map(key => ({
       accessorKey: `months.${key.clave}`,
       header: key.valor,
-      cell: EditableCell,
+      cell: ({ row, column, table, getValue }) => (
+        <EditableCell
+          row={row}
+          column={column}
+          table={table}
+          getValue={getValue}
+          initialAdvancePayCalc={advancePayCalcRef.current != undefined ? advancePayCalcRef.current : table.options.state.insertSelectedAmount}          
+          onAdvancePayCalcChange={(newValue) => {
+            advancePayCalcRef.current = newValue;
+          }}
+        />
+      ),
       // cell: info => console.log(info),
       footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, `months_${key.clave}`), 0),
       meta: {
@@ -125,7 +138,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         insertSelectedRow,
         setInsertSelectedAmount,
         setCellCopy,
-        setAdvancePayCalc,
+        // setAdvancePayCalc,
         insertSelectedAmount,
         insertAmountError,
         setInsertAmountError,
@@ -230,16 +243,14 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
           column={column}
           table={table}
           getValue={getValue}
+          initialClauseText={clauseTxtRef.current != undefined ? clauseTxtRef.current : getValue}
           onValueChange={(newValue) => {
-            setClauseTxt(prev => ({...prev, newValue}))
+            clauseTxtRef.current = newValue;
           }}
         />
       ),
       footer: 'Total',
       size: 180,
-      meta: {
-        setClauseTxt,
-      } 
     },
     {
       accessorKey: 'Importe',
@@ -269,7 +280,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         insertSelectedAmount,
         setInsertSelectedAmount,
         setCellCopy,
-        setAdvancePayCalc,
+        // setAdvancePayCalc,
         insertAmountError,
         setInsertAmountError,
         insertCanSave,
@@ -355,7 +366,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     }
   },[columnDefs])
 
-  const memoizedColumns = useMemo(() => columnDefs, [columnDefs]);
+  const memoizedColumns = useMemo(() => columnDefs, [data]);
 
   useEffect (() => {
     console.log("data ha cambiado", data);
@@ -422,23 +433,26 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     getCoreRowModel: getCoreRowModel(),
     meta: {
       updateData: (rowIndex, column, value) => {
+        console.log('update data en row:',rowIndex,', column:',column,', value:',value);
+        console.log('is value a NOT a number:', isNaN(value.amount));
         const valueNumber = isNaN(value.amount) ? value.amount : Number(value.amount);
         let newAmountData = [...data]
         if (column['id'].startsWith('months_')) {
-          // const number = Number(column['id'].substring('months_'.length));
-          const number = monthNumber(column);
-          newAmountData[rowIndex].months[number] = { mes: column.columnDef.header, amount: valueNumber, status: value.status, flag_suma: value.flag_suma};
+           const number = monthNumber(column);
+           newAmountData[rowIndex].months[number] = { mes: value.mes, amount: valueNumber, status: value.status, flag_suma: value.flag_suma};
         } else {
           newAmountData[rowIndex][column.id] = { amount: valueNumber, status: value.status, flag_suma: value.flag_suma };
         }
         setData(newAmountData);
       },
-      updateClause: (rowIndex, columnId, value) => {
-        let newData = [...data]
-        newData[rowIndex][columnId] = value;
-        console.log(newData);
-        setData(newData);
-      },
+      // updateClause: (rowIndex, columnId, value) => {
+      //   console.log('updateClause:',value);
+        // setClauseTxt(value);
+        // let newData = [...data]
+        // newData[rowIndex][columnId] = value;
+        // console.log(newData);
+        // setData(newData);
+      // },
       deleteRow: (row) => {
         const newData = [...data];
         newData.splice(row,1);
@@ -449,7 +463,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       newSanctionLine: (row, columnId, value) => {
         setInsertState(true);
         setInsertSelectedAmount(value.amount);
-        console.log('celda que copio: row ',row.id,', col ',columnId.id,' value ',value)
+        // console.log('celda que copio: row ',row.id,', col ',columnId.id,' value ',value)
         const copyCell = [];
         copyCell["column"] = {id: columnId.id, index: columnId.getIndex()};
         copyCell["row"]= row.id;
@@ -464,11 +478,14 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         newEmptyLine[0]["Clausulas"] = '';
         const newValue = {...value}
         newValue.amount = -Math.abs(value.amount);
+        newValue.status = '';
         newValue.flag_suma = subtractState ? 1 : 0;
-        newEmptyLine[0][columnId.id] = newValue;
-        console.log('emptyLine que copio', newEmptyLine);
+        //necesito el numero de mes para modificar el objeto months dentro de la nueva linea
+        const monthNr = monthNumber(columnId);
+        newEmptyLine[0].months[monthNr] = newValue;
+        // console.log('emptyLine que copio', newEmptyLine);
         const newData = [...data, newEmptyLine[0]]
-        console.log('newData', newData);
+        // console.log('newData', newData);
         setData(newData);
         setPastedCellState(true);
         setInsertCanSave(true);
@@ -502,21 +519,23 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         const copyCell = [];
         copyCell["column"] = {id: columnId.id, index: columnId.getIndex()};
         copyCell["row"]= row.id;
-        copyCell["value"] = value;
-        // console.log('copyCell', copyCell)
         setCellCopy(copyCell);
         const newEmptyLine = [...emptyLine]
         newEmptyLine[0]["TipoClausula"] = 'Retraso';
         newEmptyLine[0]["Clausulas"] = '';
         const newValue = {...value}
         newValue.amount = -Math.abs(value.amount);
-        newEmptyLine[0][columnId.id] = newValue;
+        newValue.status = '';
+        //necesito el numero de mes para modificar el objeto months dentro de la nueva linea
+        const monthNr = monthNumber(columnId);
+        newEmptyLine[0].months[monthNr] = newValue;
         const newData = [...data, newEmptyLine[0]]
         setData(newData);
         setPasteState(true);
       },  
       pasteCell: (row, columnId) => {
         console.log('recibo en pasteCell row:',row,', columnId:',columnId);
+        console.log('insertSelectedAmount:', insertSelectedAmount)
         const pegoCelda = [];
         pegoCelda["column"] = {"id":columnId.id, "index": columnId.getIndex()};
         pegoCelda["row"]= row.id;
@@ -552,11 +571,12 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         setInsertSelectedCol();
         setAdvancePayState(false);
         setDeferredPayState(false);
-        setAdvancePayCalc();
+        // setAdvancePayCalc();
+        advancePayCalcRef.current = undefined;
         setCellCopy([]);
         setPasteState(false);
         setPastedCellState(false);
-        setClauseTxt();
+        clauseTxtRef.current = undefined;
       },   
     },
     state: {
@@ -571,13 +591,12 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       insertState,
       insertSelectedAmount,
       insertCanSave,
-      advancePayCalc,
+      // advancePayCalc,
       deferredPayState,
       cellCopy,
       pasteState,
       cellPaste,
       pastedCellState,
-      clauseTxt,
       rowSelectedIndex,
     },
     onColumnVisibilityChange: setColumnVisibility,
@@ -695,16 +714,21 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                 style={{ 
                   width: tableInstance.getTotalSize(), 
                 }}
+                key={uuidv4()}
               >
                 { tableInstance.getHeaderGroups().map(headerElement => {
                     return (                      
-                      <TableDataClsHead key={headerElement.id}>
+                      <TableDataClsHead 
+                      key={uuidv4()}
+                      // key={headerElement.id}
+                      >
                         <tr>
                           { headerElement.headers.map(columnElement => {
                             const { column } = columnElement;
                             return (
                               <TableDataClsHead__cell
-                              key={columnElement.id}
+                              key={uuidv4()}
+                              // key={columnElement.id}
                               colSpan={columnElement.colSpan}
                               className='tablecell-medium'
                               style={{ ...getCommonPinningStyles(column) }}
@@ -722,20 +746,20 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                     )
                   })
                 }
-                <TableDataClsBody>
+                <TableDataClsBody key={uuidv4()}>
                   { tableInstance.getRowModel().rows.map(rowElement => {
                     return (
                       <>
                         <TableDataClsBody__row key={uuidv4()}>
                           { rowElement.getVisibleCells().map((cellElement, index) => {
                             const { column } = cellElement;
-                            // console.log('visibleCells', rowElement.getVisibleCells().length)
                             return (
                               <>
                                 {index === rowElement.getVisibleCells().length - 1 ?
                                   <>
-                                    <TableDataClsBody__cell 
-                                      key={`suma${rowElement.id}`} 
+                                    <TableDataClsBody__cell
+                                      key={uuidv4()}
+                                      // key={`suma${rowElement.id}`} 
                                       colSpan='1'
                                       style={{ ...getCommonPinningStyles(column) }}
                                     >
@@ -746,8 +770,9 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                                   </>
                                   :
                                   <>
-                                    <TableDataClsBody__cell 
-                                      key={cellElement.id} 
+                                    <TableDataClsBody__cell
+                                      key={uuidv4()}
+                                      // key={cellElement.id} 
                                       colSpan='1'
                                       style={{ ...getCommonPinningStyles(column) }}
                                       >
@@ -767,14 +792,18 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                 {
                   tableInstance.getFooterGroups().map(footerElement => {
                     return (
-                      <TableDataClsHead key={footerElement.id}>
+                      <TableDataClsHead 
+                        key={uuidv4()}
+                        // key={footerElement.id}
+                        >
                         <tr>
                           { footerElement.headers.map(footerCol => {
                             const { column } = footerCol;
                             return (                        
                               <>
                                 <TableDataClsHead__cell
-                                  key={footerCol.id}
+                                  key={uuidv4()}
+                                  // key={footerCol.id}
                                   className='tablecell-medium'
                                   style={{ ...getCommonPinningStyles(column) }}
                                 >
@@ -795,10 +824,6 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                     )
                   })
                 }
-                
-
-
-                
               </TableDataCls>
             </div>
 
@@ -846,9 +871,10 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                   disabled={ insertCanSave ? false : true }
                   className={ insertCanSave ? 'cm-o-button-mouse--primary' : 'cm-o-button-mouse--inactive'}
                   onClick={() => {
-                    // const newData = [...data]
-                    // newData[newData.length-1]['Clausulas'] = clauseTxt + ' ' +newData[cellCopy.row]['Clausulas']+ ' ' +cellCopy.column.id;
-                    // setData(newData)                    
+                    console.log('cellCopy', cellCopy)
+                    const newData = [...data]
+                    newData[newData.length-1]['Clausulas'] = clauseTxtRef.current + ' ' +newData[cellCopy.row]['Clausulas']+ ' ' +cellCopy.value.mes;
+                    setData(newData)                    
                     tableInstance.options.meta.clearStates();
                   }}
                 >
@@ -856,10 +882,14 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                 </ButtonMouse>
                 <ButtonMouseGhost
                   onClick={() => {
-                    if (data.length > 8 ) {
+                    if (data.length > 1 ) {
+
                       const newData = [...data];
-                      newData.pop()
-                      setData(newData);
+                      const lastObject = newData[newData.length - 1];
+                      if ('flag_fixed_clausula' in lastObject && lastObject.flag_fixed_clausula === 0) {
+                        newData.pop();
+                        setData(newData);
+                      }
                     }
                     tableInstance.options.meta.clearStates();
                   }}
