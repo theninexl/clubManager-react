@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { DropDownMenu, DropdownItem } from "./DropDownMenu";
-import { STATUSES } from "./MOCK_DATA2";
 import { v4 as uuidv4 } from 'uuid';
-import { IconButtonSmallPrimary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
-import { SymbolContentCopy, SymbolPaste, SymbolSave } from "../../components/UI/objects/symbols";
+import { IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
+import { SymbolContentCopy, SymbolPaste } from "../../components/UI/objects/symbols";
 import { NumericFormat } from "react-number-format";
 
 const ColorIcon = ({ Color }) => {

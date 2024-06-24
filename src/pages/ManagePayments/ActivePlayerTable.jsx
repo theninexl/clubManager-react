@@ -278,26 +278,26 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const lastTotalObject = {
       accessorKey: 'total',
       header: 'Total',
-      cell: 'lala',
-      // footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row,'total'), 0),
-      meta: {
-        subtractState,
-        insertSelectedCol,
-        insertSelectedRow,
-        insertSelectedAmount,
-        setInsertSelectedAmount,
-        setCellCopy,
-        // setAdvancePayCalc,
-        insertAmountError,
-        setInsertAmountError,
-        insertCanSave,
-        setInsertCanSave,
-        // rowSelected,
-        // setRowSelected,
-        setInsertState,
-        setSubtractState,
-      },
-      size: 125,
+      // cell: info => info.getValue(),
+      // //footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row,'total'), 0),
+      // meta: {
+      //   subtractState,
+      //   insertSelectedCol,
+      //   insertSelectedRow,
+      //   insertSelectedAmount,
+      //   setInsertSelectedAmount,
+      //   setCellCopy,
+      //   // setAdvancePayCalc,
+      //   insertAmountError,
+      //   setInsertAmountError,
+      //   insertCanSave,
+      //   setInsertCanSave,
+      //   // rowSelected,
+      //   // setRowSelected,
+      //   setInsertState,
+      //   setSubtractState,
+      // },
+      // size: 125,
     }
 
   const getCommonPinningStyles = (column) => {
@@ -360,17 +360,18 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   useEffect(()=>{
     console.log('columnDefs han cambiado');
     const hasTotal = columnDefs.some(item => item.accessorKey == 'total');
-
-    if ((columnDefs.length === totalMonths+3) && hasTotal == false) {
-      // console.log('tamaño dynamicData:', dynamicData)
-      // console.log('añado key de total');
-      const columnDefsCopy = [...columnDefs]
-      columnDefsCopy.push(lastTotalObject)
-      setColumnDefs(columnDefsCopy);
-    } else if (hasTotal == true){
-      // console.log('ya tiene añadido total y seteo los datos para la tabla')
+    if ((columnDefs.length === totalMonths+3)) {
       setData(dynamicData);
     }
+
+    // if ((columnDefs.length === totalMonths+3) && hasTotal == false) {
+    //   const columnDefsCopy = [...columnDefs]
+    //   columnDefsCopy.push(lastTotalObject)
+    //   setColumnDefs(columnDefsCopy);
+    // } else if (hasTotal == true){
+    //   console.log('columnDefs ya tiene añadido total y seteo los datos para la tabla', columnDefs)
+    //   setData(dynamicData);
+    // }
   },[columnDefs])
 
   const memoizedColumns = useMemo(() => columnDefs, [data]);
