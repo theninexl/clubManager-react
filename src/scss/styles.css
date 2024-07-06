@@ -369,6 +369,135 @@ strong {
   text-align: right;
 }
 
+.cm-l-tabledata__row input[type=text], .cm-l-tabledata__row input[type=number], .cm-l-tabledata__row input[type=email], .cm-l-tabledata__row input[type=password], .cm-l-tabledata__row input[type=date], .cm-l-tabledata__rowinput[type=text], .cm-l-tabledata__rowinput[type=number], .cm-l-tabledata__rowinput[type=email], .cm-l-tabledata__rowinput[type=password], .cm-l-tabledata__rowinput[type=date] {
+  border: 1px solid rgba(44, 50, 95, 0.5);
+  border-radius: 8px;
+  color: getcolor(primaryLight);
+  height: 36px;
+  text-indent: 12px;
+  font-size: 14px;
+  font-size: 1.4rem;
+  line-height: 24px;
+  line-height: 2.4rem;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 400;
+  font-stretch: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.cm-l-tabledata__row input[type=text]:focus, .cm-l-tabledata__row input[type=text]:focus-visible, .cm-l-tabledata__row input[type=text]:active, .cm-l-tabledata__row input[type=number]:focus, .cm-l-tabledata__row input[type=number]:focus-visible, .cm-l-tabledata__row input[type=number]:active, .cm-l-tabledata__row input[type=email]:focus, .cm-l-tabledata__row input[type=email]:focus-visible, .cm-l-tabledata__row input[type=email]:active, .cm-l-tabledata__row input[type=password]:focus, .cm-l-tabledata__row input[type=password]:focus-visible, .cm-l-tabledata__row input[type=password]:active, .cm-l-tabledata__row input[type=date]:focus, .cm-l-tabledata__row input[type=date]:focus-visible, .cm-l-tabledata__row input[type=date]:active, .cm-l-tabledata__rowinput[type=text]:focus, .cm-l-tabledata__rowinput[type=text]:focus-visible, .cm-l-tabledata__rowinput[type=text]:active, .cm-l-tabledata__rowinput[type=number]:focus, .cm-l-tabledata__rowinput[type=number]:focus-visible, .cm-l-tabledata__rowinput[type=number]:active, .cm-l-tabledata__rowinput[type=email]:focus, .cm-l-tabledata__rowinput[type=email]:focus-visible, .cm-l-tabledata__rowinput[type=email]:active, .cm-l-tabledata__rowinput[type=password]:focus, .cm-l-tabledata__rowinput[type=password]:focus-visible, .cm-l-tabledata__rowinput[type=password]:active, .cm-l-tabledata__rowinput[type=date]:focus, .cm-l-tabledata__rowinput[type=date]:focus-visible, .cm-l-tabledata__rowinput[type=date]:active {
+  border-color: #2C325F;
+  border-width: 2px;
+  outline: none;
+}
+.cm-l-tabledata__row input[type=text]:invalid, .cm-l-tabledata__row input[type=text]:focus:invalid, .cm-l-tabledata__row input[type=number]:invalid, .cm-l-tabledata__row input[type=number]:focus:invalid, .cm-l-tabledata__row input[type=email]:invalid, .cm-l-tabledata__row input[type=email]:focus:invalid, .cm-l-tabledata__row input[type=password]:invalid, .cm-l-tabledata__row input[type=password]:focus:invalid, .cm-l-tabledata__row input[type=date]:invalid, .cm-l-tabledata__row input[type=date]:focus:invalid, .cm-l-tabledata__rowinput[type=text]:invalid, .cm-l-tabledata__rowinput[type=text]:focus:invalid, .cm-l-tabledata__rowinput[type=number]:invalid, .cm-l-tabledata__rowinput[type=number]:focus:invalid, .cm-l-tabledata__rowinput[type=email]:invalid, .cm-l-tabledata__rowinput[type=email]:focus:invalid, .cm-l-tabledata__rowinput[type=password]:invalid, .cm-l-tabledata__rowinput[type=password]:focus:invalid, .cm-l-tabledata__rowinput[type=date]:invalid, .cm-l-tabledata__rowinput[type=date]:focus:invalid {
+  border-color: #2C325F;
+  border-width: 2px;
+  outline: none;
+}
+.cm-l-tabledata__row input[type=text]:-moz-read-only, .cm-l-tabledata__row input[type=number]:-moz-read-only, .cm-l-tabledata__row input[type=email]:-moz-read-only, .cm-l-tabledata__row input[type=password]:-moz-read-only, .cm-l-tabledata__row input[type=date]:-moz-read-only, .cm-l-tabledata__rowinput[type=text]:-moz-read-only, .cm-l-tabledata__rowinput[type=number]:-moz-read-only, .cm-l-tabledata__rowinput[type=email]:-moz-read-only, .cm-l-tabledata__rowinput[type=password]:-moz-read-only, .cm-l-tabledata__rowinput[type=date]:-moz-read-only {
+  border: 2px solid #E1E1E1;
+  color: rgba(69, 69, 72, 0.5);
+}
+.cm-l-tabledata__row input[type=text]:read-only, .cm-l-tabledata__row input[type=number]:read-only, .cm-l-tabledata__row input[type=email]:read-only, .cm-l-tabledata__row input[type=password]:read-only, .cm-l-tabledata__row input[type=date]:read-only, .cm-l-tabledata__rowinput[type=text]:read-only, .cm-l-tabledata__rowinput[type=number]:read-only, .cm-l-tabledata__rowinput[type=email]:read-only, .cm-l-tabledata__rowinput[type=password]:read-only, .cm-l-tabledata__rowinput[type=date]:read-only {
+  border: 2px solid #E1E1E1;
+  color: rgba(69, 69, 72, 0.5);
+}
+.cm-l-tabledata__row input[type=text]:read-only::-moz-placeholder, .cm-l-tabledata__row input[type=number]:read-only::-moz-placeholder, .cm-l-tabledata__row input[type=email]:read-only::-moz-placeholder, .cm-l-tabledata__row input[type=password]:read-only::-moz-placeholder, .cm-l-tabledata__row input[type=date]:read-only::-moz-placeholder, .cm-l-tabledata__rowinput[type=text]:read-only::-moz-placeholder, .cm-l-tabledata__rowinput[type=number]:read-only::-moz-placeholder, .cm-l-tabledata__rowinput[type=email]:read-only::-moz-placeholder, .cm-l-tabledata__rowinput[type=password]:read-only::-moz-placeholder, .cm-l-tabledata__rowinput[type=date]:read-only::-moz-placeholder {
+  color: #E1E1E1;
+}
+.cm-l-tabledata__row input[type=text]:-moz-read-only::placeholder, .cm-l-tabledata__row input[type=number]:-moz-read-only::placeholder, .cm-l-tabledata__row input[type=email]:-moz-read-only::placeholder, .cm-l-tabledata__row input[type=password]:-moz-read-only::placeholder, .cm-l-tabledata__row input[type=date]:-moz-read-only::placeholder, .cm-l-tabledata__rowinput[type=text]:-moz-read-only::placeholder, .cm-l-tabledata__rowinput[type=number]:-moz-read-only::placeholder, .cm-l-tabledata__rowinput[type=email]:-moz-read-only::placeholder, .cm-l-tabledata__rowinput[type=password]:-moz-read-only::placeholder, .cm-l-tabledata__rowinput[type=date]:-moz-read-only::placeholder {
+  color: #E1E1E1;
+}
+.cm-l-tabledata__row input[type=text]:read-only::placeholder, .cm-l-tabledata__row input[type=number]:read-only::placeholder, .cm-l-tabledata__row input[type=email]:read-only::placeholder, .cm-l-tabledata__row input[type=password]:read-only::placeholder, .cm-l-tabledata__row input[type=date]:read-only::placeholder, .cm-l-tabledata__rowinput[type=text]:read-only::placeholder, .cm-l-tabledata__rowinput[type=number]:read-only::placeholder, .cm-l-tabledata__rowinput[type=email]:read-only::placeholder, .cm-l-tabledata__rowinput[type=password]:read-only::placeholder, .cm-l-tabledata__rowinput[type=date]:read-only::placeholder {
+  color: #E1E1E1;
+}
+.cm-l-tabledata__row input[type=text]:-internal-autofill-selected, .cm-l-tabledata__row input[type=number]:-internal-autofill-selected, .cm-l-tabledata__row input[type=email]:-internal-autofill-selected, .cm-l-tabledata__row input[type=password]:-internal-autofill-selected, .cm-l-tabledata__row input[type=date]:-internal-autofill-selected, .cm-l-tabledata__rowinput[type=text]:-internal-autofill-selected, .cm-l-tabledata__rowinput[type=number]:-internal-autofill-selected, .cm-l-tabledata__rowinput[type=email]:-internal-autofill-selected, .cm-l-tabledata__rowinput[type=password]:-internal-autofill-selected, .cm-l-tabledata__rowinput[type=date]:-internal-autofill-selected {
+  background-color: #FFFFFF !important;
+}
+.cm-l-tabledata__row input[type=radio], .cm-l-tabledata__row input[type=checkbox] {
+  /* Add if not using autoprefixer */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+       appearance: none;
+  /* For iOS < 15 to remove gradient background */
+  background-color: #fff;
+  /* Not removed via appearance */
+  margin: 0;
+  border: 1px solid rgba(44, 50, 95, 0.5);
+  border-radius: 8px;
+  height: 24px;
+  width: 24px;
+  display: grid;
+  place-content: center;
+}
+.cm-l-tabledata__row input[type=radio]::before, .cm-l-tabledata__row input[type=checkbox]::before {
+  content: "check";
+  border-radius: 8px;
+  box-shadow: inset 24px 24px #0FCC81;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 24px;
+  width: 24px;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+}
+.cm-l-tabledata__row input[type=radio]:checked::before, .cm-l-tabledata__row input[type=checkbox]:checked::before {
+  color: #454548;
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  transform: scale(1);
+}
+.cm-l-tabledata__row__radio-toggle {
+  border: 1px solid rgba(44, 50, 95, 0.5);
+  background-color: #FFFFFF;
+  border-radius: 8px;
+  position: relative;
+  height: 32px;
+  width: 64px;
+}
+.cm-l-tabledata__row__radio-toggle input[type=checkbox] {
+  border: 1px solid #E1E1E1;
+  background-color: #E1E1E1;
+  height: 32px;
+  width: 32px;
+  right: 0;
+  position: absolute;
+  transition: transform 0.4s cubic-bezier(0.45, 1.8, 0.5, 0.75);
+}
+.cm-l-tabledata__row__radio-toggle input[type=checkbox]::before {
+  right: 0;
+  position: absolute;
+  transform: scale(1);
+  opacity: 0;
+}
+.cm-l-tabledata__row__radio-toggle input[type=checkbox]:checked::before {
+  content: "check";
+  border-radius: 8px;
+  box-shadow: inset 0 32px #0FCC81;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 32px;
+  width: 32px;
+  opacity: 1;
+}
+.cm-l-tabledata__row__radio-toggle input[type=checkbox]:checked {
+  transform: translateX(-32px);
+  position: absolute;
+}
+
 .cm-l-headtool {
   display: flex;
   flex-flow: row nowrap;
@@ -1464,7 +1593,7 @@ strong {
   font-size: 14px !important;
 }
 
-.cm-o-overlay, .cm-c-overlay--notifications, .cm-c-overlay--activeUser {
+.cm-o-overlay, .cm-c-overlay--notifications, .cm-c-overlay--activeUser, .cm-c-overlay--settingsOptions {
   border: 2px solid #E1E1E1;
   border-radius: 8px;
   box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.1);
@@ -2157,7 +2286,7 @@ strong {
   left: 0;
 }
 
-.cm-c-overlay--notifications, .cm-c-overlay--activeUser {
+.cm-c-overlay--notifications, .cm-c-overlay--activeUser, .cm-c-overlay--settingsOptions {
   background-color: #FFFFFF;
   position: absolute;
   z-index: 99;
@@ -2168,6 +2297,9 @@ strong {
 }
 .cm-c-overlay--activeUser {
   right: 142px;
+}
+.cm-c-overlay--settingsOptions {
+  right: 48px;
 }
 
 .cm-c-accordion__button {

@@ -5,12 +5,14 @@ import { useSaveData } from "../../hooks/useSaveData";
 import { v4 as uuidv4 } from 'uuid';
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
 import { CentralBody, CentralBody__Header, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
-import { FormSimpleHrz, SelectIcon } from "../../components/UI/components/form simple/formSimple";
-import { ActivePlayerTable } from "./ActivePlayerTable";
+import { FormSimpleHrz, LabelElement, LabelElementToggle, SelectIcon } from "../../components/UI/components/form simple/formSimple";
+import { TableCellLong, TableCellMedium, TableCellShort, TableDataHeader, TableDataRow, TableDataWrapper } from "../../components/UI/layout/tableData";
+import { IconButtonSmallSecondary } from "../../components/UI/objects/buttons";
+import { SymbolSave } from "../../components/UI/objects/symbols";
 
 
 
-export default function ManagePaymentsPage () {
+export default function SettingsClausesPage () {
 
   //estados locales
   const [allPlayers, setAllPlayers] = useState([]);
@@ -18,8 +20,9 @@ export default function ManagePaymentsPage () {
   const [warningMsg, setWarningMsg] = useState('Selecciona un jugador del desplegable para comenzar');
   const [activePlayerId, setActivePlayerId] = useState();
   const [activeContractId, setActiveContractId] = useState();
-  const [activePlayerDetails, setActivePlayerDetails] = useState()
-  const [activePlayerContracts, setActivePlayerContracts] = useState()
+  const [activePlayerDetails, setActivePlayerDetails] = useState();
+  const [activePlayerContracts, setActivePlayerContracts] = useState();
+  const [dataClauses,setDataClauses] = useState();
 
   //pedir todos los jugadores
   const { responseGetData } = useGetData('players/getAll',{search:'',pagenumber:1,rowspage:9999})
@@ -77,11 +80,15 @@ export default function ManagePaymentsPage () {
     if (activeContractId === undefined || activeContractId === '') {
       if (activePlayerId === undefined || activePlayerId === '' || activePlayerId == 0) {
         setWarningMsg('Selecciona un jugador para comenzar');
+        setErrorMsg(null);
       } else {
         setWarningMsg('Selecciona un contrato para mostrar la tabla de pagos');
+        setErrorMsg(null);
       }
     } else {
+      getClausesList(activeContractId);
       setWarningMsg(null);
+      setErrorMsg(null);
     }
   },[activeContractId])
 
@@ -89,6 +96,45 @@ export default function ManagePaymentsPage () {
     setActivePlayerId();
     setActiveContractId();
   },[])
+
+  //pedir datos clausulas
+  const getDataClauses = useSaveData();
+
+  const getClausesList = (activeContractId) => {
+    getDataClauses.uploadData('config/getClausulas',{'id_contrato':activeContractId})
+  }
+
+  useEffect(()=>{
+    if(getDataClauses.responseUpload) {
+      // console.log(getDataClauses.responseUpload);
+      if(getDataClauses.responseUpload.status == "ok") {
+        if (Object.keys(getDataClauses.responseUpload.data).length > 0) {
+          setDataClauses(getDataClauses.responseUpload.data);
+          setErrorMsg(null);
+        }
+        else {
+          setDataClauses()
+          setErrorMsg('No hay datos para el contrato seleccionado, por favor selecciona otro contrato u otro jugador');
+        }
+      }
+    }
+  },[getDataClauses.responseUpload])
+
+  //actualizar una clausula
+  const updateClause = useSaveData();
+
+  const handleUpdateClause = (clauseid, estimation, date) => {
+    updateClause.uploadData('/config/updateClausula',{'id_contrato':activeContractId, 'id_clausula':clauseid, 'flag_estimacion_hipo':estimation, 'fch_estimada_complecion':date })
+  }
+
+  useEffect(()=>{
+    if (updateClause.responseUpload) {
+      if (updateClause.responseUpload.status == "ok") {
+        setDataClauses();
+        getClausesList(activeContractId);
+      }
+    }
+  },[updateClause.responseUpload])
 
 
   return (
@@ -101,13 +147,10 @@ export default function ManagePaymentsPage () {
           <HeadContent>
             <HeadContentTitleBar>
               <TitleBar__Title>
-                <TitleBar__TitleAvatar
-                  avatarText='Calendario\nPagos'>
-                  { (!activePlayerDetails) ?
-                    <>Calendario de pagos</> 
-                    : <> {`${activePlayerDetails?.desc_nombre} ${activePlayerDetails?.desc_apellido1}`}</>
-                  }
-                </TitleBar__TitleAvatar>
+              { (!activePlayerDetails) ?
+                <>Configuración de Clausulas</> 
+                : <> {`${activePlayerDetails?.desc_nombre} ${activePlayerDetails?.desc_apellido1}`}</>
+              }
               </TitleBar__Title>
               <TitleBar__Tools>
                 <FormSimpleHrz>
@@ -153,13 +196,65 @@ export default function ManagePaymentsPage () {
           </HeadContent>
 
           <CentralBody>
-            <CentralBody__Header>Tabla de pagos</CentralBody__Header>
-            {(activePlayerId && activePlayerId != 0 && activeContractId != undefined)  &&
-              <ActivePlayerTable
-                activePlayerId={activePlayerId}
-                activeContractId={activeContractId}
-                key={uuidv4()}
-              />
+            <CentralBody__Header>Lista cláusulas</CentralBody__Header>
+            {(activePlayerId && activePlayerId != 0 && activeContractId != undefined && dataClauses)  &&
+               <TableDataWrapper className='cm-u-spacer-mb-huge'>
+               <TableDataHeader>
+                 <TableCellLong>Descripción</TableCellLong>
+                 <TableCellMedium>Bonus/Prima</TableCellMedium>
+                 <TableCellMedium>Beneficiario</TableCellMedium>
+                 <TableCellMedium>Importe</TableCellMedium>
+                 <TableCellMedium className='cm-u-centerText'>Estimado</TableCellMedium>
+                 <TableCellMedium>Fecha estimación</TableCellMedium>
+                 <TableCellShort>Guardar</TableCellShort>
+               </TableDataHeader>
+               <div>
+                 {
+                   dataClauses?.map((item,index) => {                     
+                     return (
+                       <TableDataRow key={item.id_clausula} >
+                         <TableCellLong>{item.desc_alias}</TableCellLong>
+                         <TableCellMedium>{item.bonus_prima}</TableCellMedium>
+                         <TableCellMedium>{item.beneficiario}</TableCellMedium>
+                         <TableCellMedium>{item.num_importe}€</TableCellMedium>
+                         <TableCellMedium className='cm-u-centerText'>
+                          <LabelElementToggle
+                            htmlFor='ClauseEstimation'
+                            checked={(item.flag_estimacion_hipo === 1 || item.flag_estimacion_hipo === '1' || item.flag_estimacion_hipo === true) ? 'checked':''}
+                            handleOnChange={e => {
+                              const checked = e.target.checked === true ? true : false;  
+                              const dataClauseUpdate = [...dataClauses];
+                              dataClauseUpdate[index]['flag_estimacion_hipo'] = checked;
+                              setDataClauses(dataClauseUpdate);
+                            }}
+                            />
+                         </TableCellMedium>
+                         <TableCellMedium>
+                          <LabelElement
+                            htmlFor='ClauseEstimationDate'
+                            type='date'
+                            autoComplete='off'
+                            format={'dt-mm-yyyy'}
+                            value={item.fch_estimada_complecion}
+                            handleOnChange={e => {
+                              const dataClauseUpdate = [...dataClauses];
+                              dataClauseUpdate[index]['fch_estimada_complecion'] = e.target.value;
+                              setDataClauses(dataClauseUpdate);
+                            }}
+                          />
+                         </TableCellMedium>
+                         <TableCellShort className='cm-u-centerText'>
+                          <IconButtonSmallSecondary
+                            onClick={() => handleUpdateClause(item.id_clausula,item.flag_estimacion_hipo,item.fch_estimada_complecion)}>
+                            <SymbolSave />
+                          </IconButtonSmallSecondary>
+                         </TableCellShort>
+                       </TableDataRow>
+                     );
+                   })
+                 }
+                 </div>
+             </TableDataWrapper>
             }
             {warningMsg &&
               <div  className='cm-u-centerText'>

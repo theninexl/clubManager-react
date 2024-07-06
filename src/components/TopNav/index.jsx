@@ -5,7 +5,7 @@ import { useGetData } from "../../hooks/useGetData"
 import { Navbar, NavbarContentLeft, NavbarContentRight, NavbarLinksHrz, NavbarLinksTextBtnSmall } from "../UI/components/navbar/navbar";
 import { LogoShield } from "../UI/objects/Logo";
 import { IconButtonSmallPrimary } from "../UI/objects/buttons";
-import { SymbolGroup, SymbolNotifications } from "../UI/objects/symbols";
+import { SymbolGroup, SymbolNotifications, SymbolSettings } from "../UI/objects/symbols";
 import { RegularContainer } from "../UI/layout/containers";
 import { RegularHeader } from "../UI/layout/headers";
 import { SelectIcon } from "../UI/components/form simple/formSimple";
@@ -25,6 +25,7 @@ export default function TopNav () {
   //estados locales
   const [userBoxOpen, setUserBoxOpen] = useState(false);
   const [headerEntities, setHeaderEntities] = useState();
+  const [settingsBoxOpen, setSettingsBoxOpen] = useState(false);
   //leer pathname actual y manejar navegacion
   const path = useLocation().pathname;
   const navigate = useNavigate();
@@ -43,8 +44,9 @@ export default function TopNav () {
         context.setAccount({});
         navigate('/login');
       } else if (getNotifications.responseGetData?.data?.status == 'ok') {
+        //console.log('notificacionesa', getNotifications.responseGetData)
         context.setNotifications(getNotifications.responseGetData.data.data);
-        const unReadNotifs = context.notifications.filter(notif => notif.leido === false);
+        const unReadNotifs = context.notifications.filter(notif => (notif.flag_leido === false || notif.flag_leido === null));
         context.setUnreadNotifications(unReadNotifs.length)
       }
     }
@@ -73,7 +75,7 @@ export default function TopNav () {
       return (
         <div className={userBoxOpen ? 'cm-c-overlay--activeUser' : 'cm-u-inactive'}>
           <Link 
-            className='cm-o-overlay__notification'
+            className='cm-o-overlay__option'
             onClick={handleSignOut}>
             <div className='notification--text'>Salir</div>
           </Link>
@@ -113,6 +115,40 @@ export default function TopNav () {
         <SymbolGroup />
       </IconButtonSmallPrimary>
     );
+  }
+
+  //manejar click en el boton de usuario
+  const handleSettingsBox = (e) => {
+    e.preventDefault();
+    setSettingsBoxOpen(!settingsBoxOpen);
+  }
+
+  //manejar apertura caja de logout
+  const renderSettingsBox = () => {
+    if (settingsBoxOpen) {
+      return (
+        <div className={settingsBoxOpen ? 'cm-c-overlay--settingsOptions' : 'cm-u-inactive'}>
+          <Link 
+            className='cm-o-overlay__option'
+            onClick={(e)=>{
+              e.preventDefault();
+              navigate('/settings-irpf');
+              setSettingsBoxOpen(!setSettingsBoxOpen);
+            }}>
+            <div className='notification--text'>Conf. IRPF</div>
+          </Link>
+          <Link 
+            className='cm-o-overlay__option'
+            onClick={(e)=>{
+              e.preventDefault();
+              navigate('/settings-clauses');
+              setSettingsBoxOpen(!setSettingsBoxOpen);
+            }}>
+            <div className='notification--text'>Conf. Clausulas</div>
+          </Link>
+        </div>
+      );
+    }
   }
 
   //manejar enlace boton notificaciones
@@ -197,12 +233,20 @@ export default function TopNav () {
                 {renderManageUsersBtn()}
               </li>
               <li>
+                <IconButtonSmallPrimary
+                  className={settingsBoxOpen ? 'active' : ''}
+                  onClick={handleSettingsBox} >
+                  <SymbolSettings/>
+                </IconButtonSmallPrimary>
+              </li>
+              <li>
                 {renderNotificationsBtn()}
               </li>
             </NavbarLinksHrz>
           </NavbarContentRight>
         </Navbar>
         {renderLogoutBox()}
+        {renderSettingsBox()}
       </RegularContainer>
     </RegularHeader>
   );

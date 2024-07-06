@@ -102,3 +102,9 @@ export const SymbolSearch = () => {
     <span className='material-symbols-outlined'>search</span>
   );
 }
+
+export const SymbolSettings = () => {
+  return (
+    <span className='material-symbols-outlined'>settings</span>
+  );
+}

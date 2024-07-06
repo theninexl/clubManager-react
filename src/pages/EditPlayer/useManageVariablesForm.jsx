@@ -18,7 +18,7 @@ export const useManageVariablesForm = (form, idJugador) => {
   }
   useEffect(()=>{
     if (getVariableCombos.responseUpload) {     
-    //console.log('variablescombos', getVariableCombos.responseUpload);
+    // console.log('variablescombos', getVariableCombos.responseUpload);
     editPlayerContext.setVariableCombos(getVariableCombos.responseUpload);
     }
   },[getVariableCombos.responseUpload])
@@ -130,13 +130,13 @@ export const useManageVariablesForm = (form, idJugador) => {
     const recursiveBlocksVal = document.getElementById('recursiveBlocks').checked;
     
     const formData = new FormData(form.current);
-    const amortizableVal = document.getElementById('amortizable').checked;
+    // const amortizableVal = document.getElementById('amortizable').checked;
     //const bonusPrimaVal = document.getElementById('bonus_prima').checked;
     const expresiones = editPlayerContext.variableExpressions;
     //procesar expresiones para quitar las condiciones a aquellas que no tengan por ser tipo prima
     const findNoComb = expresiones.filter(item => item.bonus_prima !== 1);
-    console.log('findNoComb', findNoComb);
-    console.log('expresiones', expresiones)
+    // console.log('findNoComb', findNoComb);
+    // console.log('expresiones', expresiones)
     const newExpresiones = [...expresiones]
     findNoComb.map(item => {
       newExpresiones[item.id_ExprComb -1]['condiciones'] = []
@@ -150,9 +150,10 @@ export const useManageVariablesForm = (form, idJugador) => {
       tipo_importe: formData.get('tipo_importe'),
       fecha_desde: formData.get('dateSince'),
       fecha_hasta: formData.get('dateTo'),
-      amortizable: amortizableVal ? 1 : 0,
+      // amortizable: amortizableVal ? 1 : 0,
       num_importe: formData.get('variableAmount'),
       id_beneficiario: formData.get('variableBeneficiary'),
+      id_anexo: formData.get('variableAnexoVI'),
     }
 
     const dataSent = {
@@ -161,7 +162,7 @@ export const useManageVariablesForm = (form, idJugador) => {
     }
 
     // console.log('variable que guardo', data);
-    console.log('variable que mando', dataSent);
+    // console.log('variable que mando', dataSent);
     saveClausula.uploadData('players/createClausula', dataSent);
     // setSavedVariables([...savedVariables, dataSent]);    
   }

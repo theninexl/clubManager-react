@@ -1,11 +1,20 @@
 import { useEffect, useRef } from "react"
 
-export function IndeterminateCheckbox({indeterminate, row, table, ...rest}) {
+export function IndeterminateCheckbox({indeterminate, row, table, onRowSelection, ...rest}) {
   const ref = useRef();
 
   useEffect(() => {
     if (typeof indeterminate === 'boolean') {
       ref.current.indeterminate = !rest.checked && indeterminate
+    }
+
+    if (row.getIsSelected() === true && ref.current.checked == true) {
+      onRowSelection(row.index, row.original)      
+    } else {
+      if (!table.getIsSomePageRowsSelected()) {
+        // console.log('no hay nada seleccionado');
+        onRowSelection(null, null)    
+      } 
     }
   }, [ref, indeterminate])
 

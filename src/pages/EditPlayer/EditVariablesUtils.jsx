@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useGlobalContext } from "../../providers/globalContextProvider";
 import { useEditPlayerDataContext } from "../../providers/EditPlayeProvider";
 import { TableCellLong, TableCellMedium, TableCellShort, TableDataHeader, TableDataRow } from "../../components/UI/layout/tableData"
@@ -6,7 +7,7 @@ import { SymbolAdd, SymbolDelete } from "../../components/UI/objects/symbols";
 import { SimpleAccordion, SimpleAccordionContent, SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
 import { HeadContentTitleBar, TitleBar__Title, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
 import { FormSimplePanelRow, LabelElement, LabelElementNumberAssist, LabelElementToggle, LabelElementToggle2SidesPanel, LabelSelectElement, LabelSelectShorterElement, SelectIconShorter } from "../../components/UI/components/form simple/formSimple";
-import { useEffect, useState } from "react";
+
 
 export const ListSelectedContract = () => {
   const editPlayerContext = useEditPlayerDataContext();
@@ -397,11 +398,23 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
             </LabelElement>
           </FormSimplePanelRow>
           <FormSimplePanelRow>
+            <LabelSelectElement
+              htmlFor='variableAnexoVI'
+              labelText='Anexo VI'>
+              <option value=''>Selecciona</option>
+              { editPlayerContext.variableCombos.anexoVI.recordset?.map((item) => {
+                    return (
+                      <option key={item.id_anexo} value={item.id_anexo}>{item.desc_anexo}</option>
+                    );
+                })}
+            </LabelSelectElement>
+          </FormSimplePanelRow>
+          {/* <FormSimplePanelRow>
             <LabelElementToggle
                 htmlFor='amortizable' >
                 Amortizable
               </LabelElementToggle>
-            </FormSimplePanelRow>
+            </FormSimplePanelRow> */}
           <FormSimplePanelRow
             className='cm-u-centerText'>
             <ButtonMousePrimary

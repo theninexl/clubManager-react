@@ -19,7 +19,7 @@ const ColorIcon = ({ Color }) => {
 }
 
 
-export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCalc, onAdvancePayCalcChange }) => {
+export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCalc, onAdvancePayCalcChange, objetoGuardado }) => {
   const initialValue = getValue();
   const [value, setValue] = useState(initialValue)
   const [advancePayCalc, setAdvancePayCalc] = useState();
@@ -66,7 +66,7 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
                 }}>
                 <input
                   value={value.amount}
-                  onChange={(e) => {
+                  onChange={(e) => {                    
                     let onChangeValue = {...value}
                     onChangeValue.amount = e.target.value;
                     setValue(onChangeValue)
@@ -90,9 +90,9 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
                         <>
                           <DropdownItem 
                             key={uuidv4()}
-                            onClick={ () => updateData(
-                              row.index, column, {mes:value.mes, amount:value.amount, status:item.id, flag_suma:value.flag_suma}
-                            )}
+                            onClick={ () => {
+                              updateData( row.index, column, {mes:value.mes, amount:value.amount, status:item.id, flag_suma:value.flag_suma, id_calendario:value.id_calendario})
+                            }}
                           >
                             <ColorIcon Color={item.color} />{item.name}
                           </DropdownItem>
@@ -182,6 +182,7 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
                         const limit = -Math.abs(column.columnDef.meta.insertSelectedAmount);   
                         console.log('limit', limit)                 
                         if (values.formattedValue !== '' && values.formattedValue >= limit && values.formattedValue <= 0) {
+                          console.log('DDD');
                           console.log('puede guardar')                          
                           let onChangeValue = {...value};
                           onChangeValue.amount = values.formattedValue;
@@ -284,11 +285,12 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
                           onBlur={()=>{
                             const limit = -Math.abs(table.options.state.insertSelectedAmount);
                             if (actualValueForCalcRef.current !== '' && actualValueForCalcRef.current >= limit) {
+                              // console.log('AAA');
                               // console.log('puede guardar')
                               column.columnDef.meta.setInsertCanSave(true);
                               //setear celda bajo copiada con el nuevo calculo
                               let onChangeValue = {...value};
-                              onChangeValue.amount = -Math.abs(actualValueForCalcRef.current);
+                              onChangeValue.amount = -Math.abs(actualValueForCalcRef.current);                        
                               updateData(row.index, table.options.state.cellCopy.column, onChangeValue);
                               //setear la propia celda donde estoy cambiando 
                               onChangeValue.amount = actualValueForCalcRef.current;
@@ -332,20 +334,20 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
                             console.log('limit', limit)
                             console.log('actual value', actualValueForCalcRef.current)
                             if (actualValueForCalcRef.current !== '' && actualValueForCalcRef.current <= limit) {
-                              console.log('puede guardar')
+                              // console.log('puede guardar')
                               column.columnDef.meta.setInsertCanSave(true);
-                              //setear celda bajo copiada con el nuevo calculo
+                              // console.log('setear celda bajo copiada con el nuevo calculo')
                               let onChangeValue = {...value};
                               onChangeValue.amount = -Math.abs(actualValueForCalcRef.current);
-                              console.log(onChangeValue);
+                              // console.log('onChangeValue', onChangeValue)
                               updateData(row.index, table.options.state.cellCopy.column, onChangeValue);
-                              //setear la propia celda donde estoy cambiando 
+                              // console.log('setear la propia celda donde estoy cambiando') 
                               onChangeValue.amount = actualValueForCalcRef.current;
                               // console.log('onChangeValue2',onChangeValue)
                               updateData(row.index, column, onChangeValue);
                               actualValueForCalcRef.current = 0;
                             } else {
-                              console.log('no puede guardar')
+                              // console.log('no puede guardar')
                               column.columnDef.meta.setInsertCanSave(false);
                             }
                           }}

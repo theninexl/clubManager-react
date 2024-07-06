@@ -1,6 +1,6 @@
 .cm-c-overlay {
     $block:&;
-    &--notifications, &--activeUser {
+    &--notifications, &--activeUser, &--settingsOptions {
         @extend .cm-o-overlay;
         background-color: getColor(white);
         position:absolute;
@@ -14,5 +14,9 @@
 
     &--activeUser {
         right: 142px;
+    }
+
+    &--settingsOptions {
+        right: 48px;
     }
 }

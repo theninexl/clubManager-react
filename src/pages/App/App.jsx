@@ -20,6 +20,8 @@ import NewIntermediaryPage from '../NewIntermediary';
 import ManagePaymentsPage from '../ManagePayments';
 import EditPlayerPaymentsPage from '../EditPlayerPayments';
 import NewUserPage from '../NewUser';
+import SettingsIRPFpage from '../SettingsIRPF';
+import SettingsClausesPage from '../SettingsClauses';
 
 const AppRoutes = () => {  
   const {isUserSignedOut} = useEvaluateSignOut();
@@ -110,6 +112,16 @@ const AppRoutes = () => {
       <TopNav />
       <EditPlayerPaymentsPage/>
     </> : <Navigate replace to={'/login'} /> },
+    { path: '/settings-irpf', element: !isUserSignedOut ?
+      <>
+        <TopNav />
+        <SettingsIRPFpage />
+      </> : <Navigate replace to={'/login'} /> },
+    { path: '/settings-clauses', element: !isUserSignedOut ?
+      <>
+        <TopNav />
+        <SettingsClausesPage />
+      </> : <Navigate replace to={'/login'} /> },
   ])
   return routes;
 }
