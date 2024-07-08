@@ -80,7 +80,7 @@ export default function SettingsIRPFpage () {
 
   const handleUpdateSeasonSettings = (e) => {
     e.preventDefault();
-    updateSeason.uploadData('/config/updateTemporada',{'id_conf':seasonDetails.id_conf, 'flag_residencia':seasonDetails.flag_residencia, 'val_pct_irpf_aplicable':seasonDetails.val_pct_irpf_aplicable});
+    updateSeason.uploadData('/config/updateTemporada',{'desc_anyo_fiscal':seasonSelected.desc_anyo_fiscal, 'flag_residencia':seasonSelected.flag_residencia, 'val_pct_irpf_aplicable':seasonDetails.val_pct_irpf_aplicable});
     }
 
   useEffect (() => {
@@ -163,7 +163,7 @@ export default function SettingsIRPFpage () {
                               //setSeasonDetails({...seasonDetails, flag_residencia: checked})
                               }}
                             >
-                            Permiso residencia
+                            Residencia
                           </LabelElementToggle>
                         </FormSimplePanelRow>
                         { Object.keys(seasonDetails).length > 0 ?
