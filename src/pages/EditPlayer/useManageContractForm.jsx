@@ -186,13 +186,13 @@ export const useManageContractForm = (form, idJugador) => {
       dt_inicio_contrato: formData.get('contractStartDate'),
       dt_inicio_contrato_real: formData.get('contractRealStartDate'),
       dt_fin_contrato: formData.get('contractEndDate'),
-      val_pct_pago_atm: formData.get('clubPercentage'),
       val_imp_salario_total: formData.get('amountTotalSalary'),      
       salario_fijo:salarios,      
     }
 
     const savedContract = {
       // id_contrato: '',
+      val_pct_pago_atm: formData.get('clubPercentage'),
       id_intermediario_1: formData.get('contractIntermediary1'),
       id_intermediario_2: formData.get('contractIntermediary2'),
       id_intermediario_3: formData.get('contractIntermediary3'),
@@ -210,13 +210,13 @@ export const useManageContractForm = (form, idJugador) => {
         } 
       }
 
-      if (Object.keys(data).length === (Object.keys(savedContract).length - 3)) {
+      if (Object.keys(data).length === (Object.keys(savedContract).length - 4)) {
         
-        console.log('object keys data', Object.keys(data).length)
-        console.log('object keys savedContract', Object.keys(savedContract).length)
+        // console.log('object keys data', Object.keys(data).length)
+        // console.log('object keys savedContract', Object.keys(savedContract).length)
         
-        console.log('contrato que guardo', data);
-        console.log('savedContract', savedContract);
+        // console.log('contrato que guardo', data);
+        // console.log('savedContract', savedContract);
         saveNewContract.uploadData('players/createContract',savedContract);
         editPlayerContext.setNewContract(false);
         //resetear contenidos salario fijo
@@ -271,7 +271,7 @@ export const useManageContractForm = (form, idJugador) => {
 
   useEffect(()=>{
     if(getDetailContract.responseUpload) {
-      console.log('detailContract',getDetailContract.responseUpload);
+      // console.log('detailContract',getDetailContract.responseUpload);
       editPlayerContext.setDetailContractData(getDetailContract.responseUpload.contrato);
       editPlayerContext.setDetailSalaryData(getDetailContract.responseUpload.salario_fijo);
       editPlayerContext.setDetailTerminationData(getDetailContract.responseUpload.clausula_rescision);
@@ -294,6 +294,7 @@ export const useManageContractForm = (form, idJugador) => {
 
   const handleSaveEditedContract = (e) => {
     e.preventDefault();
+    console.log('guardo contrato editado');
     const userParamString = idJugador.toString();
     const formData = new FormData(form.current);
 
@@ -313,18 +314,18 @@ export const useManageContractForm = (form, idJugador) => {
       dt_inicio_contrato: formData.get('contractStartDate'),
       dt_inicio_contrato_real: formData.get('contractRealStartDate'),
       dt_fin_contrato: formData.get('contractEndDate'),
-      val_pct_pago_atm: formData.get('clubPercentage'),
       val_imp_salario_total: formData.get('amountTotalSalary'),      
       salario_fijo:salarios,    
     }
 
     const editedContract = {
       id_contrato: editPlayerContext.editedContractId,
+      val_pct_pago_atm: formData.get('clubPercentage'),
       id_intermediario_2: formData.get('contractIntermediary2'),
       id_intermediario_3: formData.get('contractIntermediary3'),
     }
 
-    // console.log('data que guado', data);
+    console.log('data que guado', data);
 
     if (data) {
       for (const [key, value] of Object.entries(data)) {        
@@ -336,7 +337,7 @@ export const useManageContractForm = (form, idJugador) => {
         } 
       }
 
-      if (Object.keys(data).length === (Object.keys(editedContract).length - 3)) {
+      if (Object.keys(data).length === (Object.keys(editedContract).length - 4)) {
         // console.log('contrato que guardo', editedContract);
         saveEditedContract.uploadData('players/editContract',editedContract)        
         editPlayerContext.setEditContract(false);

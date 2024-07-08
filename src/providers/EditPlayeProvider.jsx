@@ -78,6 +78,7 @@ export const EditPlayerContextProvider = ({ children }) => {
     { desc_tipo_procedimiento: 'Baja cesión', id: 5 },
     { desc_tipo_procedimiento: 'Baja rescisión', id: 6 },
     { desc_tipo_procedimiento: 'Pago cláusula', id: 7 },
+    { desc_tipo_procedimiento: 'Renovación', id: 8 },
   ]  
 
   const [creatingContractError, setCreatingContractError] = useState();

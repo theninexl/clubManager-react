@@ -33,7 +33,8 @@ export default function NotificationsPage () {
 
   useEffect(()=>{
     if (setNotReaded.responseUpload || setNotValidated.responseUpload) {
-      // console.log(setNotReaded.responseUpload);
+      console.log(setNotReaded.responseUpload);
+      window.location.reload();
       getNotifications.uploadData('notifications/getAll',{});
     }
   },[setNotReaded.responseUpload, setNotValidated.responseUpload])
