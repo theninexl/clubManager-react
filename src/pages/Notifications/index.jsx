@@ -6,16 +6,39 @@ import { TableCellLong, TableCellMedium, TableCellShort, TableDataHeader, TableD
 import { Button } from "../../components/UI/objects/buttons";
 import { SymbolDone, SymbolMarkEmailRead } from "../../components/UI/objects/symbols";
 import { useSaveData } from "../../hooks/useSaveData";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 
 
 export default function NotificationsPage () {
+
+  const [notificationsList, setNotificationsList] = useState([]);
+
   const context = useGlobalContext();
 
+  const getHeaderDetail = useSaveData();
   const getNotifications = useSaveData();
   const setNotReaded = useSaveData();
   const setNotValidated = useSaveData();
+
+  //pido las notificaciones la primera vez
+  useEffect(()=>{
+    setNotificationsList([])
+    getNotifications.uploadData('notifications/getAll',{});
+  },[])
+
+  useEffect(()=> {
+    if (getNotifications.responseUpload) {
+      // console.log('he vuelto a pedir notificaciones')
+      // console.log(getNotifications.responseUpload);
+      if (getNotifications.responseUpload?.status == 'ok') {
+        // console.log('notificacioness', getNotifications.responseUpload.data)
+        setNotificationsList(getNotifications.responseUpload.data);
+      }
+    }
+   },[getNotifications.responseUpload])
+
+
 
   const handleReadButton = (id, notifReadState) => {
     // console.log(id, 'state que quiero:', notifReadState)
@@ -33,25 +56,23 @@ export default function NotificationsPage () {
 
   useEffect(()=>{
     if (setNotReaded.responseUpload || setNotValidated.responseUpload) {
-      // console.log(setNotReaded.responseUpload);
-      context.setNotifications([]);
-      // window.location.reload();
+      // console.log('set notif readed', setNotReaded.responseUpload);
+      // console.log('set notif validated', setNotValidated.responseUpload);
+      setNotificationsList([]);
+      getHeaderDetail.uploadData('header/getDetail',{});
       getNotifications.uploadData('notifications/getAll',{});
     }
   },[setNotReaded.responseUpload, setNotValidated.responseUpload])
 
+  //volver a actualizar el número de notificaciones no leídas en el topnav
   useEffect(()=> {
-    if (getNotifications.responseUpload) {
-      // console.log('he vuelto a pedir notificaciones')
-      // console.log(getNotifications.responseUpload);
-      if (getNotifications.responseUpload?.status == 'ok') {
-        // console.log('notificacioness', getNotifications.responseUpload.data)
-        context.setNotifications(getNotifications.responseUpload.data);
-        const unReadNotifs = context.notifications.filter(notif => notif.flag_leido === false);
-        context.setUnreadNotifications(unReadNotifs.length)
+    if (getHeaderDetail.responseUpload) {
+      if (getHeaderDetail.responseUpload.notificaciones[0].contador != 0) {
+        // console.log('Header Detail notifs', getHeaderDetail.responseUpload.notificaciones[0].contador);
+        context.setUnreadNotifications(getHeaderDetail.responseUpload.notificaciones[0].contador)
       }
-    }
-   },[getNotifications.responseUpload])
+     }
+    },[getHeaderDetail.responseUpload])
 
    const renderNotifs = (notifsLenght) => {
     if (notifsLenght == 0) {
@@ -64,7 +85,7 @@ export default function NotificationsPage () {
       return (
         <div>
           {
-            context.notifications?.map(notification => {
+            notificationsList?.map(notification => {
               return (
                 <TableDataRow
                   className={notification.leido == false ? 'cm-l-tabledata__row--noRead' : ''}
@@ -73,7 +94,7 @@ export default function NotificationsPage () {
                 >
                   <TableCellShort className='cm-u-centerText'>
                     <Button
-                      className={(notification.flag_validado == false || notification.flag_validado == null || notification.flag_validado == 0) ? 'cm-o-icon-button-small--primary' 
+                      className={(notification.flag_leido == false || notification.flag_leido == null || notification.flag_leido == 0) ? 'cm-o-icon-button-small--primary' 
                       : 'cm-o-icon-button-small--success'}
                       onClick={(e) => {
                         e.preventDefault();
@@ -128,7 +149,7 @@ export default function NotificationsPage () {
                 <TableCellLong>Asunto</TableCellLong>
                 <TableCellShort className='cm-u-centerText'>Validado</TableCellShort>
               </TableDataHeader>
-              { renderNotifs(context.notifications.length)}
+              { renderNotifs(notificationsList.length)}
             </TableDataWrapper>
           </CentralBody>
         </HalfContainerBody>

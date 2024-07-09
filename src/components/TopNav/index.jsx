@@ -31,11 +31,34 @@ export default function TopNav () {
   const navigate = useNavigate();
 
   //pedir notificaciones
-  const getNotifications = useGetData('notifications/getAll');
+  // const getNotifications = useGetData('notifications/getAll');
 
-  useEffect(()=> {
-    if (getNotifications.responseGetData) {
-      if (getNotifications.responseGetData?.response?.status === 401) {
+  // useEffect(()=> {
+  //   if (getNotifications.responseGetData) {
+  //     if (getNotifications.responseGetData?.response?.status === 401) {
+  //       //seteo signout y account en localStorage y context
+  //       const stringifiedSignOut = JSON.stringify(true);
+  //       localStorage.setItem('CMSign-out',stringifiedSignOut);
+  //       context.setSignOut(true);
+  //       localStorage.removeItem('CMAccount');
+  //       context.setAccount({});
+  //       navigate('/login');
+  //     } else if (getNotifications.responseGetData?.data?.status == 'ok') {
+  //       console.log('notificaciones pedidas desde TopNav', getNotifications.responseGetData)
+  //       context.setNotifications(getNotifications.responseGetData.data.data);
+  //       const unReadNotifs = context.notifications.filter(notif => (notif.flag_leido === false || notif.flag_leido === null));
+  //       context.setUnreadNotifications(unReadNotifs.length)
+  //     }
+  //   }
+  //  },[getNotifications.responseGetData])
+
+   //pedir entidades header
+   const getHeaderDetail = useGetData('header/getDetail');
+
+   useEffect(()=> {
+    if (getHeaderDetail.responseGetData) {
+      console.log('Header Detail', getHeaderDetail.responseGetData);
+      if (getHeaderDetail.responseGetData.status === 401) {
         //seteo signout y account en localStorage y context
         const stringifiedSignOut = JSON.stringify(true);
         localStorage.setItem('CMSign-out',stringifiedSignOut);
@@ -43,24 +66,14 @@ export default function TopNav () {
         localStorage.removeItem('CMAccount');
         context.setAccount({});
         navigate('/login');
-      } else if (getNotifications.responseGetData?.data?.status == 'ok') {
-        // console.log('notificaciones pedidas desde TopNav', getNotifications.responseGetData)
-        context.setNotifications(getNotifications.responseGetData.data.data);
-        const unReadNotifs = context.notifications.filter(notif => (notif.flag_leido === false || notif.flag_leido === null));
-        context.setUnreadNotifications(unReadNotifs.length)
+      } else if (getHeaderDetail.responseGetData.status === 200) {
+        if (getHeaderDetail.responseGetData?.data?.notificaciones[0].contador != 0) {
+          context.setUnreadNotifications(getHeaderDetail.responseGetData?.data?.notificaciones[0].contador)
+        }
+        context.setEntities(getHeaderDetail.responseGetData?.data?.entidades);
       }
-    }
-   },[getNotifications.responseGetData])
-
-   //pedir entidades header
-   const getEntities = useGetData('header/getDetail');
-
-   useEffect(()=> {
-    if (getEntities.responseGetData) {
-       //setHeaderEntities(getEntities.responseGetData.data.entidades);
-       context.setEntities(getEntities.responseGetData?.data?.entidades);
      }
-    },[getEntities.responseGetData])
+    },[getHeaderDetail.responseGetData])
 
 
 
