@@ -33,23 +33,79 @@ export default function NotificationsPage () {
 
   useEffect(()=>{
     if (setNotReaded.responseUpload || setNotValidated.responseUpload) {
-      console.log(setNotReaded.responseUpload);
-      window.location.reload();
+      // console.log(setNotReaded.responseUpload);
+      context.setNotifications([]);
+      // window.location.reload();
       getNotifications.uploadData('notifications/getAll',{});
     }
   },[setNotReaded.responseUpload, setNotValidated.responseUpload])
 
   useEffect(()=> {
     if (getNotifications.responseUpload) {
-      console.log(getNotifications.responseUpload);
-      if (getNotifications.responseUpload?.data?.status == 'ok') {
-        console.log('notificacioness', getNotifications.responseUpload)
-        context.setNotifications(getNotifications.responseUpload.data.data);
+      // console.log('he vuelto a pedir notificaciones')
+      // console.log(getNotifications.responseUpload);
+      if (getNotifications.responseUpload?.status == 'ok') {
+        // console.log('notificacioness', getNotifications.responseUpload.data)
+        context.setNotifications(getNotifications.responseUpload.data);
         const unReadNotifs = context.notifications.filter(notif => notif.flag_leido === false);
         context.setUnreadNotifications(unReadNotifs.length)
       }
     }
    },[getNotifications.responseUpload])
+
+   const renderNotifs = (notifsLenght) => {
+    if (notifsLenght == 0) {
+      return (
+        <div  className='cm-u-centerText cm-u-spacer-mt-big'>
+          <span className='warning'>Cargando notificaciones</span>
+        </div>
+      );
+    } else if (notifsLenght > 0) {
+      return (
+        <div>
+          {
+            context.notifications?.map(notification => {
+              return (
+                <TableDataRow
+                  className={notification.leido == false ? 'cm-l-tabledata__row--noRead' : ''}
+                  data-notifid={notification.id_notificacion}
+                  key={notification.id_notificacion}
+                >
+                  <TableCellShort className='cm-u-centerText'>
+                    <Button
+                      className={(notification.flag_validado == false || notification.flag_validado == null || notification.flag_validado == 0) ? 'cm-o-icon-button-small--primary' 
+                      : 'cm-o-icon-button-small--success'}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleReadButton(notification.id_notificacion, notification.flag_leido);
+                      }}
+                    >
+                        <SymbolMarkEmailRead/>
+                    </Button>
+                  </TableCellShort>
+                  <TableCellMedium>{notification.desc_asunto}</TableCellMedium>
+                  <TableCellMedium>{notification.fch_alta}</TableCellMedium>
+                  <TableCellLong>{notification.desc_descripcion}</TableCellLong>
+                  <TableCellShort className='cm-u-centerText'>
+                    <Button
+                      className={(notification.flag_validado == false || notification.flag_validado == null || notification.flag_validado == 0) ? 'cm-o-icon-button-small--primary' 
+                      : 'cm-o-icon-button-small--success'}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleValidateButton(notification.id_notificacion, notification.flag_validado);
+                      }}
+                    >
+                        <SymbolDone/>
+                    </Button>
+                  </TableCellShort>
+                </TableDataRow>
+              );
+            })
+          }
+        </div>
+      );
+    }
+   }
 
 
 
@@ -66,55 +122,13 @@ export default function NotificationsPage () {
           <CentralBody>
             <TableDataWrapper className='cm-u-spacer-mb-huge'>
               <TableDataHeader>
-                {/* <TableCellShort className='cm-u-centerText'>Tipo</TableCellShort> */}
                 <TableCellShort className='cm-u-centerText'>Leído</TableCellShort>
                 <TableCellMedium>Asunto</TableCellMedium>
                 <TableCellMedium>Fecha</TableCellMedium>
                 <TableCellLong>Asunto</TableCellLong>
                 <TableCellShort className='cm-u-centerText'>Validado</TableCellShort>
               </TableDataHeader>
-              <div>
-                {
-                  context.notifications?.map(notification => {
-                    
-                    return (
-                      <TableDataRow
-                        className={notification.leido == false ? 'cm-l-tabledata__row--noRead' : ''}
-                        data-notifid={notification.id_notificacion}
-                        key={notification.id_notificacion}
-                      >
-                        <TableCellShort className='cm-u-centerText'>
-                          <Button
-                            className={(notification.flag_validado == false || notification.flag_validado == null || notification.flag_validado == 0) ? 'cm-o-icon-button-small--primary' 
-                            : 'cm-o-icon-button-small--success'}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleReadButton(notification.id_notificacion, notification.flag_leido);
-                            }}
-                          >
-                              <SymbolMarkEmailRead/>
-                          </Button>
-                        </TableCellShort>
-                        <TableCellMedium>{notification.desc_asunto}</TableCellMedium>
-                        <TableCellMedium>{notification.fch_alta}</TableCellMedium>
-                        <TableCellLong>{notification.desc_descripcion}</TableCellLong>
-                        <TableCellShort className='cm-u-centerText'>
-                          <Button
-                            className={(notification.flag_validado == false || notification.flag_validado == null || notification.flag_validado == 0) ? 'cm-o-icon-button-small--primary' 
-                            : 'cm-o-icon-button-small--success'}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleValidateButton(notification.id_notificacion, notification.flag_validado);
-                            }}
-                          >
-                              <SymbolDone/>
-                          </Button>
-                        </TableCellShort>
-                      </TableDataRow>
-                    );
-                  })
-                }
-                </div>
+              { renderNotifs(context.notifications.length)}
             </TableDataWrapper>
           </CentralBody>
         </HalfContainerBody>

@@ -44,7 +44,7 @@ export default function TopNav () {
         context.setAccount({});
         navigate('/login');
       } else if (getNotifications.responseGetData?.data?.status == 'ok') {
-        //console.log('notificacionesa', getNotifications.responseGetData)
+        // console.log('notificaciones pedidas desde TopNav', getNotifications.responseGetData)
         context.setNotifications(getNotifications.responseGetData.data.data);
         const unReadNotifs = context.notifications.filter(notif => (notif.flag_leido === false || notif.flag_leido === null));
         context.setUnreadNotifications(unReadNotifs.length)
