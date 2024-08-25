@@ -28,6 +28,7 @@ export const EditContractsTab = ({ form, idJugador, teams, intermediaries }) => 
     handleDeleteContract,
     handleEditContract,
     handleSaveEditedContract,
+    handleSetActiveContract,
   } = useManageContractForm(form, idJugador);
 
   return (
@@ -36,6 +37,7 @@ export const EditContractsTab = ({ form, idJugador, teams, intermediaries }) => 
         <ListPlayerContracts 
           handleDeleteContract={handleDeleteContract}
           handleEditContract={handleEditContract}
+          handleSetActiveContract={handleSetActiveContract}
         />
         <ContractDataLayer
           handleAddNewSalaryComb={handleAddNewSalaryComb}

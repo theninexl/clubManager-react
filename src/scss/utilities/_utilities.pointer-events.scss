@@ -1,0 +1,7 @@
+.cm-u-non-clickable {
+  pointer-events: none; // Evita que estos elementos reciban clics
+}
+
+.cm-u-clickable {
+  pointer-events: initial;
+}

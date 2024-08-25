@@ -2,10 +2,11 @@ import { useGlobalContext } from "../../providers/globalContextProvider";
 import { useEditPlayerDataContext } from "../../providers/EditPlayeProvider";
 import { FormSimplePanel, FormSimplePanelRow, LabelElement, LabelElementAssist, LabelElementNumber, LabelElementNumberAssist, LabelElementToggle2Sides, LabelSelectElement, LabelSelectElementAssist, LabelSelectShorterElement } from "../../components/UI/components/form simple/formSimple";
 import { SimpleAccordion, SimpleAccordionContent, SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
-import { ButtonMouseGhost, ButtonMousePrimary, IconButtonSmallPrimary, IconButtonSmallSecondary, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
-import { SymbolAdd, SymbolDelete, SymbolEdit } from "../../components/UI/objects/symbols";
+import { ButtonMouseGhost, ButtonMousePrimary, IconButtonSmallPrimary, IconButtonSmallSecondary, IconButtonSmallerError, IconButtonSmallerPrimary, IconButtonSmallerSuccess } from "../../components/UI/objects/buttons";
+import { SymbolAdd, SymbolCheck, SymbolDelete, SymbolEdit, SymbolError } from "../../components/UI/objects/symbols";
 import { TableCellMedium, TableCellShort, TableDataHeader, TableDataRow } from "../../components/UI/layout/tableData";
 import { HeadContentTitleBar, TitleBar__Title, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
+import { useEffect, useState } from "react";
 
 
 
@@ -15,7 +16,7 @@ const searchName = (id,stateList,keyId,keyName ) => {
   return result[keyName];
 }
 
-export const ListPlayerContracts = ({ handleDeleteContract,handleEditContract }) => {
+export const ListPlayerContracts = ({ handleDeleteContract,handleEditContract, handleSetActiveContract }) => {
   const globalContext = useGlobalContext();
   const editPlayerContext = useEditPlayerDataContext();
 
@@ -26,7 +27,8 @@ export const ListPlayerContracts = ({ handleDeleteContract,handleEditContract })
           <TableCellMedium>Descripción</TableCellMedium>
           <TableCellMedium>Tipo de Contrato</TableCellMedium>
           <TableCellMedium>Tipo de Procedimiento</TableCellMedium>
-          <TableCellMedium>Fecha Inicio - Fecha Fin</TableCellMedium>                          
+          <TableCellMedium>Fecha Inicio - Fecha Fin</TableCellMedium>
+          <TableCellShort className='cm-u-centerText'>Activo</TableCellShort>                          
           <TableCellShort className='cm-u-centerText'>Editar</TableCellShort>
           <TableCellShort className='cm-u-centerText'>Borrar</TableCellShort>
         </TableDataHeader>
@@ -49,7 +51,27 @@ export const ListPlayerContracts = ({ handleDeleteContract,handleEditContract })
                     <TableCellMedium>{item.desc_tipo_contrato}</TableCellMedium>
                     <TableCellMedium>{item.desc_tipo_procedimiento}</TableCellMedium>
                     <TableCellMedium>{item.fecha_ini_fin}</TableCellMedium>
-                    
+                    <TableCellShort className='cm-u-centerText'>
+                          { item.FLAG_CONTRATO_ACTIVO === true ?
+                            <IconButtonSmallerSuccess
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleSetActiveContract(item.id_contrato)
+                              }}
+                            >
+                              <SymbolCheck />
+                            </IconButtonSmallerSuccess>
+                            :
+                            <IconButtonSmallerError
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleSetActiveContract(item.id_contrato)
+                              }}
+                            >
+                              <SymbolError />
+                            </IconButtonSmallerError>
+                          }
+                        </TableCellShort>
                     <TableCellShort className='cm-u-centerText'>
                       <IconButtonSmallerPrimary
                         onClick={(e) => {
@@ -165,6 +187,31 @@ export const ContractDataLayer = ({ form, idJugador, teams, intermediaries, hand
 const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,handleDeleteNewSalaryComb,handleAddNewFixedSalaryLine,handleDeleteNewFixedSalaryLine,handleAddNewTerminationClause,handleDeleteNewTerminationClause, handleChangesOnNewTerminationClause, handleChangesOnNewTerminationClauseIfToggle, handleAddNewContract, teams, intermediaries, idJugador }) => {
 
   const editPlayerContext = useEditPlayerDataContext();
+
+  const [showTerminationClause,setShowTerminationClause] = useState(false);
+  const [showIntermediaries, setShowIntermediaries] = useState(false);
+  const [showOriginDestinyFields, setShowOriginDestinyFiels] = useState(true);
+
+
+  useEffect(()=>{
+    console.log('playerContract', editPlayerContext.newContractDataForSalaryComb)
+    if (
+      editPlayerContext.newContractDataForSalaryComb.descType == 1 || 
+      editPlayerContext.newContractDataForSalaryComb.descType == 6 
+    ){ 
+      setShowTerminationClause(true);
+      setShowIntermediaries(false);
+      setShowOriginDestinyFiels(true);
+    }else if (editPlayerContext.newContractDataForSalaryComb.descType == 4) {
+      setShowIntermediaries(true);
+      setShowTerminationClause(false);
+      setShowOriginDestinyFiels(false);
+    } else {
+      setShowTerminationClause(true);
+      setShowIntermediaries(true);
+      setShowOriginDestinyFiels(true);
+    }
+  },[editPlayerContext.newContractDataForSalaryComb])
   
   
 
@@ -240,48 +287,52 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
               }
           </LabelSelectElementAssist>
         </FormSimplePanelRow>
-        <FormSimplePanelRow>
-          <LabelSelectElementAssist
-            htmlFor='playerTeamOrigin'
-            labelText='Club Origen*'
-            assistanceText=''
-            required={true}
-            defaultValue={editPlayerContext.newContractDataForSalaryComb.originClub || ''}
-            handleOnChange={e => {
-              editPlayerContext.setNewContractDataForSalaryComb({...editPlayerContext.newContractDataForSalaryComb, originClubId:e.target.value})
-              }
-            }
-            >
-              <option value=''>Selecciona</option>
-              { teams?.map(item => {
-                const selected = editPlayerContext.newContractDataForSalaryComb.originClubId == item.id_equipo ? 'selected': '';
-                return (
-                  <option key={item.id_equipo} value={item.id_equipo} selected={selected}>{item.desc_nombre_club}</option>
-                );
-              })}
-          </LabelSelectElementAssist>
-        </FormSimplePanelRow>
-        <FormSimplePanelRow>
-          <LabelSelectElementAssist
-            htmlFor='playerTeamDestination'
-            labelText='Club Destino*'
-            assistanceText=''
-            required={true}
-            defaultValue={editPlayerContext.newContractDataForSalaryComb.destinationClub || ''}
-            handleOnChange={e => {
-              editPlayerContext.setNewContractDataForSalaryComb({...editPlayerContext.newContractDataForSalaryComb, destinationClubId: e.target.value})
-              }
-            }
-            >
-              <option value=''>Selecciona</option>
-              { teams?.map(item => {
-                const selected = editPlayerContext.newContractDataForSalaryComb.destinationClubId == item.id_equipo ? 'selected': '';
-                return (
-                  <option key={item.id_equipo} value={item.id_equipo} selected={selected}>{item.desc_nombre_club}</option>
-                );
-              })}
-          </LabelSelectElementAssist>
-        </FormSimplePanelRow>
+        { showOriginDestinyFields &&
+          <>
+            <FormSimplePanelRow>
+              <LabelSelectElementAssist
+                htmlFor='playerTeamOrigin'
+                labelText='Club Origen*'
+                assistanceText=''
+                required={true}
+                defaultValue={editPlayerContext.newContractDataForSalaryComb.originClub || ''}
+                handleOnChange={e => {
+                  editPlayerContext.setNewContractDataForSalaryComb({...editPlayerContext.newContractDataForSalaryComb, originClubId:e.target.value})
+                  }
+                }
+                >
+                  <option value=''>Selecciona</option>
+                  { teams?.map(item => {
+                    const selected = editPlayerContext.newContractDataForSalaryComb.originClubId == item.id_equipo ? 'selected': '';
+                    return (
+                      <option key={item.id_equipo} value={item.id_equipo} selected={selected}>{item.desc_nombre_club}</option>
+                    );
+                  })}
+              </LabelSelectElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelSelectElementAssist
+                htmlFor='playerTeamDestination'
+                labelText='Club Destino*'
+                assistanceText=''
+                required={true}
+                defaultValue={editPlayerContext.newContractDataForSalaryComb.destinationClub || ''}
+                handleOnChange={e => {
+                  editPlayerContext.setNewContractDataForSalaryComb({...editPlayerContext.newContractDataForSalaryComb, destinationClubId: e.target.value})
+                  }
+                }
+                >
+                  <option value=''>Selecciona</option>
+                  { teams?.map(item => {
+                    const selected = editPlayerContext.newContractDataForSalaryComb.destinationClubId == item.id_equipo ? 'selected': '';
+                    return (
+                      <option key={item.id_equipo} value={item.id_equipo} selected={selected}>{item.desc_nombre_club}</option>
+                    );
+                  })}
+              </LabelSelectElementAssist>
+            </FormSimplePanelRow>
+          </>
+        }
         <FormSimplePanelRow>
           <LabelElementAssist
             htmlFor='contractStartDate'
@@ -331,70 +382,73 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
             className='panel-field-long'
             autoComplete='off'
             placeholder='Porcentaje (%)'
-            required={true}
             assistanceText=''
             >
             Porcentaje pago club
           </LabelElementAssist>
         </FormSimplePanelRow>
-        <FormSimplePanelRow>
-          <LabelSelectElement
-            htmlFor='contractIntermediary1'
-            labelText='Intermediario 1*'
-            required={true}
-            defaultValue={editPlayerContext.newContractDataForSalaryComb.intermediary1 || ''}
-            handleOnChange={e => {
-              editPlayerContext.setNewContractDataForSalaryComb({...editPlayerContext.newContractDataForSalaryComb, intermediary1Id: e.target.value})
-              }
-            }
-            >
-              <option value=''>Selecciona</option>
-              { intermediaries?.map(item => {
-                const selected = editPlayerContext.newContractDataForSalaryComb.intermediary1 == item.id_intermediario ? 'selected': '';
-                return (
-                  <option key={item.id_intermediario} value={item.id_intermediario} selected={selected}>{item.nombre}</option>
-                );
-              })}
-          </LabelSelectElement>
-        </FormSimplePanelRow>
-        <FormSimplePanelRow>
-          <LabelSelectElement
-            htmlFor='contractIntermediary2'
-            labelText='Intermediario 2'
-            defaultValue={editPlayerContext.newContractDataForSalaryComb.intermediary2 || ''}
-            handleOnChange={e => {
-              editPlayerContext.setNewContractDataForSalaryComb({...editPlayerContext.newContractDataForSalaryComb, intermediary2Id: e.target.value})
-              }
-            }
-            >
-              <option value=''>Selecciona</option>
-              { intermediaries?.map(item => {
-                const selected = editPlayerContext.newContractDataForSalaryComb.intermediary2 == item.id_intermediario ? 'selected': '';
-                return (
-                  <option key={item.id_intermediario} value={item.id_intermediario} selected={selected}>{item.nombre}</option>
-                );
-              })}
-          </LabelSelectElement>
-        </FormSimplePanelRow>
-        <FormSimplePanelRow>
-          <LabelSelectElement
-            htmlFor='contractIntermediary3'
-            labelText='Intermediario 3'
-            defaultValue={editPlayerContext.newContractDataForSalaryComb.intermediary3 || ''}
-            handleOnChange={e => {
-              editPlayerContext.setNewContractDataForSalaryComb({...editPlayerContext.newContractDataForSalaryComb, intermediary3Id: e.target.value})
-              }
-            }
-            >
-              <option value=''>Selecciona</option>
-              { intermediaries?.map(item => {
-                const selected = editPlayerContext.newContractDataForSalaryComb.intermediary3 == item.id_intermediario ? 'selected': '';
-                return (
-                  <option key={item.id_intermediario} value={item.id_intermediario} selected={selected}>{item.nombre}</option>
-                );
-              })}
-          </LabelSelectElement>
-        </FormSimplePanelRow>
+        { showIntermediaries && 
+          <>
+            <FormSimplePanelRow>
+              <LabelSelectElement
+                htmlFor='contractIntermediary1'
+                labelText='Intermediario 1*'
+                required={true}
+                defaultValue={editPlayerContext.newContractDataForSalaryComb.intermediary1 || ''}
+                handleOnChange={e => {
+                  editPlayerContext.setNewContractDataForSalaryComb({...editPlayerContext.newContractDataForSalaryComb, intermediary1Id: e.target.value})
+                  }
+                }
+                >
+                  <option value=''>Selecciona</option>
+                  { intermediaries?.map(item => {
+                    const selected = editPlayerContext.newContractDataForSalaryComb.intermediary1 == item.id_intermediario ? 'selected': '';
+                    return (
+                      <option key={item.id_intermediario} value={item.id_intermediario} selected={selected}>{item.nombre}</option>
+                    );
+                  })}
+              </LabelSelectElement>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelSelectElement
+                htmlFor='contractIntermediary2'
+                labelText='Intermediario 2'
+                defaultValue={editPlayerContext.newContractDataForSalaryComb.intermediary2 || ''}
+                handleOnChange={e => {
+                  editPlayerContext.setNewContractDataForSalaryComb({...editPlayerContext.newContractDataForSalaryComb, intermediary2Id: e.target.value})
+                  }
+                }
+                >
+                  <option value=''>Selecciona</option>
+                  { intermediaries?.map(item => {
+                    const selected = editPlayerContext.newContractDataForSalaryComb.intermediary2 == item.id_intermediario ? 'selected': '';
+                    return (
+                      <option key={item.id_intermediario} value={item.id_intermediario} selected={selected}>{item.nombre}</option>
+                    );
+                  })}
+              </LabelSelectElement>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelSelectElement
+                htmlFor='contractIntermediary3'
+                labelText='Intermediario 3'
+                defaultValue={editPlayerContext.newContractDataForSalaryComb.intermediary3 || ''}
+                handleOnChange={e => {
+                  editPlayerContext.setNewContractDataForSalaryComb({...editPlayerContext.newContractDataForSalaryComb, intermediary3Id: e.target.value})
+                  }
+                }
+                >
+                  <option value=''>Selecciona</option>
+                  { intermediaries?.map(item => {
+                    const selected = editPlayerContext.newContractDataForSalaryComb.intermediary3 == item.id_intermediario ? 'selected': '';
+                    return (
+                      <option key={item.id_intermediario} value={item.id_intermediario} selected={selected}>{item.nombre}</option>
+                    );
+                  })}
+              </LabelSelectElement>
+            </FormSimplePanelRow>
+          </>
+        }        
         <FormSimplePanelRow>
           <LabelElementNumberAssist
             htmlFor='amountTotalSalary'
@@ -406,7 +460,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
             required={true}
             assistanceText=''
           >
-            Importe Salario Total*
+            Importe Fijo Total*
           </LabelElementNumberAssist>
         </FormSimplePanelRow>
         <FormSimplePanelRow>
@@ -424,18 +478,23 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
           teams={teams}
           intermediaries={intermediaries}
           idJugador={idJugador}
-         />
-        
-        <FormSimplePanelRow>
-          <p><strong>Clausula rescisión</strong></p>
-        </FormSimplePanelRow>
-        
-        <NewTerminationClauseLine
-          handleAddNewTerminationClause={handleAddNewTerminationClause}
-          handleDeleteNewTerminationClause={handleDeleteNewTerminationClause}
-          handleChangesOnNewTerminationClause={handleChangesOnNewTerminationClause}
-          handleChangesOnNewTerminationClauseIfToggle={handleChangesOnNewTerminationClauseIfToggle}
         />
+        
+
+        { showTerminationClause &&
+          <>
+            <FormSimplePanelRow>
+              <p><strong>Clausula rescisión</strong></p>
+            </FormSimplePanelRow>
+            <NewTerminationClauseLine
+              handleAddNewTerminationClause={handleAddNewTerminationClause}
+              handleDeleteNewTerminationClause={handleDeleteNewTerminationClause}
+              handleChangesOnNewTerminationClause={handleChangesOnNewTerminationClause}
+              handleChangesOnNewTerminationClauseIfToggle={handleChangesOnNewTerminationClauseIfToggle}
+            />
+          </>
+        }
+        
 
         { editPlayerContext.creatingContractError ? 
           <FormSimplePanelRow
@@ -455,6 +514,19 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
           <ButtonMouseGhost
             onClick={() => {
               editPlayerContext.setNewContract(false);
+              //resetear tipo de contrato
+              editPlayerContext.setNewContractDataForSalaryComb(
+                {...editPlayerContext.newContractDataForSalaryComb, 
+                  descType: null,
+                  destinationClubId:null,
+                  interediary3Id:null,
+                  intermediary1:null,
+                  intermediary1Id:null,
+                  intermediary2:null,
+                  intermediary2Id:null,
+                  intermediary3:null,
+                  originClubId:null,
+                });
               //resetear contenidos salario fijo
               editPlayerContext.setContractSalary(editPlayerContext.defaultContractSalaryArray);
               //resetear contenidos clausula rescisión
@@ -471,6 +543,31 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
 
 const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalaryCombEdit, handleDeleteNewSalaryCombEdit, handleAddNewFixedSalaryLineEdit, handleDeleteNewFixedSalaryLineEdit, handleSaveEditedContract, handleChangesOnEditTerminationClause, handleChangesOnEditTerminationClauseIfToggle, handleAddEditTerminationClause,  handleDeleteEditTerminationClause, }) => {
   const editPlayerContext = useEditPlayerDataContext();
+
+  const [showTerminationClause,setShowTerminationClause] = useState(false);
+  const [showIntermediaries, setShowIntermediaries] = useState(false);
+  const [showOriginDestinyFields, setShowOriginDestinyFiels] = useState(true);
+
+
+  useEffect(()=>{
+    // console.log(editPlayerContext.detailContractData[0].desc_tipo_contrato);
+    if (
+      editPlayerContext.detailContractData[0].desc_tipo_contrato == "Laboral" || 
+      editPlayerContext.detailContractData[0].desc_tipo_contrato == "Renovación inscripción" 
+    ){ 
+      setShowTerminationClause(true);
+      setShowIntermediaries(false);
+      setShowOriginDestinyFiels(true);
+    }else if (editPlayerContext.detailContractData[0].desc_tipo_contrato == "Intermediación") {
+      setShowIntermediaries(true);
+      setShowTerminationClause(false);
+      setShowOriginDestinyFiels(false);
+    } else {
+      setShowTerminationClause(true);
+      setShowIntermediaries(true);
+      setShowOriginDestinyFiels(true);
+    }
+  },[editPlayerContext.detailContractData])
 
   return (
     <>
@@ -559,48 +656,52 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
               }
           </LabelSelectElementAssist>
         </FormSimplePanelRow>
-        <FormSimplePanelRow>
-          <LabelSelectElementAssist
-            htmlFor='playerTeamOrigin'
-            labelText='Club Origen*'
-            assistanceText=''
-            required={true}
-            defaultValue={editPlayerContext.detailContractData[0].id_club_origen || ''}
-            handleOnChange={e => {
-              let onChangeValue = [...editPlayerContext.detailContractData];
-              onChangeValue[0]["id_club_origen"] = e.target.value;
-              editPlayerContext.setDetailContractData(onChangeValue); }}
-            >
-              <option value=''>Selecciona</option>
-              { teams?.map(item => {
-                const selected = editPlayerContext.detailContractData[0].id_club_origen == item.id_equipo ? 'selected' : '';
-                return (
-                  <option key={item.id_equipo} value={item.id_equipo} selected={selected}>{item.desc_nombre_club}</option>
-                );
-              })}
-          </LabelSelectElementAssist>
-        </FormSimplePanelRow>
-        <FormSimplePanelRow>
-          <LabelSelectElementAssist
-            htmlFor='playerTeamDestination'
-            labelText='Club Destino*'
-            assistanceText=''
-            required={true}
-            defaultValue={editPlayerContext.detailContractData[0].id_club_destino || ''}
-            handleOnChange={e => {
-              let onChangeValue = [...editPlayerContext.detailContractData];
-              onChangeValue[0]["id_club_destino"] = e.target.value;
-              editPlayerContext.setDetailContractData(onChangeValue); }}
-            >
-              <option value=''>Selecciona</option>
-              { teams?.map(item => {
-                const selected = editPlayerContext.detailContractData[0].id_club_destino == item.id_equipo ? 'selected' : '';
-                return (
-                  <option key={item.id_equipo} value={item.id_equipo} selected={selected}>{item.desc_nombre_club}</option>
-                );
-              })}
-          </LabelSelectElementAssist>
-        </FormSimplePanelRow>
+        { showOriginDestinyFields &&
+          <>
+            <FormSimplePanelRow>
+              <LabelSelectElementAssist
+                htmlFor='playerTeamOrigin'
+                labelText='Club Origen*'
+                assistanceText=''
+                required={true}
+                defaultValue={editPlayerContext.detailContractData[0].id_club_origen || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...editPlayerContext.detailContractData];
+                  onChangeValue[0]["id_club_origen"] = e.target.value;
+                  editPlayerContext.setDetailContractData(onChangeValue); }}
+                >
+                  <option value=''>Selecciona</option>
+                  { teams?.map(item => {
+                    const selected = editPlayerContext.detailContractData[0].id_club_origen == item.id_equipo ? 'selected' : '';
+                    return (
+                      <option key={item.id_equipo} value={item.id_equipo} selected={selected}>{item.desc_nombre_club}</option>
+                    );
+                  })}
+              </LabelSelectElementAssist>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelSelectElementAssist
+                htmlFor='playerTeamDestination'
+                labelText='Club Destino*'
+                assistanceText=''
+                required={true}
+                defaultValue={editPlayerContext.detailContractData[0].id_club_destino || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...editPlayerContext.detailContractData];
+                  onChangeValue[0]["id_club_destino"] = e.target.value;
+                  editPlayerContext.setDetailContractData(onChangeValue); }}
+                >
+                  <option value=''>Selecciona</option>
+                  { teams?.map(item => {
+                    const selected = editPlayerContext.detailContractData[0].id_club_destino == item.id_equipo ? 'selected' : '';
+                    return (
+                      <option key={item.id_equipo} value={item.id_equipo} selected={selected}>{item.desc_nombre_club}</option>
+                    );
+                  })}
+              </LabelSelectElementAssist>
+            </FormSimplePanelRow>
+          </>
+        }
         <FormSimplePanelRow>
           <LabelElementAssist
             htmlFor='contractStartDate'
@@ -662,7 +763,6 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
             className='panel-field-long'
             autoComplete='off'
             placeholder='Porcentaje (%)'
-            required={true}
             assistanceText=''
             value={editPlayerContext.detailContractData[0].val_pct_pago_atm || ''}
             handleOnChange={e => {
@@ -673,64 +773,68 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
             Porcentaje pago club
           </LabelElementAssist>
         </FormSimplePanelRow>
-        <FormSimplePanelRow>
-          <LabelSelectElement
-            htmlFor='contractIntermediary1'
-            labelText='Intermediario 1'
-            required={true}
-            defaultValue={editPlayerContext.detailContractData[0].id_intermediario_1 || ''}
-            handleOnChange={e => {
-              let onChangeValue = [...editPlayerContext.detailContractData];
-              onChangeValue[0]["id_intermediario_1"] = e.target.value;
-              editPlayerContext.setDetailContractData(onChangeValue); }}
-            >
-              <option value=''>Selecciona</option>
-              { intermediaries?.map(item => {
-                const selected = editPlayerContext.detailContractData[0].id_intermediario_1 == item.id_intermediario ? 'selected' : ''
-                return (
-                  <option key={item.id_intermediario} value={item.id_intermediario} selected={selected}>{item.nombre}</option>
-                );
-              })}
-          </LabelSelectElement>
-        </FormSimplePanelRow>
-        <FormSimplePanelRow>
-          <LabelSelectElement
-            htmlFor='contractIntermediary2'
-            labelText='Intermediario'
-            defaultValue={editPlayerContext.detailContractData[0].id_intermediario_2 || ''}
-            handleOnChange={e => {
-              let onChangeValue = [...editPlayerContext.detailContractData];
-              onChangeValue[0]["id_intermediario_2"] = e.target.value;
-              editPlayerContext.setDetailContractData(onChangeValue); }}
-            >
-              <option value=''>Selecciona</option>
-              { intermediaries?.map(item => {
-                const selected = editPlayerContext.detailContractData[0].id_intermediario_2 == item.id_intermediario ? 'selected' : ''
-                return (
-                  <option key={item.id_intermediario} value={item.id_intermediario} selected={selected}>{item.nombre}</option>
-                );
-              })}
-          </LabelSelectElement>
-        </FormSimplePanelRow>
-        <FormSimplePanelRow>
-          <LabelSelectElement
-            htmlFor='contractIntermediary3'
-            labelText='Intermediario'
-            defaultValue={editPlayerContext.detailContractData[0].id_intermediario_3 || ''}
-            handleOnChange={e => {
-              let onChangeValue = [...editPlayerContext.detailContractData];
-              onChangeValue[0]["id_intermediario_3"] = e.target.value;
-              editPlayerContext.setDetailContractData(onChangeValue); }}
-            >
-              <option value=''>Selecciona</option>
-              { intermediaries?.map(item => {
-                const selected = editPlayerContext.detailContractData[0].id_intermediario_3 == item.id_intermediario ? 'selected' : ''
-                return (
-                  <option key={item.id_intermediario} value={item.id_intermediario} selected={selected}>{item.nombre}</option>
-                );
-              })}
-          </LabelSelectElement>
-        </FormSimplePanelRow>
+        { showIntermediaries && 
+          <>
+            <FormSimplePanelRow>
+              <LabelSelectElement
+                htmlFor='contractIntermediary1'
+                labelText='Intermediario 1'
+                required={true}
+                defaultValue={editPlayerContext.detailContractData[0].id_intermediario_1 || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...editPlayerContext.detailContractData];
+                  onChangeValue[0]["id_intermediario_1"] = e.target.value;
+                  editPlayerContext.setDetailContractData(onChangeValue); }}
+                >
+                  <option value=''>Selecciona</option>
+                  { intermediaries?.map(item => {
+                    const selected = editPlayerContext.detailContractData[0].id_intermediario_1 == item.id_intermediario ? 'selected' : ''
+                    return (
+                      <option key={item.id_intermediario} value={item.id_intermediario} selected={selected}>{item.nombre}</option>
+                    );
+                  })}
+              </LabelSelectElement>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelSelectElement
+                htmlFor='contractIntermediary2'
+                labelText='Intermediario'
+                defaultValue={editPlayerContext.detailContractData[0].id_intermediario_2 || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...editPlayerContext.detailContractData];
+                  onChangeValue[0]["id_intermediario_2"] = e.target.value;
+                  editPlayerContext.setDetailContractData(onChangeValue); }}
+                >
+                  <option value=''>Selecciona</option>
+                  { intermediaries?.map(item => {
+                    const selected = editPlayerContext.detailContractData[0].id_intermediario_2 == item.id_intermediario ? 'selected' : ''
+                    return (
+                      <option key={item.id_intermediario} value={item.id_intermediario} selected={selected}>{item.nombre}</option>
+                    );
+                  })}
+              </LabelSelectElement>
+            </FormSimplePanelRow>
+            <FormSimplePanelRow>
+              <LabelSelectElement
+                htmlFor='contractIntermediary3'
+                labelText='Intermediario'
+                defaultValue={editPlayerContext.detailContractData[0].id_intermediario_3 || ''}
+                handleOnChange={e => {
+                  let onChangeValue = [...editPlayerContext.detailContractData];
+                  onChangeValue[0]["id_intermediario_3"] = e.target.value;
+                  editPlayerContext.setDetailContractData(onChangeValue); }}
+                >
+                  <option value=''>Selecciona</option>
+                  { intermediaries?.map(item => {
+                    const selected = editPlayerContext.detailContractData[0].id_intermediario_3 == item.id_intermediario ? 'selected' : ''
+                    return (
+                      <option key={item.id_intermediario} value={item.id_intermediario} selected={selected}>{item.nombre}</option>
+                    );
+                  })}
+              </LabelSelectElement>
+            </FormSimplePanelRow>
+          </>
+        }        
         <FormSimplePanelRow>
           {/* <LabelElementAssist
             htmlFor='amountTotalSalary'
@@ -782,13 +886,17 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
           handleAddNewFixedSalaryLineEdit={handleAddNewFixedSalaryLineEdit}
           handleDeleteNewFixedSalaryLineEdit={handleDeleteNewFixedSalaryLineEdit}
         />
-        <FormSimplePanel><p><strong>Clausula de rescisión</strong></p></FormSimplePanel>
-        <EditTerminationClauseLine
-          handleChangesOnEditTerminationClause={handleChangesOnEditTerminationClause}
-          handleChangesOnEditTerminationClauseIfToggle={handleChangesOnEditTerminationClauseIfToggle}
-          handleAddEditTerminationClause={handleAddEditTerminationClause}
-          handleDeleteEditTerminationClause={handleDeleteEditTerminationClause}
-        />
+        { showTerminationClause &&
+          <>
+            <FormSimplePanel><p><strong>Clausula de rescisión</strong></p></FormSimplePanel>
+            <EditTerminationClauseLine
+              handleChangesOnEditTerminationClause={handleChangesOnEditTerminationClause}
+              handleChangesOnEditTerminationClauseIfToggle={handleChangesOnEditTerminationClauseIfToggle}
+              handleAddEditTerminationClause={handleAddEditTerminationClause}
+              handleDeleteEditTerminationClause={handleDeleteEditTerminationClause}
+            />
+          </>
+        }
         { editPlayerContext.creatingContractError? 
           <FormSimplePanelRow
           className='cm-u-centerText'>

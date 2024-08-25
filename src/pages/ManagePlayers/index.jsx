@@ -1,53 +1,63 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGetData } from "../../hooks/useGetData";
+import { useSaveData } from "../../hooks/useSaveData";
 import { AsideMenu } from "../../components/AsideMenu";
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
 import { CentralBody, CentralBody__Header, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
 import { TableCellMedium, TableCellShort, TableDataHeader, TableDataRow, TableDataWrapper } from "../../components/UI/layout/tableData";
 import { IconButtonSmallPrimary, IconButtonSmallerError, IconButtonSmallerPrimary, IconButtonSmallerSuccess } from "../../components/UI/objects/buttons";
 import { SymbolAdd, SymbolCheck, SymbolEdit, SymbolError } from "../../components/UI/objects/symbols";
+import { useGlobalContext } from "../../providers/globalContextProvider";
+import { Pagination } from "../../components/UI/components/pagination/pagination";
+
 
 
 export default function ManagePlayersPage () {
-
-  //navegar
+  const globalContext = useGlobalContext();
   const navigate = useNavigate();
 
   // variables y estados locales
-  const rowsByPage = 10;
-  const [searchValue, setSearchValue] = useState('');
-  const [listOrder, setListOrder] = useState(1);
+  const rowsByPage = 5;
+  // const [searchValue, setSearchValue] = useState('');
+  // const [listOrder, setListOrder] = useState(1);
   const [allPlayers, setAllPlayers] = useState([]);
   const [page, setPage] = useState(1);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [rowsTotal, setRowsTotal] = useState(0);
 
-  //pedir todos los jugadores
-  const { responseGetData } = useGetData('players/getAll',{search:'',pagenumber:page,rowspage:rowsByPage})
+  //pedir jugadores
+  const getPlayers = useSaveData();
+
+  const loadPlayers = () => {
+    // console.log('entro en loadPlayers', page, rowsByPage);
+    getPlayers.uploadData('players/getAll',{search:'',pagenumber:page,rowspage:rowsByPage, id_equipo:globalContext.activeEntity})
+  }
 
   useEffect(()=>{
-    if (responseGetData){
-      // console.log(responseGetData);
-      if (responseGetData.status === 200) { 
-        setAllPlayers(responseGetData.data.data);
-      } else if (responseGetData.status === 409) { setErrorMsg('El usuario que estás intentnado crear ya existe')
-      } else if (responseGetData.code === 'ERR_NETWORK') { setErrorMsg('Error de conexión, inténtelo más tarde')
-      } else if (responseGetData.code === 'ERR_BAD_RESPONSE') { setErrorMsg('Error de conexión, inténtelo más tarde')
+    const response = getPlayers.responseUpload;
+    if (response){      
+      if (response.status == 'ok') { 
+        // console.log(response);
+        setAllPlayers(response.data);
+        setRowsTotal(response.rowscount[0].count);
+      } else if (response.status === 409) { setErrorMsg('El usuario que estás intentnado crear ya existe')
+      } else if (response.code === 'ERR_NETWORK') { setErrorMsg('Error de conexión, inténtelo más tarde')
+      } else if (response.code === 'ERR_BAD_RESPONSE') { setErrorMsg('Error de conexión, inténtelo más tarde')
       } else {
         setErrorMsg('No hay datos disponibles. Vuelve a intentarlo');
       }
     }
-  },[responseGetData])
-
-  
+  },[getPlayers.responseUpload]) 
 
   //resetear pagina a 1 cuando cargas la primera vez
-  useEffect(()=> { setPage(1)},[setPage]);
+  useEffect(()=> { 
+    setPage(1);
+  },[]);
 
   //volver a pedir users cuando cambia pagina, orden
-  // useEffect(()=> {
-  //   getUsers(token,searchValue,page);
-  // },[page, listOrder]);
+  useEffect(()=> {
+    loadPlayers();
+  },[page, globalContext.activeEntity]);
 
 
   return (
@@ -81,7 +91,6 @@ export default function ManagePlayersPage () {
               </TitleBar__Tools>
             </HeadContentTitleBar>
           </HeadContent>
-
           <CentralBody>
             <CentralBody__Header>Jugadores</CentralBody__Header>
             <TableDataWrapper className='cm-u-spacer-mb-huge'>
@@ -102,8 +111,7 @@ export default function ManagePlayersPage () {
                   </TableDataRow>
                 }
                 {
-                  allPlayers?.map(player => {
-                    
+                  allPlayers?.map(player => {                    
                     return (
                       <TableDataRow key={player.id_jugador} >
                         <TableCellMedium>{player.nombre}</TableCellMedium>
@@ -136,6 +144,16 @@ export default function ManagePlayersPage () {
                   })
                 }
                 </div>
+            </TableDataWrapper>
+            <TableDataWrapper>
+              <div className='cm-c-tablePagination'>
+                <Pagination
+                  items={allPlayers}
+                  itemsPerPage={rowsByPage}
+                  rowsCountTotal={rowsTotal}
+                  setPage={setPage}
+                />
+              </div>
             </TableDataWrapper>
           </CentralBody>
         </HalfContainerBody>

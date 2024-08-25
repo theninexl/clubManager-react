@@ -49,7 +49,7 @@ export const useManageContractForm = (form, idJugador) => {
   }
 
    //borrar linea de combinación de salario
-   const handleDeleteNewSalaryComb = (index) => {
+  const handleDeleteNewSalaryComb = (index) => {
     const newSalariesArray = [...editPlayerContext.contractSalary];
     newSalariesArray.splice(index,1);
     editPlayerContext.setContractSalary(newSalariesArray);
@@ -116,14 +116,14 @@ export const useManageContractForm = (form, idJugador) => {
   //añadir una nueva linea de rescisión
   const handleAddNewTerminationClause = (number) => {
     editPlayerContext.setContractTermination([...editPlayerContext.contractTermination, {id_clau_rescision:number,flag_bruto_neto:0,dt_inicio:'',dt_fin:'',val_clau_rescision:''}]) 
-   }
+  }
 
   const handleAddEditTerminationClause = (number) => {
     editPlayerContext.setDetailTerminationData([...editPlayerContext.detailTerminationData, {id_clau_rescision:number,flag_bruto_neto:0,dt_inicio:'',dt_fin:'',val_clau_rescision:''}]) 
   }
   
    //borrar linea de rescisión
-   const handleDeleteNewTerminationClause = (index) => {
+  const handleDeleteNewTerminationClause = (index) => {
     const newTerminationArray = [...editPlayerContext.contractTermination];
     newTerminationArray.splice(index,1);
     editPlayerContext.setContractTermination(newTerminationArray);
@@ -192,7 +192,7 @@ export const useManageContractForm = (form, idJugador) => {
 
     const savedContract = {
       // id_contrato: '',
-      val_pct_pago_atm: formData.get('clubPercentage'),
+      val_pct_pago_atm: formData.get('clubPercentage') || 0,
       id_intermediario_1: formData.get('contractIntermediary1'),
       id_intermediario_2: formData.get('contractIntermediary2'),
       id_intermediario_3: formData.get('contractIntermediary3'),
@@ -210,11 +210,9 @@ export const useManageContractForm = (form, idJugador) => {
         } 
       }
 
-      if (Object.keys(data).length === (Object.keys(savedContract).length - 4)) {
-        
+      if (Object.keys(data).length === (Object.keys(savedContract).length - 4)) {        
         // console.log('object keys data', Object.keys(data).length)
-        // console.log('object keys savedContract', Object.keys(savedContract).length)
-        
+        // console.log('object keys savedContract', Object.keys(savedContract).length)        
         // console.log('contrato que guardo', data);
         // console.log('savedContract', savedContract);
         saveNewContract.uploadData('players/createContract',savedContract);
@@ -248,18 +246,34 @@ export const useManageContractForm = (form, idJugador) => {
     }
   },[saveNewContract.responseUpload])
 
-   //borrar contrato
-   const deleteContract = useSaveData();
-   const handleDeleteContract = (id) => {
-    console.log('id que quiero borrar', id);
-     deleteContract.uploadData('players/removeContract', {id_contrato:id.toString()})
-   }
-   useEffect(()=>{
-     if (deleteContract.responseUpload) {
-      console.log('vuelvo a pedir datos de jugador', idJugador);
-       getPlayerDetail(idJugador);
-     }
-   },[deleteContract.responseUpload])
+  //activarDesactivar status contrato
+  const activateContract = useSaveData();  
+
+  const handleSetActiveContract = (id) => {
+    console.log('id contrato', id);
+    activateContract.uploadData('players/changeStatusContract', {id_contrato:id.toString()})
+  }
+
+  useEffect(()=>{
+    const response = activateContract.responseUpload;
+    if (response) {
+      // console.log(response);
+      getPlayerDetail(idJugador);
+    }
+  },[activateContract.responseUpload])
+
+  //borrar contrato
+  const deleteContract = useSaveData();
+  const handleDeleteContract = (id) => {
+  console.log('id que quiero borrar', id);
+    deleteContract.uploadData('players/removeContract', {id_contrato:id.toString()})
+  }
+  useEffect(()=>{
+    if (deleteContract.responseUpload) {
+    console.log('vuelvo a pedir datos de jugador', idJugador);
+      getPlayerDetail(idJugador);
+    }
+  },[deleteContract.responseUpload])
 
 
   //editar un contrato que ya existe
@@ -320,7 +334,7 @@ export const useManageContractForm = (form, idJugador) => {
 
     const editedContract = {
       id_contrato: editPlayerContext.editedContractId,
-      val_pct_pago_atm: formData.get('clubPercentage'),
+      val_pct_pago_atm: formData.get('clubPercentage') || 0,
       id_intermediario_2: formData.get('contractIntermediary2'),
       id_intermediario_3: formData.get('contractIntermediary3'),
     }
@@ -338,7 +352,7 @@ export const useManageContractForm = (form, idJugador) => {
       }
 
       if (Object.keys(data).length === (Object.keys(editedContract).length - 4)) {
-        // console.log('contrato que guardo', editedContract);
+        console.log('contrato que guardo', editedContract);
         saveEditedContract.uploadData('players/editContract',editedContract)        
         editPlayerContext.setEditContract(false);
         editPlayerContext.setDetailContractData(null);
@@ -387,13 +401,14 @@ export const useManageContractForm = (form, idJugador) => {
   //pedir detalle de clausula cuando seleccionamos un contrato
   const getDetalleClausula = useSaveData();
   const handleActivateContract = (id) => {
-    getDetalleClausula.uploadData('players/getDetail_clausula',{id_contrato:id.toString()}); 
+    console.log('pido id contrato seleccionado', id);
+    getDetalleClausula.uploadData('players/getAllDetail_clausula',{id_contrato:id.toString()}); 
   }
 
   useEffect(()=>{
     if (getDetalleClausula.responseUpload) {
-      // console.log('savedVariables list', getDetalleClausula.responseUpload);
-      editPlayerContext.setSavedVariables(getDetalleClausula.responseUpload?.variables)
+      console.log('listado de variables que me devuelve', getDetalleClausula.responseUpload);
+      editPlayerContext.setSavedVariables(getDetalleClausula.responseUpload?.clausulas)
     }
   },[getDetalleClausula.responseUpload])
 
@@ -422,5 +437,6 @@ export const useManageContractForm = (form, idJugador) => {
     handleDeleteContract,
     handleEditContract,
     handleSaveEditedContract,
+    handleSetActiveContract,
   }
 }

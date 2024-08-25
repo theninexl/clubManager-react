@@ -40,6 +40,7 @@ export const EditPlayerHeader = ({ idJugador, }) => {
         </IconButtonSmallPrimary>
         <IconButtonSmallPrimary
           onClick={() => {
+            globalContext.setActiveContractId();
             navigate('/manage-players')}}>
           <SymbolBack />
         </IconButtonSmallPrimary>

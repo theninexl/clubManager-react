@@ -78,7 +78,7 @@ export const LabelElement = ({ children, style, className, htmlFor, type, placeh
   );
 }
 
-export const LabelElementNumber = ({ children, style, className, htmlFor, placeholder, value, handleOnChange, required, disabled, readOnly, autoComplete, role, onBlur }) => {
+export const LabelElementNumber = ({ children, style, className, htmlFor, placeholder, value, handleOnChange, required, disabled, readOnly, autoComplete, role, onBlur, suffix }) => {
   return (
     <label
       htmlFor={htmlFor}
@@ -86,7 +86,7 @@ export const LabelElementNumber = ({ children, style, className, htmlFor, placeh
       style={style} >
       <span>{ children }</span>
       <NumericFormat 
-        suffix={'€'}
+        suffix={suffix || '€'}
         thousandSeparator="."
         decimalSeparator=","
         value={value}
@@ -258,22 +258,24 @@ export const LabelElementToggle = ({ children, style, className, titleClassName,
   return (
     <label
       htmlFor={htmlFor}
-      className={`panel-field-short`}
+      className={`panel-field-short cm-u-non-clickable`}
       style={style} >
       <span
-        className={titleClassName}>{ children }</span>
+        className={`${titleClassName} cm-u-non-clickable`}>{ children }</span>
       <div
         className='cm-c-form-simple__radio-toggle'>
-           <input
-            className={className}
-            type='checkbox'
-            name={htmlFor}
-            id={htmlFor}
-            onChange={handleOnChange}
-            value={value}
-            checked={checked}
-            disabled={disabled}
+          <div className='toggle-container'> 
+            <input
+              className={`${className} cm-u-clickable`}
+              type='checkbox'
+              name={htmlFor}
+              id={htmlFor}
+              onChange={handleOnChange}
+              value={value}
+              checked={checked}
+              disabled={disabled}
             />
+          </div>
         </div>
     </label>
   );
@@ -283,25 +285,28 @@ export const LabelElementToggle2Sides = ({ textLeft, textRight, style, className
   return (
     <label
       htmlFor={htmlFor}
-      className={`panel-field-flexible`}
+      className={`panel-field-flexible cm-u-non-clickable`}
       style={style} >
       <span
-        className={`textLeft ${titleClassNameLeft}`}>{ textLeft }</span>
-      <div
-        className='cm-c-form-simple__radio-toggle'>
-           <input
-            className={className}
-            type='checkbox'
-            name={htmlFor}
-            id={htmlFor}
-            onChange={handleOnChange}
-            value={value}
-            checked={checked}
-            disabled={disabled}
+        className={`textLeft cm-u-non-clickable ${titleClassNameLeft}`}>{ textLeft }</span>
+        <div
+          className='cm-c-form-simple__radio-toggle'
+        >
+          <div className='toggle-container'>        
+            <input
+              className={`${className} cm-u-clickable`}
+              type='checkbox'
+              name={htmlFor}
+              id={htmlFor}
+              onChange={handleOnChange}
+              value={value}
+              checked={checked}
+              disabled={disabled}
             />
+          </div>
         </div>
-        <span
-        className={`textRight ${titleClassNameRight}`}>{ textRight }</span>
+      <span
+        className={`textRight cm-u-non-clickable ${titleClassNameRight}`}>{ textRight }</span>
     </label>
   );
 } 
@@ -310,27 +315,29 @@ export const LabelElementToggle2SidesPanel = ({ children, textLeft, textRight, t
   return (
     <label
       htmlFor={htmlFor}
-      className={`panel-field-short`}
+      className={`panel-field-short cm-u-non-clickable`}
       style={style} >
       <span
-        className={titleClassName}>{ children }</span>
+        className={`${titleClassName} cm-u-non-clickable`}>{ children }</span>
       <span
-        className={`textLeft ${titleClassNameleft}`}>{ textLeft }</span>
+        className={`textLeft cm-u-non-clickable ${titleClassNameleft}`}>{ textLeft }</span>
       <div
         className='cm-c-form-simple__radio-toggle'>
-           <input
-            className={className}
-            type='checkbox'
-            name={htmlFor}
-            id={htmlFor}
-            onChange={handleOnChange}
-            value={value}
-            checked={checked}
-            disabled={disabled}
+          <div className='toggle-container'>
+            <input
+              className={`${className} cm-u-clickable`}
+              type='checkbox'
+              name={htmlFor}
+              id={htmlFor}
+              onChange={handleOnChange}
+              value={value}
+              checked={checked}
+              disabled={disabled}
             />
+          </div>
         </div>
       <span
-        className={`textRight ${titleClassNameRight}`}>{ textRight }</span>
+        className={`textRight cm-u-non-clickable ${titleClassNameRight}`}>{ textRight }</span>
     </label>
   );
 } 

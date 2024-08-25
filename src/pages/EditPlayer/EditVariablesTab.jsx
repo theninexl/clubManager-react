@@ -22,6 +22,13 @@ export const EditVariablesTab = ({ form, idJugador }) => {
     getNewVariableCombos,
     handleSaveNewVariable,
     getClausulasList,
+    handleEditClausula,
+    handleAddNewDetailVariableExpression,
+    handleChangesOnDetailVariableExpression,
+    handleChangesOnDetailVariableExpressionToggle,
+    handleDeleteDetailVariableExpression,
+    handleAddNewDetailCond,
+    handleDeleteDetailCond
   } = useManageVariablesForm( form, idJugador )
 
 
@@ -40,6 +47,7 @@ export const EditVariablesTab = ({ form, idJugador }) => {
       <ListSelectedContract />
       <ListVariablesForSelectedContract
         handleDeleteClausula={handleDeleteClausula}
+        handleEditClausula={handleEditClausula}
       />
       <VariableDataLayer 
         handleChangesOnNewVariableExpression={handleChangesOnNewVariableExpression}
@@ -51,6 +59,12 @@ export const EditVariablesTab = ({ form, idJugador }) => {
         searchExpression={searchExpression}
         searchCondition={searchCondition}
         handleSaveNewVariable={handleSaveNewVariable}
+        handleAddNewDetailVariableExpression={handleAddNewDetailVariableExpression}
+        handleChangesOnDetailVariableExpression={handleChangesOnDetailVariableExpression}
+        handleChangesOnDetailVariableExpressionToggle={handleChangesOnDetailVariableExpressionToggle}
+        handleDeleteDetailVariableExpression={handleDeleteDetailVariableExpression}
+        handleAddNewDetailCond={handleAddNewDetailCond}
+        handleDeleteDetailCond={handleDeleteDetailCond}
       />
     </TableDataWrapper>
   );

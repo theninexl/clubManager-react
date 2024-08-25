@@ -68,6 +68,7 @@ export const EditPlayerContextProvider = ({ children }) => {
     { desc_tipo_contrato: 'Transfer. temporal', id: 3 },
     { desc_tipo_contrato: 'Intermediación', id: 4 },
     { desc_tipo_contrato: 'Liquidación', id: 5 },
+    { desc_tipo_contrato: 'Renovación inscripción', id: 6 },
   ]
 
   const procedureTypes = [
@@ -78,7 +79,8 @@ export const EditPlayerContextProvider = ({ children }) => {
     { desc_tipo_procedimiento: 'Baja cesión', id: 5 },
     { desc_tipo_procedimiento: 'Baja rescisión', id: 6 },
     { desc_tipo_procedimiento: 'Pago cláusula', id: 7 },
-    { desc_tipo_procedimiento: 'Renovación', id: 8 },
+    { desc_tipo_procedimiento: 'Renovación inscripción', id: 8 },
+    { desc_tipo_procedimiento: 'Renovación cesión', id: 9 },
   ]  
 
   const [creatingContractError, setCreatingContractError] = useState();
@@ -115,7 +117,7 @@ export const EditPlayerContextProvider = ({ children }) => {
   //array con combinaciones de clausula rescision que edito
   const [detailTerminationData, setDetailTerminationData] = useState(null);
 
-  //estados variables
+  //estados clausulas
   //donde guardo la info de los posibles combos de cada combinacion Exprexion+Condiciones
   const [variableCombos, setVariableCombos] = useState([]);
   const [variableCombos2, setVariableCombos2] = useState([]);
@@ -150,7 +152,13 @@ export const EditPlayerContextProvider = ({ children }) => {
   //guardar resultados search conditions
   const [searchCondSelected, setSearchCondSelected] = useState(null);
   const [searchCondResults, setSearchCondResults] = useState(null);
-  const [showSearchCondResults, setShowSearchCondResults] = useState(false);  
+  const [showSearchCondResults, setShowSearchCondResults] = useState(false);
+  //mostrar/ocultar capa editar contrato
+  const [showEditVariableLayer, setShowEditVariableLayer] = useState(false)
+  //id variable que se edita
+  const [editedVariableId, setEditedVariableId] = useState(null);
+  //array variable que edito
+  const [detailEditVariableData, setDetailEditVariableData] = useState(null);  
 
 
   return (
@@ -187,6 +195,9 @@ export const EditPlayerContextProvider = ({ children }) => {
         searchCondSelected,setSearchCondSelected,
         searchCondResults,setSearchCondResults,
         showSearchCondResults,setShowSearchCondResults,
+        showEditVariableLayer,setShowEditVariableLayer,
+        editedVariableId,setEditedVariableId,
+        detailEditVariableData,setDetailEditVariableData
       }}
     >
       { children }

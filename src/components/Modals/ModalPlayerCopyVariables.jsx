@@ -57,11 +57,14 @@ export const ModalPlayerCopyVariables = ({ state, setState, playerId, activeCont
 
     //copiar variable
     const copyVariable = useSaveData();
-    const copySelectedVariable = (varId) => copyVariable.uploadData('players/copyClausula', {
-      'id_jugador': playerId.toString(),
-      'id_contrato': activeContractId.toString(),
-      'id_clausula': varId.toString(),
-    });
+    const copySelectedVariable = (varId) => {
+      console.log('copy variable', 'playerID:', playerId, ' idContrato:',activeContractId, ' idClausula:',varId);
+      copyVariable.uploadData('players/copyClausula', {
+        'id_jugador': playerId.toString(),
+        'id_contrato': activeContractId.toString(),
+        'id_clausula': varId.toString(),
+      });
+    }
     useEffect(()=>{
       if (copyVariable.responseUpload?.status == 'ok'){
         setWrittenPlayer('');

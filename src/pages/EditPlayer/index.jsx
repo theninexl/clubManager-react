@@ -11,14 +11,11 @@ import { AsideMenu } from "../../components/AsideMenu";
 
 import { ModalPlayerCopyVariables } from "../../components/Modals/ModalPlayerCopyVariables"
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
-import { CentralBody, HeadContent, HeadContentTitleBar, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
-import { ButtonCatPrimary, ButtonCatTransparent, IconButtonSmallPrimary, } from "../../components/UI/objects/buttons";
-import { SymbolBack, SymbolDelete, } from "../../components/UI/objects/symbols";
+import { CentralBody, HeadContent} from "../../components/UI/layout/centralContentComponents";
 import { FormSimplePanel, FormSimpleRow, LabelElement, SelectIconShorter, } from "../../components/UI/components/form simple/formSimple";
 import { FormTabs, FormTabs__ContentWrapper, FormTabs__LinksWrapper, FormTabs__ToolBarWrapper, TabContent, TabLink } from "../../components/UI/components/formTabs/formTabs";
 import { manageTabs } from "../../domUtilities/manageTabs";
 
-import { ModalBody, ModalContainer, ModalContent__Small, ModalFooter } from "../../components/UI/components/modal/modal";
 import { EditPlayerHeader } from "./EditPlayerHeader";
 import { ModalDeletePlayer } from "../../components/Modals/ModalDeletePlayer";
 

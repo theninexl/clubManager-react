@@ -57,7 +57,7 @@ export default function TopNav () {
 
    useEffect(()=> {
     if (getHeaderDetail.responseGetData) {
-      console.log('Header Detail', getHeaderDetail.responseGetData);
+      // console.log('Header Detail', getHeaderDetail.responseGetData);
       if (getHeaderDetail.responseGetData.status === 401) {
         //seteo signout y account en localStorage y context
         const stringifiedSignOut = JSON.stringify(true);

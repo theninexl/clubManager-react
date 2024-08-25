@@ -6,13 +6,14 @@
     position: fixed;
     $asideGutter: getCols(2) + getGutter(regular) + getGutter(regular);
     width: calc(100% - $asideGutter);
-    z-index: 1;
+    z-index: 99;
 
     &__titleBar {
         display: flex;
         flex-direction: row;
         align-items: center;
-        margin-top: getSize($medium);
+        padding-top: getSize($medium);
+        
         .titleBar {
           $block:&;
           &__title {

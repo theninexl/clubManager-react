@@ -164,23 +164,17 @@ export default function NewPlayerPage () {
       'flag_residencia': data.flag_residencia,      
       'id_posicion': data.id_posicion,
       'valor_mercado': data.valor_mercado,
-      'flag_cotonu': data.flag_cotonu,   
+      'flag_cotonu': data.flag_cotonu,
     }
     
     //console.log('dataSent',dataSent)
-
-    if (data.desc_nombre === '') {
+    
+    if (data.desc_nombre === '' || data.desc_apellido1 === '' || data.valor_mercado === '') {
       setCreatePlayerError('Debe completar la información de los campos obligatorios');
     } else {
-      dataSent['desc_nombre'] = data.desc_nombre;
-      if (data.desc_apellido1=== '') {
-        setCreatePlayerError('Debe completar la información de los campos obligatorios');
-      } else {       
-        dataSent['desc_apellido1'] = data.desc_apellido1;    
-        //console.log('jugador que creooooo', dataSent);    
-        createNewPlayer.uploadData('players/create',dataSent);
-      }
-    }    
+      setCreatePlayerError();
+      createNewPlayer.uploadData('players/create',dataSent);
+    }
   }
 
   //mirar la respuesta de subir datos al crear jugador para setear error
@@ -440,15 +434,16 @@ export default function NewPlayerPage () {
                       </LabelSelectElement>
                     </FormSimplePanelRow>
                     <FormSimplePanelRow>
-                       <LabelElementNumberAssist
+                      <LabelElementNumberAssist
+                        required={true}
                         htmlFor='playerMarketValue'
                         suffix={'€'}
                         className='panel-field-long'
                         placeholder='Introduce euros'
-                        assistanceText='Introduce euros €'
-                       >
+                        assistanceText=''
+                      >
                         Valoración económica mercado
-                       </LabelElementNumberAssist>
+                      </LabelElementNumberAssist>
                     </FormSimplePanelRow>
                     <FormSimplePanelRow>
                       <LabelElementToggle

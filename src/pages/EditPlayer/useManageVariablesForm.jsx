@@ -27,28 +27,28 @@ export const useManageVariablesForm = (form, idJugador) => {
   //añadir una nueva expresion completa a la variable
   const handleAddNewVariableExpression = (number) => {
     editPlayerContext.setVariableExpressions([...editPlayerContext.variableExpressions, {id_ExprComb:number,bonus_prima:'',id_expresion_concatenacion:'', id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]) 
-   }
- 
-  //  //manejar cambios en los campos de la expresion
-   const handleChangesOnNewVariableExpression = (event, index) => {
-     let {name, value} = event.target;
-     let onChangeValue = [...editPlayerContext.variableExpressions];
-     onChangeValue[index][name] = value;
-     editPlayerContext.setVariableExpressions(onChangeValue);
-   }
+  }
 
-   const handleChangesOnNewVariableExpressionToggle = (event, index) => {
+  //manejar cambios en los campos de la expresion
+  const handleChangesOnNewVariableExpression = (event, index) => {
+    let {name, value} = event.target;
+    let onChangeValue = [...editPlayerContext.variableExpressions];
+    onChangeValue[index][name] = value;
+    editPlayerContext.setVariableExpressions(onChangeValue);
+  }
+
+  const handleChangesOnNewVariableExpressionToggle = (event, index) => {
     let {name, checked} = event.target;
     let onChangeValue = [...editPlayerContext.variableExpressions];
     onChangeValue[index][name] = checked ? 1 : 0;
     editPlayerContext.setVariableExpressions(onChangeValue);
   }
- 
-   const handleDeleteNewVariableExpression = (index) => {
-     const newExpressionsArray = [...editPlayerContext.variableExpressions];
-     newExpressionsArray.splice(index,1);
-     editPlayerContext.setVariableExpressions(newExpressionsArray);
-   }
+
+  const handleDeleteNewVariableExpression = (index) => {
+    const newExpressionsArray = [...editPlayerContext.variableExpressions];
+    newExpressionsArray.splice(index,1);
+    editPlayerContext.setVariableExpressions(newExpressionsArray);
+  }
 
    //añadir nueva condicion al crear variable
   const handleAddNewCond = (indexExpr,indexNewCond) => {
@@ -66,6 +66,134 @@ export const useManageVariablesForm = (form, idJugador) => {
     newExpressionsArray[indexExpr]["condiciones"] = newConditionsArray;    
     editPlayerContext.setVariableExpressions(newExpressionsArray);
   }
+
+  //añadir una linea de expresion nueva editando una variable
+  const handleAddNewDetailVariableExpression = () => {
+    console.log('add nueva linea de expresion');
+    const newIndex = editPlayerContext.detailEditVariableData[0].expresiones.length;
+    const newExpression = {
+      id_ExprComb: newIndex,
+      bonus_prima: 0,
+      id_expresion_concatenacion: '',
+      id_expresion: '',
+      id_expresion_operador: '',
+      id_expresion_valor: '',
+      condiciones: []
+    };
+
+    const updatedDetailEditVariableData = [...editPlayerContext.detailEditVariableData]
+    const targetItem = updatedDetailEditVariableData[0];
+    targetItem.expresiones = [...targetItem.expresiones, newExpression];
+
+    editPlayerContext.setDetailEditVariableData(updatedDetailEditVariableData);
+  };
+
+  //manejar cambios en la nueva linea de expresión editando una variable
+  const handleChangesOnDetailVariableExpression = (event, index) => {
+    const { name, value } = event.target;
+
+    const updatedDetailEditVariableData = [...editPlayerContext.detailEditVariableData];
+    const targetItem = { ...updatedDetailEditVariableData[0] };
+    const updatedExpressions = [...targetItem.expresiones];
+
+    // Actualiza el campo específico de la expresión en la posicion index
+    updatedExpressions[index] = { 
+      ...updatedExpressions[index], 
+      [name]: value 
+    };
+
+    targetItem.expresiones = updatedExpressions;
+    updatedDetailEditVariableData[0] = targetItem;
+    editPlayerContext.setDetailEditVariableData(updatedDetailEditVariableData);
+  };
+
+  //manejar cambios en el toggle bonusprima editando una variable
+  const handleChangesOnDetailVariableExpressionToggle = (event, index) => {
+    const { name, checked } = event.target;
+    const updatedDetailEditVariableData = [...editPlayerContext.detailEditVariableData];
+    const targetItem = { ...updatedDetailEditVariableData[0] };
+    const updatedExpressions = [...targetItem.expresiones];
+
+    // Copia la expresión específica que se va a modificar
+    const updatedExpression = { ...updatedExpressions[index] };
+
+    // Actualiza la clave 'bonus_prima' según el estado del checkbox
+    updatedExpression.bonus_prima = checked ? true : false;
+
+    if (checked) {
+        // Si el check se activa, añade una nueva condición vacía si no existe ya
+        if (updatedExpression.condiciones.length === 0) {
+            updatedExpression.condiciones.push({
+                id_condicion: '',
+                id_condicion_operador: '',
+                id_condicion_tipo: '',
+                id_condicion_valor: ''
+            });
+        }
+    } else {
+        // Si el check se desactiva, vacía el array de condiciones
+        updatedExpression.condiciones = [];
+    }
+
+    // Reemplaza la expresión actualizada en el array de expresiones
+    updatedExpressions[index] = updatedExpression;
+    targetItem.expresiones = updatedExpressions;
+    updatedDetailEditVariableData[0] = targetItem;
+    editPlayerContext.setDetailEditVariableData(updatedDetailEditVariableData);
+
+  };
+
+  //manejar el borrado de una nueva linea de expresión editando una variable
+  const handleDeleteDetailVariableExpression = (index) => {
+    const updatedDetailEditVariableData = [...editPlayerContext.detailEditVariableData];
+    const targetItem = updatedDetailEditVariableData[0];
+
+    targetItem.expresiones.splice(index, 1);
+
+    // Actualiza el estado con el nuevo array de expresiones
+    editPlayerContext.setDetailEditVariableData(updatedDetailEditVariableData);
+  };
+
+  //añadir una nueva linea de condicion editando una variable
+  const handleAddNewDetailCond = (indexExpr) => {
+    const updatedDetailEditVariableData = [...editPlayerContext.detailEditVariableData];
+    const targetItem = { ...updatedDetailEditVariableData[0] };
+    const updatedExpressions = [...targetItem.expresiones];
+    
+    // Clona la expresión específica
+    const updatedExpression = { ...updatedExpressions[indexExpr] };
+
+    // Añade una nueva condición vacía al final del array `condiciones`
+    updatedExpression.condiciones.push({
+        id_condicion: '',
+        id_condicion_operador: '',
+        id_condicion_tipo: '',
+        id_condicion_valor: ''
+    });
+
+    // Actualiza la expresión en `expresiones`
+    updatedExpressions[indexExpr] = updatedExpression;
+    targetItem.expresiones = updatedExpressions;
+    updatedDetailEditVariableData[0] = targetItem;
+    editPlayerContext.setDetailEditVariableData(updatedDetailEditVariableData);
+  };
+
+  //borrar una nueva linea de condiciones editando una variable
+  const handleDeleteDetailCond = (indexExpr, indexCond) => {
+    const updatedDetailEditVariableData = [...editPlayerContext.detailEditVariableData];
+    const targetItem = { ...updatedDetailEditVariableData[0] };
+    const updatedExpressions = [...targetItem.expresiones];
+    const updatedExpression = { ...updatedExpressions[indexExpr] };
+
+    // Elimina la condición en el índice `indexCond`
+    updatedExpression.condiciones.splice(indexCond, 1);
+
+    // Actualiza la expresión en `expresiones`
+    updatedExpressions[indexExpr] = updatedExpression;
+    targetItem.expresiones = updatedExpressions;
+    updatedDetailEditVariableData[0] = targetItem;
+    editPlayerContext.setDetailEditVariableData(updatedDetailEditVariableData);
+  };
   
   //pedir datos para buscar en una expresion tipo search
   const getExprSearch = useSaveData();
@@ -95,6 +223,26 @@ export const useManageVariablesForm = (form, idJugador) => {
     }
   },[getCondSearch.responseUpload])
 
+  //pedir datos para editar una variable que ya existe
+  const getClausulaDetail = useSaveData();
+
+  const handleEditClausula = (id) => {
+    getClausulaDetail.uploadData('players/getDetail_clausula',{id_clausula:id})  }
+
+  useEffect(()=>{
+    const response = getClausulaDetail.responseUpload;
+
+    if(response) {
+      console.log('detalle variable que quiero editar', response);
+      //guardar datos variable
+      editPlayerContext.setDetailEditVariableData(response.variables)
+      //capa edicion variable
+      editPlayerContext.setShowEditVariableLayer(true);
+    }
+
+  },[getClausulaDetail.responseUpload])
+
+
 
   //borrar una variable
   const deleteClausula = useSaveData();
@@ -105,6 +253,7 @@ export const useManageVariablesForm = (form, idJugador) => {
   useEffect(()=>{
     if (deleteClausula.responseUpload){
       //vuelve a pedir el detalle de clausula con el listado de arriba
+      console.log('he borrado la clausula, y vuelvo a pedir las clausulas para el contrato:', globalContext.activeContractId)
       getClausulasList(globalContext.activeContractId); 
     }
   },[deleteClausula.responseUpload])
@@ -112,12 +261,12 @@ export const useManageVariablesForm = (form, idJugador) => {
   //pedir clausulas guardadas para un contrato
   const getDetalleClausulasList = useSaveData();
   const getClausulasList = (id) => {
-    getDetalleClausulasList.uploadData('players/getDetail_clausula',{id_contrato:id}); 
+    getDetalleClausulasList.uploadData('players/getAllDetail_clausula',{id_contrato:id}); 
   }
 
   useEffect(()=>{
     if (getDetalleClausulasList.responseUpload) {
-      editPlayerContext.setSavedVariables(getDetalleClausulasList.responseUpload?.variables)
+      editPlayerContext.setSavedVariables(getDetalleClausulasList.responseUpload?.clausulas)
     }
   },[getDetalleClausulasList.responseUpload])
 
@@ -128,15 +277,14 @@ export const useManageVariablesForm = (form, idJugador) => {
     e.preventDefault();
     //console.log('form en hook variables', form);
     const recursiveBlocksVal = document.getElementById('recursiveBlocks').checked;
+    const flagBrutoNetoVal = document.getElementById('flag_bruto_neto').checked;
     
     const formData = new FormData(form.current);
-    // const amortizableVal = document.getElementById('amortizable').checked;
-    //const bonusPrimaVal = document.getElementById('bonus_prima').checked;
+  
     const expresiones = editPlayerContext.variableExpressions;
-    //procesar expresiones para quitar las condiciones a aquellas que no tengan por ser tipo prima
+    //procesar expresiones para quitar las condiciones a aquellas que no tengan por ser tipo bonus
     const findNoComb = expresiones.filter(item => item.bonus_prima !== 1);
-    // console.log('findNoComb', findNoComb);
-    // console.log('expresiones', expresiones)
+
     const newExpresiones = [...expresiones]
     findNoComb.map(item => {
       newExpresiones[item.id_ExprComb -1]['condiciones'] = []
@@ -151,9 +299,11 @@ export const useManageVariablesForm = (form, idJugador) => {
       fecha_desde: formData.get('dateSince'),
       fecha_hasta: formData.get('dateTo'),
       // amortizable: amortizableVal ? 1 : 0,
+      flag_bruto_neto: flagBrutoNetoVal ? 1 : 0,
       num_importe: formData.get('variableAmount'),
       id_beneficiario: formData.get('variableBeneficiary'),
       id_anexo: formData.get('variableAnexoVI'),
+      new:true
     }
 
     const dataSent = {
@@ -162,7 +312,7 @@ export const useManageVariablesForm = (form, idJugador) => {
     }
 
     // console.log('variable que guardo', data);
-    // console.log('variable que mando', dataSent);
+    console.log('variable que mando', dataSent);
     saveClausula.uploadData('players/createClausula', dataSent);
     // setSavedVariables([...savedVariables, dataSent]);    
   }
@@ -192,8 +342,15 @@ export const useManageVariablesForm = (form, idJugador) => {
     handleDeleteNewCond,
     searchExpression,
     searchCondition,
+    handleEditClausula,
     handleDeleteClausula,
     handleSaveNewVariable,
     getClausulasList,
+    handleAddNewDetailVariableExpression,
+    handleChangesOnDetailVariableExpression,
+    handleChangesOnDetailVariableExpressionToggle,
+    handleDeleteDetailVariableExpression,
+    handleAddNewDetailCond,
+    handleDeleteDetailCond
   }
 }

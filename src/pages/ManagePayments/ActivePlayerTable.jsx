@@ -71,8 +71,8 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   useEffect (() => {
     if (getPayments.responseUpload) {
       if (getPayments.responseUpload.status == 'ok') {
-        // console.log("tengo resultados buenos");
-        // console.log(getPayments.responseUpload);
+        console.log("tengo resultados buenos");
+        console.log(getPayments.responseUpload);
         // setData(getPayments.responseUpload.registros);
         setDynamicData(getPayments.responseUpload.registros);
         setErrorMsg(null)

@@ -52,6 +52,18 @@ export const SymbolError = () => {
   );
 }
 
+export const SymbolNext = () => {
+  return (
+    <span className="material-symbols-outlined">arrow_forward_ios</span>
+  );
+}
+
+export const SymbolPrevious = () => {
+  return (
+    <span className="material-symbols-outlined">arrow_back_ios</span>
+  );
+}
+
 
 export const SymbolGroup = () => {
   return (

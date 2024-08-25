@@ -36,7 +36,8 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
     {id: 7, name: "Cumplido real validado", color: "#A3F5FF"},
     {id: 8, name: "No se puede pagar", color: "#FFA3FB"},
     {id: 9, name: "Se puede pagar", color: "#E9FFA3"},
-    {id: 10, name: "Pagado", color: "#B7FFA3"}
+    {id: 10, name: "Pagado", color: "#B7FFA3"},
+    {id: 11, name: "Liquidación", color: "#57b1fc"},
   ]
 
   const getStatusColor = (statusId) => {
@@ -64,42 +65,50 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
                 backgroundColor: getStatusColor(getValue().status),
            
                 }}>
-                <input
-                  value={value.amount}
-                  onChange={(e) => {                    
-                    let onChangeValue = {...value}
-                    onChangeValue.amount = e.target.value;
-                    setValue(onChangeValue)
-                  }}
-                  onBlur={() => {
-                    updateData(row.index, column, value)
-                  }}
-                  style={{
-                    border: '1px solid lightgray',
-                    borderRadius: '4px',
-                    display: 'flex',
-                    flexGrow: 0,
-                    width: '50%',
-                    height: '28px',
-                  }}
-                />
-                { column.id !== 'Importe' &&
-                  <DropDownMenu key={uuidv4()}>
-                    { STATUSES.map(item => { 
-                      return (
-                        <>
-                          <DropdownItem 
-                            key={uuidv4()}
-                            onClick={ () => {
-                              updateData( row.index, column, {mes:value.mes, amount:value.amount, status:item.id, flag_suma:value.flag_suma, id_calendario:value.id_calendario})
-                            }}
-                          >
-                            <ColorIcon Color={item.color} />{item.name}
-                          </DropdownItem>
-                        </>
+                  {/* si es la columna de importe total solo monstramos el amount, y no el campo editable */}
+                  { column.id == 'Importe' &&
+                    <>
+                      {value.amount}
+                    </>
+                  }
+                  { column.id !== 'Importe' &&
+                  <>
+                    <input
+                      value={value.amount}
+                      onChange={(e) => {                    
+                        let onChangeValue = {...value}
+                        onChangeValue.amount = e.target.value;
+                        setValue(onChangeValue)
+                      }}
+                      onBlur={() => {
+                        updateData(row.index, column, value)
+                      }}
+                      style={{
+                        border: '1px solid lightgray',
+                        borderRadius: '4px',
+                        display: 'flex',
+                        flexGrow: 0,
+                        width: '50%',
+                        height: '28px',
+                      }}
+                    />                
+                    <DropDownMenu key={uuidv4()}>
+                      { STATUSES.map(item => { 
+                        return (
+                          <>
+                            <DropdownItem 
+                              key={uuidv4()}
+                              onClick={ () => {
+                                updateData( row.index, column, {mes:value.mes, amount:value.amount, status:item.id, flag_suma:value.flag_suma, id_calendario:value.id_calendario})
+                              }}
+                            >
+                              <ColorIcon Color={item.color} />{item.name}
+                            </DropdownItem>
+                          </>
+                        )}
                       )}
-                    )}
-                  </DropDownMenu>
+                    </DropDownMenu>
+                  </>
                 }
               </div>
             </>
@@ -246,9 +255,9 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
               ) 
                 &&
                 <>
-                   <div 
-                   className='cell-data'
-                   style={{ 
+                  <div 
+                    className='cell-data'
+                    style={{ 
                     backgroundColor: !table.options.state.pasteState ? '' : 'yellow',
                     border: !table.options.state.pastedCellState ? '' : (table.options.state.cellCopy?.column?.id == column.id && table.options.state.cellCopy?.row == row.id) ? table.options.state.insertCanSave ? '' : '2px solid red' : '',                
                     }}
@@ -383,7 +392,7 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
                           border: !table.options.state.pastedCellState ? '' : table.options.state.cellCopy?.column?.id == column.id ? table.options.state.insertCanSave ? '' : '2px solid red' :'',                
                           }}                    
                           >
-                           {value.amount}
+                            {value.amount}
                           </div>
                         </>
                       }

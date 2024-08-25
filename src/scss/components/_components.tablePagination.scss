@@ -1,0 +1,40 @@
+.cm-c-tablePagination {
+  $block: &;
+  display: block;
+  width: 100%;
+
+  .pagination {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .page-item {
+      align-items: center;
+      border-radius: getSize($small);
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      cursor: pointer;
+      height: getSize($large);
+      width: getSize($large);
+
+      &.active {
+        background-color: getColor(scarpaFlowLightFade);
+      }
+
+      .page-link {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+
+        &:hover {
+          text-decoration: none;
+        }
+      }
+    }
+  }
+}
