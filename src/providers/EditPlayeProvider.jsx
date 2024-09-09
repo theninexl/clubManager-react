@@ -43,7 +43,7 @@ export const EditPlayerContextProvider = ({ children }) => {
       beneficiario:'',
       salaryComb: [
         {
-          id_salario_fijo:1,
+          id_salario_fijo:'',
           flag_bruto_neto:0,
           dt_inicio:'',
           dt_fin:'',
@@ -54,7 +54,7 @@ export const EditPlayerContextProvider = ({ children }) => {
   ]
   const defaultContractTerminationArray = [
     {
-      id_clau_rescision:1,
+      id_clau_rescision:'',
       flag_bruto_neto:0,
       dt_inicio:'',
       dt_fin:'',
@@ -84,6 +84,7 @@ export const EditPlayerContextProvider = ({ children }) => {
   ]  
 
   const [creatingContractError, setCreatingContractError] = useState();
+  const [creatingClauseError, setCreatingClauseError] = useState();
 
 
   //contrato activo
@@ -172,6 +173,7 @@ export const EditPlayerContextProvider = ({ children }) => {
         contractTypes,
         procedureTypes,
         creatingContractError,setCreatingContractError,
+        creatingClauseError,setCreatingClauseError,
         activeContractData,setActiveContractData,
         newContract,setNewContract,
         newContractDataForSalaryComb,setNewContractDataForSalaryComb,

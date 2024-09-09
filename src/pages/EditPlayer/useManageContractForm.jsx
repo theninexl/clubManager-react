@@ -21,7 +21,7 @@ export const useManageContractForm = (form, idJugador) => {
       beneficiario:'',
       salaryComb: [
         {
-          id_salario_fijo:1,
+          id_salario_fijo:'',
           flag_bruto_neto:0,
           dt_inicio:'',
           dt_fin:'',
@@ -38,7 +38,7 @@ export const useManageContractForm = (form, idJugador) => {
       id_contraparte:'',
       salaryComb: [
         {
-          id_salario_fijo:1,
+          id_salario_fijo:'',
           flag_bruto_neto:0,
           dt_inicio:'',
           dt_fin:'',
@@ -70,6 +70,16 @@ export const useManageContractForm = (form, idJugador) => {
     editPlayerContext.setContractSalary(onChangeValue);
   }
 
+  //manejar cambios en los campos de la linea de combinación de salario si es edicion de contrato
+  const handleChangesOnEditSalaryComb = (event, index) => {
+    let {name, value} = event.target;
+    // let onChangeValue = [...editPlayerContext.contractSalary];
+    let onChangeValue = [...editPlayerContext.detailSalaryData];
+    onChangeValue[index]['id_contraparte'] = value;
+    // editPlayerContext.setContractSalary(onChangeValue);
+    editPlayerContext.setDetailSalaryData(onChangeValue);
+  }
+
   const handleChangesOnNewSalaryCombIfToggle = (event, index) => {
     let {name, checked} = event.target;
     let onChangeValue = [...editPlayerContext.contractSalary];
@@ -80,7 +90,8 @@ export const useManageContractForm = (form, idJugador) => {
   //añadir una nueva linea de salario fijo a la combinacion de salario
   const handleAddNewFixedSalaryLine = (indexComb, indexNewFSL) => {
     let onChangeValue = [...editPlayerContext.contractSalary];
-    onChangeValue[indexComb]["salaryComb"][indexNewFSL] = {id_salario_fijo:indexNewFSL+1,flag_bruto_neto:'0',dt_inicio:'',dt_fin:'',val_salario_fijo:''};
+    // onChangeValue[indexComb]["salaryComb"][indexNewFSL] = {id_salario_fijo:indexNewFSL+1,flag_bruto_neto:'0',dt_inicio:'',dt_fin:'',val_salario_fijo:''};
+    onChangeValue[indexComb]["salaryComb"][indexNewFSL] = {id_salario_fijo:'',flag_bruto_neto:'0',dt_inicio:'',dt_fin:'',val_salario_fijo:''};
     console.log(onChangeValue);
     editPlayerContext.setContractSalary(onChangeValue);
   }
@@ -88,7 +99,8 @@ export const useManageContractForm = (form, idJugador) => {
   //añadir una nueva linea de salario fijo a la combinacion de salario
   const handleAddNewFixedSalaryLineEdit = (indexComb, indexNewFSL) => {
     let onChangeValue = [...editPlayerContext.detailSalaryData];
-    onChangeValue[indexComb]["salaryComb"][indexNewFSL] = {id_salario_fijo:indexNewFSL+1,flag_bruto_neto:'0',dt_inicio:'',dt_fin:'',val_salario_fijo:''};
+    // onChangeValue[indexComb]["salaryComb"][indexNewFSL] = {id_salario_fijo:indexNewFSL+1,flag_bruto_neto:'0',dt_inicio:'',dt_fin:'',val_salario_fijo:''};
+    onChangeValue[indexComb]["salaryComb"][indexNewFSL] = {id_salario_fijo:'',flag_bruto_neto:'0',dt_inicio:'',dt_fin:'',val_salario_fijo:''};
     console.log(onChangeValue);
     editPlayerContext.setDetailSalaryData(onChangeValue);
   }
@@ -115,11 +127,11 @@ export const useManageContractForm = (form, idJugador) => {
 
   //añadir una nueva linea de rescisión
   const handleAddNewTerminationClause = (number) => {
-    editPlayerContext.setContractTermination([...editPlayerContext.contractTermination, {id_clau_rescision:number,flag_bruto_neto:0,dt_inicio:'',dt_fin:'',val_clau_rescision:''}]) 
+    editPlayerContext.setContractTermination([...editPlayerContext.contractTermination, {id_clau_rescision:'',flag_bruto_neto:0,dt_inicio:'',dt_fin:'',val_clau_rescision:''}]) 
   }
 
   const handleAddEditTerminationClause = (number) => {
-    editPlayerContext.setDetailTerminationData([...editPlayerContext.detailTerminationData, {id_clau_rescision:number,flag_bruto_neto:0,dt_inicio:'',dt_fin:'',val_clau_rescision:''}]) 
+    editPlayerContext.setDetailTerminationData([...editPlayerContext.detailTerminationData, {id_clau_rescision:'',flag_bruto_neto:0,dt_inicio:'',dt_fin:'',val_clau_rescision:''}]) 
   }
   
    //borrar linea de rescisión
@@ -203,7 +215,7 @@ export const useManageContractForm = (form, idJugador) => {
       for (const [key, value] of Object.entries(data)) {        
         if (value == '-1' || value == '') {
           console.log('error en ',key,' que tiene value',value)
-          editPlayerContext.setCreatingContractError('Es necesario rellenar todos los campos y al menos un intermediario');
+          editPlayerContext.setCreatingContractError('Es necesario rellenar todos los campos');
           break;
         } else {
           savedContract[key] = value;
@@ -214,7 +226,7 @@ export const useManageContractForm = (form, idJugador) => {
         // console.log('object keys data', Object.keys(data).length)
         // console.log('object keys savedContract', Object.keys(savedContract).length)        
         // console.log('contrato que guardo', data);
-        // console.log('savedContract', savedContract);
+        console.log('savedContract', savedContract);
         saveNewContract.uploadData('players/createContract',savedContract);
         editPlayerContext.setNewContract(false);
         //resetear contenidos salario fijo
@@ -285,7 +297,7 @@ export const useManageContractForm = (form, idJugador) => {
 
   useEffect(()=>{
     if(getDetailContract.responseUpload) {
-      // console.log('detailContract',getDetailContract.responseUpload);
+      console.log('detailContract',getDetailContract.responseUpload);
       editPlayerContext.setDetailContractData(getDetailContract.responseUpload.contrato);
       editPlayerContext.setDetailSalaryData(getDetailContract.responseUpload.salario_fijo);
       editPlayerContext.setDetailTerminationData(getDetailContract.responseUpload.clausula_rescision);
@@ -296,7 +308,7 @@ export const useManageContractForm = (form, idJugador) => {
     if (editPlayerContext.detailContractData) {
       //console.log(detailContractData);
       editPlayerContext.setNewContract(false);
-      editPlayerContext.setContractSalary([{id_salario_fijo:1,flag_bruto_neto:0,fch_inicio:'',fch_fin:'',num_salario_fijo:''}]); 
+      editPlayerContext.setContractSalary([{id_salario_fijo:'',flag_bruto_neto:0,fch_inicio:'',fch_fin:'',num_salario_fijo:''}]); 
       // window.scrollTo(0,0);
       editPlayerContext.setEditContract(true);
     }
@@ -328,6 +340,7 @@ export const useManageContractForm = (form, idJugador) => {
       dt_inicio_contrato: formData.get('contractStartDate'),
       dt_inicio_contrato_real: formData.get('contractRealStartDate'),
       dt_fin_contrato: formData.get('contractEndDate'),
+      id_intermediario_1: formData.get('contractIntermediary1'),
       val_imp_salario_total: formData.get('amountTotalSalary'),      
       salario_fijo:salarios,    
     }
@@ -412,6 +425,14 @@ export const useManageContractForm = (form, idJugador) => {
     }
   },[getDetalleClausula.responseUpload])
 
+  useEffect(()=>{
+    console.log('contract Salary', editPlayerContext.contractSalary);
+  },[editPlayerContext.contractSalary])
+
+  useEffect(()=>{
+    console.log('detail Salary Data', editPlayerContext.detailSalaryData);
+  },[editPlayerContext.detailSalaryData])
+
   
 
   return {
@@ -420,6 +441,7 @@ export const useManageContractForm = (form, idJugador) => {
     handleAddNewSalaryCombEdit,
     handleDeleteNewSalaryCombEdit,
     handleChangesOnNewSalaryComb,
+    handleChangesOnEditSalaryComb,
     handleChangesOnNewSalaryCombIfToggle,
     handleAddNewFixedSalaryLine,
     handleAddNewFixedSalaryLineEdit,

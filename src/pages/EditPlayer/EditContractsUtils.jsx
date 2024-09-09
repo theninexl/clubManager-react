@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 //buscar nombre de equipo para rellenar beneficiarios 
 const searchName = (id,stateList,keyId,keyName ) => {
   const result = stateList.find(item => item[keyId] == id);
+  
   return result[keyName];
 }
 
@@ -118,7 +119,7 @@ export const ListPlayerContracts = ({ handleDeleteContract,handleEditContract, h
   )
 }
 
-export const ContractDataLayer = ({ form, idJugador, teams, intermediaries, handleAddNewSalaryComb, handleChangesOnNewSalaryComb,handleDeleteNewSalaryComb, handleAddNewSalaryCombEdit, handleDeleteNewSalaryCombEdit, handleAddNewFixedSalaryLine,handleDeleteNewFixedSalaryLine, handleDeleteNewFixedSalaryLineEdit, handleAddNewFixedSalaryLineEdit, handleAddNewTerminationClause, handleDeleteNewTerminationClause, handleAddEditTerminationClause,  handleDeleteEditTerminationClause, handleChangesOnNewTerminationClause, handleChangesOnNewTerminationClauseIfToggle, handleChangesOnEditTerminationClause, handleChangesOnEditTerminationClauseIfToggle,  handleAddNewContract, handleSaveEditedContract  }) => {
+export const ContractDataLayer = ({ form, idJugador, teams, intermediaries, handleAddNewSalaryComb, handleChangesOnNewSalaryComb,handleChangesOnEditSalaryComb, handleDeleteNewSalaryComb, handleAddNewSalaryCombEdit, handleDeleteNewSalaryCombEdit, handleAddNewFixedSalaryLine,handleDeleteNewFixedSalaryLine, handleDeleteNewFixedSalaryLineEdit, handleAddNewFixedSalaryLineEdit, handleAddNewTerminationClause, handleDeleteNewTerminationClause, handleAddEditTerminationClause,  handleDeleteEditTerminationClause, handleChangesOnNewTerminationClause, handleChangesOnNewTerminationClauseIfToggle, handleChangesOnEditTerminationClause, handleChangesOnEditTerminationClauseIfToggle,  handleAddNewContract, handleSaveEditedContract  }) => {
 
   const editPlayerContext = useEditPlayerDataContext();
     
@@ -176,6 +177,7 @@ export const ContractDataLayer = ({ form, idJugador, teams, intermediaries, hand
               handleSaveEditedContract={handleSaveEditedContract}
               handleAddEditTerminationClause={handleAddEditTerminationClause}
               handleDeleteEditTerminationClause={handleDeleteEditTerminationClause}
+              handleChangesOnEditSalaryComb={handleChangesOnEditSalaryComb}
             />
           }
           {/* {renderEditContractLayer()} */}
@@ -468,7 +470,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
             { (editPlayerContext.newContractDataForSalaryComb.descType === 1 || editPlayerContext.newContractDataForSalaryComb.descType === 0) ? 'Salario fijo' : 'Importe fijo'}
             </strong></p>
         </FormSimplePanelRow>
-
+        aaa
         <NewSalaryLine
           handleAddNewSalaryComb={handleAddNewSalaryComb}
           handleChangesOnNewSalaryComb={handleChangesOnNewSalaryComb}
@@ -479,7 +481,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
           intermediaries={intermediaries}
           idJugador={idJugador}
         />
-        
+        bbb
 
         { showTerminationClause &&
           <>
@@ -541,7 +543,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
   
 }
 
-const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalaryCombEdit, handleDeleteNewSalaryCombEdit, handleAddNewFixedSalaryLineEdit, handleDeleteNewFixedSalaryLineEdit, handleSaveEditedContract, handleChangesOnEditTerminationClause, handleChangesOnEditTerminationClauseIfToggle, handleAddEditTerminationClause,  handleDeleteEditTerminationClause, }) => {
+const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalaryCombEdit, handleDeleteNewSalaryCombEdit, handleAddNewFixedSalaryLineEdit, handleDeleteNewFixedSalaryLineEdit, handleSaveEditedContract, handleChangesOnEditTerminationClause, handleChangesOnEditTerminationClauseIfToggle, handleAddEditTerminationClause, handleDeleteEditTerminationClause, handleChangesOnEditSalaryComb }) => {
   const editPlayerContext = useEditPlayerDataContext();
 
   const [showTerminationClause,setShowTerminationClause] = useState(false);
@@ -885,6 +887,7 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
           handleDeleteNewSalaryCombEdit={handleDeleteNewSalaryCombEdit}
           handleAddNewFixedSalaryLineEdit={handleAddNewFixedSalaryLineEdit}
           handleDeleteNewFixedSalaryLineEdit={handleDeleteNewFixedSalaryLineEdit}
+          handleChangesOnEditSalaryComb={handleChangesOnEditSalaryComb}
         />
         { showTerminationClause &&
           <>
@@ -935,7 +938,8 @@ const NewSalaryLine = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb, h
           const SalaryComb = item.id_salaryComb; 
 
           return (
-            <div key={item.id_salaryComb} data-id={item.id_salaryComb}  className='cm-u-spacer-mb-bigger'>
+            <div key={SalaryComb} data-id={SalaryComb}  className='cm-u-spacer-mb-bigger'>
+              ccc
               { editPlayerContext.newContractDataForSalaryComb.descType === 5 &&
                 <>
                   <FormSimplePanelRow>
@@ -967,7 +971,8 @@ const NewSalaryLine = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb, h
                 index={index}
                 handleAddNewFixedSalaryLine={handleAddNewFixedSalaryLine}
                 handleDeleteNewFixedSalaryLine={handleDeleteNewFixedSalaryLine}
-                 />
+              />
+              ddd
             </div>
           );
         })
@@ -976,7 +981,7 @@ const NewSalaryLine = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb, h
   )
 }
 
-const EditSalaryLine = ({ teams, intermediaries, idJugador, handleAddNewSalaryCombEdit, handleDeleteNewSalaryCombEdit, handleAddNewFixedSalaryLineEdit, handleDeleteNewFixedSalaryLineEdit }) => {
+const EditSalaryLine = ({ teams, intermediaries, idJugador, handleAddNewSalaryCombEdit, handleDeleteNewSalaryCombEdit, handleAddNewFixedSalaryLineEdit, handleDeleteNewFixedSalaryLineEdit, handleChangesOnEditSalaryComb }) => {
   const editPlayerContext = useEditPlayerDataContext();
   return (
     <>
@@ -1004,7 +1009,7 @@ const EditSalaryLine = ({ teams, intermediaries, idJugador, handleAddNewSalaryCo
                         editPlayerContext.setDetailSalaryData(onChangeValue);           
                         }}
                     >
-                      Importe en euros111*
+                      Importe en euros*
                     </LabelElementNumberAssist>
                 </FormSimplePanelRow>
               </>
@@ -1018,6 +1023,7 @@ const EditSalaryLine = ({ teams, intermediaries, idJugador, handleAddNewSalaryCo
               salaryComb={SalaryComb}
               handleAddNewSalaryCombEdit={handleAddNewSalaryCombEdit}
               handleDeleteNewSalaryCombEdit={handleDeleteNewSalaryCombEdit}
+              handleChangesOnEditSalaryComb={handleChangesOnEditSalaryComb}
             />
 
             <SalaryLineItemEdit
@@ -1040,6 +1046,7 @@ const BeneficiaryItem = ({ item, index, SalaryComb, handleAddNewSalaryComb, hand
   if (editPlayerContext.newContractDataForSalaryComb.descType > 1) {
     return (
       <>
+        eee
         <FormSimplePanelRow>
           <LabelSelectShorterElement
             htmlFor='beneficiario'
@@ -1081,7 +1088,7 @@ const BeneficiaryItem = ({ item, index, SalaryComb, handleAddNewSalaryComb, hand
   }
 }
 
-const BeneficiaryItemEdit = ({ item, index, teams, intermediaries, idJugador, salaryComb, handleAddNewSalaryCombEdit, handleDeleteNewSalaryCombEdit, }) => {
+const BeneficiaryItemEdit = ({ item, index, teams, intermediaries, idJugador, salaryComb, handleAddNewSalaryCombEdit, handleDeleteNewSalaryCombEdit,handleChangesOnEditSalaryComb }) => {
   
   const editPlayerContext = useEditPlayerDataContext();
   return (
@@ -1100,7 +1107,7 @@ const BeneficiaryItemEdit = ({ item, index, teams, intermediaries, idJugador, sa
               defaultValue={editPlayerContext.detailSalaryData[index].id_contraparte}
               handleOnChange={e => {
                 // console.log('event beneficiario', e.target);
-                //handleChangesOnNewSalaryComb(e, index)
+                handleChangesOnEditSalaryComb(e, index)
                 }
               }
               >
@@ -1250,7 +1257,11 @@ const BeneficiaryOptions = ({ teams, intermediaries, idJugador }) => {
 
 const BeneficiaryOptionsEdit = ({ index, teams, intermediaries, idJugador }) => {
   const editPlayerContext = useEditPlayerDataContext();
-
+  console.log('creando listado beneficiarios al editar');
+  console.log(`datos que tengo en beneficiaryOptionsEdit al entrar`);
+  console.log('intermediarios', intermediaries)
+  console.log('detailContracData en beneficiaryOptionsEdit')
+  console.log(editPlayerContext.detailContractData);
   return (
     <>
       { (editPlayerContext.detailContractData[0].desc_tipo_contrato ==  'Transfer. permanente' || editPlayerContext.detailContractData[0].desc_tipo_contrato ==  'Transfer. temporal') &&
@@ -1284,7 +1295,11 @@ const BeneficiaryOptionsEdit = ({ index, teams, intermediaries, idJugador }) => 
       }
       { editPlayerContext.detailContractData[0].desc_tipo_contrato ==  'Intermediación' &&
         <>
-          { editPlayerContext.detailContractData[0].id_intermediario_1 !=0 &&
+          { (
+              editPlayerContext.detailContractData[0].id_intermediario_1 != 0 && 
+              editPlayerContext.detailContractData[0].id_intermediario_1 != null
+            ) 
+            &&
             (()=>{
               let selected = editPlayerContext.detailContractData[0].id_intermediario_1 == editPlayerContext.detailSalaryData[index].id_contraparte ? 'selected' : '';
               return <option 
@@ -1297,7 +1312,11 @@ const BeneficiaryOptionsEdit = ({ index, teams, intermediaries, idJugador }) => 
             })()
           }
 
-          { editPlayerContext.detailContractData[0].id_intermediario_2 !=0 &&
+          { (
+              editPlayerContext.detailContractData[0].id_intermediario_2 != 0 && 
+              editPlayerContext.detailContractData[0].id_intermediario_2 != null
+            ) 
+            &&
             (()=>{
               let selected = editPlayerContext.detailContractData[0].id_intermediario_2 == editPlayerContext.detailSalaryData[index].id_contraparte ? 'selected' : '';
               return <option 
@@ -1310,7 +1329,11 @@ const BeneficiaryOptionsEdit = ({ index, teams, intermediaries, idJugador }) => 
             })()
           }
 
-          { editPlayerContext.detailContractData[0].id_intermediario_3 !=0 &&
+          { (
+              editPlayerContext.detailContractData[0].id_intermediario_3 != 0 && 
+              editPlayerContext.detailContractData[0].id_intermediario_3 != null
+            ) 
+            &&
             (()=>{
               let selected = editPlayerContext.detailContractData[0].id_intermediario_3 == editPlayerContext.detailSalaryData[index].id_contraparte ? 'selected' : '';
               return <option 
@@ -1678,7 +1701,7 @@ const NewTerminationClauseLine = ({ handleAddNewTerminationClause, handleDeleteN
                   }}   >
                   Fecha fin
                 </LabelElement>
-                {(item.id_clau_rescision !== 1) ?                   
+                {(index > 0) ?                   
                   <IconButtonSmallSecondary
                     onClick={(e) => {
                       e.preventDefault();

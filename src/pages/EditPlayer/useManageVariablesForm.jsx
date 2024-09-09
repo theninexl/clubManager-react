@@ -319,15 +319,16 @@ export const useManageVariablesForm = (form, idJugador) => {
 
   useEffect(()=>{
     if (saveClausula.responseUpload) {
-      console.log (saveClausula.responseUpload);
+      console.log ("save clausula", saveClausula.responseUpload);
       if (saveClausula.responseUpload.status === 'ok') {
         editPlayerContext.setShowNewVariableLayer(false);
         editPlayerContext.setVariableExpressions([{id_ExprComb:1,bonus_prima:'',id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
         //vuelve a pedir el detalle de clausula con el listado de arriba
         getClausulasList(globalContext.activeContractId); 
-        //getPlayersAgain();
+        //borrar el error
+        editPlayerContext.setCreatingClauseError(null);
       } else {
-        editPlayerContext.setError('Existe un error en el formulario, inténtelo de nuevo')
+        editPlayerContext.setCreatingClauseError('Existe un error en el formulario, inténtelo de nuevo')
       }
     }
   },[saveClausula.responseUpload])

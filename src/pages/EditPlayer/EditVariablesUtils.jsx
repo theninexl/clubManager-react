@@ -425,14 +425,16 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
             <LabelElement
               htmlFor='dateSince'
               type='date'
+              required={true}
               className='panel-field-short'>
-              Vigencia desde
+              Vigencia desde*
             </LabelElement>
             <LabelElement
               htmlFor='dateTo'
               type='date'
+              required={true}
               className='panel-field-short panel-field-short--inline'>
-              hasta
+              hasta*
             </LabelElement>
           </FormSimplePanelRow>
           <FormSimplePanelRow>
@@ -447,12 +449,13 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
                 })}
             </LabelSelectElement>
           </FormSimplePanelRow>
-          {/* <FormSimplePanelRow>
-            <LabelElementToggle
-                htmlFor='amortizable' >
-                Amortizable
-              </LabelElementToggle>
-            </FormSimplePanelRow> */}
+          { editPlayerContext.creatingClauseError? 
+            <FormSimplePanelRow
+            className='cm-u-centerText'>
+              <span className='error'>{editPlayerContext.creatingClauseError}</span>
+            </FormSimplePanelRow>
+            : ''
+          }
           <FormSimplePanelRow
             className='cm-u-centerText'>
             <ButtonMousePrimary
@@ -462,6 +465,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
               onClick={() => {
                 setRecursiveBlocks(0);
                 setBlockText(null);
+                editPlayerContext.setCreatingClauseError(null);
                 editPlayerContext.setShowNewVariableLayer(false);
                 editPlayerContext.setVariableExpressions([{id_ExprComb:1,bonus_prima:'',id_expresion_concatenacion:'', id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}])
               }}
@@ -832,6 +836,7 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveNewVari
             <LabelElement
               htmlFor='dateSince'
               type='date'
+              required={true}
               className='panel-field-short'
               value={editPlayerContext.detailEditVariableData[0].fecha_desde || ''}
               handleOnChange={e => {
@@ -839,11 +844,12 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveNewVari
                 onChangeValue[0]["fecha_desde"] = e.target.value;
                 editPlayerContext.setDetailEditVariableData(onChangeValue); }}
               >
-              Vigencia desde
+              Vigencia desde*
             </LabelElement>
             <LabelElement
               htmlFor='dateTo'
               type='date'
+              required={true}
               className='panel-field-short panel-field-short--inline'
               value={editPlayerContext.detailEditVariableData[0].fecha_hasta || ''}
               handleOnChange={e => {
@@ -851,7 +857,7 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveNewVari
                 onChangeValue[0]["fecha_hasta"] = e.target.value;
                 editPlayerContext.setDetailEditVariableData(onChangeValue); }}
               >
-              hasta
+              hasta*
             </LabelElement>
           </FormSimplePanelRow>
           <FormSimplePanelRow>

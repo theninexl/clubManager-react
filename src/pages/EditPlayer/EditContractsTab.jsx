@@ -9,6 +9,7 @@ export const EditContractsTab = ({ form, idJugador, teams, intermediaries }) => 
   const {
     handleAddNewSalaryComb,
     handleChangesOnNewSalaryComb,
+    handleChangesOnEditSalaryComb,
     handleDeleteNewSalaryComb,
     handleAddNewSalaryCombEdit,
     handleDeleteNewSalaryCombEdit,
@@ -43,6 +44,7 @@ export const EditContractsTab = ({ form, idJugador, teams, intermediaries }) => 
           handleAddNewSalaryComb={handleAddNewSalaryComb}
           handleAddNewSalaryCombEdit={handleAddNewSalaryCombEdit}
           handleChangesOnNewSalaryComb={handleChangesOnNewSalaryComb}
+          handleChangesOnEditSalaryComb={handleChangesOnEditSalaryComb}
           handleDeleteNewSalaryComb={handleDeleteNewSalaryComb}
           handleDeleteNewSalaryCombEdit={handleDeleteNewSalaryCombEdit}
           handleAddNewFixedSalaryLine={handleAddNewFixedSalaryLine}
