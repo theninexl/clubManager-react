@@ -121,7 +121,7 @@ export default function ManagePlayersPage () {
                         <TableCellMedium>{player.imp_salario_total}</TableCellMedium>
                         <TableCellMedium>{player.imp_variable}</TableCellMedium>
                         <TableCellShort className='cm-u-centerText'>
-                          { player.activo === 'SI' ?
+                          { player.activo === 1 ?
                             <IconButtonSmallerSuccess>
                               <SymbolCheck />
                             </IconButtonSmallerSuccess>

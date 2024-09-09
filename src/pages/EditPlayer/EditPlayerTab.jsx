@@ -401,7 +401,6 @@ export const EditPlayerTab = ({ idJugador, playerTypes, countries, positions }) 
           className='panel-field-long'
           autoComplete='off'
           placeholder='Introduce euros'
-          assistanceText='valor en euros €'
           value={editPlayerContext.playerDataDetails.val_valor_mercado || ''}
           handleOnChange={(values) => {
             editPlayerContext.setPlayerDataDetails({...editPlayerContext.playerDataDetails, val_valor_mercado: values.value})

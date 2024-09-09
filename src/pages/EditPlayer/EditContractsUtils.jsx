@@ -209,8 +209,8 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
       setShowTerminationClause(false);
       setShowOriginDestinyFiels(false);
     } else {
-      setShowTerminationClause(true);
-      setShowIntermediaries(true);
+      setShowTerminationClause(false);
+      setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
     }
   },[editPlayerContext.newContractDataForSalaryComb])
@@ -470,7 +470,6 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
             { (editPlayerContext.newContractDataForSalaryComb.descType === 1 || editPlayerContext.newContractDataForSalaryComb.descType === 0) ? 'Salario fijo' : 'Importe fijo'}
             </strong></p>
         </FormSimplePanelRow>
-        aaa
         <NewSalaryLine
           handleAddNewSalaryComb={handleAddNewSalaryComb}
           handleChangesOnNewSalaryComb={handleChangesOnNewSalaryComb}
@@ -481,7 +480,6 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
           intermediaries={intermediaries}
           idJugador={idJugador}
         />
-        bbb
 
         { showTerminationClause &&
           <>
@@ -565,8 +563,8 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
       setShowTerminationClause(false);
       setShowOriginDestinyFiels(false);
     } else {
-      setShowTerminationClause(true);
-      setShowIntermediaries(true);
+      setShowTerminationClause(false);
+      setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
     }
   },[editPlayerContext.detailContractData])
@@ -939,7 +937,6 @@ const NewSalaryLine = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb, h
 
           return (
             <div key={SalaryComb} data-id={SalaryComb}  className='cm-u-spacer-mb-bigger'>
-              ccc
               { editPlayerContext.newContractDataForSalaryComb.descType === 5 &&
                 <>
                   <FormSimplePanelRow>
@@ -972,7 +969,6 @@ const NewSalaryLine = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb, h
                 handleAddNewFixedSalaryLine={handleAddNewFixedSalaryLine}
                 handleDeleteNewFixedSalaryLine={handleDeleteNewFixedSalaryLine}
               />
-              ddd
             </div>
           );
         })
@@ -1046,7 +1042,6 @@ const BeneficiaryItem = ({ item, index, SalaryComb, handleAddNewSalaryComb, hand
   if (editPlayerContext.newContractDataForSalaryComb.descType > 1) {
     return (
       <>
-        eee
         <FormSimplePanelRow>
           <LabelSelectShorterElement
             htmlFor='beneficiario'
