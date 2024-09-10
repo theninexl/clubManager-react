@@ -851,9 +851,9 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                     <LabelElementToggle2Sides
                       htmlFor='flag_bruto_neto'
                       titleClassNameLeft='cm-u-textRight'
-                      textLeft='Bruto'
+                      textLeft='Neto'
                       titleClassNameRight='cm-u-spacer-mr-medium'
-                      textRight='Neto'
+                      textRight='Bruto'
                       required={true}
                       checked={brutoNetoData == '1' ? true : ''}
                       handleOnChange={(event) => {
