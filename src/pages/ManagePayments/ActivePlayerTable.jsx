@@ -8,9 +8,11 @@ import { EditableCell } from "./EditableCell";
 import { ButtonMouse, ButtonMouseGhost, ButtonMousePrimary, ButtonMouseTransparent, IconButtonSmallerPrimary } from "../../components/UI/objects/buttons";
 import { TableDataCls, TableDataClsBody, TableDataClsBody__cell, TableDataClsBody__row, TableDataClsHead, TableDataClsHead__cell } from "../../components/UI/layout/tableDataClassic";
 import { SymbolDelete } from "../../components/UI/objects/symbols";
+import { FormSimple, FormSimplePanelRow, LabelElementToggle2Sides } from "../../components/UI/components/form simple/formSimple";
+import { SimpleAccordion, SimpleAccordionContent } from "../../components/UI/components/simpleAccordion/simpleAccordion";
 
 export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {  
-
+  const [brutoNetoData, setBrutoNetoData] = useState(0);
   const [errorMsg, setErrorMsg] = useState(null);
   const [data, setData] = useState([]);
   const [dynamicData,setDynamicData] = useState([]);
@@ -65,7 +67,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
 
   const getPaymentsDetail = (activeContractId) => {
     // console.log('solicito el contrato', activeContractId);
-    getPayments.uploadData('players/calendarioRegistros',{'id_contrato':activeContractId})
+    getPayments.uploadData('players/calendarioRegistros',{'id_contrato':activeContractId, 'brutoNeto': brutoNetoData})
   }
   
   useEffect (() => {
@@ -175,7 +177,12 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       setColumnDefs([]);
     }
 
-  },[activePlayerId, activeContractId])
+  },[activePlayerId, activeContractId, brutoNetoData])
+
+  //volver a solicitar datos de contrato si cambia el selector brutoNeto de la tabla
+  useEffect(()=>{
+    console.log('cambio brutoneto');
+  },[brutoNetoData])
 
 
   const sumHelper = (total, row, key) => {
@@ -688,7 +695,10 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     const importeSuma = sumaRows[tableInstance.getSelectedRowModel().rows[0]?.id];
     const importeClausula = tableInstance.getSelectedRowModel().rows[0]?.getValue('Importe').amount;
 
-    if (importeClausula > 0 && importeSuma > 0 && importeClausula == importeSuma) {
+    if (
+      (importeClausula > 0 && importeSuma > 0 && importeClausula == importeSuma) ||
+      (importeClausula == importeSuma)
+    ) {
       setCanSave(true)
     } else {
       setCanSave(false)
@@ -698,8 +708,8 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const saveTable = useSaveData();
 
   const handleSaveTable = () => {
-    // console.log('Tabla que guardo', data);    
-    saveTable.uploadData('/players/calendarioGuardar',{'id_contrato':activeContractId, 'tabla':data});
+    console.log('Tabla que guardo', data);    
+    saveTable.uploadData('/players/calendarioGuardar',{'id_contrato':activeContractId,'brutoNeto': brutoNetoData, 'tabla':data});
   }
 
   useEffect (() => {
@@ -724,117 +734,136 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       { (data != null && data.length > 0) &&
         <>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
-            <p>
-              { (!editState && !advancePayState && !deferredPayState && !subtractState && !seizureState) &&
-                <ButtonMouseTransparent
-                  style={{ marginRight: '8px'}}
-                  onClick={()=> {
-                    setEditState(true);
-                  }}
-                >
-                  Editar pagos
-                </ButtonMouseTransparent> 
-              }
-              { editState && 
-                <>
-                  <ButtonMouse
+            <div style={{ display: 'flex', flexDirection: 'row', width: '100%'}} >
+              <p style={{ flexGrow: 1}}>
+                { (!editState && !advancePayState && !deferredPayState && !subtractState && !seizureState) &&
+                  <ButtonMouseTransparent
                     style={{ marginRight: '8px'}}
-                    disabled={ canSave ? false : true }
-                    className={ canSave ? 'cm-o-button-mouse--primary' : 'cm-o-button-mouse--inactive'}
                     onClick={()=> {
-                      setEditState(false);
-                      tableInstance.resetRowSelection();
+                      setEditState(true);
                     }}
                   >
-                    Guardar cambios
-                  </ButtonMouse>                
-                  <ButtonMouseGhost
-                    onClick={()=> {
-                      //dejar el objeto que estaba tocando, si es que lo he cambiado, como estaba
-                      const copiaData = [...data];
-                      copiaData[selectedRowBackRef.current.id] = selectedRowBackRef.current.original;
-                      selectedRowBackRef.current.id = null;
-                      selectedRowBackRef.current.original = null;
-                      setData(copiaData);
-                      setEditState(false);
-                      tableInstance.resetRowSelection();
-                    }}
-                  >
-                  Cancelar
-                  </ButtonMouseGhost>
-                </>
-              }
-              { (regularState && !editState)  &&
-                <>
-                  <ButtonMouseTransparent
-                    style={{ marginRight: '8px'}}
-                    onClick={() => {
-                      setRegularState(false);
-                      setAdvancePayState(true);
-                    }}
-                  >
-                    Anticipar pago
-                  </ButtonMouseTransparent>
-                  <ButtonMouseTransparent
-                    style={{ marginRight: '8px'}}
-                    onClick={() => {
-                      setRegularState(false);
-                      setDeferredPayState(true);
-                    }}
-                  >
-                    Retrasar pago
-                  </ButtonMouseTransparent>
-                  <ButtonMouseTransparent
-                    style={{ marginRight: '8px'}}
-                    onClick={()=>{
-                      setRegularState(false);
-                      setSubtractState(true);
-                    }}
-                  >Sanción</ButtonMouseTransparent>
-                  <ButtonMouseTransparent
-                    style={{ marginRight: '8px'}}
-                    onClick={()=>{
-                      setRegularState(false);
-                      setSeizureState(true);
-                    }}
-                  >Embargo</ButtonMouseTransparent>
-                </>
-              }
-              { (!regularState && !editState) && 
-                <>
-                  <ButtonMouse
-                    style={{ marginRight: '8px'}}
-                    disabled={ insertCanSave ? false : true }
-                    className={ insertCanSave ? 'cm-o-button-mouse--primary' : 'cm-o-button-mouse--inactive'}
-                    onClick={() => {
-                      // console.log('cellCopy', cellCopy)
-                      const newData = [...data]
-                      newData[newData.length-1]['Clausulas'] = clauseTxtRef.current + ' ' +newData[cellCopy.row]['Clausulas']+ ' ' +cellCopy.value.mes;
-                      setData(newData)                    
-                      tableInstance.options.meta.clearStates();
-                    }}
-                  >
-                    Guardar cambios
-                  </ButtonMouse>
-                  <ButtonMouseGhost
-                    onClick={() => {
-                      if (data.length > 1 ) {
-
-                        const newData = [...data];
-                        const lastObject = newData[newData.length - 1];
-                        if ('flag_fixed_clausula' in lastObject && lastObject.flag_fixed_clausula === 0) {
-                          newData.pop();
-                          setData(newData);
-                        }
-                      }
-                      tableInstance.options.meta.clearStates();
-                    }}
-                  >
+                    Editar pagos
+                  </ButtonMouseTransparent> 
+                }
+                { editState && 
+                  <>
+                    <ButtonMouse
+                      style={{ marginRight: '8px'}}
+                      disabled={ canSave ? false : true }
+                      className={ canSave ? 'cm-o-button-mouse--primary' : 'cm-o-button-mouse--inactive'}
+                      onClick={()=> {
+                        setEditState(false);
+                        tableInstance.resetRowSelection();
+                      }}
+                    >
+                      Guardar cambios
+                    </ButtonMouse>                
+                    <ButtonMouseGhost
+                      onClick={()=> {
+                        //dejar el objeto que estaba tocando, si es que lo he cambiado, como estaba
+                        const copiaData = [...data];
+                        copiaData[selectedRowBackRef.current.id] = selectedRowBackRef.current.original;
+                        selectedRowBackRef.current.id = null;
+                        selectedRowBackRef.current.original = null;
+                        setData(copiaData);
+                        setEditState(false);
+                        tableInstance.resetRowSelection();
+                      }}
+                    >
                     Cancelar
-                  </ButtonMouseGhost>
-                </>
-              }
-            </p>
+                    </ButtonMouseGhost>
+                  </>
+                }
+                { (regularState && !editState)  &&
+                  <>
+                    <ButtonMouseTransparent
+                      style={{ marginRight: '8px'}}
+                      onClick={() => {
+                        setRegularState(false);
+                        setAdvancePayState(true);
+                      }}
+                    >
+                      Anticipar pago
+                    </ButtonMouseTransparent>
+                    <ButtonMouseTransparent
+                      style={{ marginRight: '8px'}}
+                      onClick={() => {
+                        setRegularState(false);
+                        setDeferredPayState(true);
+                      }}
+                    >
+                      Retrasar pago
+                    </ButtonMouseTransparent>
+                    <ButtonMouseTransparent
+                      style={{ marginRight: '8px'}}
+                      onClick={()=>{
+                        setRegularState(false);
+                        setSubtractState(true);
+                      }}
+                    >Sanción</ButtonMouseTransparent>
+                    <ButtonMouseTransparent
+                      style={{ marginRight: '8px'}}
+                      onClick={()=>{
+                        setRegularState(false);
+                        setSeizureState(true);
+                      }}
+                    >Embargo</ButtonMouseTransparent>
+                  </>
+                }
+                { (!regularState && !editState) && 
+                  <>
+                    <ButtonMouse
+                      style={{ marginRight: '8px'}}
+                      disabled={ insertCanSave ? false : true }
+                      className={ insertCanSave ? 'cm-o-button-mouse--primary' : 'cm-o-button-mouse--inactive'}
+                      onClick={() => {
+                        // console.log('cellCopy', cellCopy)
+                        const newData = [...data]
+                        newData[newData.length-1]['Clausulas'] = clauseTxtRef.current + ' ' +newData[cellCopy.row]['Clausulas']+ ' ' +cellCopy.value.mes;
+                        setData(newData)                    
+                        tableInstance.options.meta.clearStates();
+                      }}
+                    >
+                      Guardar cambioss
+                    </ButtonMouse>
+                    <ButtonMouseGhost
+                      onClick={() => {
+                        if (data.length > 1 ) {
+
+                          const newData = [...data];
+                          const lastObject = newData[newData.length - 1];
+                          if ('flag_fixed_clausula' in lastObject && lastObject.flag_fixed_clausula === 0) {
+                            newData.pop();
+                            setData(newData);
+                          }
+                        }
+                        tableInstance.options.meta.clearStates();
+                      }}
+                    >
+                      Cancelar
+                    </ButtonMouseGhost>
+                  </>
+                }
+              </p>
+              <FormSimple>
+              <FormSimplePanelRow>
+                    <LabelElementToggle2Sides
+                      htmlFor='flag_bruto_neto'
+                      titleClassNameLeft='cm-u-textRight'
+                      textLeft='Bruto'
+                      titleClassNameRight='cm-u-spacer-mr-medium'
+                      textRight='Neto'
+                      required={true}
+                      checked={brutoNetoData == '1' ? true : ''}
+                      handleOnChange={(event) => {
+                        setBrutoNetoData(!brutoNetoData)
+                      }} 
+                      handleClick={e => { e.preventDefault; console.log('toggle');}}
+                    />
+                  </FormSimplePanelRow>
+              </FormSimple>
+            </div>
             <div className='cm-l-tabledata-cls-container cm-u-spacer-mt-big cm-u-spacer-mb-big'>
               <TableDataCls 
                 style={{ 

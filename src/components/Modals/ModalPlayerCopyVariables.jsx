@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSaveData } from "../../hooks/useSaveData";
+import { useGlobalContext } from "../../providers/globalContextProvider";
+import { useEditPlayerDataContext } from "../../providers/EditPlayeProvider";
 import { SearchResultsBox } from "../UI/components/form simple/searchResultsBox";
 import { ModalBody, ModalContainer, ModalContent__Big, ModalFooter } from "../UI/components/modal/modal";
 import { ButtonCatPrimary, ButtonCatTransparent, } from "../UI/objects/buttons";
@@ -9,7 +11,10 @@ import { StaticBodyHeader } from "../UI/layout/headers";
 import { TableCellLong, TableCellMedium, TableDataRow, TableDataWrapper } from "../UI/layout/tableData";
 
 
+
 export const ModalPlayerCopyVariables = ({ state, setState, playerId, activeContractId }) => {
+    const globalContext = useGlobalContext();
+    const editPlayerContext = useEditPlayerDataContext();
     //estados recuperar y seleccionar nombre jugador
     const [playersList, setPlayersList] = useState('');
     const [writtenPlayer, setWrittenPlayer] = useState('');
@@ -42,7 +47,7 @@ export const ModalPlayerCopyVariables = ({ state, setState, playerId, activeCont
       }
     },[selectedPlayer])
 
-    //solicitud variables jugador
+    //solicitud variables jugador del buscador
     const getClausulaList = useSaveData();
     const getPlayerVars = (numberId) => getClausulaList.uploadData('players/copyClausulaListavariable',{'id_jugador':numberId})
     useEffect(()=>{
@@ -54,6 +59,18 @@ export const ModalPlayerCopyVariables = ({ state, setState, playerId, activeCont
         setVariablesListMsg('No existen cláusulas para el jugador seleccionado')
       }
     },[getClausulaList.responseUpload])
+
+    //pedir clausulas guardadas para un contrato determinado
+    const getDetalleClausulasList = useSaveData();
+    const getClausulasList = (id) => {
+      getDetalleClausulasList.uploadData('players/getAllDetail_clausula',{id_contrato:id}); 
+    }
+
+    useEffect(()=>{
+      if (getDetalleClausulasList.responseUpload) {
+        editPlayerContext.setSavedVariables(getDetalleClausulasList.responseUpload?.clausulas)
+      }
+    },[getDetalleClausulasList.responseUpload])
 
     //copiar variable
     const copyVariable = useSaveData();
@@ -67,10 +84,12 @@ export const ModalPlayerCopyVariables = ({ state, setState, playerId, activeCont
     }
     useEffect(()=>{
       if (copyVariable.responseUpload?.status == 'ok'){
+        console.log(copyVariable.responseUpload);
         setWrittenPlayer('');
         setSelectedPlayer('');
         setSelectedPlayerVars(null);
         setState(!state);
+        getClausulasList(globalContext.activeContractId);
       }
     },[copyVariable.responseUpload])
 

@@ -6,7 +6,7 @@ import { ButtonMouseGhost, ButtonMousePrimary, ButtonMouseTransparent, IconButto
 import { SymbolAdd, SymbolDelete, SymbolEdit } from "../../components/UI/objects/symbols";
 import { SimpleAccordion, SimpleAccordionContent, SimpleAccordionTrigger } from "../../components/UI/components/simpleAccordion/simpleAccordion";
 import { HeadContentTitleBar, TitleBar__Title, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
-import { FormSimplePanelRow, LabelElement, LabelElementNumber, LabelElementNumberAssist, LabelElementToggle, LabelElementToggle2Sides, LabelElementToggle2SidesPanel, LabelSelectElement, LabelSelectShorterElement, SelectIconShorter } from "../../components/UI/components/form simple/formSimple";
+import { FormSimplePanelRow, LabelElement, LabelElementNumber, LabelElementToggle, LabelElementToggle2Sides, LabelElementToggle2SidesPanel, LabelSelectElement, LabelSelectShorterElement, SelectIconShorter } from "../../components/UI/components/form simple/formSimple";
 
 
 export const ListSelectedContract = () => {
@@ -46,9 +46,11 @@ export const ListSelectedContract = () => {
 
 export const ListVariablesForSelectedContract = ({ handleDeleteClausula, handleEditClausula }) => {
   const editPlayerContext = useEditPlayerDataContext();
+
   useEffect(()=>{
     console.log('variables guardadas para mostrar', editPlayerContext.savedVariables); 
   },[editPlayerContext.savedVariables])
+
   return (
     <>
       <TableDataHeader>

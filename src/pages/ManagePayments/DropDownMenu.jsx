@@ -26,8 +26,8 @@ export const DropDownMenu = ({ children }) => {
     if (buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
       setMenuPosition({
-        top: rect.bottom,
-        left: rect.left,
+        top: rect.top + 1,
+        left: rect.right,
       });
     }
   };
@@ -74,7 +74,7 @@ const styles = {
   },
   dropdownMenu: {
     border: '1px solid lightgray',
-    position: 'fixed',
+    position: 'absolute',
     background: 'white',
     boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
     borderRadius: '4px',
