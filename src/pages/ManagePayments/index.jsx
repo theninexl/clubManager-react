@@ -25,13 +25,14 @@ export default function ManagePaymentsPage () {
   //pedir todos los jugadores
   const getPlayers = useSaveData();
   const getActiveEntityPlayers = () => {
+    console.log('pido equipo');
     getPlayers.uploadData('players/getAll',{search:'',pagenumber:1,rowspage:9999, id_equipo:globalContext.activeEntity});
   }
 
   useEffect(()=>{
     const response = getPlayers.responseUpload;
     if (response) {
-      // console.log('response', response);
+      console.log('response', response);
       if (response.status == 'ok') { 
         setAllPlayers(response.data);
       } else if (response.code === 'ERR_NETWORK') {

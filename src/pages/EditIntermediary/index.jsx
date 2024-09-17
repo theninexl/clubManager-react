@@ -7,7 +7,7 @@ import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../comp
 import { CentralBody, CentralBody__Header, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
 import { ButtonCatPrimary, ButtonCatTransparent, ButtonMousePrimary, IconButtonSmallPrimary } from "../../components/UI/objects/buttons";
 import { SymbolBack, SymbolDelete } from "../../components/UI/objects/symbols";
-import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElementAssist } from "../../components/UI/components/form simple/formSimple";
+import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElementAssist, LabelSelectElement } from "../../components/UI/components/form simple/formSimple";
 import { ModalBody, ModalContainer, ModalContent__Small, ModalFooter } from "../../components/UI/components/modal/modal";
 
 
@@ -27,6 +27,7 @@ export default function EditIntermediaryPage () {
   const userParam = queryParams.get('intermediary');
 
   // variables y estados locales
+  const [countries, setCountries] = useState(null);
   const [error, setError] = useState(null);
   const [modal, setModal] = useState(false);
   const [intermDetail, setIntermDetail] = useState({
@@ -50,7 +51,17 @@ export default function EditIntermediaryPage () {
     "desc_nombre_contacto_3": '',
     "desc_cargo_contacto_3": ''
   });
+
+  //------------- PETICIONES DE DATOS MAESTROS ------------------------
+
+  //pedir paises, etc
+  const getCountries = useGetData('masters/getAllCountry');
+  useEffect (() => {
+    //console.log(getCountries.responseGetData)
+    if (getCountries.responseGetData) setCountries(getCountries.responseGetData.data.data);
+  },[getCountries.responseGetData])
   
+  //------------- ACCIONES DE ESTA PÁGINA -----------------------------
 
   const renderDeleteUserBtn = () => {
     if (userParam !== 'new') {
@@ -82,6 +93,7 @@ export default function EditIntermediaryPage () {
       desc_cif: formData.get('desc_cif'),
       desc_direccion: formData.get('desc_direccion'),
       desc_codigo_postal: formData.get('desc_codigo_postal'),
+      id_pais: formData.get('id_pais'),
 
       desc_num_telefono_contacto_1: formData.get('desc_num_telefono_contacto_1'),
       desc_email_contacto_1: formData.get('desc_email_contacto_1'),
@@ -107,6 +119,7 @@ export default function EditIntermediaryPage () {
       desc_cif: data.desc_cif,
       desc_direccion: data.desc_direccion,
       desc_codigo_postal: data.desc_codigo_postal,
+      id_pais: data.id_pais,
 
       desc_num_telefono_contacto_1: data.desc_num_telefono_contacto_1,
       desc_email_contacto_1: data.desc_email_contacto_1,
@@ -266,7 +279,23 @@ export default function EditIntermediaryPage () {
                   Código Postal
                 </LabelElementAssist>
               </FormSimplePanelRow>
-              
+              <FormSimplePanelRow>
+                <LabelSelectElement
+                  htmlFor='playerNationality1'
+                  labelText='Nacionalidad'
+                  defaultValue={intermDetail.id_pais || ''}
+                  handleOnChange={e => {
+                    setIntermDetail({...intermDetail, id_pais: e.target.value})
+                    }} >
+                    <option value=''>Selecciona</option>
+                    { countries?.map(country => {
+                      const selected = intermDetail.id_pais == country.id_pais ? 'selected' : '';
+                      return (
+                        <option key={country.id_pais} value={country.id_pais} selected={selected}>{country.desc_pais}</option>
+                      );
+                    })}
+                </LabelSelectElement>
+              </FormSimplePanelRow>
               
 
               <FormSimplePanelRow>

@@ -204,8 +204,8 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
                     </LabelSelectShorterElement>
                   : ''}
                   <LabelElementToggle2SidesPanel
-                    textLeft='Bonus'
-                    textRight='Prima'
+                    textLeft='Prima'
+                    textRight='Bonus'
                     htmlFor='bonus_prima'
                     checked={item.bonus_prima === 1 ? true : ''}
                     handleOnChange={(event) => {
@@ -562,8 +562,8 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveNewVari
                     </LabelSelectShorterElement>
                   : ''}
                   <LabelElementToggle2SidesPanel
-                    textLeft='Bonus'
-                    textRight='Prima'
+                    textLeft='Prima'
+                    textRight='Bonus'
                     htmlFor='bonus_prima'
                     checked={item.condiciones.length > 0 ? true : ''}
                     handleOnChange={(event) => {

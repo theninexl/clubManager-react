@@ -29,9 +29,9 @@ const AppRoutes = () => {
 
   let routes = useRoutes([
     {path: '/', element: !isUserSignedOut ? 
-      <Navigate replace to={'/main'} /> : <Navigate replace to={'/login'} /> },
+      <Navigate replace to={'/manage-players'} /> : <Navigate replace to={'/login'} /> },
     { path: '/login', element: isUserSignedOut ?
-      <Login /> : <Navigate replace to={'/main'} /> },
+      <Login /> : <Navigate replace to={'/manage-players'} /> },
     { path: '/main', element: !isUserSignedOut ?
       <>
         <TopNav />

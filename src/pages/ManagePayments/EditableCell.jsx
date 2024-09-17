@@ -63,17 +63,22 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
               className='cell-data'
               style={{ 
                 backgroundColor: getStatusColor(getValue().status),
-           
                 }}>
                   {/* si es la columna de importe total solo monstramos el amount, y no el campo editable */}
                   { column.id == 'Importe' &&
                     <>
-                      {value.amount}
+                      <NumericFormat
+                        valueIsNumericString={true}
+                        displayType="text"
+                        thousandSeparator="."
+                        decimalSeparator=","
+                        value={value.amount}
+                      />
                     </>
                   }
                   { column.id !== 'Importe' &&
                   <>
-                    <input
+                    {/* <input
                       value={value.amount}
                       onChange={(e) => {                    
                         let onChangeValue = {...value}
@@ -91,7 +96,28 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
                         width: '50%',
                         height: '28px',
                       }}
-                    />                
+                    />  */}
+                    <NumericFormat
+                        thousandSeparator="."
+                        decimalSeparator=","
+                        value={value.amount}
+                        onValueChange={(values) => {                    
+                          let onChangeValue = {...value}
+                          onChangeValue.amount = values.value;
+                          setValue(onChangeValue)
+                        }}
+                        onBlur={() => {
+                          updateData(row.index, column, value)
+                        }}
+                        style={{
+                          border: '1px solid lightgray',
+                          borderRadius: '4px',
+                          display: 'flex',
+                          flexGrow: 0,
+                          width: '50%',
+                          height: '28px',
+                        }}
+                      />               
                     <DropDownMenu key={uuidv4()}>
                       { STATUSES.map(item => { 
                         return (
@@ -126,9 +152,25 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
                       && table.options.state.cellCopy?.column?.id == column.id 
                       && table.options.state.cellCopy?.row == row.id
                     ) ? 
-                    <>{value.amount}</>
+                    <>
+                      <NumericFormat
+                        valueIsNumericString={true}
+                        displayType="text"
+                        thousandSeparator="."
+                        decimalSeparator=","
+                        value={value.amount}
+                      />
+                    </>
                     :
-                    <>{initialValue.amount}</>
+                    <>
+                      <NumericFormat
+                        valueIsNumericString={true}
+                        displayType="text"
+                        thousandSeparator="."
+                        decimalSeparator=","
+                        value={initialValue.amount}
+                      />
+                    </>
                   }
                   { (table.getState().advancePayState || table.getState().deferredPayState || table.getState().subtractState || table.getState().seizureState) && initialValue.amount != 0 && 
                     <>
@@ -168,7 +210,13 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
                 backgroundColor: getStatusColor(getValue().status),
                 }}
               >
-              {value.amount}
+              <NumericFormat
+                valueIsNumericString={true}
+                displayType="text"
+                thousandSeparator="."
+                decimalSeparator=","
+                value={value.amount}
+              />
               </div>
             </>
             :
@@ -191,8 +239,8 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
                         const limit = -Math.abs(column.columnDef.meta.insertSelectedAmount);   
                         console.log('limit', limit)                 
                         if (values.formattedValue !== '' && values.formattedValue >= limit && values.formattedValue <= 0) {
-                          console.log('DDD');
-                          console.log('puede guardar')                          
+                          // console.log('DDD');
+                          // console.log('puede guardar')                          
                           let onChangeValue = {...value};
                           onChangeValue.amount = values.formattedValue;
                           // setValue(onChangeValue);
@@ -263,7 +311,13 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
                     }}
                     
                     >
-                    {value.amount}
+                      <NumericFormat
+                        valueIsNumericString={true}
+                        displayType="text"
+                        thousandSeparator="."
+                        decimalSeparator=","
+                        value={value.amount}
+                      />
                   </div>
                 </>
               }
@@ -287,6 +341,8 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
                           prefix='-'
                           allowNegative={false}
                           value={advancePayCalc}
+                          thousandSeparator="."
+                          decimalSeparator=","
                           onValueChange={(values) => {  
                             actualValueForCalcRef.current = values.value;
                             onAdvancePayCalcChange(values.value)              
@@ -333,6 +389,8 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
                         <NumericFormat 
                           allowNegative={false}
                           value={advancePayCalc}
+                          thousandSeparator="."
+                          decimalSeparator=","
                           // value={isNaN(table.options.state.advancePayCalc) ? table.options.state.insertSelectedAmount : table.options.state.advancePayCalc}
                           onValueChange={(values) => {
                             actualValueForCalcRef.current = values.value;
@@ -376,7 +434,13 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
                 <>
                   { table.getState().subtractState || table.getState().seizureState ?
                     <>
-                      {value.amount}
+                      <NumericFormat
+                        valueIsNumericString={true}
+                        displayType="text"
+                        thousandSeparator="."
+                        decimalSeparator=","
+                        value={value.amount}
+                      />
                     </>
                     :
                     <>
@@ -392,7 +456,13 @@ export const EditableCell = ({ getValue, row, column, table, initialAdvancePayCa
                           border: !table.options.state.pastedCellState ? '' : table.options.state.cellCopy?.column?.id == column.id ? table.options.state.insertCanSave ? '' : '2px solid red' :'',                
                           }}                    
                           >
-                            {value.amount}
+                            <NumericFormat
+                              valueIsNumericString={true}
+                              displayType="text"
+                              thousandSeparator="."
+                              decimalSeparator=","
+                              value={value.amount}
+                            />
                           </div>
                         </>
                       }

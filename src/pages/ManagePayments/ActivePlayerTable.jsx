@@ -9,10 +9,11 @@ import { ButtonMouse, ButtonMouseGhost, ButtonMousePrimary, ButtonMouseTranspare
 import { TableDataCls, TableDataClsBody, TableDataClsBody__cell, TableDataClsBody__row, TableDataClsHead, TableDataClsHead__cell } from "../../components/UI/layout/tableDataClassic";
 import { SymbolDelete } from "../../components/UI/objects/symbols";
 import { FormSimple, FormSimplePanelRow, LabelElementToggle2Sides } from "../../components/UI/components/form simple/formSimple";
-import { SimpleAccordion, SimpleAccordionContent } from "../../components/UI/components/simpleAccordion/simpleAccordion";
+import { NumericFormat } from "react-number-format";
 
 export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {  
   const [brutoNetoData, setBrutoNetoData] = useState(0);
+  const [viewTotalPagoJugador, setViewTotalPagoJugador] = useState(0);
   const [errorMsg, setErrorMsg] = useState(null);
   const [data, setData] = useState([]);
   const [dynamicData,setDynamicData] = useState([]);
@@ -122,7 +123,8 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       accessorKey: `months.${key.clave}`,
       header: key.valor,
       cell: ({ row, column, table, getValue }) => (
-        <EditableCell
+        <>          
+          <EditableCell
           row={row}
           column={column}
           table={table}
@@ -133,9 +135,20 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
             advancePayCalcRef.current = newValue;
           }}
         />
+        </>
       ),
       // cell: info => console.log(info),
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, `months_${key.clave}`), 0),
+      footer: ({ table }) => {
+        const totalInFooter = table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row, `months_${key.clave}`), 0);
+
+        return <NumericFormat
+                valueIsNumericString={true}
+                displayType="text"
+                thousandSeparator="."
+                decimalSeparator=","
+                value={totalInFooter}
+              />
+      },
       meta: {
         subtractState,
         insertSelectedCol,
@@ -177,7 +190,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       setColumnDefs([]);
     }
 
-  },[activePlayerId, activeContractId, brutoNetoData])
+  },[activePlayerId, activeContractId, brutoNetoData, viewTotalPagoJugador])
 
   //volver a solicitar datos de contrato si cambia el selector brutoNeto de la tabla
   useEffect(()=>{
@@ -187,9 +200,17 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
 
   const sumHelper = (total, row, key) => {
     let number = row.getValue(key)
-    let amount = (number.flag_suma == 1 || number.flag_suma === null || number.flag_suma === undefined || number.flag_suma === '') ? Number(number.amount) : 0;
-    amount >= 0 ? total = total + amount : total = total - Math.abs(amount);    
-    return total;
+    let amount;
+
+    if (viewTotalPagoJugador == 0) {
+      amount = number.amount;
+    } else {
+      amount = (number.flag_suma == 1 || number.flag_suma === null || number.flag_suma === undefined || number.flag_suma === '') ? Number(number.amount) : 0;
+    }
+
+    amount >= 0 ? total = total + amount : total = total - Math.abs(amount);
+    let totalToFixed = Math.round(total*100)/100;;
+    return totalToFixed;
   }
 
   // const columnHelper = createColumnHelper();
@@ -265,7 +286,14 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
           }}
         />
       ),
-      footer: 'Total',
+      footer: () => {
+        return (
+          <>
+            { viewTotalPagoJugador == 0 ? 'Total pagos' : ''}
+            { viewTotalPagoJugador == 1 ? 'Total pagos a jugador' : ''}
+          </>
+        )
+      },
       size: 180,
     },
     {
@@ -294,8 +322,6 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   const lastTotalObject = {
       accessorKey: 'total',
       header: 'Total',
-      cell: info => info.getValue(),
-      // //footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => sumHelper(total,row,'total'), 0),
       size: 125,
     }
 
@@ -353,6 +379,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     } 
     // }
   },[infoForColumnDefs])
+
   //este añadirá la última columna de totales en última posición si no existe aún dentro
   useEffect(()=>{
     // console.log('columnDefs han cambiado');
@@ -363,14 +390,16 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       columnDefsCopy.push(lastTotalObject)
       setColumnDefs(columnDefsCopy);
     } else if (hasTotal == true){
-      //console.log('columnDefs ya tiene añadido total y seteo los datos para la tabla', columnDefs)
+      // console.log('columnDefs ya tiene añadido total y seteo los datos para la tabla', columnDefs)
       setData(dynamicData);
     }
   },[columnDefs])
 
+
   const memoizedColumns = useMemo(() => columnDefs, [data]);
 
   useEffect (() => {
+
     // console.log("data ha cambiado", data);
     if (data.length > 0) {
       const firstDataElement = data[0];
@@ -664,8 +693,9 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
         // console.log('originalCopy', originalCopy)
         const { months, ...rest } = originalCopy;
         let sumaFila = Object.values(months).reduce((total, numero) => {
-          const isNumber = (Number.isInteger(numero.amount) && (numero.flag_suma === 1 || numero.flag_suma == null || numero.flag_suma == '' || numero.flag_suma == undefined)) ? numero.amount : 0;
-          return total + isNumber
+
+          const isNumber = ((typeof(numero.amount) === 'number') && (numero.flag_suma == 1 || numero.flag_suma == null || numero.flag_suma == '' || numero.flag_suma == undefined)) ? numero.amount : 0;
+          return total + isNumber;
         }, 0)
         rowsSum = [...rowsSum, sumaFila]       
       })
@@ -734,7 +764,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       { (data != null && data.length > 0) &&
         <>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
-            <div style={{ display: 'flex', flexDirection: 'row', width: '100%'}} >
+            <div style={{ display: 'flex', flexDirection: 'row', gap: '24px', width: '100%'}} >
               <p style={{ flexGrow: 1}}>
                 { (!editState && !advancePayState && !deferredPayState && !subtractState && !seizureState) &&
                   <ButtonMouseTransparent
@@ -825,7 +855,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                         tableInstance.options.meta.clearStates();
                       }}
                     >
-                      Guardar cambioss
+                      Guardar cambios
                     </ButtonMouse>
                     <ButtonMouseGhost
                       onClick={() => {
@@ -847,21 +877,38 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                 }
               </p>
               <FormSimple>
-              <FormSimplePanelRow>
-                    <LabelElementToggle2Sides
-                      htmlFor='flag_bruto_neto'
-                      titleClassNameLeft='cm-u-textRight'
-                      textLeft='Neto'
-                      titleClassNameRight='cm-u-spacer-mr-medium'
-                      textRight='Bruto'
-                      required={true}
-                      checked={brutoNetoData == '1' ? true : ''}
-                      handleOnChange={(event) => {
-                        setBrutoNetoData(!brutoNetoData)
-                      }} 
-                      handleClick={e => { e.preventDefault; console.log('toggle');}}
-                    />
-                  </FormSimplePanelRow>
+                <FormSimplePanelRow>
+                  <LabelElementToggle2Sides
+                    htmlFor='flag_totalPago'
+                    titleClassNameLeft='cm-u-textRight'
+                    textLeft='Total pago'
+                    titleClassNameRight='cm-u-spacer-mr-medium'
+                    textRight='Total pago a jugador'
+                    required={true}
+                    checked={viewTotalPagoJugador == '1' ? true : ''}
+                    handleOnChange={(event) => {
+                      setViewTotalPagoJugador(!viewTotalPagoJugador)
+                    }} 
+                    handleClick={e => { e.preventDefault; console.log('toggle');}}
+                  />
+                </FormSimplePanelRow>
+              </FormSimple>
+              <FormSimple>
+                <FormSimplePanelRow>
+                  <LabelElementToggle2Sides
+                    htmlFor='flag_bruto_neto'
+                    titleClassNameLeft='cm-u-textRight'
+                    textLeft='Neto'
+                    titleClassNameRight='cm-u-spacer-mr-medium'
+                    textRight='Bruto'
+                    required={true}
+                    checked={brutoNetoData == '1' ? true : ''}
+                    handleOnChange={(event) => {
+                      setBrutoNetoData(!brutoNetoData)
+                    }} 
+                    handleClick={e => { e.preventDefault; console.log('toggle');}}
+                  />
+                </FormSimplePanelRow>
               </FormSimple>
             </div>
             <div className='cm-l-tabledata-cls-container cm-u-spacer-mt-big cm-u-spacer-mb-big'>
@@ -919,7 +966,13 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                                       style={{ ...getCommonPinningStyles(column) }}
                                     >
                                       <div className='cell-total'>
-                                        {sumaRows[rowElement.id]}
+                                        <NumericFormat
+                                          valueIsNumericString={true}
+                                          displayType="text"
+                                          thousandSeparator="."
+                                          decimalSeparator=","
+                                          value={sumaRows[rowElement.id]}
+                                        />
                                       </div>
                                     </TableDataClsBody__cell>
                                   </>
@@ -962,19 +1015,20 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                                   className='tablecell-medium'
                                   style={{ ...getCommonPinningStyles(column) }}
                                 >
-                                  {sumaCols[footerCol.id]}
-                                {
-                                  footerCol.isPlaceHolder ? null :
-                                  flexRender(
-                                    footerCol.column.columnDef.footer,
-                                    footerCol.getContext()
-                                  )
-                                }
+                                  {/* {sumaCols[footerCol.id]} */}
+                                  {
+                                    footerCol.isPlaceHolder ? null :
+                                    flexRender(
+                                      footerCol.column.columnDef.footer,
+                                      footerCol.getContext()
+                                    )
+                                  }                                  
                                 </TableDataClsHead__cell>                      
                               </>
                             )
                           })}
                         </tr>
+                       
                       </TableDataClsHead>
                     )
                   })

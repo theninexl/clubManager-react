@@ -7,6 +7,7 @@ import { CentralBody, CentralBody__Header, HeadContent, HeadContentTitleBar, Tit
 import {  ButtonMousePrimary, IconButtonSmallPrimary } from "../../components/UI/objects/buttons";
 import { SymbolBack } from "../../components/UI/objects/symbols";
 import { FormSimplePanel, FormSimplePanelRow, FormSimpleRow, LabelElementAssist, LabelSelectElement } from "../../components/UI/components/form simple/formSimple";
+import { useGetData } from "../../hooks/useGetData";
 
 export default function NewIntermediaryPage () {
   //navegar
@@ -22,8 +23,14 @@ export default function NewIntermediaryPage () {
   const userParam = queryParams.get('intermediary');
 
   // variables y estados locales
+  const [countries, setCountries] = useState(null);
   const [error, setError] = useState(null);
   const [intermDetail, setIntermDetail] = useState({});
+
+  const getCountries = useGetData('masters/getAllCountry');
+  useEffect (() => {
+    if (getCountries.responseGetData) setCountries(getCountries.responseGetData.data.data);
+  },[getCountries.responseGetData])
   
 
   const handleSave = (e) => {
@@ -35,6 +42,7 @@ export default function NewIntermediaryPage () {
       desc_cif: formData.get('desc_cif'),
       desc_direccion: formData.get('desc_direccion'),
       desc_codigo_postal: formData.get('desc_codigo_postal'),
+      id_pais: formData.get('id_pais'),
 
       desc_num_telefono_contacto_1: formData.get('desc_num_telefono_contacto_1'),
       desc_email_contacto_1: formData.get('desc_email_contacto_1'),
@@ -58,6 +66,7 @@ export default function NewIntermediaryPage () {
       desc_cif: data.desc_cif,
       desc_direccion: data.desc_direccion,
       desc_codigo_postal: data.desc_codigo_postal,
+      id_pais: data.id_pais,
 
       desc_num_telefono_contacto_1: data.desc_num_telefono_contacto_1,
       desc_email_contacto_1: data.desc_email_contacto_1,
@@ -170,7 +179,18 @@ export default function NewIntermediaryPage () {
                   Código Postal
                 </LabelElementAssist>
               </FormSimplePanelRow>
-             
+              <FormSimplePanelRow>
+                <LabelSelectElement
+                  htmlFor='id_pais'
+                  labelText='País'>
+                    <option value=''>Selecciona</option>
+                    { countries?.map(country => {
+                      return (
+                        <option key={country.id_pais} value={country.id_pais}>{country.desc_pais}</option>
+                      );
+                    })}
+                </LabelSelectElement>
+              </FormSimplePanelRow>
               <FormSimplePanelRow>
                 <LabelElementAssist
                   htmlFor='desc_nombre_contacto_1'
