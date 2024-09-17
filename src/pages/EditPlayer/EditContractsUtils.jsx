@@ -139,6 +139,7 @@ export const ContractDataLayer = ({ form, idJugador, teams, intermediaries, hand
                     editPlayerContext.setEditContract(false);
                     editPlayerContext.setDetailContractData(null);
                     editPlayerContext.setDetailSalaryData(null);
+                    editPlayerContext.setCreatingContractError(null)
                   }} >
                     <SymbolAdd />
                 </IconButtonSmallPrimary>
@@ -569,10 +570,11 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
   const [showOriginDestinyFields, setShowOriginDestinyFiels] = useState(true);
   const [showAmountTotalSalary, setShowAmountTotalSalary] = useState(true);
   const [showSalaryComb, setShowSalaryComb] = useState(true);
-
+  console.log('EditContractForm');
+  console.log("tipo contrato", editPlayerContext.detailContractData[0].desc_tipo_contrato);
 
   useEffect(()=>{
-    // console.log(editPlayerContext.detailContractData[0].desc_tipo_contrato);
+    console.log('entro en useEffect edit contrato')
     if (
       editPlayerContext.detailContractData[0].desc_tipo_contrato == "Laboral" || 
       editPlayerContext.detailContractData[0].desc_tipo_contrato == "Renovación inscripción" 
@@ -589,6 +591,7 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
       setShowAmountTotalSalary(true);
       setShowSalaryComb(true);
     }else if (editPlayerContext.detailContractData[0].desc_tipo_contrato == "Liquidación") {
+      console.log('es un contrato de liquidacion');
       setShowTerminationClause(false);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
@@ -869,59 +872,66 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
               </LabelSelectElement>
             </FormSimplePanelRow>
           </>
-        }        
-        <FormSimplePanelRow>
-          {/* <LabelElementAssist
-            htmlFor='amountTotalSalary'
-            type='text'
-            className='panel-field-long'
-            autoComplete='off'
-            placeholder='Introduce euros'
-            required={true}
-            assistanceText=''
-            value={editPlayerContext.detailContractData[0].val_imp_salario_total || ''}
-            handleOnChange={e => {
-              let onChangeValue = [...editPlayerContext.detailContractData];
-              onChangeValue[0]["val_imp_salario_total"] = e.target.value;
-              editPlayerContext.setDetailContractData(onChangeValue); }}
+        }
+        { showAmountTotalSalary &&         
+          <FormSimplePanelRow>
+            {/* <LabelElementAssist
+              htmlFor='amountTotalSalary'
+              type='text'
+              className='panel-field-long'
+              autoComplete='off'
+              placeholder='Introduce euros'
+              required={true}
+              assistanceText=''
+              value={editPlayerContext.detailContractData[0].val_imp_salario_total || ''}
+              handleOnChange={e => {
+                let onChangeValue = [...editPlayerContext.detailContractData];
+                onChangeValue[0]["val_imp_salario_total"] = e.target.value;
+                editPlayerContext.setDetailContractData(onChangeValue); }}
+              >
+              Importe Salario Total*
+            </LabelElementAssist> */}
+            <LabelElementNumberAssist
+              htmlFor='amountTotalSalary'
+              suffix={'€'}
+              type='text'
+              className='panel-field-long'
+              autoComplete='off'
+              placeholder='Introduce euros'
+              required={true}
+              assistanceText=''
+              value={editPlayerContext.detailContractData[0].val_imp_salario_total || ''}
+              handleOnChange={(values) => {
+                console.log(values.value)
+                let onChangeValue = [...editPlayerContext.detailContractData];
+                onChangeValue[0]["val_imp_salario_total"] = values.value;
+                editPlayerContext.setDetailContractData(onChangeValue); }}
             >
-            Importe Salario Total*
-          </LabelElementAssist> */}
-          <LabelElementNumberAssist
-            htmlFor='amountTotalSalary'
-            suffix={'€'}
-            type='text'
-            className='panel-field-long'
-            autoComplete='off'
-            placeholder='Introduce euros'
-            required={true}
-            assistanceText=''
-            value={editPlayerContext.detailContractData[0].val_imp_salario_total || ''}
-            handleOnChange={(values) => {
-              console.log(values.value)
-              let onChangeValue = [...editPlayerContext.detailContractData];
-              onChangeValue[0]["val_imp_salario_total"] = values.value;
-              editPlayerContext.setDetailContractData(onChangeValue); }}
-          >
-            Importe Salario Total*
-          </LabelElementNumberAssist>
-        </FormSimplePanelRow>
-        <FormSimplePanelRow>
-          <p><strong>
-            { (editPlayerContext.detailContractData[0].desc_tipo_contrato === 'Laboral') ? 'Salario fijo' : 'Importe fijo'}
-            </strong></p>
-        </FormSimplePanelRow>
+              Importe Salario Total*
+            </LabelElementNumberAssist>
+          </FormSimplePanelRow>
+        }
+        { showSalaryComb && 
+          <>
+            <FormSimplePanelRow>
+              <p><strong>
+                { (editPlayerContext.detailContractData[0].desc_tipo_contrato === 'Laboral') ? 'Salario fijo' : 'Importe fijo'}
+                </strong></p>
+            </FormSimplePanelRow>
 
-        <EditSalaryLine 
-          teams={teams}
-          intermediaries={intermediaries}
-          idJugador={idJugador}
-          handleAddNewSalaryCombEdit={handleAddNewSalaryCombEdit}
-          handleDeleteNewSalaryCombEdit={handleDeleteNewSalaryCombEdit}
-          handleAddNewFixedSalaryLineEdit={handleAddNewFixedSalaryLineEdit}
-          handleDeleteNewFixedSalaryLineEdit={handleDeleteNewFixedSalaryLineEdit}
-          handleChangesOnEditSalaryComb={handleChangesOnEditSalaryComb}
-        />
+            <EditSalaryLine 
+              teams={teams}
+              intermediaries={intermediaries}
+              idJugador={idJugador}
+              handleAddNewSalaryCombEdit={handleAddNewSalaryCombEdit}
+              handleDeleteNewSalaryCombEdit={handleDeleteNewSalaryCombEdit}
+              handleAddNewFixedSalaryLineEdit={handleAddNewFixedSalaryLineEdit}
+              handleDeleteNewFixedSalaryLineEdit={handleDeleteNewFixedSalaryLineEdit}
+              handleChangesOnEditSalaryComb={handleChangesOnEditSalaryComb}
+            />
+          </>
+        }
+        
         { showTerminationClause &&
           <>
             <FormSimplePanel><p><strong>Clausula de rescisión</strong></p></FormSimplePanel>
@@ -1123,7 +1133,7 @@ const BeneficiaryItemEdit = ({ item, index, teams, intermediaries, idJugador, sa
   const editPlayerContext = useEditPlayerDataContext();
   return (
     <>
-      { (editPlayerContext.detailContractData[0].desc_tipo_contrato ==  'Intermediación' || editPlayerContext.detailContractData[0].desc_tipo_contrato ==  'Liquidación') && 
+      { (editPlayerContext.detailContractData[0].desc_tipo_contrato ==  'Intermediación') && 
         <>
           {/* {console.log('index', index)}
           {console.log('item', item)}
@@ -1600,7 +1610,7 @@ const SalaryLineItemEdit = ({ index, handleAddNewFixedSalaryLineEdit, handleDele
                     handleOnChange={(event) => {
                       let {name, checked} = event.target;
                       let onChangeValue = [...editPlayerContext.detailSalaryData];
-                      onChangeValue[index]["salaryComb"][index2][name] = checked ? '1' : '0';
+                      onChangeValue[index]["salaryComb"][index2][name] = checked ? 1 : 0;
                       editPlayerContext.setDetailSalaryData(onChangeValue);
                     }} 
                     handleClick={e => { e.preventDefault; console.log('toggle');}}

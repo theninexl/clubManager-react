@@ -198,7 +198,7 @@ export const useManageContractForm = (form, idJugador) => {
       dt_inicio_contrato: formData.get('contractStartDate'),
       dt_inicio_contrato_real: formData.get('contractRealStartDate'),
       dt_fin_contrato: formData.get('contractEndDate'),
-      val_imp_salario_total: formData.get('amountTotalSalary'),      
+      val_imp_salario_total: formData.get('amountTotalSalary') == null ? '0': formData.get('amountTotalSalary'),      
       salario_fijo:salarios,      
     }
 
@@ -212,8 +212,9 @@ export const useManageContractForm = (form, idJugador) => {
 
 
     if (data) {
-      for (const [key, value] of Object.entries(data)) {        
-        if (value == '-1' || value == '') {
+      for (const [key, value] of Object.entries(data)) { 
+        console.log('value de la key', key,' es igual a:',value);       
+        if (value === '-1' || value === '') {
           console.log('error en ',key,' que tiene value',value)
           editPlayerContext.setCreatingContractError('Es necesario rellenar todos los campos');
           break;
@@ -327,6 +328,7 @@ export const useManageContractForm = (form, idJugador) => {
     const salarios = editPlayerContext.detailSalaryData;
     const rescision = editPlayerContext.detailTerminationData;
 
+
     const data = {
       id_plantilla: globalContext.activeEntity.toString(),
       id_jugador: userParamString,
@@ -341,7 +343,7 @@ export const useManageContractForm = (form, idJugador) => {
       dt_inicio_contrato_real: formData.get('contractRealStartDate'),
       dt_fin_contrato: formData.get('contractEndDate'),
       id_intermediario_1: formData.get('contractIntermediary1'),
-      val_imp_salario_total: formData.get('amountTotalSalary'),      
+      val_imp_salario_total: formData.get('amountTotalSalary') == null ? '0': formData.get('amountTotalSalary'),      
       salario_fijo:salarios,    
     }
 
