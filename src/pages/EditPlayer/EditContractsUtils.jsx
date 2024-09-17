@@ -193,6 +193,8 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
   const [showTerminationClause,setShowTerminationClause] = useState(false);
   const [showIntermediaries, setShowIntermediaries] = useState(false);
   const [showOriginDestinyFields, setShowOriginDestinyFiels] = useState(true);
+  const [showAmountTotalSalary, setShowAmountTotalSalary] = useState(true);
+  const [showSalaryComb, setShowSalaryComb] = useState(true);
 
 
   useEffect(()=>{
@@ -204,14 +206,26 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
       setShowTerminationClause(true);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
+      setShowAmountTotalSalary(true);
+      setShowSalaryComb(true);
     }else if (editPlayerContext.newContractDataForSalaryComb.descType == 4) {
       setShowIntermediaries(true);
       setShowTerminationClause(false);
       setShowOriginDestinyFiels(false);
+      setShowAmountTotalSalary(true);
+      setShowSalaryComb(true);
+    }else if (editPlayerContext.newContractDataForSalaryComb.descType == 5) {
+      setShowTerminationClause(false);
+      setShowIntermediaries(false);
+      setShowOriginDestinyFiels(true);
+      setShowAmountTotalSalary(false);
+      setShowSalaryComb(false);
     } else {
       setShowTerminationClause(false);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
+      setShowAmountTotalSalary(true);
+      setShowSalaryComb(true);
     }
   },[editPlayerContext.newContractDataForSalaryComb])
   
@@ -450,36 +464,42 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
               </LabelSelectElement>
             </FormSimplePanelRow>
           </>
-        }        
-        <FormSimplePanelRow>
-          <LabelElementNumberAssist
-            htmlFor='amountTotalSalary'
-            suffix={'€'}
-            type='text'
-            className='panel-field-long'
-            autoComplete='off'
-            placeholder='Introduce euros'
-            required={true}
-            assistanceText=''
-          >
-            Importe Fijo Total*
-          </LabelElementNumberAssist>
-        </FormSimplePanelRow>
-        <FormSimplePanelRow>
-          <p><strong>
-            { (editPlayerContext.newContractDataForSalaryComb.descType === 1 || editPlayerContext.newContractDataForSalaryComb.descType === 0) ? 'Salario fijo' : 'Importe fijo'}
-            </strong></p>
-        </FormSimplePanelRow>
-        <NewSalaryLine
-          handleAddNewSalaryComb={handleAddNewSalaryComb}
-          handleChangesOnNewSalaryComb={handleChangesOnNewSalaryComb}
-          handleDeleteNewSalaryComb={handleDeleteNewSalaryComb}
-          handleAddNewFixedSalaryLine={handleAddNewFixedSalaryLine}
-          handleDeleteNewFixedSalaryLine={handleDeleteNewFixedSalaryLine}
-          teams={teams}
-          intermediaries={intermediaries}
-          idJugador={idJugador}
-        />
+        }   
+        {showAmountTotalSalary && 
+          <FormSimplePanelRow>
+            <LabelElementNumberAssist
+              htmlFor='amountTotalSalary'
+              suffix={'€'}
+              type='text'
+              className='panel-field-long'
+              autoComplete='off'
+              placeholder='Introduce euros'
+              required={true}
+              assistanceText=''
+            >
+              Importe Fijo Total*
+            </LabelElementNumberAssist>
+          </FormSimplePanelRow>
+        }    
+        { showSalaryComb && 
+          <>
+            <FormSimplePanelRow>
+            <p><strong>
+              { (editPlayerContext.newContractDataForSalaryComb.descType === 1 || editPlayerContext.newContractDataForSalaryComb.descType === 0) ? 'Salario fijo' : 'Importe fijo'}
+              </strong></p>
+            </FormSimplePanelRow>
+            <NewSalaryLine
+              handleAddNewSalaryComb={handleAddNewSalaryComb}
+              handleChangesOnNewSalaryComb={handleChangesOnNewSalaryComb}
+              handleDeleteNewSalaryComb={handleDeleteNewSalaryComb}
+              handleAddNewFixedSalaryLine={handleAddNewFixedSalaryLine}
+              handleDeleteNewFixedSalaryLine={handleDeleteNewFixedSalaryLine}
+              teams={teams}
+              intermediaries={intermediaries}
+              idJugador={idJugador}
+            />
+          </>
+        }
 
         { showTerminationClause &&
           <>
@@ -547,6 +567,8 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
   const [showTerminationClause,setShowTerminationClause] = useState(false);
   const [showIntermediaries, setShowIntermediaries] = useState(false);
   const [showOriginDestinyFields, setShowOriginDestinyFiels] = useState(true);
+  const [showAmountTotalSalary, setShowAmountTotalSalary] = useState(true);
+  const [showSalaryComb, setShowSalaryComb] = useState(true);
 
 
   useEffect(()=>{
@@ -558,14 +580,27 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
       setShowTerminationClause(true);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
+      setShowAmountTotalSalary(true);
+      setShowSalaryComb(true);
     }else if (editPlayerContext.detailContractData[0].desc_tipo_contrato == "Intermediación") {
       setShowIntermediaries(true);
       setShowTerminationClause(false);
       setShowOriginDestinyFiels(false);
+      setShowAmountTotalSalary(true);
+      setShowSalaryComb(true);
+    }else if (editPlayerContext.detailContractData[0].desc_tipo_contrato == "Liquidación") {
+      setShowTerminationClause(false);
+      setShowIntermediaries(false);
+      setShowOriginDestinyFiels(true);
+      setShowAmountTotalSalary(false);
+      setShowSalaryComb(false);
+      
     } else {
       setShowTerminationClause(false);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
+      setShowAmountTotalSalary(true);
+      setShowSalaryComb(true);
     }
   },[editPlayerContext.detailContractData])
 

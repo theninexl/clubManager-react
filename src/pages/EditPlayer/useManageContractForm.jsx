@@ -225,7 +225,7 @@ export const useManageContractForm = (form, idJugador) => {
       if (Object.keys(data).length === (Object.keys(savedContract).length - 4)) {        
         // console.log('object keys data', Object.keys(data).length)
         // console.log('object keys savedContract', Object.keys(savedContract).length)        
-        // console.log('contrato que guardo', data);
+        console.log('contrato que guardo', data);
         console.log('savedContract', savedContract);
         saveNewContract.uploadData('players/createContract',savedContract);
         editPlayerContext.setNewContract(false);
@@ -240,7 +240,7 @@ export const useManageContractForm = (form, idJugador) => {
 
   useEffect(()=> {
     if (saveNewContract.responseUpload) {
-      //console.log(saveNewContract.responseUpload);
+      console.log(saveNewContract.responseUpload);
       if (saveNewContract.responseUpload.code === 'ERR_NETWORK') { editPlayerContext.setCreatingContractError('Error de conexión, inténtelo más tarde')
       } else if (saveNewContract.responseUpload.status === 'ok') { 
         // console.log('guardo con éxito, pido jugador', idJugador)
