@@ -212,7 +212,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
     }else if (editPlayerContext.newContractDataForSalaryComb.descType == 4) {
       setShowIntermediaries(true);
       setShowTerminationClause(false);
-      setShowOriginDestinyFiels(false);
+      setShowOriginDestinyFiels(true);
       setShowAmountTotalSalary(true);
       setShowSalaryComb(true);
     }else if (editPlayerContext.newContractDataForSalaryComb.descType == 5) {
@@ -587,7 +587,7 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
     }else if (editPlayerContext.detailContractData[0].desc_tipo_contrato == "Intermediación") {
       setShowIntermediaries(true);
       setShowTerminationClause(false);
-      setShowOriginDestinyFiels(false);
+      setShowOriginDestinyFiels(true);
       setShowAmountTotalSalary(true);
       setShowSalaryComb(true);
     }else if (editPlayerContext.detailContractData[0].desc_tipo_contrato == "Liquidación") {

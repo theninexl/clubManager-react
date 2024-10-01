@@ -27,18 +27,30 @@ export const AsideMenu = () => {
           </ButtonCatGhost></li>
         <li>
           <ButtonCatGhost
-             className={currentUrl === '/manage-teams' || currentUrl === '/manage-intermediaries' ? 'active' : ''}
-             onClick={() => navigate('/manage-teams')}>
+            className={currentUrl === '/manage-teams' || currentUrl === '/manage-intermediaries' ? 'active' : ''}
+            onClick={() => navigate('/manage-teams')}>
               Gestión relacional</ButtonCatGhost>
         </li>
         <li>
         <ButtonCatGhost
-             className={currentUrl === '/manage-payments' || currentUrl === '/manage-player-payments' ? 'active' : ''}
-             onClick={() => navigate('/manage-payments')}>
+            className={currentUrl === '/manage-payments' || currentUrl === '/manage-player-payments' ? 'active' : ''}
+            onClick={() => navigate('/manage-payments')}>
               Calendario de pagos</ButtonCatGhost>
         </li>
-        <li><ButtonCatGhostDisabled>Tesorería</ButtonCatGhostDisabled></li>
-        <li><ButtonCatGhostDisabled>Reporting</ButtonCatGhostDisabled></li>
+        <li>
+          <a href="https://app.powerbi.com/groups/9a54adbd-f6d7-4d48-af9c-98adcc824741/reports/e1f3bb35-9edf-4ada-ab3d-f31e27f5ae51/ReportSectionb8f71aa00eee26f7eb14?experience=power-bi" target="_blank" rel="noopener noreferrer">
+            <ButtonCatGhost>
+              Tesoreria
+            </ButtonCatGhost>
+          </a>
+        </li>
+        <li>
+          <a href="https://app.powerbi.com/groups/9a54adbd-f6d7-4d48-af9c-98adcc824741/reports/e1f3bb35-9edf-4ada-ab3d-f31e27f5ae51/ReportSection?experience=power-bi" target="_blank" rel="noopener noreferrer">
+            <ButtonCatGhost>
+              Reporting
+            </ButtonCatGhost>
+          </a>
+        </li>
         <li><ButtonCatGhostDisabled>Scouting</ButtonCatGhostDisabled></li>
         <li><ButtonCatGhostDisabled>Simula tu plantilla</ButtonCatGhostDisabled></li>
       </NavbarLinksVert>
