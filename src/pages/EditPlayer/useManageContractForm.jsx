@@ -394,7 +394,7 @@ export const useManageContractForm = (form, idJugador) => {
       }
 
       if (Object.keys(data).length === (Object.keys(editedContract).length - 4)) {
-        console.log('contrato que guardo', editedContract);
+        console.log('contrato que quiero guardar', editedContract);
         saveEditedContract.uploadData('players/editContract',editedContract)        
         
       }
