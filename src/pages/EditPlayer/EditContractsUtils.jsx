@@ -196,37 +196,36 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
   const [showOriginDestinyFields, setShowOriginDestinyFiels] = useState(true);
   const [showAmountTotalSalary, setShowAmountTotalSalary] = useState(true);
   const [showSalaryComb, setShowSalaryComb] = useState(true);
+  const [showPercentagePayment, setShowPercentagePayment] = useState(true);
 
 
   useEffect(()=>{
     console.log('playerContract', editPlayerContext.newContractDataForSalaryComb)
     if (
       editPlayerContext.newContractDataForSalaryComb.descType == 1 || 
-      editPlayerContext.newContractDataForSalaryComb.descType == 6 
+      editPlayerContext.newContractDataForSalaryComb.descType == 6 ||
+      editPlayerContext.newContractDataForSalaryComb.descType == 4
     ){ 
       setShowTerminationClause(true);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
       setShowAmountTotalSalary(true);
       setShowSalaryComb(true);
-    }else if (editPlayerContext.newContractDataForSalaryComb.descType == 4) {
-      setShowIntermediaries(true);
-      setShowTerminationClause(false);
-      setShowOriginDestinyFiels(true);
-      setShowAmountTotalSalary(true);
-      setShowSalaryComb(true);
+      setShowPercentagePayment(true);
     }else if (editPlayerContext.newContractDataForSalaryComb.descType == 5) {
       setShowTerminationClause(false);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
       setShowAmountTotalSalary(false);
       setShowSalaryComb(false);
+      setShowPercentagePayment(false);
     } else {
       setShowTerminationClause(false);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
       setShowAmountTotalSalary(true);
       setShowSalaryComb(true);
+      setShowPercentagePayment(true);
     }
   },[editPlayerContext.newContractDataForSalaryComb])
   
@@ -392,18 +391,27 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
             Fecha fin contrato*
           </LabelElementAssist>
         </FormSimplePanelRow>
-        <FormSimplePanelRow>
-          <LabelElementAssist
-            htmlFor='clubPercentage'
-            type='number'
-            className='panel-field-long'
-            autoComplete='off'
-            placeholder='Porcentaje (%)'
-            assistanceText=''
-            >
-            Porcentaje pago club
-          </LabelElementAssist>
-        </FormSimplePanelRow>
+        { showPercentagePayment && 
+          <FormSimplePanelRow>
+            <LabelElementAssist
+              htmlFor='clubPercentage'
+              type='number'
+              className='panel-field-long'
+              autoComplete='off'
+              placeholder='Porcentaje (%)'
+              assistanceText=''
+              >
+                { editPlayerContext.newContractDataForSalaryComb.descType == 1 ? 
+                  'Porcentaje pago al jugador' :
+                  ( editPlayerContext.newContractDataForSalaryComb.descType == 2 ||
+                    editPlayerContext.newContractDataForSalaryComb.descType == 3
+                  ) ?
+                  'Porcentaje pago club' :
+                  'Porcentaje pago club'
+                }
+            </LabelElementAssist>
+          </FormSimplePanelRow>
+        }
         { showIntermediaries && 
           <>
             <FormSimplePanelRow>
@@ -570,6 +578,8 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
   const [showOriginDestinyFields, setShowOriginDestinyFiels] = useState(true);
   const [showAmountTotalSalary, setShowAmountTotalSalary] = useState(true);
   const [showSalaryComb, setShowSalaryComb] = useState(true);
+  const [showPercentagePayment, setShowPercentagePayment] = useState(true);
+
   console.log('EditContractForm');
   console.log("tipo contrato", editPlayerContext.detailContractData[0].desc_tipo_contrato);
 
@@ -577,33 +587,29 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
     console.log('entro en useEffect edit contrato')
     if (
       editPlayerContext.detailContractData[0].desc_tipo_contrato == "Laboral" || 
-      editPlayerContext.detailContractData[0].desc_tipo_contrato == "Renovación inscripción" 
+      editPlayerContext.detailContractData[0].desc_tipo_contrato == "Renovación inscripción" ||
+      editPlayerContext.detailContractData[0].desc_tipo_contrato == "Intermediación"
     ){ 
       setShowTerminationClause(true);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
       setShowAmountTotalSalary(true);
       setShowSalaryComb(true);
-    }else if (editPlayerContext.detailContractData[0].desc_tipo_contrato == "Intermediación") {
-      setShowIntermediaries(true);
-      setShowTerminationClause(false);
-      setShowOriginDestinyFiels(true);
-      setShowAmountTotalSalary(true);
-      setShowSalaryComb(true);
+      setShowPercentagePayment(true);
     }else if (editPlayerContext.detailContractData[0].desc_tipo_contrato == "Liquidación") {
-      console.log('es un contrato de liquidacion');
       setShowTerminationClause(false);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
       setShowAmountTotalSalary(false);
       setShowSalaryComb(false);
-      
+      setShowPercentagePayment(false);
     } else {
       setShowTerminationClause(false);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
       setShowAmountTotalSalary(true);
       setShowSalaryComb(true);
+      setShowPercentagePayment(true);
     }
   },[editPlayerContext.detailContractData])
 
@@ -794,23 +800,33 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
             Fecha fin contrato*
           </LabelElementAssist>
         </FormSimplePanelRow>
-        <FormSimplePanelRow>
-          <LabelElementAssist
-            htmlFor='clubPercentage'
-            type='number'
-            className='panel-field-long'
-            autoComplete='off'
-            placeholder='Porcentaje (%)'
-            assistanceText=''
-            value={editPlayerContext.detailContractData[0].val_pct_pago_atm || ''}
-            handleOnChange={e => {
-              let onChangeValue = [...editPlayerContext.detailContractData];
-              onChangeValue[0]["val_pct_pago_atm"] = e.target.value;
-              editPlayerContext.setDetailContractData(onChangeValue); }}
-            >
-            Porcentaje pago club
-          </LabelElementAssist>
-        </FormSimplePanelRow>
+        { showPercentagePayment &&
+          <FormSimplePanelRow>
+            <LabelElementAssist
+              htmlFor='clubPercentage'
+              type='number'
+              className='panel-field-long'
+              autoComplete='off'
+              placeholder='Porcentaje (%)'
+              assistanceText=''
+              value={editPlayerContext.detailContractData[0].val_pct_pago_atm || ''}
+              handleOnChange={e => {
+                let onChangeValue = [...editPlayerContext.detailContractData];
+                onChangeValue[0]["val_pct_pago_atm"] = e.target.value;
+                editPlayerContext.setDetailContractData(onChangeValue); }}
+              >
+                { editPlayerContext.detailContractData[0].desc_tipo_contrato == 'Laboral' ? 
+                    'Porcentaje pago al jugador' :
+                    ( editPlayerContext.detailContractData[0].desc_tipo_contrato == 'Transfer. permanente' ||
+                      editPlayerContext.detailContractData[0].desc_tipo_contrato == 'Transfer. temporal'
+                    ) ?
+                    'Porcentaje pago club' :
+                    'Porcentaje pago club'
+                  }
+            </LabelElementAssist>
+          </FormSimplePanelRow>
+        }
+
         { showIntermediaries && 
           <>
             <FormSimplePanelRow>
