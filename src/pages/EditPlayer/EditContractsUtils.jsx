@@ -485,6 +485,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
               placeholder='Introduce euros'
               required={true}
               assistanceText=''
+              
             >
               Importe Fijo Total*
             </LabelElementNumberAssist>

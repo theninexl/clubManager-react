@@ -186,6 +186,13 @@ export const useManageContractForm = (form, idJugador) => {
     const salarios = editPlayerContext.contractSalary;
     const rescision = editPlayerContext.contractTermination;
 
+    // console.log('Salarios', salarios);
+
+    // const sumaSalarios = salarios[0].salaryComb.reduce((sum, current) => {
+    //   console.log('current', current.val_salario_fijo);
+    //   return sum + parseFloat(current.val_salario_fijo);
+    // },0)
+
     const data = {
       clausula_rescision:rescision,
       id_jugador: userParamString,
@@ -212,50 +219,70 @@ export const useManageContractForm = (form, idJugador) => {
 
 
     if (data) {
+      console.log('tengo data');
+
       for (const [key, value] of Object.entries(data)) { 
-        console.log('value de la key', key,' es igual a:',value);       
+        // console.log('value de la key', key,' es igual a:',value);       
         if (value === '-1' || value === '') {
           console.log('error en ',key,' que tiene value',value)
           editPlayerContext.setCreatingContractError('Es necesario rellenar todos los campos');
-          break;
+          return;
         } else {
           savedContract[key] = value;
         } 
       }
+
+      //comprueba que la suma de salarios es inferior a la suma de salario total
+      // console.log('sumaSalarios', sumaSalarios);
+      // const salarioTotal = savedContract.val_imp_salario_total.replace('€', '').trim();
+      // const salarioTotalNumerico = parseFloat(salarioTotal);
+      // console.log('salarioTotal', salarioTotalNumerico)
+
+      // if (sumaSalarios > salarioTotalNumerico) {
+      //   console.log('salarios no cumplen');
+      //   editPlayerContext.setCreatingContractError('La suma de salarios no puede ser mayor que el valor del importe fijo total');
+      //   return;
+      // } else {
+      //   console.log('salarios cumplen');
+      // }
 
       if (Object.keys(data).length === (Object.keys(savedContract).length - 4)) {        
         // console.log('object keys data', Object.keys(data).length)
         // console.log('object keys savedContract', Object.keys(savedContract).length)        
         console.log('contrato que guardo', data);
         console.log('savedContract', savedContract);
-        saveNewContract.uploadData('players/createContract',savedContract);
-        editPlayerContext.setNewContract(false);
-        //resetear contenidos salario fijo
-        editPlayerContext.setContractSalary(editPlayerContext.defaultContractSalaryArray);
-        //resetear contenidos clausula rescisión
-        editPlayerContext.setContractTermination(editPlayerContext.defaultContractTerminationArray) ;       
-        window.scrollTo(0,0);
+
+        saveNewContract.uploadData('players/createContract',savedContract);   
       }
     } 
   }
 
   useEffect(()=> {
-    if (saveNewContract.responseUpload) {
-      console.log(saveNewContract.responseUpload);
-      if (saveNewContract.responseUpload.code === 'ERR_NETWORK') { editPlayerContext.setCreatingContractError('Error de conexión, inténtelo más tarde')
-      } else if (saveNewContract.responseUpload.status === 'ok') { 
-        // console.log('guardo con éxito, pido jugador', idJugador)
-        getPlayerDetail(idJugador);
-        //resetear contenidos salario fijo
-        editPlayerContext.setContractSalary(editPlayerContext.defaultContractSalaryArray);
-        //resetear contenidos clausula rescisión
-        editPlayerContext.setContractTermination(editPlayerContext.defaultContractTerminationArray);
-        //reset errores form
-        editPlayerContext.setCreatingContractError();
-        window.scrollTo(0,0);
-      } else {
-        editPlayerContext.setCreatingContractError('Existe un error en el formulario, inténtelo de nuevo')
-      }
+    const response = saveNewContract.responseUpload;
+    console.log("response create contract", response);
+    if (response && response.status == '-1') {
+      editPlayerContext.setCreatingContractError('La suma de salarios no puede ser mayor que el valor del importe fijo total');
+    } else if (response && response.status == '-2') {
+      editPlayerContext.setCreatingContractError('Las fechas de inicio/fin de contrato no coinciden con las fechas introducidas en los salarios');
+    } else if (response && response.status === 'ok') {
+      //resetear contenidos salario fijo
+      editPlayerContext.setContractSalary(editPlayerContext.defaultContractSalaryArray);
+      //resetear contenidos clausula rescisión
+      editPlayerContext.setContractTermination(editPlayerContext.defaultContractTerminationArray) ;
+      //cerrar capa de creacion de contrato
+      editPlayerContext.setNewContract(false);
+      getPlayerDetail(idJugador);
+      //resetear contenidos salario fijo
+      editPlayerContext.setContractSalary(editPlayerContext.defaultContractSalaryArray);
+      //resetear contenidos clausula rescisión
+      editPlayerContext.setContractTermination(editPlayerContext.defaultContractTerminationArray);
+      //reset errores form
+      editPlayerContext.setCreatingContractError(null);
+      window.scrollTo(0,0);
+    } else if (response && response.code === 'ERR_NETWORK') {
+      editPlayerContext.setCreatingContractError('Error de conexión, inténtelo más tarde')
+    } else {
+      editPlayerContext.setCreatingContractError('Existe un error en el formulario, inténtelo de nuevo')
     }
   },[saveNewContract.responseUpload])
 
@@ -369,24 +396,27 @@ export const useManageContractForm = (form, idJugador) => {
       if (Object.keys(data).length === (Object.keys(editedContract).length - 4)) {
         console.log('contrato que guardo', editedContract);
         saveEditedContract.uploadData('players/editContract',editedContract)        
-        editPlayerContext.setEditContract(false);
-        editPlayerContext.setDetailContractData(null);
-        editPlayerContext.setDetailSalaryData(null)
-        window.scrollTo(0,0);
+        
       }
     } 
   }
 
   //mirar la respuesta de subir datos al terminar de guardar el contrato editado
   useEffect(()=> {
-    if (saveEditedContract.responseUpload) {
-      // console.log(saveEditedContract.responseUpload);
-      if (saveEditedContract.responseUpload.status === 'ok') { 
-        editPlayerContext.setCreatingContractError()
+    const response = saveEditedContract.responseUpload;
+    if (response && response.status == '-1') {
+      editPlayerContext.setCreatingContractError('La suma de salarios no puede ser mayor que el valor del importe fijo total');
+    } else if (response && response.status == '-2') {
+      editPlayerContext.setCreatingContractError('Las fechas de inicio/fin de contrato no coinciden con las fechas introducidas en los salarios');
+    } else if (response && response.status == 'ok') {
+        editPlayerContext.setEditContract(false);
+        editPlayerContext.setDetailContractData(null);
+        editPlayerContext.setDetailSalaryData(null)
+        window.scrollTo(0,0);
+        editPlayerContext.setCreatingContractError(null)
         getPlayerDetail(idJugador);
-      } else {
-        editPlayerContext.setCreatingContractError('Existe un error en el formulario, inténtelo de nuevo')
-      }
+    } else {
+      editPlayerContext.setCreatingContractError('Existe un error en el formulario, inténtelo de nuevo');
     }
   },[saveEditedContract.responseUpload])
 
