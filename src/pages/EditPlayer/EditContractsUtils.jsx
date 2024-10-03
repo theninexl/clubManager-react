@@ -1704,7 +1704,7 @@ const NewTerminationClauseLine = ({ handleAddNewTerminationClause, handleDeleteN
                 >
                   Importe en euros*
                 </LabelElementNumber>
-                <LabelElementToggle2Sides
+                {/* <LabelElementToggle2Sides
                   htmlFor='flag_bruto_neto'
                   titleClassNameLeft='cm-u-textRight'
                   textLeft='Bruto'
@@ -1714,7 +1714,7 @@ const NewTerminationClauseLine = ({ handleAddNewTerminationClause, handleDeleteN
                   checked={item.flag_bruto_neto}
                   handleOnChange={(event) => {
                     handleChangesOnNewTerminationClauseIfToggle(event,index)
-                  }} />
+                  }} /> */}
                 <LabelElement
                   htmlFor='dt_inicio'
                   type='date'
@@ -1797,7 +1797,7 @@ const EditTerminationClauseLine = ({ handleAddNewTerminationClause, handleDelete
                 >
                   Importe en euros*
                 </LabelElementNumber>
-                <LabelElementToggle2Sides
+                {/* <LabelElementToggle2Sides
                   htmlFor='flag_bruto_neto'
                   titleClassNameLeft='cm-u-textRight'
                   textLeft='Bruto'
@@ -1807,7 +1807,7 @@ const EditTerminationClauseLine = ({ handleAddNewTerminationClause, handleDelete
                   checked={item.flag_bruto_neto}
                   handleOnChange={(event) => {
                     handleChangesOnEditTerminationClauseIfToggle(event,index)
-                  }} />
+                  }} /> */}
                 <LabelElement
                   htmlFor='dt_inicio'
                   type='date'
