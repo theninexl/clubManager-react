@@ -169,7 +169,7 @@ export default function NewPlayerPage () {
     
     //console.log('dataSent',dataSent)
     
-    if (data.desc_nombre === '' || data.desc_apellido1 === '' || data.valor_mercado === '') {
+    if (data.desc_nombre === '' || data.desc_apellido1 === '') {
       setCreatePlayerError('Debe completar la información de los campos obligatorios');
     } else {
       setCreatePlayerError();
@@ -435,7 +435,6 @@ export default function NewPlayerPage () {
                     </FormSimplePanelRow>
                     <FormSimplePanelRow>
                       <LabelElementNumberAssist
-                        required={true}
                         htmlFor='playerMarketValue'
                         suffix={'€'}
                         className='panel-field-long'

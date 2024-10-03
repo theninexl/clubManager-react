@@ -41,12 +41,37 @@ export const EditPlayerTab = ({ idJugador, playerTypes, countries, positions }) 
     console.log('id_jugador', editPlayerContext.playerDataDetails.id_jugador);
     // const playerIdToString = playerData.id_jugador.toString();
     // playerData.id_jugador = playerIdToString;
-    if (editPlayerContext.playerDataDetails.flag_comunitario === true || editPlayerContext.playerDataDetails.flag_comunitario === 1) editPlayerContext.playerDataDetails.flag_comunitario = 1
-    else if (editPlayerContext.playerDataDetails.flag_comunitario === false || editPlayerContext.playerDataDetails.flag_comunitario === 0) editPlayerContext.playerDataDetails.flag_comunitario = 0
-    if (editPlayerContext.playerDataDetails.flag_residencia === true || editPlayerContext.playerDataDetails.flag_residencia === 1) editPlayerContext.playerDataDetails.flag_residencia = 1
-    else if (editPlayerContext.playerDataDetails.flag_residencia === false || editPlayerContext.playerDataDetails.flag_residencia === 0) editPlayerContext.playerDataDetails.flag_residencia = 0
-    if (editPlayerContext.playerDataDetails.flag_cotonu === true || editPlayerContext.playerDataDetails.flag_cotonu === 1) editPlayerContext.playerDataDetails.flag_cotonu = 1
-    else if (editPlayerContext.playerDataDetails.flag_cotonu === false || editPlayerContext.playerDataDetails.flag_cotonu === 0) editPlayerContext.playerDataDetails.flag_cotonu = 0
+    if (
+        editPlayerContext.playerDataDetails.flag_comunitario === true || 
+        editPlayerContext.playerDataDetails.flag_comunitario === 1
+      ) 
+        {editPlayerContext.playerDataDetails.flag_comunitario = 1}
+    else if (
+      editPlayerContext.playerDataDetails.flag_comunitario === false || 
+      editPlayerContext.playerDataDetails.flag_comunitario === 0
+    ) 
+      {editPlayerContext.playerDataDetails.flag_comunitario = 0}
+    if (
+      editPlayerContext.playerDataDetails.flag_residencia === true || 
+      editPlayerContext.playerDataDetails.flag_residencia === 1
+    ) 
+      editPlayerContext.playerDataDetails.flag_residencia = 1
+    else if (
+      editPlayerContext.playerDataDetails.flag_residencia === false || 
+      editPlayerContext.playerDataDetails.flag_residencia === 0
+    ) 
+      {editPlayerContext.playerDataDetails.flag_residencia = 0}
+    if (
+      editPlayerContext.playerDataDetails.flag_cotonu === true || 
+      editPlayerContext.playerDataDetails.flag_cotonu === 1
+    ) 
+      {editPlayerContext.playerDataDetails.flag_cotonu = 1}
+    else if (
+      editPlayerContext.playerDataDetails.flag_cotonu === false || 
+      editPlayerContext.playerDataDetails.flag_cotonu === 0
+    ) 
+      {editPlayerContext.playerDataDetails.flag_cotonu = 0}
+
     editPlayerContext.playerDataDetails.id_nacionalidad1 ? editPlayerContext.playerDataDetails.id_nacionalidad1.toString() : null;
     editPlayerContext.playerDataDetails.id_nacionalidad2 ? editPlayerContext.playerDataDetails.id_nacionalidad2.toString() : null;
     editPlayerContext.playerDataDetails.val_valor_mercado ? editPlayerContext.playerDataDetails.val_valor_mercado.toString() : null;
@@ -72,7 +97,7 @@ export const EditPlayerTab = ({ idJugador, playerTypes, countries, positions }) 
       'id_nacionalidad2': editPlayerContext.playerDataDetails.id_nacionalidad2,
       'id_posicion': editPlayerContext.playerDataDetails.id_posicion,
       'id_tipo_jugador': editPlayerContext.playerDataDetails.id_tipo_jugador,
-      'val_valor_mercado': editPlayerContext.playerDataDetails.val_valor_mercado.toString(),
+      'val_valor_mercado': editPlayerContext.playerDataDetails.val_valor_mercado?.toString(),
   }
 
     if (editPlayerContext.playerDataDetails.desc_nombre === '' || editPlayerContext.playerDataDetails.desc_apellido1 === '') {
