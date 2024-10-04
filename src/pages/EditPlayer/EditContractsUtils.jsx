@@ -203,10 +203,16 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
     console.log('playerContract', editPlayerContext.newContractDataForSalaryComb)
     if (
       editPlayerContext.newContractDataForSalaryComb.descType == 1 || 
-      editPlayerContext.newContractDataForSalaryComb.descType == 6 ||
-      editPlayerContext.newContractDataForSalaryComb.descType == 4
+      editPlayerContext.newContractDataForSalaryComb.descType == 6
     ){ 
       setShowTerminationClause(true);
+      setShowIntermediaries(false);
+      setShowOriginDestinyFiels(true);
+      setShowAmountTotalSalary(true);
+      setShowSalaryComb(true);
+      setShowPercentagePayment(true);
+    }else if (editPlayerContext.newContractDataForSalaryComb.descType == 4) {
+      setShowTerminationClause(false);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
       setShowAmountTotalSalary(true);
@@ -403,10 +409,8 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
               >
                 { editPlayerContext.newContractDataForSalaryComb.descType == 1 ? 
                   'Porcentaje pago al jugador' :
-                  ( editPlayerContext.newContractDataForSalaryComb.descType == 2 ||
-                    editPlayerContext.newContractDataForSalaryComb.descType == 3
-                  ) ?
-                  'Porcentaje pago club' :
+                  editPlayerContext.newContractDataForSalaryComb.descType == 4 ? 
+                  'Porcentaje pago intermediario':
                   'Porcentaje pago club'
                 }
             </LabelElementAssist>
@@ -588,10 +592,16 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
     console.log('entro en useEffect edit contrato')
     if (
       editPlayerContext.detailContractData[0].desc_tipo_contrato == "Laboral" || 
-      editPlayerContext.detailContractData[0].desc_tipo_contrato == "Renovación inscripción" ||
-      editPlayerContext.detailContractData[0].desc_tipo_contrato == "Intermediación"
+      editPlayerContext.detailContractData[0].desc_tipo_contrato == "Renovación inscripción"
     ){ 
       setShowTerminationClause(true);
+      setShowIntermediaries(false);
+      setShowOriginDestinyFiels(true);
+      setShowAmountTotalSalary(true);
+      setShowSalaryComb(true);
+      setShowPercentagePayment(true);
+    }else if (editPlayerContext.detailContractData[0].desc_tipo_contrato == "Intermediación") {
+      setShowTerminationClause(false);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
       setShowAmountTotalSalary(true);
@@ -818,10 +828,8 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
               >
                 { editPlayerContext.detailContractData[0].desc_tipo_contrato == 'Laboral' ? 
                     'Porcentaje pago al jugador' :
-                    ( editPlayerContext.detailContractData[0].desc_tipo_contrato == 'Transfer. permanente' ||
-                      editPlayerContext.detailContractData[0].desc_tipo_contrato == 'Transfer. temporal'
-                    ) ?
-                    'Porcentaje pago club' :
+                    editPlayerContext.detailContractData[0].desc_tipo_contrato == 'Intermediación' ? 
+                    'Porcentaje pago al intermediario' :
                     'Porcentaje pago club'
                   }
             </LabelElementAssist>

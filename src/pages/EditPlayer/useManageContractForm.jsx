@@ -261,7 +261,7 @@ export const useManageContractForm = (form, idJugador) => {
     const response = saveNewContract.responseUpload;
     console.log("response create contract", response);
     if (response && response.status == '-1') {
-      editPlayerContext.setCreatingContractError('La suma de salarios no puede ser mayor que el valor del importe fijo total');
+      editPlayerContext.setCreatingContractError('La suma de salarios fijos debe ser igual que el valor del importe salario total');
     } else if (response && response.status == '-2') {
       editPlayerContext.setCreatingContractError('Las fechas de inicio/fin de contrato no coinciden con las fechas introducidas en los salarios');
     } else if (response && response.status === 'ok') {
@@ -405,7 +405,7 @@ export const useManageContractForm = (form, idJugador) => {
   useEffect(()=> {
     const response = saveEditedContract.responseUpload;
     if (response && response.status == '-1') {
-      editPlayerContext.setCreatingContractError('La suma de salarios no puede ser mayor que el valor del importe fijo total');
+      editPlayerContext.setCreatingContractError('La suma de salarios fijos debe ser igual que el valor del importe salario total');
     } else if (response && response.status == '-2') {
       editPlayerContext.setCreatingContractError('Las fechas de inicio/fin de contrato no coinciden con las fechas introducidas en los salarios');
     } else if (response && response.status == 'ok') {
