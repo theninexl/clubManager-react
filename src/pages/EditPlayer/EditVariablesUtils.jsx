@@ -545,6 +545,7 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
           </FormSimplePanelRow>
 
           {editPlayerContext.detailEditVariableData[0].expresiones.map((item,index) => {
+            
             const ExprComb = index;        
             return (
               <div key={index} className='cm-u-spacer-mb-bigger'>
