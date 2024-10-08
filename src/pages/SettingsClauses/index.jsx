@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { AsideMenu } from "../../components/AsideMenu";
 import { useGetData } from "../../hooks/useGetData";
 import { useSaveData } from "../../hooks/useSaveData";
+import { useGlobalContext } from "../../providers/globalContextProvider";
 import { v4 as uuidv4 } from 'uuid';
 import { HalfContainer, HalfContainerAside, HalfContainerBody } from "../../components/UI/layout/containers";
 import { CentralBody, CentralBody__Header, HeadContent, HeadContentTitleBar, TitleBar__Title, TitleBar__TitleAvatar, TitleBar__Tools } from "../../components/UI/layout/centralContentComponents";
@@ -13,6 +14,7 @@ import { SymbolSave } from "../../components/UI/objects/symbols";
 
 
 export default function SettingsClausesPage () {
+  const globalContext = useGlobalContext();
 
   //estados locales
   const [allPlayers, setAllPlayers] = useState([]);
@@ -25,25 +27,26 @@ export default function SettingsClausesPage () {
   const [dataClauses,setDataClauses] = useState();
 
   //pedir todos los jugadores
-  const { responseGetData } = useGetData('players/getAll',{search:'',pagenumber:1,rowspage:9999})
+  // const { responseGetData } = useGetData('players/getAll',{search:'',pagenumber:1,rowspage:9999})
+  const getPlayers = useSaveData();
+  const getActiveEntityPlayers = () => {
+    console.log('pido equipo');
+    getPlayers.uploadData('players/getAll',{search:'',pagenumber:1,rowspage:9999, id_equipo:globalContext.activeEntity});
+  }
 
   useEffect(()=>{
-    if (responseGetData){
-      // console.log(responseGetData);
-      if (responseGetData.status === 200) { 
-        setAllPlayers(responseGetData.data.data);
-      } else if (responseGetData.code === 'ERR_NETWORK') {
-        setWarningMsg(null);   
-        setErrorMsg('Error de conexión, inténtelo más tarde');
-      } else if (responseGetData.code === 'ERR_BAD_RESPONSE') {
-        setWarningMsg(null);    
-        setErrorMsg('Error de conexión, inténtelo más tarde');
+    const response = getPlayers.responseUpload;
+    if (response){
+      console.log(response);
+      
+      if (response && response.status === 'ok') { 
+        setAllPlayers(response.data);
       } else {
         setWarningMsg(null);   
-        setErrorMsg('No hay datos disponibles. Vuelve a intentarlo');
+        setErrorMsg('Error de conexión, inténtelo más tarde');
       }
     }
-  },[responseGetData])
+  },[getPlayers.responseUpload])
 
 
   //pedir datos jugador activo
@@ -93,6 +96,7 @@ export default function SettingsClausesPage () {
   },[activeContractId])
 
   useEffect(()=>{
+    getActiveEntityPlayers();
     setActivePlayerId();
     setActiveContractId();
   },[])
