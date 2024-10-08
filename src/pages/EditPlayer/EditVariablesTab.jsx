@@ -21,6 +21,7 @@ export const EditVariablesTab = ({ form, idJugador }) => {
     handleDeleteClausula,
     getNewVariableCombos,
     handleSaveNewVariable,
+    handleSaveExistingVariable,
     getClausulasList,
     handleEditClausula,
     handleAddNewDetailVariableExpression,
@@ -59,6 +60,7 @@ export const EditVariablesTab = ({ form, idJugador }) => {
         searchExpression={searchExpression}
         searchCondition={searchCondition}
         handleSaveNewVariable={handleSaveNewVariable}
+        handleSaveExistingVariable={handleSaveExistingVariable}
         handleAddNewDetailVariableExpression={handleAddNewDetailVariableExpression}
         handleChangesOnDetailVariableExpression={handleChangesOnDetailVariableExpression}
         handleChangesOnDetailVariableExpressionToggle={handleChangesOnDetailVariableExpressionToggle}

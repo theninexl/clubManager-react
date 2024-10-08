@@ -333,6 +333,70 @@ export const useManageVariablesForm = (form, idJugador) => {
     }
   },[saveClausula.responseUpload])
 
+  //edit variale existente
+  const editClausula = useSaveData();
+
+  const handleSaveExistingVariable = (e) => {
+    e.preventDefault();
+    //console.log('form en hook variables', form);
+    const recursiveBlocksVal = document.getElementById('recursiveBlocks').checked;
+    const flagBrutoNetoVal = document.getElementById('flag_bruto_neto').checked;
+    
+    const formData = new FormData(form.current);
+  
+    const expresiones = editPlayerContext.variableExpressions;
+    //procesar expresiones para quitar las condiciones a aquellas que no tengan por ser tipo bonus
+    const findNoComb = expresiones.filter(item => item.bonus_prima !== 1);
+
+    const newExpresiones = [...expresiones]
+    findNoComb.map(item => {
+      newExpresiones[item.id_ExprComb -1]['condiciones'] = []
+    })
+
+    const data = {
+      expresiones: newExpresiones,
+      flag_bloque_recursivo: recursiveBlocksVal ? 1 : 0,
+      desc_alias: formData.get('descripcion'),
+      bloque: formData.get('bloque') === null ? '' : formData.get('bloque'),
+      tipo_importe: formData.get('tipo_importe'),
+      fecha_desde: formData.get('dateSince'),
+      fecha_hasta: formData.get('dateTo'),
+      // amortizable: amortizableVal ? 1 : 0,
+      flag_bruto_neto: flagBrutoNetoVal ? 1 : 0,
+      num_importe: formData.get('variableAmount'),
+      id_beneficiario: formData.get('variableBeneficiary'),
+      id_anexo: formData.get('variableAnexoVI'),
+      new:true
+    }
+
+    const dataSent = {
+      'id_clausula': editPlayerContext.detailEditVariableData[0].id_clausula,
+      'variable': data,
+    }
+
+    // console.log('variable que guardo', data);
+    console.log('variable que mando', dataSent);
+    saveClausula.uploadData('players/editClausula', dataSent);
+    // setSavedVariables([...savedVariables, dataSent]);    
+  }
+
+  useEffect(()=>{
+    if (editClausula.responseUpload) {
+      console.log ("edit clausula", editClausula.responseUpload);
+      if (editClausula.responseUpload.status === 'ok') {
+        editPlayerContext.setShowEditVariableLayer(false);
+        editPlayerContext.setVariableExpressions([{id_ExprComb:1,bonus_prima:'',id_expresion:'',id_expresion_operador:'',id_expresion_valor:'',condiciones:[{id_condicion:'',id_condicion_operador:'',id_condicion_tipo:'',id_condicion_valor:''}]}]);
+        //vuelve a pedir el detalle de clausula con el listado de arriba
+        getClausulasList(globalContext.activeContractId); 
+        //borrar el error
+        editPlayerContext.setCreatingClauseError(null);
+      } else {
+        editPlayerContext.setCreatingClauseError('Existe un error en el formulario, inténtelo de nuevo')
+      }
+    }
+  },[editClausula.responseUpload])
+
+
   return {
     getNewVariableCombos,
     handleAddNewVariableExpression,
@@ -346,6 +410,7 @@ export const useManageVariablesForm = (form, idJugador) => {
     handleEditClausula,
     handleDeleteClausula,
     handleSaveNewVariable,
+    handleSaveExistingVariable,
     getClausulasList,
     handleAddNewDetailVariableExpression,
     handleChangesOnDetailVariableExpression,

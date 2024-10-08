@@ -422,7 +422,9 @@ export default function EditPlayerPage () {
       //console.log(deletePlayer.responseUpload);
       if (deletePlayer.responseUpload.status === 409) { setError('El jugador que estás intentnado borrar no existe')
       } else if (deletePlayer.responseUpload.code === 'ERR_NETWORK') { setError('Error de conexión, inténtelo más tarde')
-      } else if (deletePlayer.responseUpload.status === 'ok') { navigate('/manage-players');
+      } else if (deletePlayer.responseUpload.status === 'ok') { 
+        context.setEditPlayerModalDelete(false);
+        navigate('/manage-players');
       } else {
         setError('Existe un error en el formulario, inténtelo de nuevo')
       }

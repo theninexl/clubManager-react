@@ -96,7 +96,7 @@ export const ListVariablesForSelectedContract = ({ handleDeleteClausula, handleE
   )
 }
 
-export const VariableDataLayer = ({ handleChangesOnNewVariableExpression,handleChangesOnNewVariableExpressionToggle, handleDeleteNewVariableExpression, handleAddNewVariableExpression,handleDeleteNewCond,handleAddNewCond, searchExpression, searchCondition, handleSaveNewVariable,handleAddNewDetailVariableExpression, handleChangesOnDetailVariableExpression, handleChangesOnDetailVariableExpressionToggle,   handleDeleteDetailVariableExpression, handleAddNewDetailCond, handleDeleteDetailCond }) => {
+export const VariableDataLayer = ({ handleChangesOnNewVariableExpression,handleChangesOnNewVariableExpressionToggle, handleDeleteNewVariableExpression, handleAddNewVariableExpression,handleDeleteNewCond,handleAddNewCond, searchExpression, searchCondition, handleSaveNewVariable, handleSaveExistingVariable,handleAddNewDetailVariableExpression, handleChangesOnDetailVariableExpression, handleChangesOnDetailVariableExpressionToggle,   handleDeleteDetailVariableExpression, handleAddNewDetailCond, handleDeleteDetailCond }) => {
   const globalContext = useGlobalContext();
   const editPlayerContext = useEditPlayerDataContext();
 
@@ -151,7 +151,7 @@ export const VariableDataLayer = ({ handleChangesOnNewVariableExpression,handleC
             handleChangesOnDetailVariableExpressionToggle={handleChangesOnDetailVariableExpressionToggle}
             searchExpression={searchExpression}
             searchCondition={searchCondition}
-            handleSaveNewVariable={handleSaveNewVariable}
+            handleSaveExistingVariable={handleSaveExistingVariable}
             handleAddNewDetailVariableExpression={handleAddNewDetailVariableExpression}
             handleDeleteDetailVariableExpression={handleDeleteDetailVariableExpression}
             handleAddNewDetailCond={handleAddNewDetailCond}
@@ -250,6 +250,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
                       <option value=''>Operador</option>
                     <option value='<='>&lt;=</option>
                     <option value='>='>&gt;=</option>
+                    <option value='='>=</option>
                   </SelectIconShorter>
                   <ExprCondValueField
                     idExpresion={editPlayerContext.variableExpressions[index].id_expresion}
@@ -478,7 +479,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
   )
 }
 
-const EditVariableForm = ({ searchExpression, searchCondition, handleSaveNewVariable, handleAddNewDetailVariableExpression, handleChangesOnDetailVariableExpression, handleChangesOnDetailVariableExpressionToggle,   handleDeleteDetailVariableExpression, handleAddNewDetailCond, handleDeleteDetailCond }) => {
+const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistingVariable, handleAddNewDetailVariableExpression, handleChangesOnDetailVariableExpression, handleChangesOnDetailVariableExpressionToggle,   handleDeleteDetailVariableExpression, handleAddNewDetailCond, handleDeleteDetailCond }) => {
   const editPlayerContext = useEditPlayerDataContext();
   const [editRecursiveBlocks, setEditRecursiveBlocks] = useState(0);
   const [blockText, setBlockText] = useState(null);
@@ -612,6 +613,7 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveNewVari
                       <option value=''>Operador</option>
                     <option value='<='>&lt;=</option>
                     <option value='>='>&gt;=</option>
+                    <option value='='>=</option>
                   </SelectIconShorter>
                   <ExprCondValueFieldEdit
                     idExpresion={editPlayerContext.detailEditVariableData[0].expresiones[ExprComb].id_expresion}
@@ -880,16 +882,24 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveNewVari
                 })}
             </LabelSelectElement>
           </FormSimplePanelRow>
+          { editPlayerContext.creatingClauseError? 
+            <FormSimplePanelRow
+            className='cm-u-centerText'>
+              <span className='error'>{editPlayerContext.creatingClauseError}</span>
+            </FormSimplePanelRow>
+            : ''
+          }
           <FormSimplePanelRow
             className='cm-u-centerText'>
             <ButtonMousePrimary
-              // onClick={handleSaveNewVariable}
+              onClick={handleSaveExistingVariable}
               >Guardar</ButtonMousePrimary>
             <ButtonMouseGhost
               onClick={() => {
                 setEditRecursiveBlocks(0);
                 setBlockText(null);
                 editPlayerContext.setShowEditVariableLayer(false);
+                editPlayerContext.setCreatingClauseError(null);
               }}
               >Cancelar</ButtonMouseGhost>
           </FormSimplePanelRow>

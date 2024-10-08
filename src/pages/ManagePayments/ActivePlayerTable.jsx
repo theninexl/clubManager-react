@@ -117,13 +117,13 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
 
   // Función para generar columnDefs basados en las claves
   const generateColumns = (keys) => {
-    // console.log('entro en generate colums con keys:',keys)
+    console.log('entro en generate colums con keys:',keys)
 
     return keys.map(key => ({
       accessorKey: `months.${key.clave}`,
       header: key.valor,
       cell: ({ row, column, table, getValue }) => (
-        <>          
+        <>      
           <EditableCell
           row={row}
           column={column}
@@ -356,7 +356,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
     //no puede rellenar más si columnDefs es mayor que 3, que son las 3 primeras que meto yo a mano.
     if (dynamicData.length > 0 && columnDefs <= 3) {
       setTotalMonths(Object.keys(dynamicData[0]['months']).length);
-      // console.log('tamaño dynamicData:', dynamicData)
+      console.log('tamaño dynamicData:', dynamicData)
       const columnDefsCopy = [...columnDefs]
       columnDef2.map(item => columnDefsCopy.push(item))
       setColumnDefs(columnDefsCopy);    
@@ -369,7 +369,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
   useEffect(()=>{
     //no puede añadir 2 veces     
     if (infoForColumnDefs.length > 0 && (columnDefs.length < (infoForColumnDefs.length + dynamicData.length))) {
-      // console.log('añado a columnDefs porque el tamaño de columnDefs, ',columnDefs.length,' es MENOR que la suma de dynamicData y infoForColums', (infoForColumnDefs.length + dynamicData.length) )
+      console.log('añado a columnDefs porque el tamaño de columnDefs, ',columnDefs.length,' es MENOR que la suma de dynamicData y infoForColums', (infoForColumnDefs.length + dynamicData.length) )
       const columnDefsCopy = [...columnDefs];
       infoForColumnDefs.map(column => {
         columnDef2.push(column)
@@ -382,7 +382,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
 
   //este añadirá la última columna de totales en última posición si no existe aún dentro
   useEffect(()=>{
-    // console.log('columnDefs han cambiado');
+    console.log('columnDefs han cambiado');
     const hasTotal = columnDefs.some(item => item.accessorKey == 'total');
 
     if ((columnDefs.length === totalMonths+3) && hasTotal == false) {
@@ -390,7 +390,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       columnDefsCopy.push(lastTotalObject)
       setColumnDefs(columnDefsCopy);
     } else if (hasTotal == true){
-      // console.log('columnDefs ya tiene añadido total y seteo los datos para la tabla', columnDefs)
+      console.log('columnDefs ya tiene añadido total y seteo los datos para la tabla', columnDefs)
       setData(dynamicData);
     }
   },[columnDefs])
@@ -400,7 +400,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
 
   useEffect (() => {
 
-    // console.log("data ha cambiado", data);
+    console.log("data ha cambiado", data);
     if (data.length > 0) {
       const firstDataElement = data[0];
 
@@ -911,6 +911,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                 </FormSimplePanelRow>
               </FormSimple>
             </div>
+
             <div className='cm-l-tabledata-cls-container cm-u-spacer-mt-big cm-u-spacer-mb-big'>
               <TableDataCls 
                 style={{ 
@@ -955,6 +956,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                         <TableDataClsBody__row key={uuidv4()}>
                           { rowElement.getVisibleCells().map((cellElement, index) => {
                             const { column } = cellElement;
+                            console.log('totalCells', rowElement.getVisibleCells().length)
                             return (
                               <>
                                 {index === rowElement.getVisibleCells().length - 1 ?
@@ -999,6 +1001,7 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                 </TableDataClsBody>
                 {
                   tableInstance.getFooterGroups().map(footerElement => {
+                    
                     return (
                       <TableDataClsHead 
                         key={uuidv4()}
@@ -1011,11 +1014,9 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                               <>
                                 <TableDataClsHead__cell
                                   key={uuidv4()}
-                                  // key={footerCol.id}
                                   className='tablecell-medium'
                                   style={{ ...getCommonPinningStyles(column) }}
                                 >
-                                  {/* {sumaCols[footerCol.id]} */}
                                   {
                                     footerCol.isPlaceHolder ? null :
                                     flexRender(
@@ -1028,13 +1029,13 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
                             )
                           })}
                         </tr>
-                       
                       </TableDataClsHead>
                     )
                   })
                 }
               </TableDataCls>
             </div>
+            
             { (!editState && regularState) &&
               <p className='cm-u-centerText' style={{width:'100%'}}>
                 <ButtonMousePrimary
