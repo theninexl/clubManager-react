@@ -264,6 +264,8 @@ export const useManageContractForm = (form, idJugador) => {
       editPlayerContext.setCreatingContractError('La suma de salarios fijos debe ser igual que el valor del importe salario total');
     } else if (response && response.status == '-2') {
       editPlayerContext.setCreatingContractError('Las fechas de inicio/fin de contrato no coinciden con las fechas introducidas en los salarios');
+    }  else if (response && response.status == '-3') {
+        editPlayerContext.setCreatingContractError('Las fechas de inicio/fin de contrato no coinciden con las fechas introducidas en la clausula de rescisión');
     } else if (response && response.status === 'ok') {
       //resetear contenidos salario fijo
       editPlayerContext.setContractSalary(editPlayerContext.defaultContractSalaryArray);
@@ -408,6 +410,8 @@ export const useManageContractForm = (form, idJugador) => {
       editPlayerContext.setCreatingContractError('La suma de salarios fijos debe ser igual que el valor del importe salario total');
     } else if (response && response.status == '-2') {
       editPlayerContext.setCreatingContractError('Las fechas de inicio/fin de contrato no coinciden con las fechas introducidas en los salarios');
+    } else if (response && response.status == '-3') {
+      editPlayerContext.setCreatingContractError('Las fechas de inicio/fin de contrato no coinciden con las fechas introducidas en la clausula de rescisión');
     } else if (response && response.status == 'ok') {
         editPlayerContext.setEditContract(false);
         editPlayerContext.setDetailContractData(null);
