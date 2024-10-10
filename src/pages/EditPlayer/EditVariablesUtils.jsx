@@ -604,30 +604,6 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
                           })}  
                         </>
                       }
-
-                      {/* {
-                        editPlayerContext.variableCombos.data.expresion?.map((item2) => { 
-                          
-  
-                          
-                          if (
-                            editPlayerContext.detailEditVariableData[0].expresiones[ExprComb].bonus_prima == 0 ||
-                            editPlayerContext.detailEditVariableData[0].expresiones[ExprComb].bonus_prima == undefined                             
-                            ){
-                            if (item2.bonus_prima === true) {
-                              return (
-                                <option key={item.id} value={item.id}>{item.value}</option>
-                              )
-                            }
-                          } else {
-                            if ( item2.bonus_prima === false) {
-                              return (
-                                <option key={item2.id} value={item2.id}>{item2.value}</option>
-                              )
-                            }
-                          } */}
-                          
-                      })}
                   </LabelSelectShorterElement>
                   <SelectIconShorter
                     name='id_expresion_operador'
