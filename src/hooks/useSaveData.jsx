@@ -8,9 +8,11 @@ export const useSaveData = (endpoint,parameters) => {
 
   const uploadData = async (endpoint,parameters) => {
 
+    console.log('useSaveData', endpoint, parameters)
+
     await Api.call.post(endpoint.toString(),parameters,{ headers:headers})
     .then(response => {
-      // console.log('respuesta en useSaveData llamando a', endpoint, ':',response.data)
+      console.log('respuesta en useSaveData llamando a', endpoint, ':',response)
       setResponseUpload(response.data)
     })
     .catch(err => {

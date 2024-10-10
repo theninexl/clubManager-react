@@ -77,6 +77,7 @@ export const ListPlayerContracts = ({ handleDeleteContract,handleEditContract, h
                       <IconButtonSmallerPrimary
                         onClick={(e) => {
                           e.preventDefault();
+                          editPlayerContext.setCreatingContractError(null);
                           editPlayerContext.setEditedContractId(item.id_contrato);
                           handleEditContract(item.id_contrato);
                           // console.log('editar contrato id', item.id_contrato);
@@ -1524,9 +1525,9 @@ const SalaryLineItem = ({ index, handleAddNewFixedSalaryLine, handleDeleteNewFix
                   <LabelElementToggle2Sides
                     htmlFor='flag_bruto_neto'
                     titleClassNameLeft='cm-u-textRight'
-                    textLeft='Bruto'
+                    textLeft='Neto'
                     titleClassNameRight='cm-u-spacer-mr-medium'
-                    textRight='Neto'
+                    textRight='Bruto'
                     required={true}
                     checked={editPlayerContext.contractSalary[index].salaryComb[index2].flag_bruto_neto == '1' ? true : ''}
                     handleOnChange={(event) => {
@@ -1627,9 +1628,9 @@ const SalaryLineItemEdit = ({ index, handleAddNewFixedSalaryLineEdit, handleDele
                   <LabelElementToggle2Sides
                     htmlFor='flag_bruto_neto'
                     titleClassNameLeft='cm-u-textRight'
-                    textLeft='Bruto'
+                    textLeft='Neto'
                     titleClassNameRight='cm-u-spacer-mr-medium'
-                    textRight='Neto'
+                    textRight='Bruto'
                     required={true}
                     checked={editPlayerContext.detailSalaryData[index].salaryComb[index2].flag_bruto_neto == '1' ? true : ''}
                     handleOnChange={(event) => {

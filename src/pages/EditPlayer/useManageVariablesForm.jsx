@@ -227,11 +227,12 @@ export const useManageVariablesForm = (form, idJugador) => {
   const getClausulaDetail = useSaveData();
 
   const handleEditClausula = (id) => {
-    getClausulaDetail.uploadData('players/getDetail_clausula',{id_clausula:id})  }
+    console.log('llamo edit clausula id', id);
+    getClausulaDetail.uploadData('/players/getDetail_clausula',{id_clausula:id})  }
 
   useEffect(()=>{
     const response = getClausulaDetail.responseUpload;
-
+    console.log('response edit clausula', response);
     if(response) {
       console.log('detalle variable que quiero editar', response);
       //guardar datos variable

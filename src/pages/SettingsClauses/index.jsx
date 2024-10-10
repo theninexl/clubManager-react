@@ -10,6 +10,7 @@ import { FormSimpleHrz, LabelElement, LabelElementToggle, SelectIcon } from "../
 import { TableCellLong, TableCellMedium, TableCellShort, TableDataHeader, TableDataRow, TableDataWrapper } from "../../components/UI/layout/tableData";
 import { IconButtonSmallSecondary } from "../../components/UI/objects/buttons";
 import { SymbolSave } from "../../components/UI/objects/symbols";
+import { NumericFormat } from "react-number-format";
 
 
 
@@ -220,7 +221,14 @@ export default function SettingsClausesPage () {
                          <TableCellLong>{item.desc_alias}</TableCellLong>
                          <TableCellMedium>{item.bonus_prima}</TableCellMedium>
                          <TableCellMedium>{item.beneficiario}</TableCellMedium>
-                         <TableCellMedium>{item.num_importe}€</TableCellMedium>
+                         <TableCellMedium>
+                          <NumericFormat 
+                            displayType="text" 
+                            value={item.num_importe} 
+                            thousandSeparator="."
+                            decimalSeparator=","
+                            suffix="€"
+                          /></TableCellMedium>
                          <TableCellMedium className='cm-u-centerText'>
                           <LabelElementToggle
                             htmlFor='ClauseEstimation'

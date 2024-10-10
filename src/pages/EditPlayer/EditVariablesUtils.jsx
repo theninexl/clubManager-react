@@ -69,6 +69,9 @@ export const ListVariablesForSelectedContract = ({ handleDeleteClausula, handleE
             <IconButtonSmallerPrimary
               onClick={(e) => {
                 e.preventDefault();
+                editPlayerContext.setCreatingClauseError(null);
+                editPlayerContext.setShowNewVariableLayer(false);
+                // editPlayerContext.setShowEditVariableLayer(true);
                 editPlayerContext.setEditedVariableId(item.id_clausula);
                 handleEditClausula(item.id_clausula);
                 // console.log('editar contrato id', item.id_contrato);
@@ -114,7 +117,9 @@ export const VariableDataLayer = ({ handleChangesOnNewVariableExpression,handleC
                 <ButtonMousePrimary
                 onClick={(e) => {
                   e.preventDefault();
+                  editPlayerContext.setCreatingClauseError(null);
                   editPlayerContext.setShowNewVariableLayer(true);
+                  editPlayerContext.setShowEditVariableLayer(false);
                 }}
                 >
                   Nueva
@@ -583,25 +588,44 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
                       handleChangesOnDetailVariableExpression(event,index)
                     }}                  
                     >
-                      <option value=''>Expresionn {item.condiciones.length} </option>
-                      {
-                        editPlayerContext.variableCombos.data.expresion?.map((item) => {                
+                      <option value=''>Expresión</option>
+                      {console.log('variablesCombos disponbibles', editPlayerContext.variableCombos)}
+
+                      {item.condiciones.length > 0 ? 
+                        <>
+                          { editPlayerContext.variableCombos.data.expresion?.map(item => {
+                            if (item.bonus_prima === false) return <option key={item.id} value={item.id}>{item.value}</option>
+                          })}            
+                        </>
+                        : 
+                        <>
+                          { editPlayerContext.variableCombos.data.expresion?.map(item => {
+                            if (item.bonus_prima === true) return <option key={item.id} value={item.id}>{item.value}</option>
+                          })}  
+                        </>
+                      }
+
+                      {/* {
+                        editPlayerContext.variableCombos.data.expresion?.map((item2) => { 
+                          
+  
+                          
                           if (
                             editPlayerContext.detailEditVariableData[0].expresiones[ExprComb].bonus_prima == 0 ||
                             editPlayerContext.detailEditVariableData[0].expresiones[ExprComb].bonus_prima == undefined                             
                             ){
-                            if (item.bonus_prima === true) {
+                            if (item2.bonus_prima === true) {
                               return (
                                 <option key={item.id} value={item.id}>{item.value}</option>
                               )
                             }
                           } else {
-                            if ( item.bonus_prima === false) {
+                            if ( item2.bonus_prima === false) {
                               return (
-                                <option key={item.id} value={item.id}>{item.value}</option>
+                                <option key={item2.id} value={item2.id}>{item2.value}</option>
                               )
                             }
-                          }
+                          } */}
                           
                       })}
                   </LabelSelectShorterElement>
