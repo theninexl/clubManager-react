@@ -307,7 +307,10 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
           getValue={getValue}
         />
       ),
-      footer: ({ table }) => table.getFilteredRowModel().rows.reduce((total, row) => total + row.getValue('Importe').amount, 0),
+      footer: ({ table }) => {
+        const total = table.getFilteredRowModel().rows.reduce((total, row) => total + row.getValue('Importe').amount, 0);
+        return Math.round(total * 100) / 100; // Devuelve un número redondeado a dos decimales
+      },
       meta: {
         editState,
         setEditState,

@@ -8,6 +8,9 @@ export const useEditPlayerDataContext = () => {
 
 export const EditPlayerContextProvider = ({ children }) => {
 
+  //modal confirmar accion en edicion de jugadores
+  const [editPlayerConfirmModal, setEditPlayerConfirmModal] = useState(false);
+
   //estados datos generales jugador
   const [playerDataDetails, setPlayerDataDetails ] = useState({
     'desc_alias': '',
@@ -199,7 +202,8 @@ export const EditPlayerContextProvider = ({ children }) => {
         showSearchCondResults,setShowSearchCondResults,
         showEditVariableLayer,setShowEditVariableLayer,
         editedVariableId,setEditedVariableId,
-        detailEditVariableData,setDetailEditVariableData
+        detailEditVariableData,setDetailEditVariableData,
+        editPlayerConfirmModal,setEditPlayerConfirmModal,
       }}
     >
       { children }

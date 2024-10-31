@@ -3,7 +3,8 @@ import { ListPlayerContracts, ContractDataLayer } from "./EditContractsUtils";
 import { TableDataWrapper } from "../../components/UI/layout/tableData";
 
 
-export const EditContractsTab = ({ form, idJugador, teams, intermediaries }) => { 
+export const EditContractsTab = ({ form, idJugador, teams, intermediaries,handleOpenModalConfirmAction }) => { 
+
   
   //hook contratos 
   const {
@@ -39,6 +40,7 @@ export const EditContractsTab = ({ form, idJugador, teams, intermediaries }) => 
           handleDeleteContract={handleDeleteContract}
           handleEditContract={handleEditContract}
           handleSetActiveContract={handleSetActiveContract}
+          handleOpenModalConfirmAction={handleOpenModalConfirmAction}
         />
         <ContractDataLayer
           handleAddNewSalaryComb={handleAddNewSalaryComb}

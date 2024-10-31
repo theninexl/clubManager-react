@@ -49,7 +49,7 @@ export function IndeterminateCheckbox({indeterminate, row, table, onRowSelection
           type="checkbox"
           name="selecCheckbox"
           ref={ref}
-          style={ row.index < 8  ?  {} : {display: 'none'}}
+          // style={ row.index < 8  ?  {} : {display: 'none'}}
           {...rest}
         />
       </>

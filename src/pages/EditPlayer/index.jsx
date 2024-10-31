@@ -18,6 +18,7 @@ import { manageTabs } from "../../domUtilities/manageTabs";
 
 import { EditPlayerHeader } from "./EditPlayerHeader";
 import { ModalDeletePlayer } from "../../components/Modals/ModalDeletePlayer";
+import { ModalConfirmPlayerAction } from "../../components/Modals/ModalConfirmPlayerAction";
 
 
 
@@ -38,22 +39,31 @@ export default function EditPlayerPage () {
   const userParam = queryParams.get('player');
   const userParamString = userParam.toString();
 
-  // variables y estados locales
+  // estados locales
   const [error, setError] = useState(null);
-  
+  // estados para guardar información local de paises y posiciones
   const [countries, setCountries] = useState(null);
   const [positions, setPositions] = useState(null);
   // const [contracts, setContracts] = useState(null);
   const [playerTypes, setPlayerTypes] = useState(null); 
   const [intermediaries, setIntermediaries] = useState(null);
   const [teams, setTeams] = useState(null);
-  const [showUploadDoc, setShowUploadDoc ] = useState(false);
-  const [uploadedFiles, setUploadedFiles ] = useState([]);
+
+  //estado modal confirmar acciones
+  const [modalConfirmActions, setModalConfirmActions] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    message: "",
+    action: null,
+    actionMsg: "",
+});
+
+  // const [showUploadDoc, setShowUploadDoc ] = useState(false);
+  // const [uploadedFiles, setUploadedFiles ] = useState([]);
   //estados playerDetails
   //estados recuperar y seleccionar nombre jugador
-  const [optaPlayersList, setOptaPlayersList] = useState(null);
-  const [optaSelectedPlayer, setOptaSelectedPlayer] = useState('');
-  const [optaResultsBox, setOptaResultsBox] = useState(false);
+  // const [optaPlayersList, setOptaPlayersList] = useState(null);
+  // const [optaSelectedPlayer, setOptaSelectedPlayer] = useState('');
+  // const [optaResultsBox, setOptaResultsBox] = useState(false);
   
 
   useEffect(()=>{
@@ -431,11 +441,28 @@ export default function EditPlayerPage () {
     }
   },[deletePlayer.responseUpload])
 
+  //funcion para mandar props a la modal de confirmar acciones
+  const handleOpenModalConfirmAction = (msg,actionMsg,actionFunction) => {
+    setModalConfirmActions(true);
+    setModalConfig ({
+      message: msg,
+      action: actionFunction,
+      actionMsg: actionMsg,
+    })
+  }
+
   
 
   return (
     <>
       <EditPlayerContextProvider>
+        <ModalConfirmPlayerAction
+          state={modalConfirmActions}
+          setState={setModalConfirmActions}
+          msgText={modalConfig.message}
+          actionMsg={modalConfig.actionMsg}
+          action={modalConfig.action}
+        />
         <ModalDeletePlayer 
           state={context.editPlayerModalDelete}
           setState={context.setEditPlayerModalDelete}
@@ -487,6 +514,7 @@ export default function EditPlayerPage () {
                           idJugador={userParamString}
                           teams={teams}
                           intermediaries={intermediaries}
+                          handleOpenModalConfirmAction={handleOpenModalConfirmAction}
                         />
                         </TabContent>
                       <TabContent id='variables'>
@@ -496,53 +524,6 @@ export default function EditPlayerPage () {
                           idJugador={userParamString}
                         />
                       </TabContent>
-                      {/* <TabContent id='documentos'>
-                        <SimpleAccordion>
-                          <SimpleAccordionTrigger
-                            className='cm-u-spacer-mb-bigger'>
-                            <HeadContentTitleBar>
-                              <TitleBar__Title></TitleBar__Title>
-                              <TitleBar__Tools>
-                                <IconButtonSmallPrimary
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    setShowUploadDoc(true);
-                                  }} >
-                                    <SymbolAdd />
-                                </IconButtonSmallPrimary>
-                              </TitleBar__Tools>
-                            </HeadContentTitleBar>
-                          </SimpleAccordionTrigger>
-                          {renderUploadDocsLayer()}
-                        </SimpleAccordion>
-                        <TableDataWrapper
-                          className='cm-u-spacer-mt-big'>
-                            <TableDataHeader>
-                              <TableCellLong>Decripción</TableCellLong>
-                              <TableCellShort></TableCellShort>
-                            </TableDataHeader>
-                            {
-                              uploadedFiles?.map((item, index)=> {
-                                const description = item.desc_documento;
-                                return (
-                                  <TableDataRow key={index}>
-                                    <TableCellLong>{description}</TableCellLong>
-                                    <TableCellShort>
-                                      <IconButtonSmallerPrimary
-                                        onClick={() => {
-                                          const newFilter = uploadedFiles.filter(item => item.desc_documento !== description)
-                                          console.log(newFilter);
-                                          setUploadedFiles([newFilter])
-                                        }}>
-                                        <SymbolDelete />
-                                      </IconButtonSmallerPrimary>
-                                    </TableCellShort>
-                                  </TableDataRow>
-                                );
-                              })
-                            }
-                        </TableDataWrapper>
-                      </TabContent> */}
                     </FormTabs__ContentWrapper>
                   </FormTabs>
                   {error &&

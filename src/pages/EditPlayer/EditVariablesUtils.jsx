@@ -175,6 +175,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
   const [blockText, setBlockText] = useState(null);
   const [tipoImporte, setTipoImporte] = useState();
 
+
   return (
     <>
       <SimpleAccordionContent>
@@ -376,7 +377,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
               placeholder='introduce bloque'
               type='text'
               className='panel-field-long'
-              disabled={(recursiveBlocks === 1 || recursiveBlocks === '1' || recursiveBlocks === true)? true : ''}
+              disabled={(recursiveBlocks === 0 || recursiveBlocks === '0' || recursiveBlocks === false)? true : ''}
               value={blockText === null ? '' : blockText}
               handleOnChange={(e)=>{
                 if (recursiveBlocks !== 1) setBlockText(e.target.value);           
@@ -409,12 +410,15 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
             >
             Importe
             </LabelElementNumber>
+            {
+              editPlayerContext.activeContractData[0]?.desc_tipo_contrato == 'Laboral' &&
 
-            <LabelElementToggle2Sides
+              <LabelElementToggle2Sides
               textLeft='Neto'
               textRight='Bruto'
               htmlFor='flag_bruto_neto'
               />
+            }
           </FormSimplePanelRow>
 
           <FormSimplePanelRow>
@@ -747,10 +751,10 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
           <FormSimplePanelRow>
             <LabelElementToggle
               htmlFor='recursiveBlocks'
-              checked={editRecursiveBlocks === 1 ? 'checked' : ''}
+              checked={editRecursiveBlocks === 1 ? '' : 'checked'}
               handleOnChange={(e) => {
                 const isChecked = e.target.checked;
-                setEditRecursiveBlocks(isChecked ? 1 : 0);
+                setEditRecursiveBlocks(isChecked ? 0 : 1);
               }}
               >
               Bloques Acumulados
@@ -807,16 +811,21 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
             >
             Importe
             </LabelElementNumber>
-            <LabelElementToggle2Sides
-              textLeft='Neto'
-              textRight='Bruto'
-              htmlFor='flag_bruto_neto'
-              checked={flagBrutoNetoToggle == 1 ? 'checked':''}
-              handleOnChange={(e)=>{
-                const isChecked = e.target.checked;
-                setFlagBrutoNetoToggle(isChecked ? 1 : 0);
-              }}
+
+            {
+              editPlayerContext.activeContractData[0]?.desc_tipo_contrato == 'Laboral' &&
+
+              <LabelElementToggle2Sides
+                textLeft='Neto'
+                textRight='Bruto'
+                htmlFor='flag_bruto_neto'
+                checked={flagBrutoNetoToggle == 1 ? 'checked':''}
+                handleOnChange={(e)=>{
+                  const isChecked = e.target.checked;
+                  setFlagBrutoNetoToggle(isChecked ? 1 : 0);
+                }}
               />
+            }
           </FormSimplePanelRow>
           <FormSimplePanelRow>
             <LabelSelectElement

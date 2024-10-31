@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useGlobalContext } from "../../providers/globalContextProvider";
 import { useEditPlayerDataContext } from "../../providers/EditPlayeProvider"
 import { useSaveData } from "../../hooks/useSaveData";
@@ -176,6 +176,25 @@ export const useManageContractForm = (form, idJugador) => {
     editPlayerContext.setDetailTerminationData(onChangeValue);
   }
 
+  //funcion sumar salarios al crear o editar contrato
+  const sumContractSalaries = (datos) => {
+    const salarioTotal = parseFloat(datos.val_imp_salario_total.replace("€", "").trim());
+
+    let sumaSalarioFijo = 0;
+
+    if (Array.isArray(datos.salario_fijo)) {
+        datos.salario_fijo.forEach(salario => {
+            if (Array.isArray(salario.salaryComb)) {
+                salario.salaryComb.forEach(salarioItem => {
+                    sumaSalarioFijo += parseFloat(salarioItem.val_salario_fijo);
+                });
+            }
+        });
+    }
+
+    return salarioTotal == sumaSalarioFijo;
+  }
+
   //guardar un nuevo contrato
   const saveNewContract = useSaveData();
 
@@ -185,13 +204,6 @@ export const useManageContractForm = (form, idJugador) => {
 
     const salarios = editPlayerContext.contractSalary;
     const rescision = editPlayerContext.contractTermination;
-
-    // console.log('Salarios', salarios);
-
-    // const sumaSalarios = salarios[0].salaryComb.reduce((sum, current) => {
-    //   console.log('current', current.val_salario_fijo);
-    //   return sum + parseFloat(current.val_salario_fijo);
-    // },0)
 
     const data = {
       clausula_rescision:rescision,
@@ -217,10 +229,9 @@ export const useManageContractForm = (form, idJugador) => {
       id_intermediario_3: formData.get('contractIntermediary3'),
     }
 
-
+    //compruebo que ningún valor queda vacío o es = -1
     if (data) {
       console.log('tengo data');
-
       for (const [key, value] of Object.entries(data)) { 
         // console.log('value de la key', key,' es igual a:',value);       
         if (value === '-1' || value === '') {
@@ -230,29 +241,22 @@ export const useManageContractForm = (form, idJugador) => {
         } else {
           savedContract[key] = value;
         } 
-      }
-
-      //comprueba que la suma de salarios es inferior a la suma de salario total
-      // console.log('sumaSalarios', sumaSalarios);
-      // const salarioTotal = savedContract.val_imp_salario_total.replace('€', '').trim();
-      // const salarioTotalNumerico = parseFloat(salarioTotal);
-      // console.log('salarioTotal', salarioTotalNumerico)
-
-      // if (sumaSalarios > salarioTotalNumerico) {
-      //   console.log('salarios no cumplen');
-      //   editPlayerContext.setCreatingContractError('La suma de salarios no puede ser mayor que el valor del importe fijo total');
-      //   return;
-      // } else {
-      //   console.log('salarios cumplen');
-      // }
-
+      }      
+    //compruebo la suma de salarios coincide si el objeto final está bien construido y si es así lo mando a guardar.
       if (Object.keys(data).length === (Object.keys(savedContract).length - 4)) {        
         // console.log('object keys data', Object.keys(data).length)
         // console.log('object keys savedContract', Object.keys(savedContract).length)        
         console.log('contrato que guardo', data);
         console.log('savedContract', savedContract);
+        const esSalarioValido = sumContractSalaries(savedContract);
 
-        saveNewContract.uploadData('players/createContract',savedContract);   
+        if (esSalarioValido) {
+          saveNewContract.uploadData('players/createContract',savedContract);
+        } else if (!esSalarioValido && savedContract.desc_tipo_contrato == 'Laboral'){
+          editPlayerContext.setCreatingContractError('La suma de salarios fijos debe ser igual que el valor del importe salario total');
+        } else {
+          editPlayerContext.setCreatingContractError('La suma de los Importes Fijos debe ser igual que el valor del Importe Total');
+        }
       }
     } 
   }
@@ -311,7 +315,9 @@ export const useManageContractForm = (form, idJugador) => {
     deleteContract.uploadData('players/removeContract', {id_contrato:id.toString()})
   }
   useEffect(()=>{
-    if (deleteContract.responseUpload) {
+    const response = deleteContract.responseUpload;
+    console.log('deleteContract.responseUpload',response);
+    if (response && response.status == 'ok') {
     console.log('vuelvo a pedir datos de jugador', idJugador);
       getPlayerDetail(idJugador);
     }
@@ -397,7 +403,17 @@ export const useManageContractForm = (form, idJugador) => {
 
       if (Object.keys(data).length === (Object.keys(editedContract).length - 4)) {
         console.log('contrato que quiero guardar', editedContract);
-        saveEditedContract.uploadData('players/editContract',editedContract)        
+        
+        
+        const esSalarioValido = sumContractSalaries(editedContract);
+
+        if (esSalarioValido) {
+          saveEditedContract.uploadData('players/editContract',editedContract)  
+        } else if (!esSalarioValido && editedContract.desc_tipo_contrato == 'Laboral'){
+          editPlayerContext.setCreatingContractError('La suma de salarios fijos debe ser igual que el valor del importe salario total');
+        } else {
+          editPlayerContext.setCreatingContractError('La suma de los Importes Fijos debe ser igual que el valor del Importe Total');
+        }
         
       }
     } 

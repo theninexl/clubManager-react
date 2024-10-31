@@ -357,10 +357,11 @@
     $block:&;
     border-radius: getSize($small) !important;
     height:getSize($huge);
-    min-width: 150px;
+    min-width: 200px;
     position: relative;
 
     input {
+        width: 235px;
         @include font-size($defFontSizeDT, $lineHeightDT);
 
         &::placeholder, input::placeholder {

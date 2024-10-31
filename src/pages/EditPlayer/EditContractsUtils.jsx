@@ -17,7 +17,7 @@ const searchName = (id,stateList,keyId,keyName ) => {
   return result[keyName];
 }
 
-export const ListPlayerContracts = ({ handleDeleteContract,handleEditContract, handleSetActiveContract }) => {
+export const ListPlayerContracts = ({ handleDeleteContract,handleEditContract, handleSetActiveContract,handleOpenModalConfirmAction }) => {
   const globalContext = useGlobalContext();
   const editPlayerContext = useEditPlayerDataContext();
 
@@ -89,7 +89,12 @@ export const ListPlayerContracts = ({ handleDeleteContract,handleEditContract, h
                       <IconButtonSmallerPrimary
                         onClick={(e) => {
                           e.preventDefault();
-                          handleDeleteContract(item.id_contrato);
+                          // handleDeleteContract(item.id_contrato);
+                          handleOpenModalConfirmAction(
+                            "¿Estás seguro de que deseas borrar este contrato?",
+                            "Borrar",
+                            () => handleDeleteContract(item.id_contrato)
+                          )
                         }}>
                         <SymbolDelete />
                       </IconButtonSmallerPrimary>
@@ -1522,22 +1527,28 @@ const SalaryLineItem = ({ index, handleAddNewFixedSalaryLine, handleDeleteNewFix
                     >
                       
                     </LabelElementNumber>
-                  <LabelElementToggle2Sides
-                    htmlFor='flag_bruto_neto'
-                    titleClassNameLeft='cm-u-textRight'
-                    textLeft='Neto'
-                    titleClassNameRight='cm-u-spacer-mr-medium'
-                    textRight='Bruto'
-                    required={true}
-                    checked={editPlayerContext.contractSalary[index].salaryComb[index2].flag_bruto_neto == '1' ? true : ''}
-                    handleOnChange={(event) => {
-                      let {name, checked} = event.target;
-                      let onChangeValue = [...editPlayerContext.contractSalary];
-                      onChangeValue[index]["salaryComb"][index2][name] = checked ? '1' : '0';
-                      editPlayerContext.setContractSalary(onChangeValue);
-                    }} 
-                    handleClick={e => { e.preventDefault; console.log('toggle');}}
+                  { (editPlayerContext.newContractDataForSalaryComb.descType !== 2 &&
+                    editPlayerContext.newContractDataForSalaryComb.descType !== 3 &&
+                    editPlayerContext.newContractDataForSalaryComb.descType !== 4) 
+                    && 
+                    <LabelElementToggle2Sides
+                      htmlFor='flag_bruto_neto'
+                      titleClassNameLeft='cm-u-textRight'
+                      textLeft='Neto'
+                      titleClassNameRight='cm-u-spacer-mr-medium'
+                      textRight='Bruto'
+                      required={true}
+                      checked={editPlayerContext.contractSalary[index].salaryComb[index2].flag_bruto_neto == '1' ? true : ''}
+                      handleOnChange={(event) => {
+                        let {name, checked} = event.target;
+                        let onChangeValue = [...editPlayerContext.contractSalary];
+                        onChangeValue[index]["salaryComb"][index2][name] = checked ? '1' : '0';
+                        editPlayerContext.setContractSalary(onChangeValue);
+                      }} 
+                      handleClick={e => { e.preventDefault; console.log('toggle');}}
                     />
+                  }
+                  
                   <LabelElement
                     htmlFor='dt_inicio'
                     type='date'
@@ -1554,22 +1565,27 @@ const SalaryLineItem = ({ index, handleAddNewFixedSalaryLine, handleDeleteNewFix
                     >
                     Fecha inicio
                   </LabelElement>
-                  <LabelElement
-                    htmlFor='dt_fin'
-                    type='date'
-                    className='panel-field-flexible'
-                    autoComplete='off'
-                    placeholder='dd/mm/yyyy'
-                    required={true}
-                    value={editPlayerContext.contractSalary[index].salaryComb[index2].dt_fin || ''}
-                    handleOnChange={(e) => {
-                      let onChangeValue = [...editPlayerContext.contractSalary];
-                      onChangeValue[index]["salaryComb"][index2]["dt_fin"] = e.target.value;
-                      editPlayerContext.setContractSalary(onChangeValue);                            
-                    }} 
-                    >
-                    Fecha fin
-                  </LabelElement>
+                  { (editPlayerContext.newContractDataForSalaryComb.descType !== 2 &&
+                    editPlayerContext.newContractDataForSalaryComb.descType !== 3 &&
+                    editPlayerContext.newContractDataForSalaryComb.descType !== 4) 
+                    && 
+                    <LabelElement
+                      htmlFor='dt_fin'
+                      type='date'
+                      className='panel-field-flexible'
+                      autoComplete='off'
+                      placeholder='dd/mm/yyyy'
+                      required={true}
+                      value={editPlayerContext.contractSalary[index].salaryComb[index2].dt_fin || ''}
+                      handleOnChange={(e) => {
+                        let onChangeValue = [...editPlayerContext.contractSalary];
+                        onChangeValue[index]["salaryComb"][index2]["dt_fin"] = e.target.value;
+                        editPlayerContext.setContractSalary(onChangeValue);                            
+                      }} 
+                      >
+                      Fecha fin
+                    </LabelElement>
+                  }
                   {(index2 !== 0) ?                   
                     <IconButtonSmallSecondary
                       onClick={(e) => {
@@ -1625,22 +1641,29 @@ const SalaryLineItemEdit = ({ index, handleAddNewFixedSalaryLineEdit, handleDele
                       }}
                     >
                     </LabelElementNumber>
-                  <LabelElementToggle2Sides
-                    htmlFor='flag_bruto_neto'
-                    titleClassNameLeft='cm-u-textRight'
-                    textLeft='Neto'
-                    titleClassNameRight='cm-u-spacer-mr-medium'
-                    textRight='Bruto'
-                    required={true}
-                    checked={editPlayerContext.detailSalaryData[index].salaryComb[index2].flag_bruto_neto == '1' ? true : ''}
-                    handleOnChange={(event) => {
-                      let {name, checked} = event.target;
-                      let onChangeValue = [...editPlayerContext.detailSalaryData];
-                      onChangeValue[index]["salaryComb"][index2][name] = checked ? 1 : 0;
-                      editPlayerContext.setDetailSalaryData(onChangeValue);
-                    }} 
-                    handleClick={e => { e.preventDefault; console.log('toggle');}}
-                    />
+                    {
+                      ( editPlayerContext.detailContractData[0].desc_tipo_contrato !=  'Transfer. permanente' && 
+                        editPlayerContext.detailContractData[0].desc_tipo_contrato !=  'Transfer. temporal' &&
+                        editPlayerContext.detailContractData[0].desc_tipo_contrato !=  'Intermediación'
+                      ) &&
+                      <LabelElementToggle2Sides
+                        htmlFor='flag_bruto_neto'
+                        titleClassNameLeft='cm-u-textRight'
+                        textLeft='Neto'
+                        titleClassNameRight='cm-u-spacer-mr-medium'
+                        textRight='Bruto'
+                        required={true}
+                        checked={editPlayerContext.detailSalaryData[index].salaryComb[index2].flag_bruto_neto == '1' ? true : ''}
+                        handleOnChange={(event) => {
+                          let {name, checked} = event.target;
+                          let onChangeValue = [...editPlayerContext.detailSalaryData];
+                          onChangeValue[index]["salaryComb"][index2][name] = checked ? 1 : 0;
+                          editPlayerContext.setDetailSalaryData(onChangeValue);
+                        }} 
+                        handleClick={e => { e.preventDefault; console.log('toggle');}}
+                      />
+                    }
+                  
                   <LabelElement
                     htmlFor='dt_inicio'
                     type='date'
@@ -1657,22 +1680,28 @@ const SalaryLineItemEdit = ({ index, handleAddNewFixedSalaryLineEdit, handleDele
                     >
                     Fecha inicio
                   </LabelElement>
-                  <LabelElement
-                    htmlFor='dt_fin'
-                    type='date'
-                    className='panel-field-flexible'
-                    autoComplete='off'
-                    placeholder='dd/mm/yyyy'
-                    required={true}
-                    value={editPlayerContext.detailSalaryData[index].salaryComb[index2].dt_fin || ''}
-                    handleOnChange={(e) => {
-                      let onChangeValue = [...editPlayerContext.detailSalaryData];
-                      onChangeValue[index]["salaryComb"][index2]["dt_fin"] = e.target.value;
-                      editPlayerContext.setDetailSalaryData(onChangeValue);                            
-                    }} 
-                    >
-                    Fecha fin
-                  </LabelElement>
+                  {
+                      ( editPlayerContext.detailContractData[0].desc_tipo_contrato !=  'Transfer. permanente' && 
+                        editPlayerContext.detailContractData[0].desc_tipo_contrato !=  'Transfer. temporal' &&
+                        editPlayerContext.detailContractData[0].desc_tipo_contrato !=  'Intermediación'
+                      ) &&
+                      <LabelElement
+                        htmlFor='dt_fin'
+                        type='date'
+                        className='panel-field-flexible'
+                        autoComplete='off'
+                        placeholder='dd/mm/yyyy'
+                        required={true}
+                        value={editPlayerContext.detailSalaryData[index].salaryComb[index2].dt_fin || ''}
+                        handleOnChange={(e) => {
+                          let onChangeValue = [...editPlayerContext.detailSalaryData];
+                          onChangeValue[index]["salaryComb"][index2]["dt_fin"] = e.target.value;
+                          editPlayerContext.setDetailSalaryData(onChangeValue);                            
+                        }} 
+                        >
+                        Fecha fin
+                      </LabelElement>
+                  }
                   {(index2 !== 0) ?                   
                     <IconButtonSmallSecondary
                       onClick={(e) => {

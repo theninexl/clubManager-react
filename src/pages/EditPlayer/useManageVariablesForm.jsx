@@ -278,7 +278,7 @@ export const useManageVariablesForm = (form, idJugador) => {
     e.preventDefault();
     //console.log('form en hook variables', form);
     const recursiveBlocksVal = document.getElementById('recursiveBlocks').checked;
-    const flagBrutoNetoVal = document.getElementById('flag_bruto_neto').checked;
+    const flagBrutoNetoVal = editPlayerContext.activeContractData[0]?.desc_tipo_contrato == 'Laboral' ? document.getElementById('flag_bruto_neto').checked : false;
     
     const formData = new FormData(form.current);
   
@@ -341,7 +341,7 @@ export const useManageVariablesForm = (form, idJugador) => {
     e.preventDefault();
     //console.log('form en hook variables', form);
     const recursiveBlocksVal = document.getElementById('recursiveBlocks').checked;
-    const flagBrutoNetoVal = document.getElementById('flag_bruto_neto').checked;
+    const flagBrutoNetoVal = editPlayerContext.activeContractData[0]?.desc_tipo_contrato == 'Laboral' ? document.getElementById('flag_bruto_neto').checked : 'false';
     
     const formData = new FormData(form.current);
   
