@@ -219,8 +219,8 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
       setShowPercentagePayment(true);
     }else if (editPlayerContext.newContractDataForSalaryComb.descType == 4) {
       setShowTerminationClause(false);
-      setShowIntermediaries(false);
-      setShowOriginDestinyFiels(true);
+      setShowIntermediaries(true);
+      setShowOriginDestinyFiels(false);
       setShowAmountTotalSalary(true);
       setShowSalaryComb(true);
       setShowPercentagePayment(true);
@@ -608,8 +608,8 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
       setShowPercentagePayment(true);
     }else if (editPlayerContext.detailContractData[0].desc_tipo_contrato == "Intermediación") {
       setShowTerminationClause(false);
-      setShowIntermediaries(false);
-      setShowOriginDestinyFiels(true);
+      setShowIntermediaries(true);
+      setShowOriginDestinyFiels(false);
       setShowAmountTotalSalary(true);
       setShowSalaryComb(true);
       setShowPercentagePayment(true);

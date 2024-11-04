@@ -178,7 +178,12 @@ export const useManageContractForm = (form, idJugador) => {
 
   //funcion sumar salarios al crear o editar contrato
   const sumContractSalaries = (datos) => {
-    const salarioTotal = parseFloat(datos.val_imp_salario_total.replace("€", "").trim());
+    console.log('importe salario total sin tocar', datos.val_imp_salario_total)
+    const salarioTotal = parseFloat(datos.val_imp_salario_total
+      .replace(/\./g, '')  // Elimina todos los puntos que separan los miles
+      .replace("€", "")    // Elimina el símbolo del euro
+      .trim()
+    );
 
     let sumaSalarioFijo = 0;
 
@@ -192,7 +197,30 @@ export const useManageContractForm = (form, idJugador) => {
         });
     }
 
+    console.log('salarioTotal', salarioTotal);
+    console.log('sumaSalarioFijo', sumaSalarioFijo);
+
     return salarioTotal == sumaSalarioFijo;
+  }
+
+  //función obtener campos obligatorios dependiendo del tipo de contrato
+  const getRequiredFields = (contractType) => {
+      switch (contractType) {
+        case "Laboral":
+          return ['clausula_rescision', 'id_jugador', 'desc_descripcion', 'desc_tipo_contrato', 'desc_tipo_procedimiento', 'id_club_origen', 'id_club_destino', 'int_dorsal', 'dt_inicio_contrato', 'dt_inicio_contrato_real', 'dt_fin_contrato', 'val_imp_salario_total', 'val_pct_pago_atm', 'salario_fijo'];
+        case "Transfer. permanente":
+          return ['desc_descripcion', 'int_dorsal', 'desc_tipo_contrato', 'desc_tipo_procedimiento', 'id_club_origen', 'id_club_destino',  'dt_inicio_contrato', 'dt_inicio_contrato_real', 'dt_fin_contrato', 'val_pct_pago_atm', 'val_imp_salario_total', 'salario_fijo'];
+        case "Transfer. temporal":
+          return ['desc_descripcion', 'int_dorsal', 'desc_tipo_contrato', 'desc_tipo_procedimiento', 'id_club_origen', 'id_club_destino',  'dt_inicio_contrato', 'dt_inicio_contrato_real', 'dt_fin_contrato', 'val_pct_pago_atm', 'val_imp_salario_total', 'salario_fijo'];
+        case "Intermediación":
+          return ['desc_descripcion', 'int_dorsal', 'desc_tipo_contrato', 'desc_tipo_procedimiento', 'dt_inicio_contrato', 'dt_inicio_contrato_real', 'dt_fin_contrato', 'id_intermediario_1', 'salario_fijo','val_imp_salario_total'];
+        case "Liquidación": 
+           return ['desc_descripcion', 'int_dorsal', 'desc_tipo_contrato', 'desc_tipo_procedimiento', 'id_club_origen', 'id_club_destino', 'dt_inicio_contrato', 'dt_inicio_contrato_real', 'dt_fin_contrato','val_imp_salario_total'];
+        case "Renovación inscripción":
+          return ['clausula_rescision', 'int_dorsal', 'desc_descripcion', 'desc_tipo_contrato', 'desc_tipo_procedimiento', 'id_club_origen', 'id_club_destino', 'dt_inicio_contrato', 'dt_inicio_contrato_real', 'dt_fin_contrato', 'val_pct_pago_atm', 'val_imp_salario_total', 'salario_fijo'];
+        default:
+          return []
+      }
   }
 
   //guardar un nuevo contrato
@@ -217,48 +245,62 @@ export const useManageContractForm = (form, idJugador) => {
       dt_inicio_contrato: formData.get('contractStartDate'),
       dt_inicio_contrato_real: formData.get('contractRealStartDate'),
       dt_fin_contrato: formData.get('contractEndDate'),
-      val_imp_salario_total: formData.get('amountTotalSalary') == null ? '0': formData.get('amountTotalSalary'),      
-      salario_fijo:salarios,      
-    }
-
-    const savedContract = {
-      // id_contrato: '',
+      val_imp_salario_total: formData.get('amountTotalSalary') == null ? '0€': formData.get('amountTotalSalary'), 
       val_pct_pago_atm: formData.get('clubPercentage') || 0,
       id_intermediario_1: formData.get('contractIntermediary1'),
       id_intermediario_2: formData.get('contractIntermediary2'),
-      id_intermediario_3: formData.get('contractIntermediary3'),
-    }
+      id_intermediario_3: formData.get('contractIntermediary3'),     
+      salario_fijo:salarios,      
+    };
 
-    //compruebo que ningún valor queda vacío o es = -1
+    const savedContract = {
+      id_jugador: userParamString
+    };
+
+    const requiredFields = getRequiredFields(data.desc_tipo_contrato);
+
     if (data) {
       console.log('tengo data');
-      for (const [key, value] of Object.entries(data)) { 
-        // console.log('value de la key', key,' es igual a:',value);       
-        if (value === '-1' || value === '') {
-          console.log('error en ',key,' que tiene value',value)
+    
+      for (const field of requiredFields) {
+        const value = data[field];
+      
+        if (value === '-1' || value === '' || value == null) {
+          console.log('error en ', field, ' que tiene value', value);
           editPlayerContext.setCreatingContractError('Es necesario rellenar todos los campos');
           return;
-        } else {
-          savedContract[key] = value;
-        } 
-      }      
-    //compruebo la suma de salarios coincide si el objeto final está bien construido y si es así lo mando a guardar.
-      if (Object.keys(data).length === (Object.keys(savedContract).length - 4)) {        
-        // console.log('object keys data', Object.keys(data).length)
-        // console.log('object keys savedContract', Object.keys(savedContract).length)        
-        console.log('contrato que guardo', data);
-        console.log('savedContract', savedContract);
-        const esSalarioValido = sumContractSalaries(savedContract);
-
-        if (esSalarioValido) {
-          saveNewContract.uploadData('players/createContract',savedContract);
-        } else if (!esSalarioValido && savedContract.desc_tipo_contrato == 'Laboral'){
-          editPlayerContext.setCreatingContractError('La suma de salarios fijos debe ser igual que el valor del importe salario total');
-        } else {
-          editPlayerContext.setCreatingContractError('La suma de los Importes Fijos debe ser igual que el valor del Importe Total');
+        }  else {
+          savedContract[field] = value;
         }
       }
     } 
+
+    //compruebo la suma de salarios coincide si el objeto final está bien construido y si es así lo mando a guardar.
+    if ((Object.keys(requiredFields).length === (Object.keys(savedContract).length - 1 )) && 
+      data.desc_tipo_contrato != "Liquidación" &&
+      data.desc_tipo_contrato != "Renovación inscripción") {        
+      console.log('object keys requiredFields', Object.keys(requiredFields).length)
+      console.log('object keys savedContract', Object.keys(savedContract).length)        
+      console.log('savedContract', savedContract);
+      const esSalarioValido = sumContractSalaries(savedContract);
+
+      if (esSalarioValido) {
+        saveNewContract.uploadData('players/createContract',savedContract);
+      } else if (!esSalarioValido && savedContract.desc_tipo_contrato == 'Laboral'){
+        editPlayerContext.setCreatingContractError('La suma de salarios fijos debe ser igual que el valor del importe salario total');
+      } else {
+        editPlayerContext.setCreatingContractError('La suma de los Importes Fijos debe ser igual que el valor del Importe Total');
+      }
+    } else if ((Object.keys(requiredFields).length === (Object.keys(savedContract).length - 1 )) && 
+      (data.desc_tipo_contrato == "Liquidación" || data.desc_tipo_contrato == "Renovación inscripción")) {
+      console.log('object keys requiredFields', Object.keys(requiredFields).length)
+      console.log('object keys savedContract', Object.keys(savedContract).length)        
+      console.log('savedContract', savedContract);
+      saveNewContract.uploadData('players/createContract',savedContract);
+    }
+
+    
+
   }
 
   useEffect(()=> {
@@ -378,45 +420,59 @@ export const useManageContractForm = (form, idJugador) => {
       dt_inicio_contrato_real: formData.get('contractRealStartDate'),
       dt_fin_contrato: formData.get('contractEndDate'),
       id_intermediario_1: formData.get('contractIntermediary1'),
-      val_imp_salario_total: formData.get('amountTotalSalary') == null ? '0': formData.get('amountTotalSalary'),      
+      id_intermediario_2: formData.get('contractIntermediary2'),
+      id_intermediario_3: formData.get('contractIntermediary3'),
+      val_imp_salario_total: formData.get('amountTotalSalary') == null ? '0€': formData.get('amountTotalSalary'), 
+      val_pct_pago_atm: formData.get('clubPercentage') || 0,     
       salario_fijo:salarios,    
     }
 
     const editedContract = {
       id_contrato: editPlayerContext.editedContractId,
-      val_pct_pago_atm: formData.get('clubPercentage') || 0,
-      id_intermediario_2: formData.get('contractIntermediary2'),
-      id_intermediario_3: formData.get('contractIntermediary3'),
+      id_jugador: userParamString,      
     }
 
-    console.log('data que guado', data);
+    const requiredFields = getRequiredFields(data.desc_tipo_contrato);
 
     if (data) {
-      for (const [key, value] of Object.entries(data)) {        
-        if (value == '-1' || value == '') {
+      console.log('tengo data');
+    
+      for (const field of requiredFields) {
+        const value = data[field];
+      
+        if (value === '-1' || value === '' || value == null) {
+          console.log('error en ', field, ' que tiene value', value);
           editPlayerContext.setCreatingContractError('Es necesario rellenar todos los campos');
-          break;
-        } else {
-          editedContract[key] = value;
-        } 
-      }
-
-      if (Object.keys(data).length === (Object.keys(editedContract).length - 4)) {
-        console.log('contrato que quiero guardar', editedContract);
-        
-        
-        const esSalarioValido = sumContractSalaries(editedContract);
-
-        if (esSalarioValido) {
-          saveEditedContract.uploadData('players/editContract',editedContract)  
-        } else if (!esSalarioValido && editedContract.desc_tipo_contrato == 'Laboral'){
-          editPlayerContext.setCreatingContractError('La suma de salarios fijos debe ser igual que el valor del importe salario total');
-        } else {
-          editPlayerContext.setCreatingContractError('La suma de los Importes Fijos debe ser igual que el valor del Importe Total');
+          return;
+        }  else {
+          editedContract[field] = value;
         }
-        
       }
     } 
+
+    //compruebo la suma de salarios coincide si el objeto final está bien construido y si es así lo mando a guardar.
+    if ((Object.keys(requiredFields).length === (Object.keys(editedContract).length - 2 )) && 
+      data.desc_tipo_contrato != "Liquidación" &&
+      data.desc_tipo_contrato != "Renovación inscripción") {        
+      console.log('object keys requiredFields', Object.keys(requiredFields).length)
+      console.log('object keys editedContract', Object.keys(editedContract).length)        
+      console.log('editedContract', editedContract);
+      const esSalarioValido = sumContractSalaries(editedContract);
+
+      if (esSalarioValido) {
+        saveEditedContract.uploadData('players/editContract',editedContract) 
+      } else if (!esSalarioValido && editedContract.desc_tipo_contrato == 'Laboral'){
+        editPlayerContext.setCreatingContractError('La suma de salarios fijos debe ser igual que el valor del importe salario total');
+      } else {
+        editPlayerContext.setCreatingContractError('La suma de los Importes Fijos debe ser igual que el valor del Importe Total');
+      }
+    } else if ((Object.keys(requiredFields).length === (Object.keys(editedContract).length - 2 )) && 
+      (data.desc_tipo_contrato == "Liquidación" || data.desc_tipo_contrato == "Renovación inscripción")) {
+      console.log('object keys requiredFields', Object.keys(requiredFields).length)
+      console.log('object keys editedContract', Object.keys(editedContract).length)        
+      console.log('editedContract', editedContract);
+      saveEditedContract.uploadData('players/editContract',editedContract) 
+    }
   }
 
   //mirar la respuesta de subir datos al terminar de guardar el contrato editado

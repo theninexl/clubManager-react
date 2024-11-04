@@ -309,7 +309,16 @@ export const ActivePlayerTable = ({ activePlayerId, activeContractId }) => {
       ),
       footer: ({ table }) => {
         const total = table.getFilteredRowModel().rows.reduce((total, row) => total + row.getValue('Importe').amount, 0);
-        return Math.round(total * 100) / 100; // Devuelve un número redondeado a dos decimales
+        const totalRounded = Math.round(total * 100) / 100;
+        return (
+          <NumericFormat
+            valueIsNumericString={true}
+            displayType="text"
+            thousandSeparator="."
+            decimalSeparator=","
+            value={totalRounded}
+          />
+        ) // Devuelve un número redondeado a dos decimales
       },
       meta: {
         editState,
