@@ -2,8 +2,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Navbar, NavbarLinksVert } from "../UI/components/navbar/navbar";
 import { ButtonCatGhost, ButtonCatGhostDisabled } from "../UI/objects/buttons";
 import { useEffect, useState } from "react";
+import { useGlobalContext } from "../../providers/globalContextProvider";
 
 export const AsideMenu = () => {
+  const globalContext = useGlobalContext();
   //leer pathname actual y manejar navegacion
   const path = useLocation().pathname;
   const navigate = useNavigate();
@@ -22,7 +24,10 @@ export const AsideMenu = () => {
         <li>
           <ButtonCatGhost
             className={currentUrl === '/manage-players' ? 'active' : ''}
-            onClick={() => navigate('/manage-players')}>
+            onClick={() => {
+              globalContext.setActiveContractId();
+              navigate('/manage-players')
+              }}>
               Plantilla
           </ButtonCatGhost></li>
         <li>
