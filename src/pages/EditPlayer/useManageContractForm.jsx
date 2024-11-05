@@ -207,7 +207,7 @@ export const useManageContractForm = (form, idJugador) => {
   const getRequiredFields = (contractType) => {
       switch (contractType) {
         case "Laboral":
-          return ['clausula_rescision', 'id_jugador', 'desc_descripcion', 'desc_tipo_contrato', 'desc_tipo_procedimiento', 'id_club_origen', 'id_club_destino', 'int_dorsal', 'dt_inicio_contrato', 'dt_inicio_contrato_real', 'dt_fin_contrato', 'val_imp_salario_total', 'val_pct_pago_atm', 'salario_fijo'];
+          return ['clausula_rescision', 'desc_descripcion', 'desc_tipo_contrato', 'desc_tipo_procedimiento', 'id_club_origen', 'id_club_destino', 'int_dorsal', 'dt_inicio_contrato', 'dt_inicio_contrato_real', 'dt_fin_contrato', 'val_imp_salario_total', 'val_pct_pago_atm', 'salario_fijo'];
         case "Transfer. permanente":
           return ['desc_descripcion', 'int_dorsal', 'desc_tipo_contrato', 'desc_tipo_procedimiento', 'id_club_origen', 'id_club_destino',  'dt_inicio_contrato', 'dt_inicio_contrato_real', 'dt_fin_contrato', 'val_pct_pago_atm', 'val_imp_salario_total', 'salario_fijo'];
         case "Transfer. temporal":
@@ -449,6 +449,10 @@ export const useManageContractForm = (form, idJugador) => {
         }
       }
     } 
+
+    console.log('object keys requiredFields', Object.keys(requiredFields).length)
+    console.log('object keys editedContract', Object.keys(editedContract).length)        
+    console.log('editedContract', editedContract);
 
     //compruebo la suma de salarios coincide si el objeto final está bien construido y si es así lo mando a guardar.
     if ((Object.keys(requiredFields).length === (Object.keys(editedContract).length - 2 )) && 
