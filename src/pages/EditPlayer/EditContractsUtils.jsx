@@ -12,8 +12,7 @@ import { useEffect, useState } from "react";
 
 //buscar nombre de equipo para rellenar beneficiarios 
 const searchName = (id,stateList,keyId,keyName ) => {
-  const result = stateList.find(item => item[keyId] == id);
-  
+  const result = stateList.find(item => item[keyId] == id) || '';;
   return result[keyName];
 }
 
@@ -435,7 +434,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
                   }
                 }
                 >
-                  <option value=''>Selecciona</option>
+                  <option value='-1'>Selecciona</option>
                   { intermediaries?.map(item => {
                     const selected = editPlayerContext.newContractDataForSalaryComb.intermediary1 == item.id_intermediario ? 'selected': '';
                     return (
@@ -454,7 +453,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
                   }
                 }
                 >
-                  <option value=''>Selecciona</option>
+                  <option value='-1'>Selecciona</option>
                   { intermediaries?.map(item => {
                     const selected = editPlayerContext.newContractDataForSalaryComb.intermediary2 == item.id_intermediario ? 'selected': '';
                     return (
@@ -473,7 +472,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
                   }
                 }
                 >
-                  <option value=''>Selecciona</option>
+                  <option value='-1'>Selecciona</option>
                   { intermediaries?.map(item => {
                     const selected = editPlayerContext.newContractDataForSalaryComb.intermediary3 == item.id_intermediario ? 'selected': '';
                     return (
@@ -855,7 +854,7 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
                   onChangeValue[0]["id_intermediario_1"] = e.target.value;
                   editPlayerContext.setDetailContractData(onChangeValue); }}
                 >
-                  <option value=''>Selecciona</option>
+                  <option value='-1'>Selecciona</option>
                   { intermediaries?.map(item => {
                     const selected = editPlayerContext.detailContractData[0].id_intermediario_1 == item.id_intermediario ? 'selected' : ''
                     return (
@@ -874,7 +873,7 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
                   onChangeValue[0]["id_intermediario_2"] = e.target.value;
                   editPlayerContext.setDetailContractData(onChangeValue); }}
                 >
-                  <option value=''>Selecciona</option>
+                  <option value='-1'>Selecciona</option>
                   { intermediaries?.map(item => {
                     const selected = editPlayerContext.detailContractData[0].id_intermediario_2 == item.id_intermediario ? 'selected' : ''
                     return (
@@ -893,7 +892,7 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
                   onChangeValue[0]["id_intermediario_3"] = e.target.value;
                   editPlayerContext.setDetailContractData(onChangeValue); }}
                 >
-                  <option value=''>Selecciona</option>
+                  <option value='-1'>Selecciona</option>
                   { intermediaries?.map(item => {
                     const selected = editPlayerContext.detailContractData[0].id_intermediario_3 == item.id_intermediario ? 'selected' : ''
                     return (

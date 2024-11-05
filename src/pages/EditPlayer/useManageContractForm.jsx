@@ -223,6 +223,16 @@ export const useManageContractForm = (form, idJugador) => {
       }
   }
 
+  //funcion obtener campos opcionales dependiendo del tipo de contrato
+  const getOptionalFields = (contractType) => {
+    switch (contractType) {
+      case "Intermediación":
+        return ['id_intermediario_2', 'id_intermediario_3'];
+      default:
+        return []
+    }
+  }
+
   //guardar un nuevo contrato
   const saveNewContract = useSaveData();
 
@@ -248,8 +258,8 @@ export const useManageContractForm = (form, idJugador) => {
       val_imp_salario_total: formData.get('amountTotalSalary') == null ? '0€': formData.get('amountTotalSalary'), 
       val_pct_pago_atm: formData.get('clubPercentage') || 0,
       id_intermediario_1: formData.get('contractIntermediary1'),
-      id_intermediario_2: formData.get('contractIntermediary2'),
-      id_intermediario_3: formData.get('contractIntermediary3'),     
+      id_intermediario_2: formData.get('contractIntermediary2') || '-1',
+      id_intermediario_3: formData.get('contractIntermediary3') || '-1',     
       salario_fijo:salarios,      
     };
 
@@ -258,9 +268,11 @@ export const useManageContractForm = (form, idJugador) => {
     };
 
     const requiredFields = getRequiredFields(data.desc_tipo_contrato);
+    const optionalFields = getOptionalFields(data.desc_tipo_contrato);
+    const totalExpectedFields = requiredFields.length + optionalFields.length;
 
     if (data) {
-      console.log('tengo data');
+      console.log('tengo data', data);
     
       for (const field of requiredFields) {
         const value = data[field];
@@ -273,15 +285,23 @@ export const useManageContractForm = (form, idJugador) => {
           savedContract[field] = value;
         }
       }
+
+      for (const field of optionalFields) {
+        const value = data[field];
+        if (value !== '' && value != null) {
+          savedContract[field] = value;
+        }
+      }
     } 
 
+    console.log('object keys totalExpectedFields', totalExpectedFields)
+    console.log('object keys savedContract', Object.keys(savedContract).length)        
+    console.log('savedContract', savedContract);
+
     //compruebo la suma de salarios coincide si el objeto final está bien construido y si es así lo mando a guardar.
-    if ((Object.keys(requiredFields).length === (Object.keys(savedContract).length - 1 )) && 
+    if ((totalExpectedFields === (Object.keys(savedContract).length - 1 )) && 
       data.desc_tipo_contrato != "Liquidación" &&
       data.desc_tipo_contrato != "Renovación inscripción") {        
-      console.log('object keys requiredFields', Object.keys(requiredFields).length)
-      console.log('object keys savedContract', Object.keys(savedContract).length)        
-      console.log('savedContract', savedContract);
       const esSalarioValido = sumContractSalaries(savedContract);
 
       if (esSalarioValido) {
@@ -291,16 +311,10 @@ export const useManageContractForm = (form, idJugador) => {
       } else {
         editPlayerContext.setCreatingContractError('La suma de los Importes Fijos debe ser igual que el valor del Importe Total');
       }
-    } else if ((Object.keys(requiredFields).length === (Object.keys(savedContract).length - 1 )) && 
+    } else if ((totalExpectedFields === (Object.keys(savedContract).length - 1 )) && 
       (data.desc_tipo_contrato == "Liquidación" || data.desc_tipo_contrato == "Renovación inscripción")) {
-      console.log('object keys requiredFields', Object.keys(requiredFields).length)
-      console.log('object keys savedContract', Object.keys(savedContract).length)        
-      console.log('savedContract', savedContract);
       saveNewContract.uploadData('players/createContract',savedContract);
     }
-
-    
-
   }
 
   useEffect(()=> {
@@ -433,9 +447,11 @@ export const useManageContractForm = (form, idJugador) => {
     }
 
     const requiredFields = getRequiredFields(data.desc_tipo_contrato);
+    const optionalFields = getOptionalFields(data.desc_tipo_contrato);
+    const totalExpectedFields = requiredFields.length + optionalFields.length;
 
     if (data) {
-      console.log('tengo data');
+      console.log('tengo data', data);
     
       for (const field of requiredFields) {
         const value = data[field];
@@ -448,19 +464,23 @@ export const useManageContractForm = (form, idJugador) => {
           editedContract[field] = value;
         }
       }
+
+      for (const field of optionalFields) {
+        const value = data[field];
+        if (value !== '' && value != null) {
+          editedContract[field] = value;
+        }
+      }
     } 
 
-    console.log('object keys requiredFields', Object.keys(requiredFields).length)
+    console.log('object keys totalExpectedFields', totalExpectedFields)
     console.log('object keys editedContract', Object.keys(editedContract).length)        
     console.log('editedContract', editedContract);
 
     //compruebo la suma de salarios coincide si el objeto final está bien construido y si es así lo mando a guardar.
-    if ((Object.keys(requiredFields).length === (Object.keys(editedContract).length - 2 )) && 
+    if ((totalExpectedFields === (Object.keys(editedContract).length - 2 )) && 
       data.desc_tipo_contrato != "Liquidación" &&
-      data.desc_tipo_contrato != "Renovación inscripción") {        
-      console.log('object keys requiredFields', Object.keys(requiredFields).length)
-      console.log('object keys editedContract', Object.keys(editedContract).length)        
-      console.log('editedContract', editedContract);
+      data.desc_tipo_contrato != "Renovación inscripción") {
       const esSalarioValido = sumContractSalaries(editedContract);
 
       if (esSalarioValido) {
@@ -470,11 +490,8 @@ export const useManageContractForm = (form, idJugador) => {
       } else {
         editPlayerContext.setCreatingContractError('La suma de los Importes Fijos debe ser igual que el valor del Importe Total');
       }
-    } else if ((Object.keys(requiredFields).length === (Object.keys(editedContract).length - 2 )) && 
+    } else if ((totalExpectedFields === (Object.keys(editedContract).length - 2 )) && 
       (data.desc_tipo_contrato == "Liquidación" || data.desc_tipo_contrato == "Renovación inscripción")) {
-      console.log('object keys requiredFields', Object.keys(requiredFields).length)
-      console.log('object keys editedContract', Object.keys(editedContract).length)        
-      console.log('editedContract', editedContract);
       saveEditedContract.uploadData('players/editContract',editedContract) 
     }
   }
