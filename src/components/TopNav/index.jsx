@@ -194,8 +194,8 @@ export default function TopNav () {
         <Navbar>
           <NavbarContentLeft>
             <Link to='/main' className='cm-o-logo'>
-              <LogoShield />
-              {/* <LogoPWC /> */}
+              {/* <LogoShield /> */}
+              <LogoPWC />
               Club Manager
             </Link>
           </NavbarContentLeft>

@@ -3,7 +3,7 @@ import { Api } from "../../services/api";
 import { useGlobalContext } from "../../providers/globalContextProvider";
 import { FormSimple, FormSimpleRow, LabelElement } from "../../components/UI/components/form simple/formSimple";
 import { MainContent, ThirdContainer } from "../../components/UI/layout/containers";
-import { LogoShield } from "../../components/UI/objects/Logo";
+import { LogoPWC } from "../../components/UI/objects/LogoPWC";
 import { Button } from "../../components/UI/objects/buttons";
 
 export default function Login () {
@@ -54,7 +54,7 @@ export default function Login () {
       <MainContent className='cm-u-centerVer'>
         <ThirdContainer>
           <div className='cm-o-logo--centered cm-u-spacer-mb-big'>
-            <LogoShield />
+            <LogoPWC />
             Club Manager
           </div>
           <FormSimple 
