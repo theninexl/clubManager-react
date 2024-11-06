@@ -10,6 +10,7 @@ import { RegularContainer } from "../UI/layout/containers";
 import { RegularHeader } from "../UI/layout/headers";
 import { SelectIcon } from "../UI/components/form simple/formSimple";
 import { NotificationsBubble } from "../UI/objects/notificationsBubble";
+import { LogoPWC } from "../UI/objects/LogoPWC";
 
 
 export default function TopNav () {
@@ -29,28 +30,6 @@ export default function TopNav () {
   //leer pathname actual y manejar navegacion
   const path = useLocation().pathname;
   const navigate = useNavigate();
-
-  //pedir notificaciones
-  // const getNotifications = useGetData('notifications/getAll');
-
-  // useEffect(()=> {
-  //   if (getNotifications.responseGetData) {
-  //     if (getNotifications.responseGetData?.response?.status === 401) {
-  //       //seteo signout y account en localStorage y context
-  //       const stringifiedSignOut = JSON.stringify(true);
-  //       localStorage.setItem('CMSign-out',stringifiedSignOut);
-  //       context.setSignOut(true);
-  //       localStorage.removeItem('CMAccount');
-  //       context.setAccount({});
-  //       navigate('/login');
-  //     } else if (getNotifications.responseGetData?.data?.status == 'ok') {
-  //       console.log('notificaciones pedidas desde TopNav', getNotifications.responseGetData)
-  //       context.setNotifications(getNotifications.responseGetData.data.data);
-  //       const unReadNotifs = context.notifications.filter(notif => (notif.flag_leido === false || notif.flag_leido === null));
-  //       context.setUnreadNotifications(unReadNotifs.length)
-  //     }
-  //   }
-  //  },[getNotifications.responseGetData])
 
    //pedir entidades header
    const getHeaderDetail = useGetData('header/getDetail');
@@ -216,6 +195,7 @@ export default function TopNav () {
           <NavbarContentLeft>
             <Link to='/main' className='cm-o-logo'>
               <LogoShield />
+              {/* <LogoPWC /> */}
               Club Manager
             </Link>
           </NavbarContentLeft>

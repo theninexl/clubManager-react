@@ -360,24 +360,26 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
             );
           })}
           <FormSimplePanelRow>
-            <LabelElementToggle
-              htmlFor='recursiveBlocks'
+            <LabelElementToggle2SidesPanel
+              textLeft='Definido'
+              textRight='No definido'
+              htmlFor='bonus_prima'
               checked={(recursiveBlocks === 1 || recursiveBlocks === '1' || recursiveBlocks === true) ? 'checked':''}
-              handleOnChange={(e)=>{
+              handleOnChange={(e) => {
                 const checked = e.target.checked === true ? '1' : '0';  
                 setRecursiveBlocks(checked)               
                 if (e.target.checked === true) setBlockText(null);
               }}>
-              Bloques Acumulados
-            </LabelElementToggle>
+              Bloques acumulados
+            </LabelElementToggle2SidesPanel>
           </FormSimplePanelRow>
           <FormSimplePanelRow>
             <LabelElement
               htmlFor='bloque'
-              placeholder='introduce bloque'
+              placeholder='introduce bloques'
               type='text'
               className='panel-field-long'
-              disabled={(recursiveBlocks === 0 || recursiveBlocks === '0' || recursiveBlocks === false)? true : ''}
+              disabled={(recursiveBlocks === 0 || recursiveBlocks === '0' || recursiveBlocks === false)? '' : true}
               value={blockText === null ? '' : blockText}
               handleOnChange={(e)=>{
                 if (recursiveBlocks !== 1) setBlockText(e.target.value);           
@@ -749,16 +751,18 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
             );
           })}
           <FormSimplePanelRow>
-            <LabelElementToggle
-              htmlFor='recursiveBlocks'
-              checked={editRecursiveBlocks === 1 ? '' : 'checked'}
+            <LabelElementToggle2SidesPanel
+              textLeft='Definido'
+              textRight='No definido'
+              htmlFor='bonus_prima'
+              checked={editRecursiveBlocks === 0 ? '' : 'checked'}
               handleOnChange={(e) => {
                 const isChecked = e.target.checked;
-                setEditRecursiveBlocks(isChecked ? 0 : 1);
-              }}
-              >
-              Bloques Acumulados
-            </LabelElementToggle>
+                setEditRecursiveBlocks(isChecked ? 1 : 0);
+              }}>
+              Bloques acumulados
+            </LabelElementToggle2SidesPanel>
+
           </FormSimplePanelRow>
           <FormSimplePanelRow>
             <LabelElement

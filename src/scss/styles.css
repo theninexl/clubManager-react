@@ -243,7 +243,7 @@ strong {
   border-bottom: 1px solid rgba(198, 53, 39, 0.5);
   position: fixed;
   top: 0;
-  z-index: 10;
+  z-index: 100;
   width: 100%;
   padding-top: 12px;
   padding-bottom: 12px;
@@ -689,13 +689,13 @@ strong {
   background-color: #FFFFFF;
   position: fixed;
   width: calc(100% - 224px);
-  z-index: 1;
+  z-index: 99;
 }
 .cm-l-contentHeader__titleBar {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-top: 12px;
+  padding-top: 12px;
 }
 .cm-l-contentHeader__titleBar .titleBar__title {
   display: flex;
@@ -1655,9 +1655,10 @@ strong {
 .cm-o-logo, .cm-o-logo--centered {
   color: #2C325F;
   display: flex;
-  flex-flow: row nowrap;
+  flex-direction: row;
   align-items: center;
   gap: 8px;
+  min-width: 200px;
   font-size: 19px;
   font-size: 1.9rem;
   line-height: 24px;
@@ -1674,6 +1675,14 @@ strong {
 .cm-o-logo .shield, .cm-o-logo--centered .shield {
   height: 16px;
   width: 16px;
+}
+.cm-o-logo .shieldPWC, .cm-o-logo--centered .shieldPWC {
+  height: 24px;
+  width: auto;
+}
+.cm-o-logo .shield svg, .cm-o-logo--centered .shield svg, .cm-o-logo .shieldPWC svg, .cm-o-logo--centered .shieldPWC svg {
+  height: 100%;
+  width: auto;
 }
 
 .cm-o-logo--centered {
@@ -1997,6 +2006,7 @@ strong {
   margin: 0;
   border: 1px solid rgba(44, 50, 95, 0.5);
   border-radius: 8px;
+  cursor: pointer;
   height: 24px;
   width: 24px;
   display: grid;
@@ -2031,30 +2041,45 @@ strong {
   transform: scale(1);
 }
 .cm-c-form-simple__radio-toggle {
-  border: 1px solid rgba(44, 50, 95, 0.5);
-  background-color: #FFFFFF;
-  border-radius: 8px;
+  display: flex;
+}
+.cm-c-form-simple__radio-toggle .toggle-container {
+  display: inline-block;
   position: relative;
   height: 32px;
   width: 64px;
+  border: 1px solid rgba(44, 50, 95, 0.5);
+  background-color: #FFFFFF;
+  border-radius: 8px;
+  overflow: hidden;
 }
 .cm-c-form-simple__radio-toggle input[type=checkbox] {
-  border: 1px solid #E1E1E1;
-  background-color: #E1E1E1;
+  position: absolute;
   height: 32px;
   width: 32px;
-  right: 0;
-  position: absolute;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  background-color: #E1E1E1;
+  border: 1px solid #E1E1E1;
+  border-radius: 8px;
   transition: transform 0.4s cubic-bezier(0.45, 1.8, 0.5, 0.75);
+  cursor: pointer;
 }
 .cm-c-form-simple__radio-toggle input[type=checkbox]::before {
-  right: 0;
+  content: " ";
   position: absolute;
-  transform: scale(1);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
   opacity: 0;
 }
 .cm-c-form-simple__radio-toggle input[type=checkbox]:checked::before {
   content: "check";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   border-radius: 8px;
   box-shadow: inset 0 32px #0FCC81;
   display: flex;
@@ -2065,8 +2090,7 @@ strong {
   opacity: 1;
 }
 .cm-c-form-simple__radio-toggle input[type=checkbox]:checked {
-  transform: translateX(-32px);
-  position: absolute;
+  transform: translateX(32px);
 }
 
 .cm-c-field-icon {
@@ -2232,10 +2256,11 @@ strong {
 .cm-c-dropdown-select {
   border-radius: 8px !important;
   height: 48px;
-  min-width: 150px;
+  min-width: 200px;
   position: relative;
 }
 .cm-c-dropdown-select input {
+  width: 235px;
   font-size: 14px;
   font-size: 1.4rem;
   line-height: 24px;
@@ -2324,10 +2349,10 @@ strong {
 }
 
 .cm-c-modal {
-  position: fixed;
+  position: absolute;
   height: 100vh;
   width: 100%;
-  z-index: 100;
+  z-index: 9999;
 }
 .cm-c-modal-background {
   background-color: rgba(69, 69, 72, 0.85);
@@ -2441,6 +2466,41 @@ strong {
   height: 0;
   opacity: 0;
   overflow: hidden;
+}
+
+.cm-c-tablePagination {
+  display: block;
+  width: 100%;
+}
+.cm-c-tablePagination .pagination {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.cm-c-tablePagination .pagination .page-item {
+  align-items: center;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  cursor: pointer;
+  height: 32px;
+  width: 32px;
+}
+.cm-c-tablePagination .pagination .page-item.active {
+  background-color: rgba(225, 225, 225, 0.3);
+}
+.cm-c-tablePagination .pagination .page-item .page-link {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+.cm-c-tablePagination .pagination .page-item .page-link:hover {
+  text-decoration: none;
 }
 
 /** Utilities **/
@@ -2595,4 +2655,12 @@ strong {
 
 .cm-u-inactive {
   display: none;
+}
+
+.cm-u-non-clickable {
+  pointer-events: none;
+}
+
+.cm-u-clickable {
+  pointer-events: initial;
 }/*# sourceMappingURL=styles.css.map */

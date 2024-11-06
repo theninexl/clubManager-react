@@ -2,9 +2,10 @@
     $block:&;
     color:getColor(primary);
     display: flex;
-    flex-flow: row nowrap;
+    flex-direction: row;
     align-items: center;
     gap:getSize($small);
+    min-width: 200px;
     @include font-size($fontSizeJumpDT1, $lineHeightDT);
     @include cm-qs-bold;
 
@@ -15,6 +16,16 @@
     .shield {
         height: getSize($big);
         width: getSize($big);
+    }
+
+    .shieldPWC {
+        height: getSize($bigger);
+        width: auto;
+    }
+
+    .shield svg, .shieldPWC svg {
+        height: 100%;
+        width: auto;
     }
 }
 
