@@ -363,7 +363,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
             <LabelElementToggle2SidesPanel
               textLeft='Definido'
               textRight='No definido'
-              htmlFor='bonus_prima'
+              htmlFor='recursiveBlocks'
               checked={(recursiveBlocks === 1 || recursiveBlocks === '1' || recursiveBlocks === true) ? 'checked':''}
               handleOnChange={(e) => {
                 const checked = e.target.checked === true ? '1' : '0';  
@@ -754,7 +754,7 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
             <LabelElementToggle2SidesPanel
               textLeft='Definido'
               textRight='No definido'
-              htmlFor='bonus_prima'
+              htmlFor='recursiveBlocks'
               checked={editRecursiveBlocks === 0 ? '' : 'checked'}
               handleOnChange={(e) => {
                 const isChecked = e.target.checked;
