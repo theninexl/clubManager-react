@@ -43,14 +43,14 @@ export const AsideMenu = () => {
               Calendario de pagos</ButtonCatGhost>
         </li>
         <li>
-          <a href="https://app.powerbi.com/groups/9a54adbd-f6d7-4d48-af9c-98adcc824741/reports/e1f3bb35-9edf-4ada-ab3d-f31e27f5ae51/ReportSectionb8f71aa00eee26f7eb14?experience=power-bi" target="_blank" rel="noopener noreferrer">
+          <a href="https://app.powerbi.com/groups/9a54adbd-f6d7-4d48-af9c-98adcc824741/reports/bb7981d4-edcb-4ae5-81c2-0de0572648a3/ReportSectionb8f71aa00eee26f7eb14?experience=power-bi&clientSideAuth=0" target="_blank" rel="noopener noreferrer">
             <ButtonCatGhost>
               Tesoreria
             </ButtonCatGhost>
           </a>
         </li>
         <li>
-          <a href="https://app.powerbi.com/groups/9a54adbd-f6d7-4d48-af9c-98adcc824741/reports/e1f3bb35-9edf-4ada-ab3d-f31e27f5ae51/ReportSection?experience=power-bi" target="_blank" rel="noopener noreferrer">
+          <a href="https://app.powerbi.com/groups/9a54adbd-f6d7-4d48-af9c-98adcc824741/reports/bb7981d4-edcb-4ae5-81c2-0de0572648a3/ReportSection?experience=power-bi&clientSideAuth=0" target="_blank" rel="noopener noreferrer">
             <ButtonCatGhost>
               Reporting
             </ButtonCatGhost>

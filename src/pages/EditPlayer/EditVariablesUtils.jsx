@@ -368,7 +368,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
               handleOnChange={(e) => {
                 const checked = e.target.checked === true ? '1' : '0';  
                 setRecursiveBlocks(checked)               
-                if (e.target.checked === true) setBlockText(null);
+                if (e.target.checked) setBlockText(null);
               }}>
               Bloques acumulados
             </LabelElementToggle2SidesPanel>
@@ -382,7 +382,12 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
               disabled={(recursiveBlocks === 0 || recursiveBlocks === '0' || recursiveBlocks === false)? '' : true}
               value={blockText === null ? '' : blockText}
               handleOnChange={(e)=>{
-                if (recursiveBlocks !== 1) setBlockText(e.target.value);           
+                const value = e.target.value;
+                if (recursiveBlocks !== 1 && value !== "") {
+                  setBlockText(value);
+                } else if (value === "") {
+                  setBlockText("");  // Permite mantener el foco al estar vacío
+                }           
               }}
               >Bloque 
             </LabelElement> 
@@ -755,11 +760,12 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
               textLeft='Definido'
               textRight='No definido'
               htmlFor='recursiveBlocks'
-              checked={editRecursiveBlocks === 0 ? '' : 'checked'}
+              checked={(editRecursiveBlocks === 1 || editRecursiveBlocks === '1' || editRecursiveBlocks === true) ? 'checked':''}
               handleOnChange={(e) => {
                 const isChecked = e.target.checked;
                 setEditRecursiveBlocks(isChecked ? 1 : 0);
-              }}>
+              }}
+              >
               Bloques acumulados
             </LabelElementToggle2SidesPanel>
 
@@ -773,11 +779,19 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
               disabled={editRecursiveBlocks === 1}
               value={editRecursiveBlocks === 1 ? '' : editPlayerContext.detailEditVariableData[0].bloque}
               handleOnChange={(e) => {
-                if (editRecursiveBlocks !== 1) {
+                console.log('editRecursiveBlocks', editRecursiveBlocks)
+                const value = e.target.value;
+                if (editRecursiveBlocks !== 1 && value !== "") {
                   let onChangeValue = [...editPlayerContext.detailEditVariableData];
-                  onChangeValue[0]["bloque"] = e.target.value;
-                  editPlayerContext.setDetailEditVariableData(onChangeValue); 
-                }
+                  onChangeValue[0]["bloque"] = value;
+                  editPlayerContext.setDetailEditVariableData(onChangeValue);
+                } else if (value === "") {
+                  console.log('está vacío');
+                  let onChangeValue = [...editPlayerContext.detailEditVariableData];
+                  onChangeValue[0]["bloque"] = "";
+                  console.log('onChangeValue', onChangeValue);
+                  // editPlayerContext.setDetailEditVariableData(onChangeValue);
+                }        
               }}
               >Bloque 
             </LabelElement> 
