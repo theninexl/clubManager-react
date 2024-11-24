@@ -174,6 +174,19 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
   const [recursiveBlocks, setRecursiveBlocks] = useState(0);
   const [blockText, setBlockText] = useState(null);
   const [tipoImporte, setTipoImporte] = useState();
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+
+  //verifica que al menos estas 3 keys de cada nuevo objeto en el array de expresiones estén rellenas (lo minimo) y en caso afirmativo desbloquea el botón de guardar.
+  useEffect(() => {
+    const isValid = editPlayerContext.variableExpressions.every((expression) => {
+      return (
+        expression.id_expresion &&
+        expression.id_expresion_operador &&
+        expression.id_expresion_valor
+      );
+    });
+    setIsButtonDisabled(!isValid);
+  }, [editPlayerContext.variableExpressions]);
 
 
   return (
@@ -478,6 +491,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
           <FormSimplePanelRow
             className='cm-u-centerText'>
             <ButtonMousePrimary
+              disabled={isButtonDisabled}
               onClick={handleSaveNewVariable}
               >Guardar</ButtonMousePrimary>
             <ButtonMouseGhost
@@ -501,15 +515,16 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
   const [blockText, setBlockText] = useState(null);
   const [tipoImporte, setTipoImporte] = useState();
   const [flagBrutoNetoToggle, setFlagBrutoNetoToggle] = useState();
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
   useEffect(()=>{
-    const bloque = editPlayerContext.detailEditVariableData[0].bloque;
-    if (bloque == 0) {
-      setEditRecursiveBlocks(1);      
-    } else {
-      setEditRecursiveBlocks(0);
+    const bloque = editPlayerContext.detailEditVariableData[0].flag_bloque_recursivo;
+    if (bloque === 0) {
+      setEditRecursiveBlocks(0);      
+    } else if (bloque === 1) {
+      setEditRecursiveBlocks(1);
     }
-  },[editPlayerContext.detailEditVariableData[0].bloque])
+  },[editPlayerContext.detailEditVariableData[0].flag_bloque_recursivo])
 
   useEffect(() => {
     if (editRecursiveBlocks === 1) {
@@ -535,9 +550,32 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
 
   },[editPlayerContext.detailEditVariableData[0].flag_bruto_neto])
 
-  useEffect(()=>{
-    console.log('variable editando', editPlayerContext.detailEditVariableData)
-  },[editPlayerContext.detailEditVariableData])
+  // useEffect(()=>{
+  //   console.log('variable editando', editPlayerContext.detailEditVariableData)
+  // },[editPlayerContext.detailEditVariableData])
+
+  
+
+  //verifica que al menos estas 3 keys de cada nuevo objeto en el array de expresiones estén rellenas (lo minimo) y en caso afirmativo desbloquea el botón de guardar.
+  useEffect(() => {
+
+    const isValid = editPlayerContext.detailEditVariableData.every((item) => {
+      // Verificar que 'expresiones' exista y sea un array
+      return (
+        Array.isArray(item.expresiones) &&
+        item.expresiones.every((expression) => {
+          // Validar las claves requeridas dentro de cada 'expression'
+          return (
+            expression.id_expresion &&
+            expression.id_expresion_operador &&
+            expression.id_expresion_valor
+          );
+        })
+      );
+    });
+    setIsButtonDisabled(!isValid);
+  }, [editPlayerContext.detailEditVariableData]);
+
 
   return (
     <>
@@ -920,6 +958,7 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
           <FormSimplePanelRow
             className='cm-u-centerText'>
             <ButtonMousePrimary
+              disabled={isButtonDisabled}
               onClick={handleSaveExistingVariable}
               >Guardar</ButtonMousePrimary>
             <ButtonMouseGhost

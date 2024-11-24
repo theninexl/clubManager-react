@@ -4,16 +4,40 @@
     &--primary {
         @include button-cat;
         @include button-primary;
+
+        &:disabled {
+            cursor: inherit; 
+            pointer-events: none;
+
+            @include button-mouse;
+            @include button-inactive;
+        }
     }
     
     &--secondary {
         @include button-cat;
-        @include button-secondary;        
+        @include button-secondary;  
+        
+        &:disabled {
+            cursor: inherit; 
+            pointer-events: none;
+
+            @include button-mouse;
+            @include button-inactive;
+        }
     }
     
     &--transparent {
         @include button-cat;
-        @include button-transparent;        
+        @include button-transparent;   
+        
+        &:disabled {
+            cursor: inherit; 
+            pointer-events: none;
+
+            @include button-mouse;
+            @include button-inactive;
+        }
     }
 
     &--ghost {
@@ -22,6 +46,14 @@
         
         &.active {
             @include button-primary;
+        }
+
+        &:disabled {
+            cursor: inherit; 
+            pointer-events: none;
+
+            @include button-mouse;
+            @include button-inactive;
         }
     }
 
@@ -72,28 +104,62 @@
     &--primary {
         @include button-mouse;
         @include button-primary;
+
+        &:disabled {
+            cursor: inherit; 
+            pointer-events: none;
+
+            @include button-mouse;
+            @include button-inactive;
+        }
     }
 
     &--secondary {
         @include button-mouse;
         @include button-secondary;
+
+        &:disabled {
+            cursor: inherit; 
+            pointer-events: none;
+
+            @include button-mouse;
+            @include button-inactive;
+        }
     }
     
     &--transparent {
         @include button-mouse;
         @include button-transparent;
+
+        &:disabled {
+            cursor: inherit; 
+            pointer-events: none;
+
+            @include button-mouse;
+            @include button-inactive;
+        }
     }
 
     &--ghost {
         @include button-mouse;
         @include button-ghost;
+
+        &:disabled {
+            cursor: inherit; 
+            pointer-events: none;
+
+            @include button-mouse;
+            @include button-inactive;
+        }
     }
 
     &--inactive {
         @include button-mouse;
         @include button-inactive;
         cursor: inherit;
-    }      
+    }
+    
+    
 }
 
 .cm-o-button-dog {

@@ -76,6 +76,11 @@ export const ListPlayerContracts = ({ handleDeleteContract,handleEditContract, h
                       <IconButtonSmallerPrimary
                         onClick={(e) => {
                           e.preventDefault();
+                          //estos tres son los mismos que en cancelar en el form de edicion de contrato
+                          editPlayerContext.setEditContract(false);
+                          editPlayerContext.setDetailContractData(null);
+                          editPlayerContext.setDetailSalaryData(null);
+                          //estos son especificos
                           editPlayerContext.setCreatingContractError(null);
                           editPlayerContext.setEditedContractId(item.id_contrato);
                           handleEditContract(item.id_contrato);
