@@ -70,12 +70,13 @@ export const ButtonMouse = ({ children, className, id, onClick, disabled,...rest
   );
 }
 
-export const ButtonMousePrimary = ({ children, className, id, onClick }) => {
+export const ButtonMousePrimary = ({ children, className, id, onClick, ...rest }) => {
   return (
     <button
       className={`cm-o-button-mouse--primary ${className}`}
       id={id}
-      onClick={onClick} >
+      onClick={onClick}
+      {...rest} >
       { children }
     </button>
   );

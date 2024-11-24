@@ -174,6 +174,36 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
   const [recursiveBlocks, setRecursiveBlocks] = useState(0);
   const [blockText, setBlockText] = useState(null);
   const [tipoImporte, setTipoImporte] = useState();
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+
+  //verifica que al menos estas 3 keys de cada nuevo objeto en el array de expresiones estén rellenas (lo minimo) y en caso afirmativo desbloquea el botón de guardar.
+  useEffect(() => {
+    const isValid = editPlayerContext.variableExpressions.every((expression) => {
+      console.log('Expresión:', expression);
+  
+      // Validar las claves principales
+      const mainFieldsValid =
+        expression.id_expresion &&
+        expression.id_expresion_operador &&
+        expression.id_expresion_valor;
+  
+      // Validar las condiciones solo si bonus_prima === 1
+      const conditionsValid =
+        expression.bonus_prima === "1" ||
+        (Array.isArray(expression.condiciones) &&
+          expression.condiciones.every((condition) => {
+            return (
+              condition.id_condicion &&
+              condition.id_condicion_operador &&
+              condition.id_condicion_valor
+            );
+          }));
+  
+      // Validar si bonus_prima está vacío (solo mainFieldsValid es relevante)
+      return mainFieldsValid && (expression.bonus_prima === "" || conditionsValid);
+    });
+    setIsButtonDisabled(!isValid);
+  }, [editPlayerContext.variableExpressions]);
 
 
   return (
@@ -478,6 +508,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
           <FormSimplePanelRow
             className='cm-u-centerText'>
             <ButtonMousePrimary
+              disabled={isButtonDisabled}
               onClick={handleSaveNewVariable}
               >Guardar</ButtonMousePrimary>
             <ButtonMouseGhost
@@ -501,15 +532,16 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
   const [blockText, setBlockText] = useState(null);
   const [tipoImporte, setTipoImporte] = useState();
   const [flagBrutoNetoToggle, setFlagBrutoNetoToggle] = useState();
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
   useEffect(()=>{
-    const bloque = editPlayerContext.detailEditVariableData[0].bloque;
-    if (bloque == 0) {
-      setEditRecursiveBlocks(1);      
-    } else {
-      setEditRecursiveBlocks(0);
+    const bloque = editPlayerContext.detailEditVariableData[0].flag_bloque_recursivo;
+    if (bloque === 0) {
+      setEditRecursiveBlocks(0);      
+    } else if (bloque === 1) {
+      setEditRecursiveBlocks(1);
     }
-  },[editPlayerContext.detailEditVariableData[0].bloque])
+  },[editPlayerContext.detailEditVariableData[0].flag_bloque_recursivo])
 
   useEffect(() => {
     if (editRecursiveBlocks === 1) {
@@ -535,9 +567,49 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
 
   },[editPlayerContext.detailEditVariableData[0].flag_bruto_neto])
 
-  useEffect(()=>{
-    console.log('variable editando', editPlayerContext.detailEditVariableData)
-  },[editPlayerContext.detailEditVariableData])
+  // useEffect(()=>{
+  //   console.log('variable editando', editPlayerContext.detailEditVariableData)
+  // },[editPlayerContext.detailEditVariableData])
+
+  
+
+  //verifica que al menos estas 3 keys de cada nuevo objeto en el array de expresiones estén rellenas (lo minimo) y en caso afirmativo desbloquea el botón de guardar.
+  useEffect(() => {
+
+    const isValid = editPlayerContext.detailEditVariableData.every((item) => {
+      console.log('expresion:', item);
+      // Verificar que 'expresiones' exista y sea un array
+      return (
+        Array.isArray(item.expresiones) &&
+        item.expresiones.every((expression) => {
+          // Validar las claves principales
+          const mainFieldsValid =
+            expression.id_expresion &&
+            expression.id_expresion_operador &&
+            expression.id_expresion_valor;
+  
+          // Validar las condiciones solo si bonus_prima === "1"
+          const conditionsValid =
+            expression.bonus_prima !== undefined &&
+            expression.bonus_prima === true &&
+            Array.isArray(expression.condiciones) &&
+            expression.condiciones.every((condition) => {
+              return (
+                condition.id_condicion &&
+                condition.id_condicion_operador &&
+                condition.id_condicion_valor
+              );
+            });
+  
+          // La validación es válida si solo mainFieldsValid es suficiente (bonus_prima === "")
+          // o si también se cumple la validación de condiciones (bonus_prima === "1")
+          return mainFieldsValid && (!expression.bonus_prima || conditionsValid);
+        })
+      );
+    });
+    setIsButtonDisabled(!isValid);
+  }, [editPlayerContext.detailEditVariableData]);
+
 
   return (
     <>
@@ -920,6 +992,7 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
           <FormSimplePanelRow
             className='cm-u-centerText'>
             <ButtonMousePrimary
+              disabled={isButtonDisabled}
               onClick={handleSaveExistingVariable}
               >Guardar</ButtonMousePrimary>
             <ButtonMouseGhost
