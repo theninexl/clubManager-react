@@ -183,9 +183,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
   
       // Validar las claves principales
       const mainFieldsValid =
-        expression.id_expresion &&
-        expression.id_expresion_operador &&
-        expression.id_expresion_valor;
+        expression.id_expresion
   
       // Validar las condiciones solo si bonus_prima === 1
       const conditionsValid =
@@ -193,9 +191,7 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
         (Array.isArray(expression.condiciones) &&
           expression.condiciones.every((condition) => {
             return (
-              condition.id_condicion &&
-              condition.id_condicion_operador &&
-              condition.id_condicion_valor
+              condition.id_condicion
             );
           }));
   
@@ -584,9 +580,7 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
         item.expresiones.every((expression) => {
           // Validar las claves principales
           const mainFieldsValid =
-            expression.id_expresion &&
-            expression.id_expresion_operador &&
-            expression.id_expresion_valor;
+            expression.id_expresion
   
           // Validar las condiciones solo si bonus_prima === "1"
           const conditionsValid =
@@ -595,9 +589,7 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
             Array.isArray(expression.condiciones) &&
             expression.condiciones.every((condition) => {
               return (
-                condition.id_condicion &&
-                condition.id_condicion_operador &&
-                condition.id_condicion_valor
+                condition.id_condicion
               );
             });
   
