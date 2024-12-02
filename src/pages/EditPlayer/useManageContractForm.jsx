@@ -181,6 +181,7 @@ export const useManageContractForm = (form, idJugador) => {
     console.log('importe salario total sin tocar', datos.val_imp_salario_total)
     const salarioTotal = parseFloat(datos.val_imp_salario_total
       .replace(/\./g, '')  // Elimina todos los puntos que separan los miles
+      .replace(',', '.')   // Reemplaza la coma decimal con un punto
       .replace("€", "")    // Elimina el símbolo del euro
       .trim()
     );
@@ -203,6 +204,46 @@ export const useManageContractForm = (form, idJugador) => {
     return salarioTotal == sumaSalarioFijo;
   }
 
+  //funcion comprobar fechas en salariosFijos
+  function validarFechasPrincipales(contrato) {
+    const { dt_inicio_contrato, dt_inicio_contrato_real, dt_fin_contrato } = contrato;
+  
+    const fechaInicio = new Date(dt_inicio_contrato);
+    const fechaInicioReal = new Date(dt_inicio_contrato_real);
+    const fechaFin = new Date(dt_fin_contrato);
+  
+    // Comprobamos que ninguna de las fechas de inicio sea posterior a la fecha de fin
+    if (fechaInicio > fechaFin || fechaInicioReal > fechaFin) {
+      return false;
+    }
+  
+    return true;
+  }
+
+  // Función para validar las fechas en el array salaryComb
+  function validarFechasSalaryComb(contrato) {
+    const { desc_tipo_contrato, dt_inicio_contrato, salario_fijo } = contrato;
+
+    // Comprobamos si es necesario validar salaryComb
+    if (desc_tipo_contrato === "Laboral" || desc_tipo_contrato === "Liquidación") {
+      return true; // No requiere validación
+    }
+
+    const fechaInicioContrato = new Date(dt_inicio_contrato);
+
+    // Recorrer salaryComb y validar fechas
+    for (const salarioFijo of salario_fijo) {
+      for (const salario of salarioFijo.salaryComb) {
+        const fechaInicioSalario = new Date(salario.dt_inicio);
+        if (fechaInicioSalario < fechaInicioContrato) {
+          return false; // Hay una fecha no válida
+        }
+      }
+    }
+
+    return true; // Todas las fechas son válidas
+  }
+
   //función obtener campos obligatorios dependiendo del tipo de contrato
   const getRequiredFields = (contractType) => {
       switch (contractType) {
@@ -222,6 +263,7 @@ export const useManageContractForm = (form, idJugador) => {
           return []
       }
   }
+
 
   //funcion obtener campos opcionales dependiendo del tipo de contrato
   const getOptionalFields = (contractType) => {
@@ -297,23 +339,40 @@ export const useManageContractForm = (form, idJugador) => {
     console.log('object keys totalExpectedFields', totalExpectedFields)
     console.log('object keys savedContract', Object.keys(savedContract).length)        
     console.log('savedContract', savedContract);
+    const esSalarioValido = sumContractSalaries(savedContract);
+    const fechasPrincipalesValidas = validarFechasPrincipales(savedContract);
+    const fechasSalariosValidas = validarFechasSalaryComb(savedContract);
 
     //compruebo la suma de salarios coincide si el objeto final está bien construido y si es así lo mando a guardar.
     if ((totalExpectedFields === (Object.keys(savedContract).length - 1 )) && 
       data.desc_tipo_contrato != "Liquidación" &&
-      data.desc_tipo_contrato != "Renovación inscripción") {        
-      const esSalarioValido = sumContractSalaries(savedContract);
-
-      if (esSalarioValido) {
-        saveNewContract.uploadData('players/createContract',savedContract);
-      } else if (!esSalarioValido && savedContract.desc_tipo_contrato == 'Laboral'){
-        editPlayerContext.setCreatingContractError('La suma de salarios fijos debe ser igual que el valor del importe salario total');
+      data.desc_tipo_contrato != "Renovación inscripción") { 
+      if (!fechasPrincipalesValidas) {
+        editPlayerContext.setCreatingContractError('La fecha final del contrato es anterior a la fecha inicial. Revise las fechas del contrato');
       } else {
-        editPlayerContext.setCreatingContractError('La suma de los Importes Fijos debe ser igual que el valor del Importe Total');
+        if (!fechasSalariosValidas) {
+          editPlayerContext.setCreatingContractError('Las fechas de inicio/fin de contrato no coinciden con las fechas introducidas en los salarios');
+        } else {
+          if (esSalarioValido) {
+            saveNewContract.uploadData('players/createContract',savedContract);
+          } else if (!esSalarioValido && savedContract.desc_tipo_contrato == 'Laboral'){
+            editPlayerContext.setCreatingContractError('La suma de salarios fijos debe ser igual que el valor del importe salario total');
+          } else {
+            editPlayerContext.setCreatingContractError('La suma de los Importes Fijos debe ser igual que el valor del Importe Total');
+          }
+        }
       }
     } else if ((totalExpectedFields === (Object.keys(savedContract).length - 1 )) && 
       (data.desc_tipo_contrato == "Liquidación" || data.desc_tipo_contrato == "Renovación inscripción")) {
-      saveNewContract.uploadData('players/createContract',savedContract);
+        if (!fechasPrincipalesValidas) {
+          editPlayerContext.setCreatingContractError('La fecha final del contrato es anterior a la fecha inicial. Revise las fechas del contrato');
+        } else {
+          if (!fechasSalariosValidas) {
+            editPlayerContext.setCreatingContractError('Las fechas de inicio/fin de contrato no coinciden con las fechas introducidas en los salarios');
+          } else {
+            saveNewContract.uploadData('players/createContract',savedContract);
+          }
+        }
     }
   }
 
@@ -476,23 +535,47 @@ export const useManageContractForm = (form, idJugador) => {
     console.log('object keys totalExpectedFields', totalExpectedFields)
     console.log('object keys editedContract', Object.keys(editedContract).length)        
     console.log('editedContract', editedContract);
+    const esSalarioValido = sumContractSalaries(editedContract);
+    const fechasPrincipalesValidas = validarFechasPrincipales(editedContract);
+    const fechasSalariosValidas = validarFechasSalaryComb(editedContract);
+
+    console.log('esSalarioValido:',esSalarioValido);
+    console.log('fechasPrincipalesValidas:',fechasPrincipalesValidas);
+    console.log('fechasSalariosValidas:',fechasSalariosValidas);
 
     //compruebo la suma de salarios coincide si el objeto final está bien construido y si es así lo mando a guardar.
     if ((totalExpectedFields === (Object.keys(editedContract).length - 2 )) && 
       data.desc_tipo_contrato != "Liquidación" &&
       data.desc_tipo_contrato != "Renovación inscripción") {
-      const esSalarioValido = sumContractSalaries(editedContract);
 
-      if (esSalarioValido) {
-        saveEditedContract.uploadData('players/editContract',editedContract) 
-      } else if (!esSalarioValido && editedContract.desc_tipo_contrato == 'Laboral'){
-        editPlayerContext.setCreatingContractError('La suma de salarios fijos debe ser igual que el valor del importe salario total');
-      } else {
-        editPlayerContext.setCreatingContractError('La suma de los Importes Fijos debe ser igual que el valor del Importe Total');
-      }
+        if (!fechasPrincipalesValidas) {
+          editPlayerContext.setCreatingContractError('La fecha final del contrato es anterior a la fecha inicial. Revise las fechas del contrato');
+        } else {
+          if (!fechasSalariosValidas) {
+            editPlayerContext.setCreatingContractError('Las fechas de inicio/fin de contrato no coinciden con las fechas introducidas en los salarios');
+          } else {
+            if (esSalarioValido) {
+              saveEditedContract.uploadData('players/editContract',editedContract) 
+            } else if (!esSalarioValido && editedContract.desc_tipo_contrato == 'Laboral'){
+              editPlayerContext.setCreatingContractError('La suma de salarios fijos debe ser igual que el valor del importe salario total');
+            } else {
+              editPlayerContext.setCreatingContractError('La suma de los Importes Fijos debe ser igual que el valor del Importe Total');
+            }
+          }
+        }
+    
     } else if ((totalExpectedFields === (Object.keys(editedContract).length - 2 )) && 
       (data.desc_tipo_contrato == "Liquidación" || data.desc_tipo_contrato == "Renovación inscripción")) {
-      saveEditedContract.uploadData('players/editContract',editedContract) 
+
+        if (!fechasPrincipalesValidas) {
+          editPlayerContext.setCreatingContractError('La fecha final del contrato es anterior a la fecha inicial. Revise las fechas del contrato');
+        } else {
+          if (!fechasSalariosValidas) {
+            editPlayerContext.setCreatingContractError('Las fechas de inicio/fin de contrato no coinciden con las fechas introducidas en los salarios');
+          } else {
+            saveEditedContract.uploadData('players/editContract',editedContract) 
+          }
+        }
     }
   }
 

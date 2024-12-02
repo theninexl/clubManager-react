@@ -694,6 +694,7 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
                   <ExprCondValueFieldEdit
                     idExpresion={editPlayerContext.detailEditVariableData[0].expresiones[ExprComb].id_expresion}
                     idExpresionValor={editPlayerContext.detailEditVariableData[0].expresiones[ExprComb].id_expresion_valor}
+                    idExpresionDesc={editPlayerContext.detailEditVariableData[0].expresiones[ExprComb].id_expresion_desc}
                     index={index}
                     handleChangesOnDetailVariableExpression={handleChangesOnDetailVariableExpression}
                     searchExpression={searchExpression}
@@ -1081,7 +1082,7 @@ const ExprCondValueField = ({ idExpresion, index,  handleChangesOnNewVariableExp
 } 
 
 //render campo valor de expresion dependiendo de tipo de expresión cuando editamos una expresión creada
-const ExprCondValueFieldEdit = ({ idExpresion, idExpresionValor, index,  handleChangesOnDetailVariableExpression, searchExpression }) => {
+const ExprCondValueFieldEdit = ({ idExpresion, idExpresionValor, idExpresionDesc, index,  handleChangesOnDetailVariableExpression, searchExpression }) => {
   const editPlayerContext = useEditPlayerDataContext();
 
   const [searchExprSelected, setSearchExprSelected] = useState(null);
@@ -1133,7 +1134,7 @@ const ExprCondValueFieldEdit = ({ idExpresion, idExpresionValor, index,  handleC
           autoComplete='off'
           placeholder='Escribe para buscar'
           required={true}
-          value={searchExprSelected || idExpresionValor}
+          value={searchExprSelected || idExpresionDesc}
           handleOnChange={(e)=>{
             setSearchExprSelected(e.target.value);
             if (e.target.value.length >= 2 ) {
