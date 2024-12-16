@@ -597,6 +597,7 @@ export const useManageContractForm = (form, idJugador) => {
         window.scrollTo(0,0);
         editPlayerContext.setCreatingContractError(null)
         getPlayerDetail(idJugador);
+        
     } else {
       editPlayerContext.setCreatingContractError('Existe un error en el formulario, inténtelo de nuevo');
     }
