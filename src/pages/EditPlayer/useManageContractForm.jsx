@@ -222,7 +222,8 @@ export const useManageContractForm = (form, idJugador) => {
 
   // Función para validar las fechas en el array salaryComb
   function validarFechasSalaryComb(contrato) {
-    const { desc_tipo_contrato, dt_inicio_contrato, salario_fijo } = contrato;
+    console.log('recibo en validarFechasSalaryComb', contrato);
+    const { desc_tipo_contrato, dt_inicio_contrato, dt_inicio_contrato_real, salario_fijo } = contrato;
 
     // Comprobamos si es necesario validar salaryComb
     if (desc_tipo_contrato === "Laboral" || desc_tipo_contrato === "Liquidación") {
@@ -230,12 +231,13 @@ export const useManageContractForm = (form, idJugador) => {
     }
 
     const fechaInicioContrato = new Date(dt_inicio_contrato);
+    const fechaInicioContratoReal = new Date(dt_inicio_contrato_real);
 
     // Recorrer salaryComb y validar fechas
     for (const salarioFijo of salario_fijo) {
       for (const salario of salarioFijo.salaryComb) {
         const fechaInicioSalario = new Date(salario.dt_inicio);
-        if (fechaInicioSalario < fechaInicioContrato) {
+        if (fechaInicioSalario < fechaInicioContrato || fechaInicioSalario < fechaInicioContratoReal) {
           return false; // Hay una fecha no válida
         }
       }
@@ -351,7 +353,7 @@ export const useManageContractForm = (form, idJugador) => {
         editPlayerContext.setCreatingContractError('La fecha final del contrato es anterior a la fecha inicial. Revise las fechas del contrato');
       } else {
         if (!fechasSalariosValidas) {
-          editPlayerContext.setCreatingContractError('Las fechas de inicio/fin de contrato no coinciden con las fechas introducidas en los salarios');
+          editPlayerContext.setCreatingContractError('Las fechas del importe son posteriores a las fechas del inicio del contrato. Revíselas');
         } else {
           if (esSalarioValido) {
             saveNewContract.uploadData('players/createContract',savedContract);
@@ -552,7 +554,7 @@ export const useManageContractForm = (form, idJugador) => {
           editPlayerContext.setCreatingContractError('La fecha final del contrato es anterior a la fecha inicial. Revise las fechas del contrato');
         } else {
           if (!fechasSalariosValidas) {
-            editPlayerContext.setCreatingContractError('Las fechas de inicio/fin de contrato no coinciden con las fechas introducidas en los salarios');
+            editPlayerContext.setCreatingContractError('Las fechas del importe son posteriores a las fechas del inicio del contrato. Revíselas');
           } else {
             if (esSalarioValido) {
               saveEditedContract.uploadData('players/editContract',editedContract) 
