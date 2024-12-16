@@ -207,6 +207,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
   const [showAmountTotalSalary, setShowAmountTotalSalary] = useState(true);
   const [showSalaryComb, setShowSalaryComb] = useState(true);
   const [showPercentagePayment, setShowPercentagePayment] = useState(true);
+  const [totalFixedSalaryName, setTotalFixedSalaryName] = useState('Importe Fijo Total*')
 
 
   useEffect(()=>{
@@ -215,6 +216,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
       editPlayerContext.newContractDataForSalaryComb.descType == 1 || 
       editPlayerContext.newContractDataForSalaryComb.descType == 6
     ){ 
+      setTotalFixedSalaryName('Importe Fijo Total*');
       setShowTerminationClause(true);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
@@ -222,6 +224,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
       setShowSalaryComb(true);
       setShowPercentagePayment(true);
     }else if (editPlayerContext.newContractDataForSalaryComb.descType == 4) {
+      setTotalFixedSalaryName('Importe Total*')
       setShowTerminationClause(false);
       setShowIntermediaries(true);
       setShowOriginDestinyFiels(false);
@@ -229,6 +232,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
       setShowSalaryComb(true);
       setShowPercentagePayment(true);
     }else if (editPlayerContext.newContractDataForSalaryComb.descType == 5) {
+      setTotalFixedSalaryName('Importe Fijo Total*');
       setShowTerminationClause(false);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
@@ -236,6 +240,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
       setShowSalaryComb(false);
       setShowPercentagePayment(false);
     } else {
+      setTotalFixedSalaryName('Importe Total*')
       setShowTerminationClause(false);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
@@ -243,6 +248,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
       setShowSalaryComb(true);
       setShowPercentagePayment(true);
     }
+
   },[editPlayerContext.newContractDataForSalaryComb])
   
   
@@ -501,7 +507,7 @@ const NewContractForm = ({ handleAddNewSalaryComb, handleChangesOnNewSalaryComb,
               assistanceText=''
               
             >
-              Importe Fijo Total*
+              { totalFixedSalaryName }
             </LabelElementNumberAssist>
           </FormSimplePanelRow>
         }    
@@ -594,6 +600,7 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
   const [showAmountTotalSalary, setShowAmountTotalSalary] = useState(true);
   const [showSalaryComb, setShowSalaryComb] = useState(true);
   const [showPercentagePayment, setShowPercentagePayment] = useState(true);
+  const [totalFixedSalaryName, setTotalFixedSalaryName] = useState('Importe Fijo Total*')
 
   console.log('EditContractForm');
   console.log("tipo contrato", editPlayerContext.detailContractData[0].desc_tipo_contrato);
@@ -604,6 +611,7 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
       editPlayerContext.detailContractData[0].desc_tipo_contrato == "Laboral" || 
       editPlayerContext.detailContractData[0].desc_tipo_contrato == "Renovación inscripción"
     ){ 
+      setTotalFixedSalaryName('Importe Fijo Total*');
       setShowTerminationClause(true);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
@@ -611,6 +619,7 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
       setShowSalaryComb(true);
       setShowPercentagePayment(true);
     }else if (editPlayerContext.detailContractData[0].desc_tipo_contrato == "Intermediación") {
+      setTotalFixedSalaryName('Importe Total*')
       setShowTerminationClause(false);
       setShowIntermediaries(true);
       setShowOriginDestinyFiels(false);
@@ -618,6 +627,7 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
       setShowSalaryComb(true);
       setShowPercentagePayment(true);
     }else if (editPlayerContext.detailContractData[0].desc_tipo_contrato == "Liquidación") {
+      setTotalFixedSalaryName('Importe Fijo Total*');
       setShowTerminationClause(false);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
@@ -625,6 +635,7 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
       setShowSalaryComb(false);
       setShowPercentagePayment(false);
     } else {
+      setTotalFixedSalaryName('Importe Total*')
       setShowTerminationClause(false);
       setShowIntermediaries(false);
       setShowOriginDestinyFiels(true);
@@ -942,7 +953,7 @@ const EditContractForm = ({ teams, intermediaries, idJugador, handleAddNewSalary
                 onChangeValue[0]["val_imp_salario_total"] = values.value;
                 editPlayerContext.setDetailContractData(onChangeValue); }}
             >
-              Importe Salario Total*
+              { totalFixedSalaryName }
             </LabelElementNumberAssist>
           </FormSimplePanelRow>
         }

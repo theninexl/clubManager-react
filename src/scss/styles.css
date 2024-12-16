@@ -76,7 +76,7 @@ body {
   color: #2C325F;
 }
 
-.cm-u-text-mouse, .cm-o-button-mouse--inactive, .cm-o-button-mouse--ghost, .cm-o-button-mouse--transparent, .cm-o-button-mouse--secondary, .cm-o-button-mouse--primary, .cm-l-table-players__body tr, .cm-l-tabledata__row, .cm-l-tabledata__footer, .cm-l-form-panel__row .panel-field-short span.assistance, .cm-l-form-panel__row .panel-field-short span.error, .cm-l-form-panel__row .panel-field-long span.assistance, .cm-l-form-panel__row .panel-field-long span.error, .cm-u-text-black-mouse, .navbar-links__textbutt-small, .navbar-links__textbutt, .cm-o-sortButton, .cm-o-icon-button-enormous--deco, .cm-o-icon-button--error, .cm-o-icon-button--success, .cm-o-icon-button--pressed, .cm-o-icon-button--secondary, .cm-o-icon-button--primary, .cm-l-tabledata-cls__header, .cm-l-table-players__header tr, .cm-l-tabledata__row--noRead, .cm-l-tabledata__header {
+.cm-u-text-mouse, .cm-o-button-mouse--inactive, .cm-o-button-mouse--ghost:disabled, .cm-o-button-mouse--ghost, .cm-o-button-mouse--transparent:disabled, .cm-o-button-mouse--transparent, .cm-o-button-mouse--secondary:disabled, .cm-o-button-mouse--secondary, .cm-o-button-mouse--primary:disabled, .cm-o-button-mouse--primary, .cm-o-button-cat--ghost:disabled, .cm-o-button-cat--transparent:disabled, .cm-o-button-cat--secondary:disabled, .cm-o-button-cat--primary:disabled, .cm-l-table-players__body tr, .cm-l-tabledata__row, .cm-l-tabledata__footer, .cm-l-form-panel__row .panel-field-short span.assistance, .cm-l-form-panel__row .panel-field-short span.error, .cm-l-form-panel__row .panel-field-long span.assistance, .cm-l-form-panel__row .panel-field-long span.error, .cm-u-text-black-mouse, .navbar-links__textbutt-small, .navbar-links__textbutt, .cm-o-sortButton, .cm-o-icon-button-enormous--deco, .cm-o-icon-button--error, .cm-o-icon-button--success, .cm-o-icon-button--pressed, .cm-o-icon-button--secondary, .cm-o-icon-button--primary, .cm-l-tabledata-cls__header, .cm-l-table-players__header tr, .cm-l-tabledata__row--noRead, .cm-l-tabledata__header {
   font-size: 14px;
   font-size: 1.4rem;
   line-height: 24px;
@@ -763,6 +763,26 @@ strong {
 .cm-o-button-cat--primary:hover {
   text-decoration: none;
 }
+.cm-o-button-cat--primary:disabled {
+  cursor: inherit;
+  pointer-events: none;
+  height: 40px;
+  padding: 4px 16px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 700;
+  font-stretch: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #FFFFFF;
+  background-color: #E1E1E1;
+}
+.cm-o-button-cat--primary:disabled:hover {
+  text-decoration: none;
+}
 .cm-o-button-cat--secondary {
   padding: 4px 8px;
   border: 0;
@@ -778,6 +798,26 @@ strong {
   background-color: #CECE7E;
 }
 .cm-o-button-cat--secondary:hover {
+  text-decoration: none;
+}
+.cm-o-button-cat--secondary:disabled {
+  cursor: inherit;
+  pointer-events: none;
+  height: 40px;
+  padding: 4px 16px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 700;
+  font-stretch: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #FFFFFF;
+  background-color: #E1E1E1;
+}
+.cm-o-button-cat--secondary:disabled:hover {
   text-decoration: none;
 }
 .cm-o-button-cat--transparent {
@@ -801,6 +841,26 @@ strong {
 .cm-o-button-cat--transparent:hover {
   background-color: rgba(69, 69, 72, 0.05);
 }
+.cm-o-button-cat--transparent:disabled {
+  cursor: inherit;
+  pointer-events: none;
+  height: 40px;
+  padding: 4px 16px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 700;
+  font-stretch: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #FFFFFF;
+  background-color: #E1E1E1;
+}
+.cm-o-button-cat--transparent:disabled:hover {
+  text-decoration: none;
+}
 .cm-o-button-cat--ghost {
   padding: 4px 8px;
   border: 0;
@@ -821,6 +881,26 @@ strong {
 .cm-o-button-cat--ghost.active {
   color: #FFFFFF;
   background-color: #2C325F;
+}
+.cm-o-button-cat--ghost:disabled {
+  cursor: inherit;
+  pointer-events: none;
+  height: 40px;
+  padding: 4px 16px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 700;
+  font-stretch: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #FFFFFF;
+  background-color: #E1E1E1;
+}
+.cm-o-button-cat--ghost:disabled:hover {
+  text-decoration: none;
 }
 .cm-o-button-cat--ghost-inactive {
   padding: 4px 8px;
@@ -966,6 +1046,26 @@ strong {
 .cm-o-button-mouse--primary:hover {
   text-decoration: none;
 }
+.cm-o-button-mouse--primary:disabled {
+  cursor: inherit;
+  pointer-events: none;
+  height: 40px;
+  padding: 4px 16px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 700;
+  font-stretch: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #FFFFFF;
+  background-color: #E1E1E1;
+}
+.cm-o-button-mouse--primary:disabled:hover {
+  text-decoration: none;
+}
 .cm-o-button-mouse--secondary {
   height: 40px;
   padding: 4px 16px;
@@ -982,6 +1082,26 @@ strong {
   background-color: #CECE7E;
 }
 .cm-o-button-mouse--secondary:hover {
+  text-decoration: none;
+}
+.cm-o-button-mouse--secondary:disabled {
+  cursor: inherit;
+  pointer-events: none;
+  height: 40px;
+  padding: 4px 16px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 700;
+  font-stretch: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #FFFFFF;
+  background-color: #E1E1E1;
+}
+.cm-o-button-mouse--secondary:disabled:hover {
   text-decoration: none;
 }
 .cm-o-button-mouse--transparent {
@@ -1006,6 +1126,26 @@ strong {
 .cm-o-button-mouse--transparent:hover {
   background-color: rgba(69, 69, 72, 0.05);
 }
+.cm-o-button-mouse--transparent:disabled {
+  cursor: inherit;
+  pointer-events: none;
+  height: 40px;
+  padding: 4px 16px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 700;
+  font-stretch: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #FFFFFF;
+  background-color: #E1E1E1;
+}
+.cm-o-button-mouse--transparent:disabled:hover {
+  text-decoration: none;
+}
 .cm-o-button-mouse--ghost {
   height: 40px;
   padding: 4px 16px;
@@ -1022,6 +1162,26 @@ strong {
   background: transparent;
 }
 .cm-o-button-mouse--ghost:hover {
+  text-decoration: none;
+}
+.cm-o-button-mouse--ghost:disabled {
+  cursor: inherit;
+  pointer-events: none;
+  height: 40px;
+  padding: 4px 16px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 700;
+  font-stretch: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #FFFFFF;
+  background-color: #E1E1E1;
+}
+.cm-o-button-mouse--ghost:disabled:hover {
   text-decoration: none;
 }
 .cm-o-button-mouse--inactive {
