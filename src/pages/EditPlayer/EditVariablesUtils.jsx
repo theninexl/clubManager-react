@@ -44,8 +44,9 @@ export const ListSelectedContract = () => {
   )
 }
 
-export const ListVariablesForSelectedContract = ({ handleDeleteClausula, handleEditClausula }) => {
+export const ListVariablesForSelectedContract = ({ handleDeleteClausula, handleEditClausula, getNewVariableCombos }) => {
   const editPlayerContext = useEditPlayerDataContext();
+  const globalContext = useGlobalContext();
 
   useEffect(()=>{
     console.log('variables guardadas para mostrar', editPlayerContext.savedVariables); 
@@ -69,12 +70,14 @@ export const ListVariablesForSelectedContract = ({ handleDeleteClausula, handleE
             <IconButtonSmallerPrimary
               onClick={(e) => {
                 e.preventDefault();
+                getNewVariableCombos(globalContext.activeContractId);
                 editPlayerContext.setCreatingClauseError(null);
                 editPlayerContext.setShowNewVariableLayer(false);
                 // editPlayerContext.setShowEditVariableLayer(true);
                 editPlayerContext.setEditedVariableId(item.id_clausula);
                 handleEditClausula(item.id_clausula);
                 // console.log('editar contrato id', item.id_contrato);
+                // console.log('combos disponibles', editPlayerContext.variableCombos);
               }}>
               <SymbolEdit />
             </IconButtonSmallerPrimary>
@@ -99,7 +102,7 @@ export const ListVariablesForSelectedContract = ({ handleDeleteClausula, handleE
   )
 }
 
-export const VariableDataLayer = ({ handleChangesOnNewVariableExpression,handleChangesOnNewVariableExpressionToggle, handleDeleteNewVariableExpression, handleAddNewVariableExpression,handleDeleteNewCond,handleAddNewCond, searchExpression, searchCondition, handleSaveNewVariable, handleSaveExistingVariable,handleAddNewDetailVariableExpression, handleChangesOnDetailVariableExpression, handleChangesOnDetailVariableExpressionToggle,   handleDeleteDetailVariableExpression, handleAddNewDetailCond, handleDeleteDetailCond }) => {
+export const VariableDataLayer = ({ handleChangesOnNewVariableExpression,handleChangesOnNewVariableExpressionToggle, handleDeleteNewVariableExpression, handleAddNewVariableExpression,handleDeleteNewCond,handleAddNewCond, searchExpression, searchCondition, handleSaveNewVariable, handleSaveExistingVariable,handleAddNewDetailVariableExpression, handleChangesOnDetailVariableExpression, handleChangesOnDetailVariableExpressionToggle,   handleDeleteDetailVariableExpression, handleAddNewDetailCond, handleDeleteDetailCond, getNewVariableCombos }) => {
   const globalContext = useGlobalContext();
   const editPlayerContext = useEditPlayerDataContext();
 
@@ -120,6 +123,8 @@ export const VariableDataLayer = ({ handleChangesOnNewVariableExpression,handleC
                   editPlayerContext.setCreatingClauseError(null);
                   editPlayerContext.setShowNewVariableLayer(true);
                   editPlayerContext.setShowEditVariableLayer(false);
+                  getNewVariableCombos(globalContext.activeContractId);
+                  // console.log('combos disponibles', editPlayerContext.variableCombos);
                 }}
                 >
                   Nueva
@@ -184,19 +189,22 @@ const NewVariableForm = ({ handleChangesOnNewVariableExpression, handleChangesOn
       // Validar las claves principales
       const mainFieldsValid =
         expression.id_expresion
-  
+      
+      // Esto pidió Javi que fuera así en 20241125 pero en 20241216 se quejaron que se validara asi que lo desactivo
       // Validar las condiciones solo si bonus_prima === 1
-      const conditionsValid =
-        expression.bonus_prima === "1" ||
-        (Array.isArray(expression.condiciones) &&
-          expression.condiciones.every((condition) => {
-            return (
-              condition.id_condicion
-            );
-          }));
+      // const conditionsValid =
+      //   expression.bonus_prima === "1" ||
+      //   (Array.isArray(expression.condiciones) &&
+      //     expression.condiciones.every((condition) => {
+      //       return (
+      //         condition.id_condicion
+      //       );
+      //     }));
   
       // Validar si bonus_prima está vacío (solo mainFieldsValid es relevante)
-      return mainFieldsValid && (expression.bonus_prima === "" || conditionsValid);
+      // Esto pidió Javi que fuera así en 20241125 pero en 20241216 se quejaron que se validara asi que lo desactivo
+      // return mainFieldsValid && (expression.bonus_prima === "" || conditionsValid);
+      return mainFieldsValid
     });
     setIsButtonDisabled(!isValid);
   }, [editPlayerContext.variableExpressions]);
@@ -579,23 +587,26 @@ const EditVariableForm = ({ searchExpression, searchCondition, handleSaveExistin
         Array.isArray(item.expresiones) &&
         item.expresiones.every((expression) => {
           // Validar las claves principales
-          const mainFieldsValid =
-            expression.id_expresion
+          const mainFieldsValid = expression.id_expresion;
   
           // Validar las condiciones solo si bonus_prima === "1"
-          const conditionsValid =
-            expression.bonus_prima !== undefined &&
-            expression.bonus_prima === true &&
-            Array.isArray(expression.condiciones) &&
-            expression.condiciones.every((condition) => {
-              return (
-                condition.id_condicion
-              );
-            });
+          // Esto pidió Javi que fuera así en 20241125 pero en 20241216 se quejaron que se validara asi que lo desactivo
+          // const conditionsValid =
+          //   expression.bonus_prima !== undefined &&
+          //   expression.bonus_prima === true &&
+          //   Array.isArray(expression.condiciones) &&
+          //   expression.condiciones.every((condition) => {
+          //     return (
+          //       condition.id_condicion
+          //     );
+          //   });
   
           // La validación es válida si solo mainFieldsValid es suficiente (bonus_prima === "")
           // o si también se cumple la validación de condiciones (bonus_prima === "1")
-          return mainFieldsValid && (!expression.bonus_prima || conditionsValid);
+          // Esto pidió Javi que fuera así en 20241125 pero en 20241216 se quejaron que se validara asi que lo desactivo
+          //return mainFieldsValid && (!expression.bonus_prima || conditionsValid);
+          console.log('mainFieldsValid', mainFieldsValid);
+          return mainFieldsValid;
         })
       );
     });

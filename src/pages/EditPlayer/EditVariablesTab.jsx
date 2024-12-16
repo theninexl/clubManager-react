@@ -49,6 +49,8 @@ export const EditVariablesTab = ({ form, idJugador }) => {
       <ListVariablesForSelectedContract
         handleDeleteClausula={handleDeleteClausula}
         handleEditClausula={handleEditClausula}
+        getNewVariableCombos={getNewVariableCombos}
+
       />
       <VariableDataLayer 
         handleChangesOnNewVariableExpression={handleChangesOnNewVariableExpression}
@@ -67,6 +69,7 @@ export const EditVariablesTab = ({ form, idJugador }) => {
         handleDeleteDetailVariableExpression={handleDeleteDetailVariableExpression}
         handleAddNewDetailCond={handleAddNewDetailCond}
         handleDeleteDetailCond={handleDeleteDetailCond}
+        getNewVariableCombos={getNewVariableCombos}
       />
     </TableDataWrapper>
   );
